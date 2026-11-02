@@ -1,0 +1,18 @@
+{
+  "name": "vozemestudo-frontend",
+  "version": "0.3.1",
+  "private": true,
+  "description": "Front-end estático do Voz em Estudo; npm é usado somente nos testes opcionais.",
+  "scripts": {
+    "test": "node tests/browser-check.cjs",
+    "test:browser": "node tests/browser-check.cjs",
+    "test:dom": "node tests/dom-check.cjs",
+    "check:syntax": "python ../scripts/static-check.py"
+  },
+  "devDependencies": {
+    "axe-core": "4.14.0",
+    "jsdom": "26.1.0",
+    "playwright": "1.62.1"
+  },
+  "type": "module"
+}

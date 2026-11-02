@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="paper">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FFFBF6">
+  <link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3">
+  <title>Voz em Estudo | Responder questões</title>
+  <script src="/js/utils/theme-init.js"></script><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script>
+  <script type="module" src="/js/pages/quiz.page.js"></script>
+<link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" />
+  <script defer src="/js/utils/card-motion.js"></script>
+</head>
+<body data-page="quiz-session" class="quiz-session-page">
+  <a class="skip-link" href="#conteudo-principal">Pular para a questão</a>
+  <header class="quiz-session-header">
+    <a class="wordmark" href="./painel.html" aria-label="Voz em Estudo — painel">
+      <img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" alt="" aria-hidden="true">
+      <span class="brand-name" aria-hidden="true"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span>
+    </a>
+    <button class="secondary-action" type="button" data-leave-quiz>Sair da lista</button>
+  </header>
+  <main id="conteudo-principal" tabindex="-1" class="quiz-session-main">
+    <section class="quiz-progress-area" aria-label="Progresso da lista">
+      <div><span data-quiz-progress-text>Carregando lista…</span><strong data-quiz-title></strong></div>
+      <div class="quiz-progress-track"><span data-quiz-progress-bar></span></div>
+    </section>
+    <article class="quiz-question-card" data-quiz-card>
+      <span class="eyebrow">Questão de múltipla escolha</span>
+      <h1 id="quiz-statement" tabindex="-1" data-quiz-statement>Carregando questão...</h1>
+      <form data-single-question-form>
+        <fieldset class="quiz-alternatives" aria-labelledby="quiz-statement" data-quiz-alternatives></fieldset>
+        <p class="quiz-selection-message" data-quiz-message role="status" aria-live="polite"></p>
+        <div class="quiz-navigation"><button class="secondary-action" type="button" data-previous-question>Anterior</button><button class="primary-action" type="submit" data-next-question>Próxima questão</button></div>
+      </form>
+    </article>
+  </main>
+</body>
+</html>

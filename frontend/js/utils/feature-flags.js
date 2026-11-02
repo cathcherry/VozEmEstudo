@@ -1,0 +1,28 @@
+import { getPublicConfig } from '../api/config.js';
+
+export const FEATURE_FLAG_NAMES = Object.freeze([
+  'catalog_units',
+  'planning',
+  'mp4_retention',
+  'study_tracking',
+  'quiz_v2',
+  'flashcards',
+  'social_basic',
+  'sharing',
+]);
+
+export function normalizeFeatureFlags(source = {}) {
+  return Object.freeze(
+    Object.fromEntries(FEATURE_FLAG_NAMES.map((name) => [name, source?.[name] === true])),
+  );
+}
+
+export async function getFeatureFlags() {
+  const config = await getPublicConfig();
+  return normalizeFeatureFlags(config.featureFlags);
+}
+
+export async function isFeatureEnabled(name) {
+  if (!FEATURE_FLAG_NAMES.includes(name)) return false;
+  return (await getFeatureFlags())[name];
+}

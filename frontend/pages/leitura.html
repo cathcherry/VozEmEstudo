@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Leitura e foco</title>
+<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/settings.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" />
+  <script defer src="/js/utils/card-motion.js"></script>
+</head><body class="app-page" data-page="reading">
+<a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+<aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./painel.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span></a>
+<nav aria-label="Navegação principal" class="primary-navigation"><a href="./painel.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Painel</span></a><a href="./nova-transcricao.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/></svg><span>Nova transcrição</span></a><a href="./historico.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/></svg><span>Biblioteca</span></a></nav>
+<nav class="sidebar-settings" aria-label="Preferências e ajuda"><a href="./aparencia.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/></svg><span>Aparência</span></a><a href="./leitura.html" class="active" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20L10 4l7 16M6 14h8M20 4v16M18 6l2-2 2 2M18 18l2 2 2-2"/></svg><span>Leitura e foco</span></a><a href="./ajuda.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/></svg><span>Ajuda</span></a></nav>
+<a class="sidebar-about" href="./index.html">Sobre o Voz em Estudo</a></div></aside>
+<button class="menu-backdrop" data-menu-backdrop type="button" aria-label="Fechar menu"></button>
+<header class="site-header app-topbar"><div class="topbar-title"><button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span>Leitura e foco</span></div>
+<div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
+<button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/><circle cx="12" cy="12" r="3"/></svg><span data-focus-toggle-label>Modo foco</span></button>
+<a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
+<main tabindex="-1" class="article-content" id="conteudo-principal"><header class="article-heading"><span class="eyebrow">Preferências de leitura</span><h1>Leitura e foco</h1><p>Ajuste texto, espaçamento e efeitos para estudar com mais conforto.</p></header><section class="article-section focus-settings-section" id="foco">
+<h2>Conforto de leitura</h2><p class="plain-note">Ative ou encerre o modo foco pelo botão no cabeçalho ou pelo atalho Alt + F. A barra lateral recolhe automaticamente; use o botão de navegação para reabri-la.</p>
+<div class="personalization-settings"><div class="personalization-group"><h3>Uma tarefa por vez</h3><label class="check-row"><input data-ui-setting="focusMode" id="setting-focus-mode" type="checkbox"><span><strong>Modo foco</strong><small>Recolhe a barra lateral, reduz elementos secundários e interrompe efeitos de movimento. Você pode expandir a navegação quando precisar.</small></span></label><p class="plain-note">Guarde esta combinação em <a href="./aparencia.html#saved-themes-heading">Meus temas</a>.</p></div>
+<div class="personalization-group">
+<div class="personalization-heading">
+<span aria-hidden="true" class="setting-icon">◎</span>
+<div>
+<h3>Apoio ao foco</h3>
+</div>
+</div>
+
+<label class="check-row">
+<input data-ui-setting="lowStimulation" id="setting-low-stimulation" type="checkbox"/>
+<span><strong>Menos estímulos visuais</strong><small>Remove sombras, efeitos e mudanças visuais desnecessárias.</small></span>
+</label>
+<label class="check-row">
+<input data-ui-setting="reducedMotion" id="setting-reduced-motion" type="checkbox"/>
+<span><strong>Movimento reduzido</strong><small>Desativa animações e transições da interface.</small></span>
+</label>
+</div>
+<div class="personalization-group">
+<div class="personalization-heading">
+<span aria-hidden="true" class="setting-icon">Aa</span>
+<div>
+<h3>Conforto de leitura</h3>
+</div>
+</div>
+<label class="check-row">
+<input data-ui-setting="highContrast" id="setting-high-contrast" type="checkbox"/>
+<span><strong>Contraste reforçado</strong><small>Destaca bordas, campos e links importantes.</small></span>
+</label>
+<label class="check-row">
+<input data-ui-setting="readableFont" id="setting-readable-font" type="checkbox"/>
+<span><strong>Tipografia de leitura</strong><small>Usa Verdana, letras simples e facilmente distinguíveis, com linhas mais confortáveis.</small></span>
+</label>
+<label class="setting-select-row" for="setting-text-size">
+<span><strong>Tamanho do texto</strong><small>Aumenta textos e controles sem alterar o conteúdo.</small></span>
+<select data-ui-setting="textSize" id="setting-text-size">
+<option value="small">Pequeno — 90%</option>
+<option value="default">Padrão — 100%</option>
+<option value="medium">Médio — 115%</option>
+<option value="large">Grande — 130%</option>
+<option value="extra-large">Muito grande — 150%</option>
+<option value="maximum">Máximo — 200%</option>
+</select>
+</label>
+<label class="setting-select-row" for="setting-reading-spacing">
+<span><strong>Espaçamento da leitura</strong><small>Ajusta a distância entre linhas, palavras e parágrafos.</small></span>
+<select data-ui-setting="readingSpacing" id="setting-reading-spacing">
+<option value="compact">Compacto</option>
+<option value="comfortable">Confortável</option>
+<option value="wide">Amplo</option>
+</select>
+</label>
+</div>
+</div>
+<div class="personalization-actions">
+<button class="secondary-action" id="reset-personalization" type="button">Restaurar preferências</button>
+<p aria-live="polite" class="personalization-message" id="personalization-message"></p>
+</div>
+</section></main>
+<footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>

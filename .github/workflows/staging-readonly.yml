@@ -1,0 +1,39 @@
+name: Authorized staging read checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorization:
+        description: 'Type APPROVE_STAGING_READS after confirming the protected staging environment'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  staging-readonly:
+    if: ${{ inputs.authorization == 'APPROVE_STAGING_READS' }}
+    environment: staging-readonly
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.19.0
+      - name: Install existing backend libraries without postinstall downloads
+        run: npm ci --prefix backend --ignore-scripts --no-audit --no-fund
+      - name: Verify only authorized synthetic staging fixtures
+        run: npm run test:integration
+        env:
+          E01_REMOTE_READS_APPROVED: 'true'
+          E01_STAGING_PROJECT_REF: ${{ vars.E01_STAGING_PROJECT_REF }}
+          E01_API_URL: ${{ vars.E01_API_URL }}
+          E01_PUBLISHABLE_KEY: ${{ secrets.E01_PUBLISHABLE_KEY }}
+          E01_USER_A_TOKEN: ${{ secrets.E01_USER_A_TOKEN }}
+          E01_USER_B_TOKEN: ${{ secrets.E01_USER_B_TOKEN }}
+          E01_MATERIAL_A_ID: ${{ vars.E01_MATERIAL_A_ID }}
+          E01_JOB_A_ID: ${{ vars.E01_JOB_A_ID }}

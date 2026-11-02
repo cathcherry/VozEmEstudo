@@ -1,0 +1,22 @@
+.presentation-banner {
+  margin-bottom: 1.25rem;
+  border-radius: 0.5rem;
+  position: relative;
+  z-index: 100;
+  padding: 0.65rem 1rem;
+  background: #fff5d6;
+  color: #342b13;
+  font:
+    0.875rem/1.5 system-ui,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+.presentation-banner a {
+  color: #342b13;
+  text-decoration: underline;
+  font-weight: 700;
+}
+.presentation-banner a:focus-visible {
+  outline: 3px solid #342b13;
+  outline-offset: 3px;
+}

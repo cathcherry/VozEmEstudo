@@ -1,0 +1,115 @@
+TAP version 13
+# Subtest: rejects invalid or oversized trim ranges
+ok 1 - rejects invalid or oversized trim ranges
+  ---
+  duration_ms: 3.174001
+  type: 'test'
+  ...
+# Subtest: real FFmpeg: inspect and trim MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM and MOV
+    # Subtest: wav
+    ok 1 - wav
+      ---
+      duration_ms: 826.491727
+      type: 'test'
+      ...
+    # Subtest: mp3
+    ok 2 - mp3
+      ---
+      duration_ms: 1531.503743
+      type: 'test'
+      ...
+    # Subtest: m4a
+    ok 3 - m4a
+      ---
+      duration_ms: 872.564853
+      type: 'test'
+      ...
+    # Subtest: aac
+    ok 4 - aac
+      ---
+      duration_ms: 710.418805
+      type: 'test'
+      ...
+    # Subtest: ogg
+    ok 5 - ogg
+      ---
+      duration_ms: 804.426471
+      type: 'test'
+      ...
+    # Subtest: flac
+    ok 6 - flac
+      ---
+      duration_ms: 689.19584
+      type: 'test'
+      ...
+    # Subtest: mp4
+    ok 7 - mp4
+      ---
+      duration_ms: 1644.847857
+      type: 'test'
+      ...
+    # Subtest: webm
+    ok 8 - webm
+      ---
+      duration_ms: 850.015784
+      type: 'test'
+      ...
+    # Subtest: mov
+    ok 9 - mov
+      ---
+      duration_ms: 1006.337088
+      type: 'test'
+      ...
+    # Subtest: malformed file, forbidden format and video without sound
+    ok 10 - malformed file, forbidden format and video without sound
+      ---
+      duration_ms: 288.253075
+      type: 'test'
+      ...
+    # Subtest: actual HTTP media router returns a clipped WAV and metadata
+    ok 11 - actual HTTP media router returns a clipped WAV and metadata
+      ---
+      duration_ms: 333.348215
+      type: 'test'
+      ...
+    1..11
+ok 2 - real FFmpeg: inspect and trim MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM and MOV
+  ---
+  duration_ms: 9673.302902
+  type: 'test'
+  ...
+# {"time":"2026-10-08T05:01:49.822Z","level":"error","event":"HTTP_ERROR","requestId":"b1baa341-9a94-4049-912e-1115b7b875b5","code":"AUTH_REQUIRED","status":401,"message":"É necessário entrar na conta."}
+# {"time":"2026-10-08T05:01:49.832Z","level":"error","event":"HTTP_ERROR","requestId":"618f3995-bbfd-4734-8801-1b2f1311b993","code":"AUTH_REQUIRED","status":401,"message":"É necessário entrar na conta."}
+# Subtest: production media routes enforce authentication before accepting bytes
+ok 3 - production media routes enforce authentication before accepting bytes
+  ---
+  duration_ms: 47.666478
+  type: 'test'
+  ...
+# Subtest: aceita somente as quantidades de questões definidas
+ok 4 - aceita somente as quantidades de questões definidas
+  ---
+  duration_ms: 1.309282
+  type: 'test'
+  ...
+# Subtest: detecta derivação desatualizada pela revisão
+ok 5 - detecta derivação desatualizada pela revisão
+  ---
+  duration_ms: 0.199973
+  type: 'test'
+  ...
+# Subtest: valida formato e limite do áudio
+ok 6 - valida formato e limite do áudio
+  ---
+  duration_ms: 1.556886
+  type: 'test'
+  ...
+1..6
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17113.665829

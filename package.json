@@ -1,0 +1,39 @@
+{
+  "name": "voz-em-estudo-quality",
+  "version": "0.3.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "packageManager": "npm@11.9.0",
+  "scripts": {
+    "lint": "eslint . --max-warnings=0 && npm run lint:python",
+    "lint:python": "python -m ruff check asr-space scripts",
+    "format": "prettier --write . && python -m ruff format asr-space scripts",
+    "format:check": "node scripts/format-check.mjs && python -m ruff format --check asr-space scripts",
+    "test": "npm run test:backend && npm run test:dom && npm run test:python && npm run test:quality",
+    "test:backend": "npm --prefix backend test -- --test-concurrency=1",
+    "test:dom": "npm --prefix frontend run test:dom",
+    "test:browser": "npm --prefix frontend run test:browser",
+    "test:python": "python scripts/tests/test-distribution-audit.py && python -m unittest discover -s scripts/tests && python -m unittest discover -s asr-space/tests",
+    "test:integration": "node scripts/integration-check.mjs",
+    "check:syntax": "python scripts/static-check.py",
+    "check:openapi": "node scripts/openapi-check.mjs",
+    "check:secrets": "python scripts/secret-check.py",
+    "check": "npm run lint && npm run format:check && npm run check:syntax && npm run check:ci && npm run check:openapi && npm run check:secrets && npm test",
+    "test:quality": "node --test scripts/tests/*.test.mjs",
+    "check:ci": "node scripts/ci-check.mjs",
+    "demo": "node scripts/presentation/server.mjs",
+    "test:demo": "node --test scripts/tests/presentation.test.mjs"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.1.0",
+    "@electric-sql/pglite": "0.5.8",
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.9",
+    "yaml": "2.9.1"
+  }
+}

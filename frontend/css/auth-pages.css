@@ -1,0 +1,155 @@
+/* Voz em Estudo | autenticação: regras exclusivas para login, cadastro e recuperação.
+   Base visual: style.css > marque.css > product.css > library.css > voz-redesign.css.
+   Esta folha é sempre a ÚLTIMA destas três páginas. Não adicionar novas
+   regras de autenticação às folhas globais; altere aqui.
+*/
+
+/* Cabeçalhos: tamanhos e fontes previsíveis, independentemente do CSS global. */
+body.auth-page .login-introduction.auth-brand-panel h1 {
+  font-family: var(--brand-font, 'Plus Jakarta Sans', 'Inter', sans-serif);
+  font-size: clamp(2rem, 2.45vw, 2.55rem);
+  font-weight: 750;
+  line-height: 1.19;
+  letter-spacing: -0.042em;
+  max-width: 22ch;
+  overflow-wrap: normal;
+}
+body.auth-page .login-introduction.auth-brand-panel > p:not(.section-kicker) {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+body.auth-page .login-box-heading h1,
+body.auth-page .login-box-heading h2 {
+  font-family: var(--brand-font, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.65rem, 2vw, 1.85rem);
+  line-height: 1.2;
+  font-weight: 650;
+}
+body.auth-page .login-page,
+body.auth-page .login-layout,
+body.auth-page .register-layout,
+body.auth-page .login-box { min-width: 0; }
+body.auth-page .login-box { max-width: 100%; }
+body.auth-page .login-layout { grid-template-columns: minmax(0,1fr) minmax(340px,460px); }
+body.auth-page .login-brand-illustration { min-width: 0; }
+body.auth-page .login-brand-illustration img { flex: 0 0 auto; width: clamp(115px,13vw,160px); }
+body.auth-page .login-brand-illustration span { max-width: 18ch; font-family: var(--font-body); font-size: .82rem; }
+
+/* Cadastro: mascote ao lado do formulário, alinhado com o início do conteúdo. */
+body.auth-page[data-page="register"] .register-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 160px) minmax(0, 500px);
+  align-items: start;
+  justify-content: center;
+  gap: clamp(22px, 3vw, 38px);
+  width: min(780px, calc(100% - 44px));
+  margin: auto;
+  padding: 45px 0;
+}
+body.auth-page[data-page="register"] .register-brand-mascot {
+  display: flex;
+  align-self: start;
+  justify-content: center;
+  padding-top: 105px;
+}
+body.auth-page[data-page="register"] .register-brand-mascot img {
+  display: block;
+  width: min(150px, 100%);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+body.auth-page[data-page="register"] .register-layout > .login-box { width: 100%; min-width: 0; }
+
+/* Recuperação: ocupa a própria coluna, sem reservar espaço ao mascote. */
+body.auth-page[data-page="recovery"] .register-layout.recovery-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 520px);
+  justify-content: center;
+  width: min(580px, calc(100% - 32px));
+  margin: auto;
+  padding: 48px 0;
+}
+body.auth-page[data-page="recovery"] .recovery-layout > .login-box { min-width: 0; width: 100%; }
+body.auth-page .login-form[hidden] { display: none !important; }
+
+/* Mostrar/ocultar senha: dentro do campo, sem impactar inputs de outras páginas. */
+body.auth-page .password-field { display: block; position: relative; width: 100%; min-width: 0; }
+body.auth-page .password-field > input { display: block; width: 100%; padding-right: 92px; }
+body.auth-page .password-toggle {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 68px;
+  min-height: 36px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--accent-strong);
+  font: 650 .8rem var(--font-body, sans-serif);
+  cursor: pointer;
+}
+body.auth-page .password-toggle:hover { background: var(--surface-alt); }
+body.auth-page .password-toggle:focus-visible,
+body.auth-page .forgot-password-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+body.auth-page .forgot-password-link {
+  justify-self: end;
+  margin-top: -7px;
+  color: var(--accent-strong);
+  font-size: .86rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Notificações do login: visíveis, à direita e com contraste real. */
+body.auth-page .auth-toast[hidden] { display: none !important; }
+body.auth-page .auth-toast {
+  position: fixed;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  left: auto;
+  z-index: 2147483000;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-sizing: border-box;
+  width: min(420px, calc(100vw - 32px));
+  min-height: 86px;
+  padding: 17px 15px;
+  border: 1px solid #90afe1;
+  border-left: 6px solid #245fc5;
+  border-radius: 14px;
+  background: #eaf2ff;
+  color: #172f58;
+  box-shadow: 0 16px 38px rgba(16, 33, 58, .25), 0 2px 8px rgba(16,33,58,.12);
+  font: 400 15px/1.5 'Inter', 'Segoe UI', sans-serif;
+  animation: auth-toast-enter .23s ease-out both;
+}
+body.auth-page .auth-toast[data-type="success"] { background: #e5f6eb; border-color: #8dc8a2; border-left-color: #17804b; color: #174d32; }
+body.auth-page .auth-toast[data-type="error"] { background: #ffedef; border-color: #e5a1a9; border-left-color: #bc2639; color: #712232; }
+body.auth-page .auth-toast__symbol { flex: 0 0 31px; display: grid; place-items: center; width: 31px; height: 31px; margin-top: 1px; border-radius: 50%; background: #cddfff; color: #174b99; font-size: 17px; font-weight: 800; }
+body.auth-page .auth-toast[data-type="success"] .auth-toast__symbol { background: #c2eacf; color: #14683d; }
+body.auth-page .auth-toast[data-type="error"] .auth-toast__symbol { background: #ffd0d5; color: #992233; }
+body.auth-page .auth-toast__content { min-width: 0; flex: 1; }
+body.auth-page .auth-toast__title { display: block; margin-bottom: 3px; font-size: 15px; font-weight: 750; line-height: 1.35; }
+body.auth-page .auth-toast__text { display: block; margin: 0; font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
+body.auth-page .auth-toast__close { flex: 0 0 32px; display: grid; place-items: center; width: 32px; height: 32px; margin: -5px -4px -3px 0; padding: 0; border: 1px solid transparent; border-radius: 8px; background: rgba(255,255,255,.6); color: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
+body.auth-page .auth-toast__close:hover { border-color: currentColor; background: rgba(255,255,255,.9); }
+body.auth-page .auth-toast__close:focus-visible { outline: 3px solid #245fc5; outline-offset: 2px; }
+@keyframes auth-toast-enter { from { opacity: 0; transform: translate(14px,9px); } to { opacity: 1; transform: translate(0,0); } }
+@media (max-width: 900px) {
+  body.auth-page .login-layout { grid-template-columns: minmax(0,1fr); padding: 32px 0; }
+  body.auth-page .login-introduction { display: none; }
+  body.auth-page .login-box { width: 100%; max-width: 540px; margin: auto; }
+  body.auth-page[data-page="register"] .register-layout { grid-template-columns: minmax(0,520px); width: min(560px, calc(100% - 32px)); padding: 30px 0; }
+  body.auth-page[data-page="register"] .register-brand-mascot { display: none; }
+}
+@media (max-width: 540px) {
+  body.auth-page .login-box { padding: 24px 20px; }
+  body.auth-page .auth-toast { right: max(12px, env(safe-area-inset-right)); bottom: max(12px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); padding: 16px 13px; min-height: 76px; }
+  body.auth-page .auth-toast__text { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { body.auth-page .auth-toast { animation: none; } }

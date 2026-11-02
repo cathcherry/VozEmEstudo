@@ -1,0 +1,28 @@
+{
+  "name": "audioestudo-backend",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "worker": "node src/worker.js",
+    "dev": "node --watch src/server.js",
+    "dev:worker": "node --watch src/worker.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@gradio/client": "2.5.0",
+    "@supabase/supabase-js": "2.112.3",
+    "cors": "2.8.6",
+    "dotenv": "17.4.2",
+    "express": "5.2.1",
+    "groq-sdk": "1.5.0",
+    "helmet": "8.3.0",
+    "zod": "4.4.3",
+    "ffmpeg-static": "5.3.0",
+    "ffprobe-static": "3.1.0"
+  }
+}

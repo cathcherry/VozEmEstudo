@@ -1,0 +1,11 @@
+# Notas E02 para revisão do TCC
+
+Texto proposto para incorporar ao capítulo técnico e às limitações do TCC. Não altera automaticamente arquivos da autora e não representa validação científica realizada.
+
+A aplicação separa reconhecimento de fala, conferência humana e geração textual. Uma declaração versionada registra que o usuário afirma possuir permissão para utilizar e transmitir a gravação; não comprova direitos autorais. A escolha de conservação de áudio é independente. A transcrição gerada é versionada, e cada nova geração depende da confirmação explícita de uma revisão, cujo snapshot permanece associado ao job e aos derivados. Confirmar significa registrar conferência, não assegurar veracidade ou fidelidade total do reconhecimento.
+
+Três análises preliminares por modelo generativo orientam conferência de finalidade educacional, correspondência temática e possíveis inconsistências factuais. As saídas estruturadas são validadas, inclusive referências ao snapshot. Cada análise registra revisão, modelo, prompt, contexto e horário. Ironia, refutação, ficção, hipótese e ambiguidade exigem interpretação; os estados de ausência de aviso, insuficiência e erro não podem ser apresentados como prova de verdade ou falsidade.
+
+A validação de formato/referência demonstra consistência técnica, sem demonstrar qualidade pedagógica ou correção semântica. Não foram medidos precisão/recall de avisos, falsos positivos, impacto em aprendizagem, eficácia para TDAH, desempenho psicométrico ou qualidade da inferência ASR real. Em vídeos, somente a faixa de áudio é processada; conteúdo visual pode estar ausente do material derivado. O uso de provedores externos exige transparência e consulta às políticas vigentes, sem prometer exclusão externa não verificada.
+
+Os testes locais incluem autorização de duas contas, RLS e commits/retries em PostgreSQL embutido com dados sintéticos, serviços HTTP reais e transporte externo simulado. PGlite usa uma conexão e não comprova concorrência entre workers/conexões de um Supabase real. Staging autorizado, backup/restore, validação de grants/RLS/URLs reais, provedores e tecnologias assistivas devem ser apresentados como pendentes até existir evidência própria. Resultados locais e bloqueios constam no relatório E02; não declarar o gate G1 ou a Fase 1 liberados.

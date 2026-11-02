@@ -1,0 +1,56 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FFMPEG_PATH: /usr/bin/ffmpeg
+      FFPROBE_PATH: /usr/bin/ffprobe
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.19.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+            frontend/package-lock.json
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Install pinned tooling and runtime dependencies
+        run: |
+          npm install --global npm@11.9.0
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix backend --ignore-scripts --no-audit --no-fund
+          npm ci --prefix frontend --ignore-scripts --no-audit --no-fund
+          python -m pip install -r requirements-dev.txt
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+      - name: Check source, contracts, secrets and local fixtures
+        run: npm run check
+      - name: Install Chromium for the existing browser suite
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Check browser journeys and automated accessibility
+        run: npm run test:browser
+      - name: Audit the distribution archive
+        run: |
+          python scripts/distribution-audit.py pack . "$RUNNER_TEMP/AudioEstudo_VozEmEstudo.zip"
+          python scripts/distribution-audit.py audit "$RUNNER_TEMP/AudioEstudo_VozEmEstudo.zip"
