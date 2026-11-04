@@ -63,6 +63,121 @@ create table public.study_tasks (
   title text not null check (char_length(btrim(title)) between 1 and 180),
   due_date date,
   material_id uuid,
+  -- External references are stored as URLs, never fetched by the server.
+  reference_url text check (
+    reference_url is null or
+    (char_length(reference_url) <= 2048 and reference_url ~ '^https://[^[:space:]]+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint study_tasks_goal_owner_fk
+    foreign key (goal_id, user_id)
+    references public.study_goals(id, user_id) on delete cascade,
+  constraint study_tasks_subgoal_scope_fk
+    foreign key (subgoal_id, goal_id, user_id)
+    references public.study_subgoals(id, goal_id, user_id)
+    on delete set null (subgoal_id),
+  constraint study_tasks_material_owner_fk
+    foreign key (material_id, user_id)
+    references public.materials(id, user_id)
+    on delete set null (material_id)
+);
+
+create index study_goals_owner_created_idx on public.study_goals(user_id, created_at desc);
+create index study_subgoals_goal_created_idx
+  on public.study_subgoals(goal_id, created_at);
+create index study_tasks_subgoal_idx
+  on public.study_tasks(subgoal_id)
+  where subgoal_id is not null;
+create index study_tasks_goal_created_idx on public.study_tasks(goal_id, sort_order, created_at);
+create index study_tasks_owner_due_idx on public.study_tasks(user_id, due_date);
+create index study_tasks_material_idx on public.study_tasks(material_id)
+  where material_id is not null;
+
+create trigger study_goals_set_updated_at
+  before update on public.study_goals
+  for each row execute function public.set_updated_at();
+create trigger study_subgoals_set_updated_at
+  before update on public.study_subgoals
+  for each row execute function public.set_updated_at();
+create trigger study_tasks_set_updated_at
+  before update on public.study_tasks
+  for each row execute function public.set_updated_at();
+
+-- Reorders are single-transaction and only service_role may execute this RPC.
+-- The lock serializes concurrent reorder and insert operations for one goal.
+-- An exact list of the goal's tasks is required; no partial/cross-user reorder.
+create function public.study_reorder_tasks(
+  p_user_id uuid,
+  p_goal_id uuid,
+  p_task_ids uuid[]
+) returns table (id uuid, sort_order bigint)
+language plpgsql
+security invoker
+set search_path = pg_catalog, public
+as $reorder$
+declare
+  v_count integer;
+begin
+  if p_user_id is null or p_goal_id is null or p_task_ids is null
+      or cardinality(p_task_ids) < 2 or cardinality(p_task_ids) > 500 then
+    raise exception 'PLANNING_ORDER_INVALID' using errcode = '23514';
+  end if;
+
+  perform 1 from public.study_goals g
+  where g.id = p_goal_id and g.user_id = p_user_id
+  for update;
+  if not found then
+    raise exception 'PLANNING_GOAL_MISSING' using errcode = '23503';
+  end if;
+
+  select count(*) into v_count from public.study_tasks t
+  where t.goal_id = p_goal_id and t.user_id = p_user_id;
+  if cardinality(p_task_ids) <> v_count
+    or (select count(distinct x) from unnest(p_task_ids) as x) <> v_count
+    or (select count(*) from public.study_tasks t
+        where t.goal_id = p_goal_id and t.user_id = p_user_id
+          and t.id = any(p_task_ids)) <> v_count then
+    raise exception 'PLANNING_ORDER_CONFLICT' using errcode = '23514';
+  end if;
+
+  update public.study_tasks t
+  set sort_order = ordered.ordinality * 1000
+  from unnest(p_task_ids) with ordinality as ordered(task_id, ordinality)
+  where t.id = ordered.task_id and t.goal_id = p_goal_id and t.user_id = p_user_id;
+
+  return query
+  select t.id, t.sort_order from public.study_tasks t
+  where t.goal_id = p_goal_id and t.user_id = p_user_id
+  order by t.sort_order, t.created_at, t.id;
+end
+$reorder$;
+
+revoke all on function public.study_reorder_tasks(uuid, uuid, uuid[])
+from public, anon, authenticated;
+grant execute on function public.study_reorder_tasks(uuid, uuid, uuid[])
+to service_role;
+
+alter table public.study_goals enable row level security;
+alter table public.study_tasks enable row level security;
+alter table public.study_subgoals enable row level security;
+
+create policy study_goals_select_own on public.study_goals
+  for select to authenticated using (user_id = (select auth.uid()));
+create policy study_tasks_select_own on public.study_tasks
+  for select to authenticated using (user_id = (select auth.uid()));
+
+create policy study_subgoals_select_own on public.study_subgoals
+  for select to authenticated using (user_id = (select auth.uid()));
+
+revoke all on table public.study_goals, public.study_subgoals, public.study_tasks
+  from public, anon, authenticated;
+grant select, insert, update, delete on table public.study_goals, public.study_subgoals, public.study_tasks
+  to service_role;
+commit;
+)
+  ),
+  -- New tasks naturally appear at the end, even after a manual reorder.
+  sort_order bigint not null default (floor(extract(epoch from clock_timestamp()) * 1000)::bigint),
   completed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),

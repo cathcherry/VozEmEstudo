@@ -6,6 +6,12 @@ function assertDb(error) {
   if (['42P01', '42703', 'PGRST202'].includes(error.code))
     throw new AppError('PLANNING_SCHEMA_REQUIRED', 'O planejamento ainda não foi habilitado no banco.', 503);
   if (error.code === '23503') throw errors.notFound('Vínculo de planejamento');
+  if (error.code === '23514')
+    throw new AppError(
+      'PLANNING_ORDER_CONFLICT',
+      'A ordem mudou desde sua última atualização. Recarregue as tarefas.',
+      409,
+    );
   if (error.code === '23505') throw new AppError('PLANNING_CONFLICT', 'Já existe um item com esses dados.', 409);
   throw error;
 }
