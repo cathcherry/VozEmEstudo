@@ -1,5 +1,5 @@
 // E10: browser view intentionally renders only server-provided feedback.
-export function feedbackForQuestion(result, mode) {
+export function feedbackForQuestion(result) {
   if (!result) return '';
   if (!Object.hasOwn(result, 'correctIndex'))
     return 'Resposta registrada. O gabarito será apresentado ao concluir.';
