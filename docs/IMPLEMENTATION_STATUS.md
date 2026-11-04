@@ -1,3 +1,9 @@
+# Etapa 4 iniciada — Questões 2.0 (E10)
+
+O PR #2 em Draft agora inclui API e interface de tentativas persistentes com feedback imediato/diferido, migration candidata E10 e checks. `FEATURE_QUIZ_V2` continua OFF. Sem alteração do Supabase, sem teste A/B real e sem merge na `main`. Veja [o plano E10](implementation-2.0/06-quiz-v2-workplan.md).
+
+---
+
 # Continuação da etapa 3 — E06 (subobjetivos e edição)
 
 No PR #2 estão agora **subobjetivos de um nível**, edição de objetivos e tarefas, vínculos seguros a subobjetivos e ordenação/filtros na interface. A migration candidata E05/E06 foi **alterada antes de qualquer aplicação**, incluindo a tabela `study_subgoals` e constraints compostas de escopo. Nenhum SQL foi aplicado ao Supabase; `FEATURE_PLANNING` segue OFF. A revisão atual e os limites constam no [plano de planejamento](implementation-2.0/05-planejamento-workplan.md).
