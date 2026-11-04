@@ -12,7 +12,7 @@ function assertDb(error) {
 
 const goalFields = 'id,title,description,target_date,status,created_at';
 const subgoalFields = 'id,goal_id,title,due_date,created_at';
-const taskFields = 'id,goal_id,subgoal_id,title,due_date,material_id,completed_at,created_at';
+const taskFields = 'id,goal_id,subgoal_id,title,due_date,material_id,reference_url,sort_order,completed_at,created_at';
 
 export async function listOwnedPlanning(userId) {
   const db = getAdminSupabase();
@@ -22,7 +22,7 @@ export async function listOwnedPlanning(userId) {
     db.from('study_subgoals').select(subgoalFields).eq('user_id', userId)
       .order('created_at', { ascending: true }),
     db.from('study_tasks').select(taskFields).eq('user_id', userId)
-      .order('created_at', { ascending: true }),
+      .order('sort_order', { ascending: true }).order('created_at', { ascending: true }),
   ]);
   for (const result of [goals, subgoals, tasks]) assertDb(result.error);
   return { goals: goals.data || [], subgoals: subgoals.data || [], tasks: tasks.data || [] };
@@ -80,6 +80,23 @@ export async function insertSubgoal(userId, goalId, subgoal) {
     .insert({ ...subgoal, goal_id: goalId, user_id: userId }).select(subgoalFields).single();
   assertDb(error);
   return data;
+}
+
+export async function updateOwnedSubgoal(userId, subgoalId, patch) {
+  const { data, error } = await getAdminSupabase().from('study_subgoals')
+    .update(patch).eq('user_id', userId).eq('id', subgoalId)
+    .select(subgoalFields).maybeSingle();
+  assertDb(error);
+  if (!data) throw errors.notFound('Subobjetivo');
+  return data;
+}
+
+export async function reorderOwnedTasks(userId, goalId, taskIds) {
+  const { data, error } = await getAdminSupabase().rpc('study_reorder_tasks', {
+    p_user_id: userId, p_goal_id: goalId, p_task_ids: taskIds,
+  });
+  assertDb(error);
+  return data || [];
 }
 
 export async function insertTask(userId, goalId, task) {

@@ -19,6 +19,16 @@ export async function createSubgoal(req, res, next) {
   catch (error) { next(error); }
 }
 
+export async function updateSubgoal(req, res, next) {
+  try { res.json(await planningService.updateSubgoal(req.user.id, req.params.subgoalId, req.body)); }
+  catch (error) { next(error); }
+}
+
+export async function reorderTasks(req, res, next) {
+  try { res.json(await planningService.reorderTasks(req.user.id, req.params.goalId, req.body)); }
+  catch (error) { next(error); }
+}
+
 export async function createTask(req, res, next) {
   try { res.status(201).json(await planningService.createTask(req.user.id, req.params.goalId, req.body)); }
   catch (error) { next(error); }

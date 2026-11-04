@@ -3,6 +3,7 @@ import { errors } from '../domain/errors.js';
 import {
   validatePlanningId, validateNewGoal, validateGoalPatch, validateNewSubgoal,
   validateNewTask, validateTaskPatch, validateTaskCompletion,
+  validateSubgoalPatch, validateTaskOrder,
 } from '../validators/planning.validator.js';
 
 export function buildPlanningService(store = repository) {
@@ -23,6 +24,17 @@ export function buildPlanningService(store = repository) {
       const payload = validateNewSubgoal(body);
       await store.getOwnedGoal(userId, id);
       return store.insertSubgoal(userId, id, payload);
+    },
+    updateSubgoal(userId, subgoalId, body) {
+      return store.updateOwnedSubgoal(
+        userId, validatePlanningId(subgoalId), validateSubgoalPatch(body),
+      );
+    },
+    async reorderTasks(userId, goalId, body) {
+      const id = validatePlanningId(goalId);
+      const taskIds = validateTaskOrder(body);
+      await store.getOwnedGoal(userId, id);
+      return store.reorderOwnedTasks(userId, id, taskIds);
     },
     async createTask(userId, goalId, body) {
       const id = validatePlanningId(goalId);
