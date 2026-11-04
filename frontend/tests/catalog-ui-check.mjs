@@ -14,6 +14,9 @@ test('catalog remains hidden and scoped until the feature flag is enabled', () =
   assert.match(html, /\/css\/catalog\.css/);
   assert.match(css, /body\[data-page='history'\] \.catalog-workspace/);
   assert.match(page, /initCatalogPanel/);
+  assert.match(page, /initLibraryViewSwitcher/);
+  assert.match(html, /data-library-view-switch hidden/);
+  assert.match(html, /value="resources"/);
 });
 
 test('catalog panel has accessible forms for subjects, units, and material assignments', () => {

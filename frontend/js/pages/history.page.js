@@ -5,6 +5,7 @@ import { studyFor, metadataTags, saveTags } from '../utils/study-store.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initCatalogPanel } from './catalog-panel.js';
+import { initLibraryViewSwitcher } from './library-views.js';
 
 await initAuthenticatedShell();
 const query=new URLSearchParams(location.search);
@@ -12,7 +13,7 @@ const search=document.querySelector('#library-search'), groups=document.querySel
 const controls=Object.fromEntries(['subject','tag','status','study','group','order'].map(key=>[key,document.querySelector('#library-'+key)]));
 search.value=query.get('q')||''; if(['active','completed','new'].includes(query.get('study'))) controls.study.value=query.get('study');
 let materials=[], loaded=false, editing=null, announceTimer, returnFocus=null;
-let catalogPanel=null, catalogInitialized=false;
+let catalogPanel=null, catalogInitialized=false, libraryViews=null;
 const dialog=document.querySelector('#metadata-dialog'), form=document.querySelector('[data-metadata-form]'), message=document.querySelector('[data-metadata-message]');
 const nameField=document.querySelector('#metadata-name'), subjectField=document.querySelector('#metadata-subject'), tagsField=document.querySelector('#metadata-tags');
 function fillOptions(control,values) { const previous=control.value; control.querySelectorAll('option:not(:first-child)').forEach(x=>x.remove()); for(const value of values) { const option=document.createElement('option'); option.value=value; option.textContent=value; control.append(option); } if([...control.options].some(o=>o.value===previous)) control.value=previous; }
@@ -39,18 +40,65 @@ function render() {
   const needle=search.value.trim().toLocaleLowerCase('pt-BR');
   const visible=materials.filter(m=>{
     const tags=metadataTags(m), s=studyFor(m.id), phase=s.completed?'completed':s.openedAt?'active':'new';
-    return `${m.title} ${tags.join(' ')}`.toLocaleLowerCase('pt-BR').includes(needle)
+    return `${m.title} ${m.subject||''} ${catalogPanel?.unitLabelForMaterial(m)||''} ${tags.join(' ')}`.toLocaleLowerCase('pt-BR').includes(needle)
       && (controls.subject.value==='all'||(m.subject||'Sem disciplina')===controls.subject.value)
       && (controls.tag.value==='all'||tags.includes(controls.tag.value))
       && (controls.status.value==='all'||materialState(m)===controls.status.value)
       && (controls.study.value==='all'||phase===controls.study.value);
   }).sort((a,b)=>controls.order.value==='title'?a.title.localeCompare(b.title,'pt-BR'):controls.order.value==='opened'?(studyFor(b.id).openedAt||0)-(studyFor(a.id).openedAt||0):new Date(b.created_at)-new Date(a.created_at));
-  clearTimeout(announceTimer); announceTimer=setTimeout(()=>{count.textContent=`${visible.length} ${visible.length===1?'aula':'aulas'}${visible.length!==materials.length?' de '+materials.length:''}`;},180);
+  const showingResources = libraryViews?.isResourceView() === true;
+  const resourceGroups = showingResources ? libraryViews.groupsFor(visible) : [];
+  const resourceCount = resourceGroups.reduce((total, group) => total + group.items.length, 0);
+  clearTimeout(announceTimer);
+  announceTimer=setTimeout(()=>{
+    count.textContent = showingResources
+      ? `${resourceCount} ${resourceCount===1?'recurso':'recursos'} em ${visible.length} ${visible.length===1?'aula':'aulas'}`
+      : `${visible.length} ${visible.length===1?'aula':'aulas'}${visible.length!==materials.length?' de '+materials.length:''}`;
+  },180);
   groups.replaceChildren(); state.replaceChildren(); state.hidden=Boolean(visible.length);
   if(!visible.length) {
     const card=emptyState(materials.length?'Nenhum material encontrado.':'Você ainda não enviou uma aula.',materials.length?'Tente outro título, disciplina ou tag.':'Suas aulas aparecerão aqui depois do envio.',{mascot:false,href:materials.length?null:'./nova-transcricao.html'});
     if(materials.length) {const button=document.createElement('button');button.className='secondary-action';button.type='button';button.textContent='Limpar busca e filtros';button.addEventListener('click',clear);card.querySelector('div').append(button);}
     state.append(card); return;
+  }
+  if (showingResources) {
+    if (resourceCount === 0) {
+      state.hidden = false;
+      state.append(emptyState(
+        'Nenhum recurso disponível para estes filtros.',
+        'As aulas ainda podem estar em processamento. Volte à visualização por aula para acompanhar o andamento.',
+        { mascot: false },
+      ));
+      return;
+    }
+    let groupIndex=0;
+    for (const group of resourceGroups) {
+      const section=document.createElement('section');
+      section.className='library-group library-resource-group';
+      const heading=document.createElement('h2');
+      heading.id='resource-group-'+groupIndex++;
+      section.setAttribute('aria-labelledby',heading.id);
+      heading.textContent=group.label;
+      const total=document.createElement('small');
+      total.textContent=`${group.items.length} ${group.items.length===1?'item':'itens'}`;
+      heading.append(' ',total);
+      section.append(heading);
+      for (const item of group.items) {
+        const article=document.createElement('article');
+        article.className='library-resource-reference';
+        const link=document.createElement('a');
+        link.href=item.href;
+        link.textContent=item.title;
+        const meta=document.createElement('p');
+        const original=visible.find((material)=>material.id===item.materialId);
+        const unit=original ? catalogPanel?.unitLabelForMaterial(original) : null;
+        meta.textContent=unit && unit!=='Sem unidade' ? unit : item.subject;
+        article.append(link,meta);
+        section.append(article);
+      }
+      groups.append(section);
+    }
+    return;
   }
   const mapping=new Map();
   for(const material of visible) {
@@ -98,6 +146,12 @@ async function load() {
           const option = document.createElement('option');
           option.value = 'unit'; option.textContent = 'Unidade';
           controls.group.append(option);
+          libraryViews = initLibraryViewSwitcher({
+            onChange() {
+              controls.group.disabled = libraryViews?.isResourceView() === true;
+              render();
+            },
+          });
         }
       } catch (error) {
         const catalogNotice = document.querySelector('[data-catalog-status]');

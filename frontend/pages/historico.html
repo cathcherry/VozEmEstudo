@@ -21,7 +21,14 @@
 <form data-catalog-assignment-form><h3>Organizar uma aula</h3><label for="catalog-assign-material">Aula<select id="catalog-assign-material" data-catalog-assign-material required></select></label><label for="catalog-assign-subject">Disciplina<select id="catalog-assign-subject" data-catalog-assign-subject></select></label><label for="catalog-assign-unit">Unidade<select id="catalog-assign-unit" data-catalog-assign-unit></select></label><button type="submit" class="secondary-action">Salvar vínculo</button></form>
 </div><p data-catalog-status role="status" aria-live="polite"></p>
 </section>
-<section class="study-section" aria-label="Materiais da Biblioteca"><form class="library-search" role="search" data-library-search><label class="sr-only" for="library-search">Buscar título, disciplina ou tag</label><input type="search" id="library-search" placeholder="Buscar título, disciplina ou tag" autocomplete="off"><button class="secondary-action" type="submit">Buscar</button></form>
+<section class="study-section" aria-label="Materiais da Biblioteca">
+<fieldset class="library-view-switch" data-library-view-switch hidden>
+<legend>Visualizar Biblioteca</legend>
+<label><input type="radio" name="library-view" value="lessons" checked> Por aula e unidade</label>
+<label><input type="radio" name="library-view" value="resources"> Por tipo de recurso</label>
+</fieldset>
+<p data-library-view-status role="status" aria-live="polite"></p>
+<form class="library-search" role="search" data-library-search><label class="sr-only" for="library-search">Buscar título, disciplina ou tag</label><input type="search" id="library-search" placeholder="Buscar título, disciplina ou tag" autocomplete="off"><button class="secondary-action" type="submit">Buscar</button></form>
 <details class="library-filter-panel"><summary>Organizar e filtrar</summary><div class="library-filters">
 <label for="library-subject">Disciplina<select id="library-subject"><option value="all">Todas as disciplinas</option></select></label>
 <label for="library-tag">Tag<select id="library-tag"><option value="all">Todas as tags</option></select></label>

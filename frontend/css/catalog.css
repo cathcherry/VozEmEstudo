@@ -37,3 +37,59 @@ body[data-page='history'] .catalog-forms :is(input, select) {
 body[data-page='history'] .catalog-forms button { align-self: flex-start; margin-top: auto; }
 body[data-page='history'] [data-catalog-status] { min-height: 1.5em; margin: 16px 0 0; }
 body[data-page='history'] [data-catalog-status][data-state='error'] { color: var(--error, #a52828); }
+
+/* E04: two views use one material ID and link back to the original resource. */
+body[data-page='history'] .library-view-switch[hidden] { display: none; }
+body[data-page='history'] .library-view-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  padding: 0 0 18px;
+  margin: 0 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--border-light);
+}
+body[data-page='history'] .library-view-switch legend {
+  font-size: .8rem;
+  font-weight: 650;
+  padding: 0 0 10px;
+}
+body[data-page='history'] .library-view-switch label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: .84rem;
+}
+body[data-page='history'] .library-view-switch input { accent-color: var(--accent-strong); }
+body[data-page='history'] .library-view-switch input:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+body[data-page='history'] [data-library-view-status]:empty { display: none; }
+body[data-page='history'] [data-library-view-status] {
+  font-size: .8rem;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+body[data-page='history'] [data-library-view-status][data-state='error'] {
+  color: var(--error, #a52828);
+}
+body[data-page='history'] .library-resource-reference {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border-light);
+  min-width: 0;
+}
+body[data-page='history'] .library-resource-reference:last-child { border-bottom: 0; }
+body[data-page='history'] .library-resource-reference a {
+  color: var(--text);
+  font-weight: 600;
+  font-size: .92rem;
+  overflow-wrap: anywhere;
+  text-underline-offset: 3px;
+}
+body[data-page='history'] .library-resource-reference a:hover { color: var(--accent-strong); }
+body[data-page='history'] .library-resource-reference p {
+  color: var(--muted);
+  font-size: .76rem;
+  margin: 5px 0 0;
+}
