@@ -62,7 +62,7 @@ export function validateSubgoalPatch(input) {
 }
 
 function validateReferenceUrl(value) {
-  if (value === null || value === '') return null;
+  if (value === undefined || value === null || value === '') return null;
   const parsed = z.string().trim().max(2048).parse(value);
   let url;
   try { url = new URL(parsed); }
