@@ -83,6 +83,76 @@ export async function insertUnit(userId, subjectId, unit) {
   return data;
 }
 
+/**
+ * Read-only resource index for E04. Only owned material IDs enter the four
+ * downstream queries. No transcription, summary, question text or audio path
+ * is returned to the browser.
+ */
+export function summarizeOwnedResources(materialIds, rows) {
+  const result = Object.fromEntries(
+    materialIds.map((id) => [
+      id,
+      { audio: false, transcription: false, summary: false, questions: false },
+    ]),
+  );
+  for (const [kind, collection] of Object.entries(rows)) {
+    if (!['audio', 'transcription', 'summary', 'questions'].includes(kind)) continue;
+    for (const row of collection || []) {
+      if (!Object.hasOwn(result, row.material_id)) continue;
+      if (kind === 'audio') {
+        if (row.retain_original === true && Boolean(row.storage_path))
+          result[row.material_id].audio = true;
+      } else result[row.material_id][kind] = true;
+    }
+  }
+  return result;
+}
+
+export async function listLibraryResources(userId) {
+  const db = getAdminSupabase();
+  const availability = {};
+  // Explicit page size avoids assuming the Data API's default row limit.
+  const pageSize = 200;
+  for (let offset = 0; ; offset += pageSize) {
+    const { data: materials, error } = await db
+      .from('materials')
+      .select('id')
+      .eq('user_id', userId)
+      .order('id', { ascending: true })
+      .range(offset, offset + pageSize - 1);
+    ensureDatabaseResult(error);
+    const ids = (materials || []).map((material) => material.id);
+    if (ids.length === 0) break;
+
+    const results = await Promise.all([
+      db.from('audio_files').select('material_id,retain_original,storage_path').in('material_id', ids),
+      db.from('transcriptions').select('material_id').in('material_id', ids),
+      db
+        .from('summary_versions')
+        .select('material_id')
+        .in('material_id', ids)
+        .eq('is_current', true),
+      db
+        .from('question_batches')
+        .select('material_id')
+        .in('material_id', ids)
+        .gt('generated_count', 0),
+    ]);
+    for (const response of results) ensureDatabaseResult(response.error);
+    Object.assign(
+      availability,
+      summarizeOwnedResources(ids, {
+        audio: results[0].data,
+        transcription: results[1].data,
+        summary: results[2].data,
+        questions: results[3].data,
+      }),
+    );
+    if (ids.length < pageSize) break;
+  }
+  return availability;
+}
+
 export async function updateMaterialCatalog(userId, materialId, selection) {
   const { data, error } = await getAdminSupabase()
     .from('materials')

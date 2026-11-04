@@ -13,6 +13,10 @@ export function buildCatalogService(store = repository) {
       return store.listCatalog(userId);
     },
 
+    async resources(userId) {
+      return store.listLibraryResources(userId);
+    },
+
     async createSubject(userId, input) {
       return store.insertSubject(userId, validateSubject(input));
     },

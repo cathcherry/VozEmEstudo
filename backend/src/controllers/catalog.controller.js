@@ -8,6 +8,14 @@ export async function list(req, res, next) {
   }
 }
 
+export async function resources(req, res, next) {
+  try {
+    res.json(await catalogService.resources(req.user.id));
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function createSubject(req, res, next) {
   try {
     res.status(201).json(await catalogService.createSubject(req.user.id, req.body));
