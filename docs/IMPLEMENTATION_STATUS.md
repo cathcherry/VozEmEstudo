@@ -1,3 +1,9 @@
+# Etapa 5 iniciada — Flashcards e revisão espaçada (E13)
+
+Primeira implementação da API, do Painel e da migration E13 salva no PR #2 em Draft, `FEATURE_FLASHCARDS=false`. Inclui histórico, agendamento atômico e testes; **nenhum SQL aplicado e nenhum merge na `main`**. Ver [guia E13](implementation-2.0/07-flashcards-workplan.md). Teste real do PostgreSQL/Supabase e avaliação da interface ainda necessários.
+
+---
+
 # Etapa 4 iniciada — Questões 2.0 (E10)
 
 O PR #2 em Draft agora inclui API e interface de tentativas persistentes com feedback imediato/diferido, migration candidata E10 e checks. `FEATURE_QUIZ_V2` continua OFF. Sem alteração do Supabase, sem teste A/B real e sem merge na `main`. Veja [o plano E10](implementation-2.0/06-quiz-v2-workplan.md).
