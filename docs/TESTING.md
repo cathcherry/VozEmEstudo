@@ -2,6 +2,8 @@
 
 Execute a partir da raiz após [SETUP.md](SETUP.md). Os comandos normais não precisam de credenciais. Use dados sintéticos; não importar .env da instalação para a suíte de fixtures.
 
+> **Política enxuta da etapa 1 (04/11/2026):** `npm run check` não executa `format:check` até a dívida de formatação herdada ser resolvida. A checagem Prettier/Ruff continua disponível separadamente por `npm run format:check`, mas não bloqueia o CI por estilos antigos e não demanda Docker. Testes de lint, sintaxe, segredos e regressões continuam obrigatórios. O validador OpenAPI foi também retirado do check padrão porque o arquivo `docs/engineering/AudioEstudo_openapi.yaml` não foi incluído na versão publicada; `npm run check:openapi` continua disponível para quando o contrato for recuperado ou reconstruído com evidência. Não interpretar CI verde como aprovação de integrações reais ou gates E00–E02.
+
 Preparação dos gates antes da E03: [gates-readiness.md](implementation-2.0/gates-readiness.md). Os novos testes de guards/RLS em `scripts/tests/` entram nos comandos locais existentes. `staging-academic-check.mjs` e `staging-concurrency.py` são ensaios de **escrita** exclusivamente em staging autorizado, separados do probe E01 de leitura; não são chamados por CI ou `npm test`. Nenhuma execução real é aprovada apenas por existir uma variável de ambiente.
 
 | Comando                  | O que verifica                                                                                                 |
@@ -17,7 +19,7 @@ Preparação dos gates antes da E03: [gates-readiness.md](implementation-2.0/gat
 | npm run test:python      | Auditor de distribuição e adaptador ASR com modelos/providers falsos                                           |
 | npm run test:quality     | Regressão da política de formatação e bloqueio dos checks remotos                                              |
 | npm test                 | Backend, DOM, Python e ferramentas                                                                             |
-| npm run check            | Lint, formatter, sintaxe, OpenAPI, segredos e npm test                                                         |
+| npm run check            | Lint, sintaxe, segredos e npm test (formatacao/OpenAPI opcionais nesta etapa)                                                         |
 | npm run test:browser     | Jornadas Chromium existentes, FFmpeg e axe com APIs/Auth simulados                                             |
 | npm run test:integration | Apenas staging explicitamente autorizado; sem configuração aprovada falha antes de fetch                       |
 
