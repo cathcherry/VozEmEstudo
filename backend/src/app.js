@@ -11,6 +11,8 @@ import { requestIdMiddleware } from './middleware/request-id.middleware.js';
 import { requireAuth } from './middleware/auth.middleware.js';
 import { notFoundMiddleware, errorMiddleware } from './middleware/error.middleware.js';
 import { materialRouter } from './routes/material.routes.js';
+import { catalogRouter } from './routes/catalog.routes.js';
+import { isFeatureEnabled } from './config/feature-flags.js';
 import { questionRouter } from './routes/question.routes.js';
 import { jobRouter } from './routes/job.routes.js';
 import { mediaRouter } from './routes/media.routes.js';
@@ -48,6 +50,7 @@ app.get('/api/config', (_req, res) => {
 
 app.use('/api/media', requireAuth, mediaRouter);
 app.use('/api/materials', requireAuth, materialRouter);
+if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 app.use('/api/jobs', requireAuth, jobRouter);
 
