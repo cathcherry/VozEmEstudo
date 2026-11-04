@@ -26,6 +26,14 @@ begin
       ) then
     raise exception 'E03_ABORT: estruturas E03 ja existem (nao reaplicar)';
   end if;
+  if not exists (
+    select 1 from pg_trigger t
+    where t.tgrelid = 'public.materials'::regclass
+      and t.tgname = 'materials_set_updated_at'
+      and t.tgenabled = 'O'
+  ) then
+    raise exception 'E03_ABORT: trigger de timestamp legado ausente ou desativado';
+  end if;
   if exists (
     select 1 from public.materials
     where subject is not null

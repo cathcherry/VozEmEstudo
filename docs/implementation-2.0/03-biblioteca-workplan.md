@@ -2,7 +2,7 @@
 
 **Branch:** `feat/etapa-2-biblioteca-2-0`  
 **Referência inicial:** `c1a7f62490b66168269d0e1168909b565209058a` (`main`, 04/11/2026)  
-**Estado:** primeira fatia E03 implementada na branch (API + painel da biblioteca sob flag); o SQL permanece como proposta, sem execução remota, e a `main` segue intacta.
+**Estado:** fatias E03/E04 implementadas na branch com flag OFF; migration E03 candidata e verificações SQL versionadas, **sem execução remota nem aprovação de gate**; a `main` segue intacta.
 
 ## Regra de trabalho sem computador local
 
@@ -18,7 +18,7 @@
 
 - [ ] Confirmar schema de produção/staging e ledger de migrations; não reaplicar `001_initial.sql` nem E02.
 - [x] Rascunhar esquema aditivo em `database/proposals/e03-catalog-schema-draft.sql` (**não executar**).
-- [ ] Validar e promover o SQL para migration numerada, com testes sintéticos, grants/RLS e procedimentos de backup/reversão.
+- [x] Preparar migration numerada e transacional (`20261104190000_catalog_units.sql`), com checagens de privilégios/RLS, backfill por conta, guarda contra reaplicação e preservação de `updated_at`; criar `e03-preflight.sql`, `e03-postflight.sql`, runbook e testes estáticos. **Ainda não aprovada nem aplicada no Supabase**: falta validar o schema remoto/backup e o gate com duas contas.
 - [x] Implementar primeira fatia da API autenticada: listar catálogo, criar disciplina/unidade e vincular/desvincular uma aula, com Zod, normalização e filtros de ownership. Rotas protegidas por `FEATURE_CATALOG_UNITS`, que continua OFF.
 - [x] Manter `materials.subject` e os novos IDs coerentes quando a aula é vinculada pela API do catálogo; alterações livres do rótulo legado limpam os IDs na mesma operação, sob a flag. Novos uploads ainda dependem da etapa de associação explícita ou sincronização planejada.
 - [ ] Migrar tags do `localStorage` apenas com consentimento e merge idempotente, sem converter visitas em horas de estudo.
@@ -35,7 +35,7 @@
 
 Arquivos novos: `backend/src/{routes,controllers,services,repositories,validators}/catalog.*.js`, `frontend/js/api/catalog.api.js`, `frontend/js/pages/catalog-panel.js`, `frontend/css/catalog.css`, testes de catálogo e interface. Integração: `backend/src/app.js` monta o novo router somente com a flag ativa; `GET /api/materials` só requisita `subject_id`/`unit_id` quando o schema estiver habilitado. A edição de disciplina em texto livre desassocia IDs em uma atualização atômica, evitando vínculo contraditório. A UI adiciona criar disciplina/unidade, vincular aula e agrupar por unidade.
 
-**Não pronto para ativar:** o SQL continua na pasta `database/proposals/` e ainda não é uma migration aprovada. Sem aplicação e testes no Supabase, a flag deve permanecer OFF. A interface não recebeu validação visual real. Novos uploads com texto livre não são vinculados automaticamente a um ID; a associação pode ser feita na biblioteca após a ativação.
+**Não pronto para ativar:** o SQL executável foi preparado em `database/migrations/20261104190000_catalog_units.sql` e o plano de aplicação em `docs/implementation-2.0/04-e03-catalog-runbook.md`; o rascunho em `database/proposals/` está obsoleto. Os testes estáticos não substituem a execução controlada e a verificação remota. A flag deve permanecer OFF. A interface não recebeu validação visual real. Novos uploads com texto livre não são vinculados automaticamente a um ID; a associação pode ser feita na biblioteca após a ativação.
 
 ## Incremento E04 — recursos sem replicação
 
@@ -48,7 +48,7 @@ Limites: o conteúdo não é duplicado, mas um mesmo título pode aparecer em ca
 **G2a (E03):** migration aplicada em ambiente autorizado, backfill conferido com contagens e IDs anteriores, propriedade/RLS comprovada, API sem acesso cruzado.  
 **G2b (E04):** interface nova funcionando no banco real, recursos da mesma aula acessíveis nas duas visões, sem duplicação e sem regressão dos fluxos existentes.
 
-O arquivo SQL é um **desenho inicial**, não a migration final. A aplicação remota e a ativação da flag são pontos de parada com aprovação humana.
+Há uma **migration candidata, versionada e não executada**. Seu uso está bloqueado até confirmar o schema remoto, backup e os resultados do preflight. A execução remota e a ativação da flag continuam pontos de parada com aprovação humana.
 
 ## Política de lotes
 

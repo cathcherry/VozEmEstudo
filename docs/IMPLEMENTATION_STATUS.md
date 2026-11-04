@@ -1,6 +1,6 @@
 # Etapa 2 — Biblioteca 2.0 em desenvolvimento (04/11/2026)
 
-O pull request em **Draft** [#2](https://github.com/cathcherry/VozEmEstudo/pull/2) concentra os commits E03/E04. O backend já contém catálogo autenticado (disciplinas, unidades e vínculo de aulas), e a Biblioteca possui um painel de organização e agrupamento por unidade, mas tudo está protegido por `FEATURE_CATALOG_UNITS=false` por padrão. O SQL necessário é apenas uma **proposta não aplicada** em `database/proposals/e03-catalog-schema-draft.sql`. Nenhuma migration remota, ativação da flag ou merge em `main` foi realizada. Testes remotos e validação visual estão pendentes; consultar o plano `implementation-2.0/03-biblioteca-workplan.md`.
+O pull request em **Draft** [#2](https://github.com/cathcherry/VozEmEstudo/pull/2) concentra os commits E03/E04. O backend já contém catálogo autenticado (disciplinas, unidades e vínculo de aulas), e a Biblioteca possui um painel de organização e agrupamento por unidade, mas tudo está protegido por `FEATURE_CATALOG_UNITS=false` por padrão. A migration E03 candidata está em `database/migrations/20261104190000_catalog_units.sql`, com preflight, postflight e runbook. **Não aplicada** no Supabase; o rascunho antigo em `database/proposals` foi desativado. Nenhuma migration remota, ativação da flag ou merge em `main` foi realizada. Testes reais do Supabase, validação visual com a flag ativa e aprovação dos gates estão pendentes; consultar o plano `implementation-2.0/03-biblioteca-workplan.md`.
 
 ---
 
