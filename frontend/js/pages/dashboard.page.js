@@ -5,8 +5,10 @@ import { studyFor } from '../utils/study-store.js';
 import { materialRow, playbackAtEnd } from '../utils/library-ui.js';
 import { formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
+import { initPlanningPanel } from './planning-panel.js';
 
 const session=await initAuthenticatedShell();
+let planningInitialized = false;
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
@@ -15,6 +17,15 @@ async function load() {
   container.setAttribute('aria-busy','true');
   try {
     const materials=await listMaterials();
+    // Optional module: a planning failure must never break the existing dashboard.
+    if (!planningInitialized) {
+      planningInitialized = true;
+      try { await initPlanningPanel({ materials }); }
+      catch (error) {
+        const notice = document.querySelector('[data-planning-status]');
+        if (notice) notice.textContent = error.message || 'Planejamento indisponível.';
+      }
+    }
     const active=materials.filter((m)=>studyFor(m.id).openedAt && !studyFor(m.id).completed);
     const completed=materials.filter((m)=>studyFor(m.id).completed);
     const pending=materials.filter((m)=>materialState(m)==='processing');

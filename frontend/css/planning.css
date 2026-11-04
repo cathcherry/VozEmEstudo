@@ -1,0 +1,41 @@
+/* E05/E06: only in the dashboard and while FEATURE_PLANNING is true. */
+body[data-page='dashboard'] [data-planning-panel][hidden] { display: none; }
+body[data-page='dashboard'] .planning-panel {
+  margin: 18px 0 24px;
+  padding: clamp(16px, 2.5vw, 24px);
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+}
+body[data-page='dashboard'] .planning-panel h2 { margin: 0 0 12px; font-size: 1.35rem; }
+body[data-page='dashboard'] .planning-panel > p { font-size: .85rem; color: var(--muted); }
+body[data-page='dashboard'] .planning-forms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,270px),1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+body[data-page='dashboard'] .planning-forms form {
+  display: grid;
+  gap: 10px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  min-width: 0;
+}
+body[data-page='dashboard'] .planning-forms h3 { margin: 0; font-size: .95rem; }
+body[data-page='dashboard'] .planning-forms label { display: grid; gap: 5px; font-size: .8rem; }
+body[data-page='dashboard'] .planning-forms :is(input,select) { width: 100%; min-height: 44px; }
+body[data-page='dashboard'] .planning-forms button { justify-self: start; align-self: end; }
+body[data-page='dashboard'] .planning-goal { padding: 16px 0; border-top: 1px solid var(--border-light); }
+body[data-page='dashboard'] .planning-goal h3 { font-size: 1.03rem; margin: 0 0 5px; }
+body[data-page='dashboard'] .planning-meta,
+body[data-page='dashboard'] .planning-empty { color: var(--muted); font-size: .8rem; }
+body[data-page='dashboard'] .planning-tasks { list-style: none; padding: 0; margin: 12px 0 0; }
+body[data-page='dashboard'] .planning-tasks li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 8px 0; }
+body[data-page='dashboard'] .planning-tasks label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; flex: 1 1 180px; }
+body[data-page='dashboard'] .planning-tasks input { accent-color: var(--accent-strong); width: 20px; height: 20px; }
+body[data-page='dashboard'] .planning-tasks input:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+body[data-page='dashboard'] .planning-tasks input:checked + span { text-decoration: line-through; color: var(--muted); }
+body[data-page='dashboard'] .planning-tasks small { color: var(--muted); }
+body[data-page='dashboard'] .planning-tasks a { text-decoration: underline; text-underline-offset: 3px; }
+body[data-page='dashboard'] [data-planning-status][data-state='error'] { color: var(--error, #a52828); }
+body[data-page='dashboard'] [data-planning-status]:empty { display: none; }
