@@ -6,9 +6,11 @@ import { materialRow, playbackAtEnd } from '../utils/library-ui.js';
 import { formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
+import { initFlashcardsPanel } from './flashcards-panel.js';
 
 const session=await initAuthenticatedShell();
 let planningInitialized = false;
+let flashcardsInitialized = false;
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
@@ -17,6 +19,15 @@ async function load() {
   container.setAttribute('aria-busy','true');
   try {
     const materials=await listMaterials();
+    // E13 is entirely optional: failing to load cards must not break the dashboard.
+    if (!flashcardsInitialized) {
+      flashcardsInitialized = true;
+      void initFlashcardsPanel({ materials }).catch((error) => {
+        const notice = document.querySelector('[data-flashcard-review-status]');
+        if (notice) notice.textContent = error.message || 'Flashcards indisponíveis.';
+      });
+    }
+
     // Optional module: a planning failure must never break the existing dashboard.
     if (!planningInitialized) {
       planningInitialized = true;

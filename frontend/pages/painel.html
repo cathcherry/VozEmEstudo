@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Painel</title>
-<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/dashboard.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" /><link rel="stylesheet" href="/css/planning.css" />
+<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/dashboard.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" /><link rel="stylesheet" href="/css/planning.css" /><link rel="stylesheet" href="/css/flashcards.css" />
   <script defer src="/js/utils/card-motion.js"></script>
 </head><body class="app-page" data-page="dashboard">
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
@@ -47,6 +47,45 @@
 </div>
 <p data-planning-status role="status" aria-live="polite"></p>
 <div data-planning-list></div>
+</section>
+<section class="flashcards-panel" data-flashcards-panel hidden aria-labelledby="flashcards-heading">
+<h2 id="flashcards-heading">Flashcards</h2>
+<p class="flashcard-muted">Crie cartões a partir das suas aulas e revise conforme a próxima data sugerida.</p>
+<div class="flashcard-columns">
+<div class="flashcard-column">
+<h3>Revisão de hoje</h3><p data-flashcard-count class="flashcard-muted"></p>
+<div data-flashcard-due-area aria-live="polite"></div>
+<p data-flashcard-review-status role="status" aria-live="polite"></p>
+</div>
+<div class="flashcard-column">
+<h3>Novo cartão</h3>
+<form data-flashcard-create-form class="flashcard-form">
+<label for="flashcard-front">Pergunta ou conceito
+<textarea id="flashcard-front" name="front" maxlength="1000" rows="3" required></textarea></label>
+<label for="flashcard-back">Resposta ou explicação
+<textarea id="flashcard-back" name="back" maxlength="2000" rows="4" required></textarea></label>
+<label for="flashcard-material">Aula relacionada (opcional)
+<select id="flashcard-material" name="materialId"></select></label>
+<button type="submit" class="secondary-action">Criar cartão</button>
+</form><p data-flashcard-create-status role="status" aria-live="polite"></p>
+</div>
+</div>
+<details class="flashcard-management">
+<summary>Organizar meus cartões</summary>
+<form data-flashcard-manage-form class="flashcard-form">
+<label for="flashcard-manage-id">Cartão
+<select id="flashcard-manage-id" name="cardId" required></select></label>
+<label for="flashcard-manage-front">Frente
+<textarea id="flashcard-manage-front" name="front" maxlength="1000" rows="2" required disabled></textarea></label>
+<label for="flashcard-manage-back">Verso
+<textarea id="flashcard-manage-back" name="back" maxlength="2000" rows="3" required disabled></textarea></label>
+<label for="flashcard-manage-archive">Arquivar
+<input id="flashcard-manage-archive" type="checkbox" name="archived" disabled></label>
+<button type="submit" class="secondary-action" disabled>Salvar alterações</button>
+</form>
+<p data-flashcard-manage-limit class="flashcard-muted"></p>
+<p data-flashcard-manage-status role="status" aria-live="polite"></p>
+</details>
 </section>
 <div class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</div>
 <div class="library-dashboard" data-dashboard-data aria-busy="true">

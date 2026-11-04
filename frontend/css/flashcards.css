@@ -1,0 +1,68 @@
+/* E13 - scoped to dashboard and enabled only with FEATURE_FLASHCARDS. */
+body[data-page='dashboard'] [data-flashcards-panel][hidden] { display: none; }
+body[data-page='dashboard'] .flashcards-panel {
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  margin: 18px 0 24px;
+  padding: clamp(16px, 2.5vw, 24px);
+}
+body[data-page='dashboard'] .flashcards-panel h2 { margin: 0 0 8px; font-size: 1.3rem; }
+body[data-page='dashboard'] .flashcards-panel h3 { margin: 8px 0; font-size: .96rem; }
+body[data-page='dashboard'] .flashcards-panel h4 { margin: 16px 0 8px; font-size: .9rem; }
+body[data-page='dashboard'] .flashcard-muted { color: var(--muted); font-size: .83rem; }
+body[data-page='dashboard'] .flashcard-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 22px;
+  margin-top: 18px;
+}
+body[data-page='dashboard'] .flashcard-column { min-width: 0; }
+body[data-page='dashboard'] .flashcard-form { display: grid; gap: 10px; margin-top: 12px; }
+body[data-page='dashboard'] .flashcard-form label { display: grid; gap: 6px; font-size: .8rem; }
+body[data-page='dashboard'] .flashcard-form :is(textarea, select) {
+  width: 100%;
+  min-height: 44px;
+}
+body[data-page='dashboard'] .flashcard-form textarea { min-height: 88px; resize: vertical; }
+body[data-page='dashboard'] .flashcard-form button { justify-self: start; }
+body[data-page='dashboard'] .flashcard-review-card {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 18px;
+  margin-top: 12px;
+}
+body[data-page='dashboard'] .flashcard-content {
+  font-size: .98rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+body[data-page='dashboard'] .flashcard-answer {
+  padding: 12px;
+  background: var(--surface-secondary, transparent);
+  border-radius: 6px;
+}
+body[data-page='dashboard'] .flashcard-rating-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+body[data-page='dashboard'] .flashcard-rating-buttons button { min-height: 44px; }
+body[data-page='dashboard'] .flashcards-panel :is(input, textarea, select, button, a):focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
+}
+body[data-page='dashboard'] .flashcard-material-link {
+  display: block;
+  margin: 10px 0;
+  font-size: .8rem;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+body[data-page='dashboard'] [data-flashcard-manage-status][data-state='error'],
+body[data-page='dashboard'] [data-flashcard-create-status][data-state='error'],
+body[data-page='dashboard'] [data-flashcard-review-status][data-state='error'] {
+  color: var(--error, #a52828);
+}
+body[data-page='dashboard'] .flashcard-form :disabled { opacity: .55; }
