@@ -39,6 +39,12 @@ where normalized_name <> lower(btrim(regexp_replace(name, '[[:space:]]+', ' ', '
 select count(*) as noncanonical_units from public.study_units
 where normalized_title <> lower(btrim(regexp_replace(title, '[[:space:]]+', ' ', 'g')));
 
+-- Deve haver 1 linha com enabled = true.
+select t.tgname, t.tgenabled = 'O' as enabled
+from pg_trigger t
+where t.tgrelid = 'public.materials'::regclass
+  and t.tgname = 'materials_set_updated_at';
+
 select n.nspname as schema, c.relname as table_name, c.relrowsecurity as rls_enabled
 from pg_class c join pg_namespace n on n.oid = c.relnamespace
 where n.nspname = 'public' and c.relname in ('study_subjects','study_units')
@@ -49,8 +55,14 @@ select
   has_table_privilege('authenticated', 'public.study_subjects', 'SELECT') as authenticated_subject_read,
   has_table_privilege('anon', 'public.study_units', 'SELECT') as anon_unit_read,
   has_table_privilege('authenticated', 'public.study_units', 'SELECT') as authenticated_unit_read,
-  has_table_privilege('service_role', 'public.study_subjects', 'SELECT,INSERT,UPDATE,DELETE') as service_subject_crud,
-  has_table_privilege('service_role', 'public.study_units', 'SELECT,INSERT,UPDATE,DELETE') as service_unit_crud;
+  (has_table_privilege('service_role', 'public.study_subjects', 'SELECT')
+   and has_table_privilege('service_role', 'public.study_subjects', 'INSERT')
+   and has_table_privilege('service_role', 'public.study_subjects', 'UPDATE')
+   and has_table_privilege('service_role', 'public.study_subjects', 'DELETE')) as service_subject_crud,
+  (has_table_privilege('service_role', 'public.study_units', 'SELECT')
+   and has_table_privilege('service_role', 'public.study_units', 'INSERT')
+   and has_table_privilege('service_role', 'public.study_units', 'UPDATE')
+   and has_table_privilege('service_role', 'public.study_units', 'DELETE')) as service_unit_crud;
 
 -- A consulta verifica objetos e grants; NAO substitui teste com contas A/B reais.
 select tablename, policyname, roles, cmd

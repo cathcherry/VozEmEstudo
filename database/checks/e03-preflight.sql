@@ -42,6 +42,13 @@ select
     as expected_new_subjects
 from public.materials;
 
+-- A migration desativa temporariamente somente este trigger de timestamp
+-- dentro de uma transacao + lock; bloquear se ele estiver ausente/inativo.
+select t.tgname, t.tgenabled = 'O' as active
+from pg_trigger t
+where t.tgrelid = 'public.materials'::regclass
+  and t.tgname = 'materials_set_updated_at';
+
 -- Conferir se os marcadores de controle de revisao E02 existem.
 select c.relname as table_name, c.relrowsecurity as rls_enabled
 from pg_class c join pg_namespace n on n.oid = c.relnamespace

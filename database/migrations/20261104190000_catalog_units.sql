@@ -141,6 +141,13 @@ from labels
 order by user_id, lower(label), label
 on conflict (user_id, normalized_name) do nothing;
 
+-- Preserve historical updated_at: the existing materials_set_updated_at trigger
+-- stamps every UPDATE. Altering the trigger under the DDL transaction's table
+-- lock is safe from concurrent writes; rollback restores it automatically.
+-- Only this trigger is disabled, never E02 permission/review constraints.
+lock table public.materials in access exclusive mode;
+alter table public.materials disable trigger materials_set_updated_at;
+
 update public.materials m
 set subject_id = s.id
 from public.study_subjects s
@@ -148,6 +155,8 @@ where m.subject_id is null
   and m.user_id = s.user_id
   and nullif(btrim(regexp_replace(m.subject, '[[:space:]]+', ' ', 'g')), '') is not null
   and s.normalized_name = lower(btrim(regexp_replace(m.subject, '[[:space:]]+', ' ', 'g')));
+
+alter table public.materials enable trigger materials_set_updated_at;
 
 -- API server-side has privileges; browser-facing roles do not.
 alter table public.study_subjects enable row level security;
