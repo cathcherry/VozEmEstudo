@@ -1,0 +1,39 @@
+/* Biblioteca 2.0: controls remain dormant while FEATURE_CATALOG_UNITS is off. */
+body[data-page='history'] .catalog-workspace[hidden] { display: none; }
+body[data-page='history'] .catalog-workspace {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  margin-bottom: 24px;
+  padding: clamp(16px, 2.5vw, 24px);
+}
+body[data-page='history'] .catalog-workspace h2 {
+  margin: 0 0 10px;
+  font-size: 1.18rem;
+}
+body[data-page='history'] .catalog-workspace > p {
+  font-size: .83rem;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+body[data-page='history'] .catalog-forms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 18px;
+}
+body[data-page='history'] .catalog-forms form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  min-width: 0;
+}
+body[data-page='history'] .catalog-forms h3 { font-size: .94rem; margin: 0; }
+body[data-page='history'] .catalog-forms label { font-size: .8rem; display: grid; gap: 6px; }
+body[data-page='history'] .catalog-forms :is(input, select) {
+  width: 100%;
+  min-height: 44px;
+}
+body[data-page='history'] .catalog-forms button { align-self: flex-start; margin-top: auto; }
+body[data-page='history'] [data-catalog-status] { min-height: 1.5em; margin: 16px 0 0; }
+body[data-page='history'] [data-catalog-status][data-state='error'] { color: var(--error, #a52828); }

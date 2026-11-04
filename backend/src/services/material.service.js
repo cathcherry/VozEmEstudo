@@ -10,6 +10,7 @@ import { listSummaries } from '../repositories/summary.repository.js';
 import { listBatches } from '../repositories/question.repository.js';
 import { createJob } from '../repositories/job.repository.js';
 import { createAudioSignedUrl } from './audio.service.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
 
 function assertStorageOwnership(storagePath, userId, materialId) {
   assertSafeStoragePath(storagePath);
@@ -69,7 +70,14 @@ export async function patch(userId, materialId, input) {
   const patchData = validateMaterialPatch(input);
   const changes = {};
   if ('title' in patchData) changes.title = patchData.title;
-  if ('subject' in patchData) changes.subject = patchData.subject;
+  if ('subject' in patchData) {
+    changes.subject = patchData.subject;
+    // Legacy free-text edits explicitly unlink the structured catalog assignment.
+    if (isFeatureEnabled('catalog_units')) {
+      changes.subject_id = null;
+      changes.unit_id = null;
+    }
+  }
   return materials.updateOwnedMaterial(userId, materialId, changes);
 }
 

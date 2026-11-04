@@ -3,6 +3,7 @@ import { PERMISSION_DECLARATION } from '../config/permission-declaration.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { errors } from '../domain/errors.js';
 import { assertSafeStoragePath } from '../validators/storage-path.validator.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
 
 export async function createMaterial(userId, data) {
   return rpc('create_material_with_permission_admin', {
@@ -15,11 +16,12 @@ export async function createMaterial(userId, data) {
 
 export async function listMaterials(userId) {
   const db = getAdminSupabase();
+  const fields =
+    'id,title,subject,status,current_stage,initial_question_count,created_at,updated_at,completed_at,audio_files(duration_ms,retain_original,extension,original_name)';
+  const projection = isFeatureEnabled('catalog_units') ? `${fields},subject_id,unit_id` : fields;
   const { data, error } = await db
     .from('materials')
-    .select(
-      'id,title,subject,status,current_stage,initial_question_count,created_at,updated_at,completed_at,audio_files(duration_ms,retain_original,extension,original_name)',
-    )
+    .select(projection)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
