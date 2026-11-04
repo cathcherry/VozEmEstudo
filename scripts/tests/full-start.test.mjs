@@ -4,15 +4,16 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '../..');
 const read = p => readFileSync(resolve(root,p), 'utf8');
-test('legacy Windows launchers use the persistent Supabase server', () => {
-  const main=read('INICIAR-VOZ-EM-ESTUDO.cmd');
-  for(const old of ['INICIAR-IA-REAL.cmd','INICIAR-APRESENTACAO.cmd'])
-    assert.match(read(old), /INICIAR-VOZ-EM-ESTUDO\.cmd/);
-  assert.match(main,/scripts\\full\\start\.mjs/);
-  const unified=read('scripts/full/start.mjs');
-  assert.match(unified,/src\/server\.js/);
-  assert.match(unified,/src\/worker\.js/);
-  assert.doesNotMatch(unified,/presentation\/server|live\/server/);
+test('Windows launcher starts the persistent Supabase API and worker', () => {
+  const main = read('INICIAR.cmd');
+  assert.match(main, /node scripts\\full\\start\.mjs/);
+  assert.match(main, /backend\\\.env/);
+  assert.doesNotMatch(main, /presentation\\server|live\\server/);
+
+  const unified = read('scripts/full/start.mjs');
+  assert.match(unified, /src\/server\.js/);
+  assert.match(unified, /src\/worker\.js/);
+  assert.doesNotMatch(unified, /presentation\/server|live\/server/);
 });
 test('runtime verifies E02 and audio bucket before starting workers', () => {
   const checker=read('backend/src/diagnostics/check-runtime.js');
