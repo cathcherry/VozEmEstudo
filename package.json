@@ -27,7 +27,7 @@
     "demo": "node scripts/presentation/server.mjs",
     "test:demo": "node --test scripts/tests/presentation.test.mjs",
     "test:auth-css": "node frontend/tests/auth-style-check.mjs",
-    "test:catalog-ui": "node --test frontend/tests/catalog-ui-check.mjs"
+    "test:catalog-ui": "node --test frontend/tests/catalog-ui-check.mjs frontend/tests/library-views.test.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "13.1.0",

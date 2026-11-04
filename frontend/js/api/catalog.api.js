@@ -1,6 +1,7 @@
 import { apiFetch } from './http.js';
 
 export const getCatalog = () => apiFetch('/api/catalog');
+export const getLibraryResources = () => apiFetch('/api/catalog/resources');
 export const createSubject = (name) =>
   apiFetch('/api/catalog/subjects', {
     method: 'POST',
