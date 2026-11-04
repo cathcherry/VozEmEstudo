@@ -1,3 +1,9 @@
+# Etapa 3 iniciada — Planejamento de estudos E05/E06
+
+API, primeiro painel de objetivos/tarefas, migração candidata e verificações SQL foram versionados no **PR #2 em Draft**, usando a flag `FEATURE_PLANNING=false` por padrão. A nova migração `20261104203000_study_planning.sql` **depende da E03**, não foi aplicada e não deve ser executada diretamente sem preflight, backup e aprovação. Veja [o plano E05/E06](implementation-2.0/05-planejamento-workplan.md). A implementação de subobjetivos e funcionalidades avançadas continua pendente.
+
+---
+
 # Etapa 2 — Biblioteca 2.0 em desenvolvimento (04/11/2026)
 
 O pull request em **Draft** [#2](https://github.com/cathcherry/VozEmEstudo/pull/2) concentra os commits E03/E04. O backend já contém catálogo autenticado (disciplinas, unidades e vínculo de aulas), e a Biblioteca possui um painel de organização e agrupamento por unidade, mas tudo está protegido por `FEATURE_CATALOG_UNITS=false` por padrão. A migration E03 candidata está em `database/migrations/20261104190000_catalog_units.sql`, com preflight, postflight e runbook. **Não aplicada** no Supabase; o rascunho antigo em `database/proposals` foi desativado. Nenhuma migration remota, ativação da flag ou merge em `main` foi realizada. Testes reais do Supabase, validação visual com a flag ativa e aprovação dos gates estão pendentes; consultar o plano `implementation-2.0/03-biblioteca-workplan.md`.
