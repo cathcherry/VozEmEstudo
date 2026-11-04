@@ -39,3 +39,83 @@ body[data-page='dashboard'] .planning-tasks small { color: var(--muted); }
 body[data-page='dashboard'] .planning-tasks a { text-decoration: underline; text-underline-offset: 3px; }
 body[data-page='dashboard'] [data-planning-status][data-state='error'] { color: var(--error, #a52828); }
 body[data-page='dashboard'] [data-planning-status]:empty { display: none; }
+
+/* E06: nested objectives, inline editing and task filtering */
+body[data-page='dashboard'] .planning-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 12px 0 20px;
+  padding-block: 12px;
+  border-top: 1px solid var(--border-light);
+}
+body[data-page='dashboard'] .planning-controls label {
+  display: grid;
+  gap: 5px;
+  font-size: .8rem;
+  flex: 1 1 175px;
+  max-width: 280px;
+}
+body[data-page='dashboard'] .planning-controls select { width: 100%; min-height: 44px; }
+body[data-page='dashboard'] .planning-goal-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+}
+body[data-page='dashboard'] .planning-goal-header h3 { flex: 1 1 160px; }
+body[data-page='dashboard'] .planning-inline-button {
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: .77rem;
+  min-height: 36px;
+  padding: 6px 10px;
+}
+body[data-page='dashboard'] .planning-inline-button:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+body[data-page='dashboard'] .planning-edit-form[hidden] { display: none; }
+body[data-page='dashboard'] .planning-edit-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%,180px), 1fr));
+  width: 100%;
+  gap: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  padding: 12px;
+  background: var(--surface);
+}
+body[data-page='dashboard'] .planning-edit-form label {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  font-size: .79rem;
+}
+body[data-page='dashboard'] .planning-edit-form :is(input,select) {
+  width: 100%;
+  min-height: 44px;
+}
+body[data-page='dashboard'] .planning-edit-form button {
+  align-self: end;
+  min-height: 44px;
+}
+body[data-page='dashboard'] .planning-subgoal {
+  margin: 10px 0 0 16px;
+  padding: 10px 0 10px 16px;
+  border-left: 2px solid var(--border-light);
+}
+body[data-page='dashboard'] .planning-subgoal h4,
+body[data-page='dashboard'] .planning-ungrouped-title {
+  font-size: .88rem;
+  margin: 8px 0;
+}
+body[data-page='dashboard'] .planning-tasks li {
+  min-width: 0;
+}
+body[data-page='dashboard'] .planning-tasks li > label span {
+  overflow-wrap: anywhere;
+}

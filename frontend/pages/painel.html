@@ -21,12 +21,28 @@
 <label for="planning-goal-title">O que deseja alcançar?<input id="planning-goal-title" name="title" maxlength="160" required></label>
 <label for="planning-goal-date">Prazo (opcional)<input id="planning-goal-date" name="targetDate" type="date"></label>
 <button type="submit" class="secondary-action">Criar objetivo</button></form>
+<form data-planning-subgoal-form><h3>Novo subobjetivo</h3>
+<label for="planning-subgoal-goal">Objetivo principal<select id="planning-subgoal-goal" data-planning-subgoal-goal required></select></label>
+<label for="planning-subgoal-title">Subobjetivo<input id="planning-subgoal-title" name="title" maxlength="160" required></label>
+<label for="planning-subgoal-date">Prazo (opcional)<input id="planning-subgoal-date" name="dueDate" type="date"></label>
+<button type="submit" class="secondary-action">Adicionar subobjetivo</button></form>
 <form data-planning-task-form><h3>Nova tarefa</h3>
 <label for="planning-task-goal">Objetivo<select id="planning-task-goal" data-planning-goal-select required></select></label>
 <label for="planning-task-title">Tarefa<input id="planning-task-title" name="title" maxlength="180" required></label>
+<label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
 <label for="planning-task-date">Prazo (opcional)<input id="planning-task-date" name="dueDate" type="date"></label>
 <label for="planning-task-material">Aula relacionada (opcional)<select id="planning-task-material" data-planning-material-select></select></label>
 <button type="submit" class="secondary-action">Adicionar tarefa</button></form>
+</div>
+<div class="planning-controls" aria-label="Organização das tarefas">
+<label for="planning-task-filter">Mostrar tarefas
+<select id="planning-task-filter" data-planning-task-filter>
+<option value="all">Todas</option><option value="pending">Pendentes</option><option value="completed">Concluídas</option>
+</select></label>
+<label for="planning-task-sort">Ordenar tarefas
+<select id="planning-task-sort" data-planning-task-sort>
+<option value="due">Prazo e pendências</option><option value="recent">Mais recentes</option><option value="title">Título</option>
+</select></label>
 </div>
 <p data-planning-status role="status" aria-live="polite"></p>
 <div data-planning-list></div>
