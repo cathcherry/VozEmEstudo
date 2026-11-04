@@ -27,7 +27,7 @@ export function buildQuizSessionService(store = repository) {
       );
     },
     finish: (userId, id) => store.finishOwnedSession(userId, quizId(id)),
-    createReview: (userId, sessionId, body) => {
+    createReview: async (userId, sessionId, body) => {
       const { feedbackMode } = validateReviewStart(body);
       return store.createOwnedReviewSession(userId, quizId(sessionId), feedbackMode);
     },

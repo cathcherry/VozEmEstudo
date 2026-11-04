@@ -24,7 +24,7 @@ test('flags require explicit booleans and discard unknown or credential fields',
   });
   assert.equal(flags.planning, true);
   assert.equal(flags.sharing, false);
-  assert.equal(Object.keys(flags).length, 8);
+  assert.equal(Object.keys(flags).length, 9);
   assert.deepEqual(
     normalizeFeatureFlags({ ...flags, sharing: 'true', secret: 'synthetic' }),
     flags,
