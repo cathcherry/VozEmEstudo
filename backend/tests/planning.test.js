@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { buildPlanningService } from '../src/services/planning.service.js';
 import {
   validateNewGoal, validateNewTask, validateTaskCompletion,
+  validateGoalPatch, validateTaskPatch, validateNewSubgoal,
 } from '../src/validators/planning.validator.js';
 
 const a = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -15,7 +16,7 @@ test('planning validates deadlines, strict payloads and task checkboxes', () => 
     title: 'Revisar Química', description: null, target_date: '2026-11-30',
   });
   assert.deepEqual(validateNewTask({ title: 'Fazer questões' }), {
-    title: 'Fazer questões', due_date: null, material_id: null,
+    title: 'Fazer questões', due_date: null, material_id: null, subgoal_id: null,
   });
   assert.throws(() => validateNewGoal({ title: 'A', targetDate: '2026-02-30' }));
   assert.throws(() => validateNewTask({ title: 'A', materialId: 'abc' }));
@@ -61,4 +62,89 @@ test('foreign goal or foreign linked material blocks insertion', async () => {
     (error) => error.code === 'NOT_FOUND',
   );
   assert.equal(inserted, 0);
+});
+
+test('goal editing, subgoals and task patch are strict, minimal and predictable', () => {
+  assert.deepEqual(validateGoalPatch({ title: '  Simulado  ', targetDate: null, status: 'active' }), {
+    title: 'Simulado', target_date: null, status: 'active',
+  });
+  assert.deepEqual(validateNewSubgoal({ title: '  Revisar   capítulos  ', dueDate: '2026-11-10' }), {
+    title: 'Revisar capítulos', due_date: '2026-11-10',
+  });
+  assert.deepEqual(validateTaskPatch({ title: '  Leitura   A  ', subgoalId: null }), {
+    title: 'Leitura A', subgoal_id: null,
+  });
+  assert.throws(() => validateGoalPatch({}));
+  assert.throws(() => validateGoalPatch({ status: 'unknown' }));
+  assert.throws(() => validateGoalPatch({ user_id: a }));
+  assert.throws(() => validateNewSubgoal({ title: ' ' }));
+  assert.throws(() => validateTaskPatch({}));
+  assert.throws(() => validateTaskPatch({ dueDate: '2026-02-30' }));
+});
+
+test('subgoal creation requires a goal owned by this account', async () => {
+  let inserted = 0;
+  const store = {
+    async getOwnedGoal(userId, id) { assert.equal(userId, a); assert.equal(id, goal); throw Object.assign(new Error('not found'), { code: 'NOT_FOUND' }); },
+    async insertSubgoal() { inserted++; },
+  };
+  await assert.rejects(
+    buildPlanningService(store).createSubgoal(a, goal, { title: 'Revisão 1' }),
+    (error) => error.code === 'NOT_FOUND',
+  );
+  assert.equal(inserted, 0);
+  store.getOwnedGoal = async () => ({ id: goal });
+  store.insertSubgoal = async (userId, id, data) => {
+    assert.equal(userId, a);
+    assert.equal(id, goal);
+    inserted++;
+    return { id: task, goal_id: id, ...data };
+  };
+  const created = await buildPlanningService(store).createSubgoal(a, goal, { title: 'Revisão 1' });
+  assert.equal(created.title, 'Revisão 1');
+  assert.equal(inserted, 1);
+});
+
+test('task cannot be moved to a subgoal belonging to another goal', async () => {
+  const otherGoal = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+  let writes = 0;
+  const store = {
+    async getOwnedTask(userId, taskId) {
+      assert.equal(userId, a); assert.equal(taskId, task);
+      return { id: task, goal_id: goal };
+    },
+    async getOwnedSubgoal(userId, subgoalId) {
+      assert.equal(userId, a);
+      assert.equal(subgoalId, otherGoal);
+      return { id: otherGoal, goal_id: otherGoal };
+    },
+    async updateOwnedTask() { writes++; },
+  };
+  await assert.rejects(
+    buildPlanningService(store).updateTask(a, task, { subgoalId: otherGoal }),
+    (error) => error.code === 'NOT_FOUND',
+  );
+  assert.equal(writes, 0);
+  store.getOwnedSubgoal = async () => ({ id: otherGoal, goal_id: goal });
+  store.updateOwnedTask = async (userId, taskId, patch) => {
+    assert.equal(userId, a);
+    assert.equal(taskId, task);
+    assert.deepEqual(patch, { subgoal_id: otherGoal });
+    writes++;
+    return { id: task, ...patch };
+  };
+  await buildPlanningService(store).updateTask(a, task, { subgoalId: otherGoal });
+  assert.equal(writes, 1);
+});
+
+test('goal edits are always scoped to the authenticated user', async () => {
+  const service = buildPlanningService({
+    async updateOwnedGoal(userId, id, changes) {
+      assert.equal(userId, a);
+      assert.equal(id, goal);
+      assert.deepEqual(changes, { title: 'Nova meta' });
+      return { id, ...changes };
+    },
+  });
+  assert.equal((await service.updateGoal(a, goal, { title: 'Nova meta' })).title, 'Nova meta');
 });
