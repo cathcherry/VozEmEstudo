@@ -12,6 +12,11 @@ export function validateQuizStart(body) {
     feedbackMode: z.enum(['immediate', 'deferred']),
   }).strict().parse(body);
 }
+export function validateReviewStart(body) {
+  return z.object({
+    feedbackMode: z.enum(['immediate', 'deferred']),
+  }).strict().parse(body);
+}
 export function validateQuizAnswer(body) {
   return z.object({
     questionId: uuid,

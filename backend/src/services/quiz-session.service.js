@@ -1,7 +1,9 @@
 import * as repository from '../repositories/quiz-session.repository.js';
 import { AppError } from '../domain/errors.js';
 import { buildQuizDiagnostic } from './quiz-diagnostic.service.js';
-import { quizId, validateQuizStart, validateQuizAnswer } from '../validators/quiz-session.validator.js';
+import {
+  quizId, validateQuizStart, validateQuizAnswer, validateReviewStart,
+} from '../validators/quiz-session.validator.js';
 
 export function buildQuizSessionService(store = repository) {
   return {
@@ -25,6 +27,10 @@ export function buildQuizSessionService(store = repository) {
       );
     },
     finish: (userId, id) => store.finishOwnedSession(userId, quizId(id)),
+    createReview: (userId, sessionId, body) => {
+      const { feedbackMode } = validateReviewStart(body);
+      return store.createOwnedReviewSession(userId, quizId(sessionId), feedbackMode);
+    },
   };
 }
 

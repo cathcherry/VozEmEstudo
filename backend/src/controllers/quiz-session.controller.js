@@ -24,3 +24,11 @@ export async function finish(req, res, next) {
   try { res.json(await quizSessionService.finish(req.user.id, req.params.sessionId)); }
   catch (error) { next(error); }
 }
+
+export async function createReview(req, res, next) {
+  try {
+    res.status(201).json(await quizSessionService.createReview(
+      req.user.id, req.params.sessionId, req.body,
+    ));
+  } catch (error) { next(error); }
+}
