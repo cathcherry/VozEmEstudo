@@ -1,5 +1,11 @@
 # Preparação do ambiente
 
+> **Situação em 04/11/2026:** o desenvolvimento corrente está no repositório privado `cathcherry/VozEmEstudo`, na branch `main`. O projeto Supabase existente recebeu a migration E02 segundo o histórico de operação informado pela responsável; o estado remoto não foi reinspecionado nesta etapa. Não reaplique a migration nem a baseline `001_initial.sql`. As observações E00/E01 abaixo preservam o contexto técnico e histórico de 09/10/2026.
+
+## Fluxo recomendado sem Docker
+
+Para contribuições: GitHub Desktop para atualizar o checkout e GitHub Actions para testes de código. Mudanças de banco serão preparadas como SQL aditivo e somente aplicadas via Supabase Dashboard após conferir ambiente e backup. **Nenhuma instalação de Docker, PostgreSQL ou Supabase CLI é exigida para a etapa 1.** O roteiro local abaixo é opcional e serve para quem precisar executar o produto.
+
 ## Editar e apresentar sem Docker
 
 Para abrir as telas atuais com dados fictícios, consulte [Apresentação local](../APRESENTACAO.md). Execute `node scripts/presentation/server.mjs` na raiz e abra http://127.0.0.1:3000. Sem instalação de dependências para a navegação básica; sem conexão com Supabase. O modo integrado abaixo continua dependendo dos gates e da configuração do ambiente.

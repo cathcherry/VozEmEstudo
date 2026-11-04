@@ -1,3 +1,14 @@
+# Estado atual no GitHub — 04/11/2026 (etapa 1)
+
+- **Fonte vigente:** repositório privado `cathcherry/VozEmEstudo`, branch `main`; alterações propostas em `chore/etapa-1-estabilizacao` até aprovação e merge. O histórico abaixo é anterior à publicação e não deve ser tratado como status remoto atualizado.
+- **Testes informados pela responsável:** login por Google, GitHub e e-mail, recuperação, cadastro, alternância de senha, notificações e layout de autenticação funcionaram. Upload/transcrição, resumo e questões funcionaram anteriormente, mas **não foram reexecutados** na revisão publicada.
+- **Supabase:** a migration E02 foi aplicada na instância de uso conforme relato de operação anterior. Isso **não comprova** inventário atual das migrations, backup restaurável, RLS remota, duas conexões concorrentes ou validação formal de G1. Nesta etapa, nenhuma migration é executada.
+- **Engenharia:** a execução inicial do GitHub Actions em 02/11 falhou no ESLint (`frontend/tests/auth-style-check.mjs`: globals Node não declarados; `scripts/live/server.mjs`: import duplicado). Correções seguem em PR separado; execução verde só pode ser declarada após confirmação do Actions.
+- **CSS:** login, cadastro e recuperação compartilham `frontend/css/auth-pages.css` carregado por último. Os estilos das demais páginas ainda são compostos por arquivos globais/compartilhados; não houve refatoração visual geral. Regras de responsabilidade e prevenção de conflito estão em [CSS_GUIDE.md](CSS_GUIDE.md).
+- **Escopo:** E00–E02 possuem implementação e evidências anteriores, porém os gates formais dependem de validações externas; E03–E20 ainda não constituem entregas implementadas. A etapa 1 não muda regras de autenticação, serviços de IA, dados ou comportamento do worker.
+
+---
+
 # E02 — implementação local em validação; G1 bloqueado
 
 Permissão versionada, revisão explícita, fontes congeladas, commits transacionais e avisos preliminares implementados localmente sobre a versão 12 da E01. Migration aditiva preparada; nenhuma aplicação remota. Testes, arquivo de base e pendências constam em `implementation-2.0/e02-report.md`; `CONTINUAR.md` registra a retomada. Staging/backup/restore, concorrência nativa e integrações reais permanecem bloqueados. E03–E21 não iniciadas; não presumir aceite dos gates anteriores.

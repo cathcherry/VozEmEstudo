@@ -43,3 +43,7 @@ Aplicar Clean Code, SOLID, DRY, KISS e YAGNI conforme o problema: não criar int
 Indentação JS/JSON/YAML/CSS/HTML de dois espaços; Python de quatro. UTF-8, LF e newline final. Prettier é o formatter JS/documentos; Ruff é o lint/formatter Python. ESLint separa Node, ESM browser e scripts clássicos. Bundles de terceiros, binários, segredos e evidências históricas geradas não são reformatados.
 
 Antes de PR, executar os comandos de [TESTING.md](TESTING.md) e seguir [CONTRIBUTING.md](../CONTRIBUTING.md). Formatação legada deve ficar em diff separado de mudanças de lógica. Nenhuma licença do projeto é escolhida nesta entrega.
+
+## Organização dos estilos (etapa 1)
+
+O CSS existente tem camadas históricas compartilhadas; não reescrevê-las em massa para resolver uma tela. Para mudanças de interface, consulte [CSS_GUIDE.md](CSS_GUIDE.md): defina o arquivo proprietário de cada componente, use classe de página no `body` para regras locais e não acrescente seletores globais de `h1`, `input`, `button` ou `.login-box` em folhas compartilhadas. As telas de autenticação devem modificar exclusivamente `auth-pages.css` após as folhas base. Acrescente ou atualize teste focado e mantenha o fluxo legado sem alterações desnecessárias.

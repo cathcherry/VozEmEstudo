@@ -25,8 +25,9 @@ Instale as dependências antes com `npm.cmd ci` na pasta `backend`.
 
 ## Configuração e banco
 
-- As credenciais já configuradas estão em `backend/.env`, preservadas deste pacote.
-  Não compartilhe esse arquivo ao publicar o código ou um repositório público.
+- O repositório **não contém** `backend/.env`. Na instalação local, mantenha seu
+  próprio arquivo privado (use `backend/.env.example` apenas como referência).
+  Nunca publique credenciais, mesmo em repositório privado.
 - A migração E02 (`database/migrations/20261009101846_academic_review.sql`)
   foi aplicada anteriormente ao projeto Supabase usado nos testes. **Não é
   necessário reaplicá-la** se você estiver usando o mesmo banco.
@@ -62,6 +63,6 @@ O formulário de cadastro apresenta uma mensagem genérica por privacidade quand
 
 ## CSS de autenticação e publicação
 
-As páginas `login.html`, `cadastro.html` e `recuperar-senha.html` compartilham agora **uma folha de CSS de ajustes**, `frontend/css/auth-pages.css`, carregada depois dos estilos gerais. Os estilos globais (base, temas, kit) são mantidos intactos para as demais telas. Para não criar conflitos futuros, ajuste estas telas **somente nesse arquivo**. Execute `node frontend/tests/auth-style-check.mjs` após modificá-lo.
+As páginas `login.html`, `cadastro.html` e `recuperar-senha.html` compartilham agora **uma folha de CSS de ajustes**, `frontend/css/auth-pages.css`, carregada depois dos estilos gerais. Os estilos globais (base, temas, kit) são mantidos intactos para as demais telas. Para não criar conflitos futuros, ajuste estas telas **somente nesse arquivo**. A verificação `node frontend/tests/auth-style-check.mjs` agora faz parte de `npm test` no GitHub Actions. Consulte [o mapa de CSS](docs/CSS_GUIDE.md) antes de alterar outros estilos.
 
-**GitHub:** consulte [`PUBLICAR_NO_GITHUB.md`](PUBLICAR_NO_GITHUB.md) para publicar com segurança. `backend/.env` e outros arquivos privados não estão neste ZIP.
+**GitHub:** o código é versionado no repositório privado `cathcherry/VozEmEstudo`. As instruções de publicação inicial em [`PUBLICAR_NO_GITHUB.md`](PUBLICAR_NO_GITHUB.md) são históricas. Faça as próximas alterações em branches e revise o CI antes de incorporar à `main`.

@@ -38,7 +38,7 @@ export default [
   { files: ['frontend/js/utils/theme-init.js'], languageOptions: { sourceType: 'script' } },
   // Functions executed by Playwright evaluate/addInitScript run in the browser.
   {
-    files: ['frontend/tests/*.cjs'],
+    files: ['frontend/tests/*.{cjs,mjs}'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   // axe-core is injected into the page before Playwright evaluates the callback.
