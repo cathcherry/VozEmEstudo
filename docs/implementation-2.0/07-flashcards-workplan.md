@@ -26,5 +26,5 @@
 
 - Não há geração automática por IA nem importação de cartões de transcrições, resumos ou questões: isso precisa de revisão de qualidade e proteção contra invenção de conteúdo.
 - Não há upload de imagens/arquivos nem conjunto de cartões compartilháveis.
-- O algoritmo ainda não foi calibrado com dados de aprendizado, e o SQL **não foi testado em um PostgreSQL real** neste estágio; testes unitários/estáticos do CI não substituem essa etapa.
+- O algoritmo ainda não foi calibrado com dados de aprendizado, o SQL é exercitado com **PostgreSQL embarcado (PGlite)** no CI, mas **não foi validado no Supabase real**, com o schema e as permissões efetivas do projeto. Os testes não substituem a homologação integrada.
 - Dados persistidos podem ser usados entre dispositivos **após o backend, migration e flag serem implantados e validados**.

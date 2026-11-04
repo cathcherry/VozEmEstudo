@@ -29,11 +29,14 @@ export async function listOwnedFlashcards(userId, filter) {
   let query = db.from('study_flashcards')
     .select(cardFields, { count: 'exact' })
     .eq('user_id', userId)
-    .order('due_at', { ascending: true })
-    .order('id', { ascending: true })
     .limit(PAGE_LIMIT);
-  if (filter === 'due')
-    query = query.eq('status', 'active').lte('due_at', new Date().toISOString());
+  if (filter === 'due') {
+    query = query.eq('status', 'active').lte('due_at', new Date().toISOString())
+      .order('due_at', { ascending: true }).order('id', { ascending: true });
+  } else {
+    query = query.order('created_at', { ascending: false })
+      .order('id', { ascending: true });
+  }
   const { data, count, error } = await query;
   assertDb(error);
   return { cards: data || [], total: count || 0, limit: PAGE_LIMIT };
