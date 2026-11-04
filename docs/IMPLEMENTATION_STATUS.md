@@ -1,3 +1,9 @@
+# Etapa 2 — Biblioteca 2.0 em desenvolvimento (04/11/2026)
+
+O pull request em **Draft** [#2](https://github.com/cathcherry/VozEmEstudo/pull/2) concentra os commits E03/E04. O backend já contém catálogo autenticado (disciplinas, unidades e vínculo de aulas), e a Biblioteca possui um painel de organização e agrupamento por unidade, mas tudo está protegido por `FEATURE_CATALOG_UNITS=false` por padrão. O SQL necessário é apenas uma **proposta não aplicada** em `database/proposals/e03-catalog-schema-draft.sql`. Nenhuma migration remota, ativação da flag ou merge em `main` foi realizada. Testes remotos e validação visual estão pendentes; consultar o plano `implementation-2.0/03-biblioteca-workplan.md`.
+
+---
+
 # Estado atual no GitHub — 04/11/2026 (etapa 1)
 
 - **Fonte vigente:** repositório privado `cathcherry/VozEmEstudo`, branch `main`; alterações propostas em `chore/etapa-1-estabilizacao` até aprovação e merge. O histórico abaixo é anterior à publicação e não deve ser tratado como status remoto atualizado.

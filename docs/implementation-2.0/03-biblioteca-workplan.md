@@ -2,7 +2,7 @@
 
 **Branch:** `feat/etapa-2-biblioteca-2-0`  
 **Referência inicial:** `c1a7f62490b66168269d0e1168909b565209058a` (`main`, 04/11/2026)  
-**Estado:** preparação de E03/E04; nenhum SQL aplicado e nenhuma alteração da `main`.
+**Estado:** primeira fatia E03 implementada na branch (API + painel da biblioteca sob flag); o SQL permanece como proposta, sem execução remota, e a `main` segue intacta.
 
 ## Regra de trabalho sem computador local
 
@@ -19,17 +19,23 @@
 - [ ] Confirmar schema de produção/staging e ledger de migrations; não reaplicar `001_initial.sql` nem E02.
 - [x] Rascunhar esquema aditivo em `database/proposals/e03-catalog-schema-draft.sql` (**não executar**).
 - [ ] Validar e promover o SQL para migration numerada, com testes sintéticos, grants/RLS e procedimentos de backup/reversão.
-- [ ] Implementar API autenticada para disciplinas/unidades e associação de materiais, com Zod, normalização e ownership.
-- [ ] Garantir compatibilidade de `materials.subject` textual com os novos `subject_id`/`unit_id`, incluindo materiais criados após a migration.
+- [x] Implementar primeira fatia da API autenticada: listar catálogo, criar disciplina/unidade e vincular/desvincular uma aula, com Zod, normalização e filtros de ownership. Rotas protegidas por `FEATURE_CATALOG_UNITS`, que continua OFF.
+- [x] Manter `materials.subject` e os novos IDs coerentes quando a aula é vinculada pela API do catálogo; alterações livres do rótulo legado limpam os IDs na mesma operação, sob a flag. Novos uploads ainda dependem da etapa de associação explícita ou sincronização planejada.
 - [ ] Migrar tags do `localStorage` apenas com consentimento e merge idempotente, sem converter visitas em horas de estudo.
 - [ ] Testar duas contas A/B e preservação de IDs, transcrições, resumos e lotes.
 
 ## E04 — duas visões da biblioteca
 
-- [ ] Preservar a página existente como fallback da flag desativada.
-- [ ] Criar navegação “Por aula/unidade” e “Por tipo de recurso” sem copiar transcrições, resumos nem questões.
+- [x] Preservar a página existente como fallback da flag desativada; formulários novos ficam ocultos quando OFF.
+- [ ] Implementar navegação completa “Por aula/unidade” e “Por tipo de recurso” sem duplicação (a primeira fatia já acrescentou agrupamento por unidade, mas **não** as duas visões completas).
 - [ ] Adicionar filtros e ações agregadas com IDs originais, estados vazios e carregamento acessível.
 - [ ] Validar responsividade e teclado com testes automatizados; revisão visual humana apenas no aceite integrado.
+
+## Incremento E03 — implementação guardada por feature flag
+
+Arquivos novos: `backend/src/{routes,controllers,services,repositories,validators}/catalog.*.js`, `frontend/js/api/catalog.api.js`, `frontend/js/pages/catalog-panel.js`, `frontend/css/catalog.css`, testes de catálogo e interface. Integração: `backend/src/app.js` monta o novo router somente com a flag ativa; `GET /api/materials` só requisita `subject_id`/`unit_id` quando o schema estiver habilitado. A edição de disciplina em texto livre desassocia IDs em uma atualização atômica, evitando vínculo contraditório. A UI adiciona criar disciplina/unidade, vincular aula e agrupar por unidade.
+
+**Não pronto para ativar:** o SQL continua na pasta `database/proposals/` e ainda não é uma migration aprovada. Sem aplicação e testes no Supabase, a flag deve permanecer OFF. A interface não recebeu validação visual real. Novos uploads com texto livre não são vinculados automaticamente a um ID; a associação pode ser feita na biblioteca após a ativação.
 
 ## Gates que não vamos simular como aprovados
 
