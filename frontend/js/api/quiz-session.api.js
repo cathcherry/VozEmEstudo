@@ -22,3 +22,10 @@ export const createReviewQuizSession = (sessionId, feedbackMode = 'immediate') =
   apiFetch(`/api/quiz-sessions/${encodeURIComponent(sessionId)}/review`, {
     method: 'POST', body: JSON.stringify({ feedbackMode }),
   });
+
+export const getQuizDiagnostic = (sessionId) =>
+  apiFetch(`/api/quiz-sessions/${encodeURIComponent(sessionId)}/diagnostic`);
+export const createQuizReviewSession = (sourceSessionId, feedbackMode) =>
+  apiFetch(`/api/quiz-sessions/${encodeURIComponent(sourceSessionId)}/review`, {
+    method: 'POST', body: JSON.stringify({ feedbackMode }),
+  });

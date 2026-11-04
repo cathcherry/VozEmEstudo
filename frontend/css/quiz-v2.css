@@ -28,3 +28,36 @@
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-history ul { list-style: none; padding: 0; margin: 0; }
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-history li { padding: 7px 0; }
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-history a { color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }
+
+/* E11/E12: accessible, scoped diagnostic after a completed quiz. */
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-diagnostic {
+  margin: 20px 0 36px;
+  padding: 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  max-width: 860px;
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-diagnostic h2 {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-diagnostic h3 {
+  font-size: 1rem;
+  margin: 18px 0 8px;
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-note {
+  font-size: .83rem;
+  color: var(--muted);
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors {
+  margin: 8px 0 18px;
+  padding-left: 22px;
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors li p {
+  font-size: .85rem;
+  margin: 5px 0 0;
+}

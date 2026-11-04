@@ -4,6 +4,7 @@ import {
 } from '../api/quiz-session.api.js';
 import { feedbackForQuestion, quizScore, firstUnanswered } from '../utils/quiz-v2-view.js';
 import { emptyState } from '../utils/material-ui.js';
+import { renderQuizDiagnosticPanel } from './quiz-diagnostic-panel.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 
 function el(tag, text, className) {
@@ -241,6 +242,11 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       main.append(result);
     }
     main.append(card);
+    if (finished) {
+      void renderQuizDiagnosticPanel({
+        parent: main, session, materialId, batchId: session.batch_id,
+      });
+    }
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
