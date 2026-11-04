@@ -11,3 +11,20 @@
   padding: 12px 16px; border: 1px solid var(--border-light);
 }
 .quiz-session-main[data-quiz-v2='true'] .quiz-answer-card:focus-within { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+
+/* E11/E12: neutral, compact review of answers from the source session. */
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-result h2 { margin: 0 0 8px; font-size: 1.15rem; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-result h3 { margin: 14px 0 10px; font-size: .96rem; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors { padding-left: 22px; margin: 8px 0 18px; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors li { margin: 0 0 14px; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors p { margin: 5px 0; font-size: .88rem; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-disclaimer {
+  font-size: .78rem; font-weight: 400; opacity: .8; margin: 12px 0 0;
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-history {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-light);
+}
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-history h2 { font-size: 1rem; margin: 0 0 9px; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-history ul { list-style: none; padding: 0; margin: 0; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-history li { padding: 7px 0; }
+.quiz-session-main[data-quiz-v2='true'] .quiz-v2-history a { color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }

@@ -1,6 +1,10 @@
-import { createQuizSession, getQuizSession, submitQuizAnswer, finishQuizSession } from '../api/quiz-session.api.js';
+import {
+  createQuizSession, getQuizSession, submitQuizAnswer, finishQuizSession,
+  listQuizSessions, createReviewQuizSession,
+} from '../api/quiz-session.api.js';
 import { feedbackForQuestion, quizScore, firstUnanswered } from '../utils/quiz-v2-view.js';
 import { emptyState } from '../utils/material-ui.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -23,6 +27,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
   let sessionData = null;
   let current = 0;
   let busy = false;
+  const reviewEnabled = await isFeatureEnabled('quiz_review');
 
   function showFailure(error) {
     main.replaceChildren();
@@ -65,6 +70,27 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     form.append(fieldset, message, button);
     card.append(heading, description, form);
     main.replaceChildren(card);
+    // A compact entry to resume recent attempts, not a duplicated question bank.
+    void listQuizSessions().then((sessions) => {
+      if (sessionData) return;
+      const previous = sessions.filter((item) => item.material_id === materialId).slice(0, 8);
+      if (!previous.length) return;
+      const history = el('section', null, 'quiz-v2-history');
+      history.append(el('h2', 'Tentativas anteriores'));
+      const list = el('ul');
+      for (const item of previous) {
+        const row = el('li');
+        const link = el('a',
+          `${item.status === 'completed' ? 'Concluída' : 'Em andamento'} · ${item.kind === 'review' ? 'Revisão de erros' : 'Lista completa'} · ${new Date(item.created_at).toLocaleDateString('pt-BR')}`,
+        );
+        link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(item.batch_id)}&session=${encodeURIComponent(item.id)}`;
+        row.append(link);
+        list.append(row);
+      }
+      history.append(list);
+      card.append(history);
+    }).catch(() => {});
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (busy || !form.reportValidity()) return;
@@ -166,7 +192,53 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     main.replaceChildren(progressSection);
     if (finished) {
       const score = quizScore(answers);
-      main.append(el('p', `Tentativa concluída: ${score.correct} de ${questions.length} acertos. Você pode revisar todas as respostas.`, 'quiz-v2-result'));
+      const incorrect = questions.map((q) => ({
+        question: q,
+        answer: answers.find((item) => item.questionId === q.id),
+      })).filter(({ answer }) => answer?.correct === false);
+      const result = el('section', null, 'quiz-v2-result');
+      result.setAttribute('aria-label', 'Diagnóstico da tentativa');
+      result.append(el('h2', 'Resultado da tentativa'));
+      result.append(el('p', `${score.correct} de ${questions.length} acertos · ${Math.round((score.correct / questions.length) * 100)}% pelo gabarito gerado.`));
+      if (incorrect.length) {
+        result.append(el('h3', `${incorrect.length} ${incorrect.length === 1 ? 'questão para revisar' : 'questões para revisar'}`));
+        const list = el('ol', null, 'quiz-v2-errors');
+        for (const { question: missed, answer } of incorrect) {
+          const row = el('li');
+          row.append(el('strong', missed.statement));
+          row.append(el('p', `Você marcou ${String.fromCharCode(65 + answer.selectedIndex)}. O gabarito indica ${String.fromCharCode(65 + answer.correctIndex)}.`));
+          if (answer.explanation) row.append(el('p', answer.explanation));
+          list.append(row);
+        }
+        result.append(list);
+        if (reviewEnabled) {
+          const review = el('button', 'Refazer apenas as questões erradas', 'secondary-action');
+          review.type = 'button';
+          review.addEventListener('click', async () => {
+            if (busy) return;
+            busy = true;
+            review.disabled = true;
+            try {
+              const created = await createReviewQuizSession(session.id, 'immediate');
+              const url = new URL(window.location.href);
+              url.searchParams.set('session', created.id);
+              url.searchParams.set('batch', session.batch_id);
+              window.location.href = url.toString();
+            } catch (error) {
+              review.disabled = false;
+              busy = false;
+              const warning = el('p', error.message || 'Não foi possível criar a revisão.');
+              warning.setAttribute('role', 'alert');
+              result.append(warning);
+            }
+          });
+          result.append(review);
+        }
+      } else {
+        result.append(el('p', 'Todas as respostas coincidiram com o gabarito gerado.'));
+      }
+      result.append(el('p', 'Este resultado compara alternativas com respostas geradas automaticamente; confira o conteúdo original se encontrar alguma divergência.', 'quiz-v2-disclaimer'));
+      main.append(result);
     }
     main.append(card);
 

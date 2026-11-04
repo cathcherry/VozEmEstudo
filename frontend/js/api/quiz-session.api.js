@@ -15,3 +15,10 @@ export const finishQuizSession = (sessionId) =>
   apiFetch(`/api/quiz-sessions/${encodeURIComponent(sessionId)}/finish`, {
     method: 'POST', body: JSON.stringify({}),
   });
+
+export const getQuizDiagnostic = (sessionId) =>
+  apiFetch(`/api/quiz-sessions/${encodeURIComponent(sessionId)}/diagnostic`);
+export const createReviewQuizSession = (sessionId, feedbackMode = 'immediate') =>
+  apiFetch(`/api/quiz-sessions/${encodeURIComponent(sessionId)}/review`, {
+    method: 'POST', body: JSON.stringify({ feedbackMode }),
+  });
