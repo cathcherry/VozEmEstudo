@@ -12,6 +12,10 @@ export async function get(req, res, next) {
   try { res.json(await quizSessionService.get(req.user.id, req.params.sessionId)); }
   catch (error) { next(error); }
 }
+export async function diagnostic(req, res, next) {
+  try { res.json(await quizSessionService.diagnostic(req.user.id, req.params.sessionId)); }
+  catch (error) { next(error); }
+}
 export async function answer(req, res, next) {
   try { res.json(await quizSessionService.answer(req.user.id, req.params.sessionId, req.body)); }
   catch (error) { next(error); }

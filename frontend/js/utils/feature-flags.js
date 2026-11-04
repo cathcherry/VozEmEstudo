@@ -6,6 +6,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'mp4_retention',
   'study_tracking',
   'quiz_v2',
+  'quiz_review',
   'flashcards',
   'social_basic',
   'sharing',

@@ -1,5 +1,6 @@
 import * as repository from '../repositories/quiz-session.repository.js';
 import { AppError } from '../domain/errors.js';
+import { buildQuizDiagnostic } from './quiz-diagnostic.service.js';
 import { quizId, validateQuizStart, validateQuizAnswer } from '../validators/quiz-session.validator.js';
 
 export function buildQuizSessionService(store = repository) {
@@ -13,6 +14,10 @@ export function buildQuizSessionService(store = repository) {
       return store.createOwnedSession(userId, input);
     },
     get: (userId, id) => store.readOwnedSession(userId, quizId(id)),
+    async diagnostic(userId, id) {
+      const data = await store.readOwnedSession(userId, quizId(id));
+      return buildQuizDiagnostic(data);
+    },
     async answer(userId, id, body) {
       const selected = validateQuizAnswer(body);
       return store.submitSessionAnswer(
