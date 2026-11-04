@@ -133,7 +133,7 @@ begin
   select count(*) into v_count from public.study_tasks t
   where t.goal_id = p_goal_id and t.user_id = p_user_id;
   if cardinality(p_task_ids) <> v_count
-    or (select count(distinct x) from unnest(p_task_ids) as x) <> v_count
+    or (select count(distinct x.task_id) from unnest(p_task_ids) as x(task_id)) <> v_count
     or (select count(*) from public.study_tasks t
         where t.goal_id = p_goal_id and t.user_id = p_user_id
           and t.id = any(p_task_ids)) <> v_count then

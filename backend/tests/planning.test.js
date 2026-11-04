@@ -4,6 +4,7 @@ import { buildPlanningService } from '../src/services/planning.service.js';
 import {
   validateNewGoal, validateNewTask, validateTaskCompletion,
   validateGoalPatch, validateTaskPatch, validateNewSubgoal,
+  validateSubgoalPatch, validateTaskOrder,
 } from '../src/validators/planning.validator.js';
 
 const a = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -16,7 +17,7 @@ test('planning validates deadlines, strict payloads and task checkboxes', () => 
     title: 'Revisar Química', description: null, target_date: '2026-11-30',
   });
   assert.deepEqual(validateNewTask({ title: 'Fazer questões' }), {
-    title: 'Fazer questões', due_date: null, material_id: null, subgoal_id: null,
+    title: 'Fazer questões', due_date: null, material_id: null, subgoal_id: null, reference_url: null,
   });
   assert.throws(() => validateNewGoal({ title: 'A', targetDate: '2026-02-30' }));
   assert.throws(() => validateNewTask({ title: 'A', materialId: 'abc' }));
@@ -147,4 +148,71 @@ test('goal edits are always scoped to the authenticated user', async () => {
     },
   });
   assert.equal((await service.updateGoal(a, goal, { title: 'Nova meta' })).title, 'Nova meta');
+});
+
+test('subgoal edits preserve ownership and reject empty or foreign fields', async () => {
+  const id = 'ffffffff-ffff-4fff-8fff-ffffffffffff';
+  assert.deepEqual(validateSubgoalPatch({ title: '  Reavaliar  ', dueDate: null }), {
+    title: 'Reavaliar', due_date: null,
+  });
+  assert.throws(() => validateSubgoalPatch({}));
+  assert.throws(() => validateSubgoalPatch({ user_id: a }));
+  assert.throws(() => validateSubgoalPatch({ dueDate: '2026-02-30' }));
+  const service = buildPlanningService({
+    async updateOwnedSubgoal(userId, subgoalId, data) {
+      assert.equal(userId, a);
+      assert.equal(subgoalId, id);
+      assert.deepEqual(data, { title: 'Corrigido' });
+      return { id: subgoalId, ...data };
+    },
+  });
+  assert.equal((await service.updateSubgoal(a, id, { title: 'Corrigido' })).id, id);
+});
+
+test('reference links accept only HTTPS without credentials and stay optional', () => {
+  const url = 'https://example.org/artigo?q=1';
+  assert.equal(validateNewTask({ title: 'Ler', referenceUrl: url }).reference_url, url);
+  assert.equal(validateNewTask({ title: 'Ler', referenceUrl: null }).reference_url, null);
+  assert.equal(validateTaskPatch({ referenceUrl: '' }).reference_url, null);
+  assert.throws(() => validateNewTask({ title: 'Ler', referenceUrl: 'http://example.org' }));
+  assert.throws(() => validateNewTask({ title: 'Ler', referenceUrl: 'javascript:alert(1)' }));
+  assert.throws(() => validateNewTask({ title: 'Ler', referenceUrl: 'https://x:y@example.org' }));
+  assert.throws(() => validateNewTask({ title: 'Ler', referenceUrl: 'abc' }));
+});
+
+test('task reordering accepts exact unique IDs and passes the owner to the repository', async () => {
+  const ids = [task, material];
+  assert.deepEqual(validateTaskOrder({ taskIds: ids }), ids);
+  assert.throws(() => validateTaskOrder({ taskIds: [task, task] }));
+  assert.throws(() => validateTaskOrder({ taskIds: [task] }));
+  assert.throws(() => validateTaskOrder({ taskIds: [task, 'bad'] }));
+  assert.throws(() => validateTaskOrder({ taskIds: ids, user_id: a }));
+  let calls = 0;
+  const service = buildPlanningService({
+    async getOwnedGoal(userId, goalId) {
+      assert.equal(userId, a);
+      assert.equal(goalId, goal);
+      return { id: goal };
+    },
+    async reorderOwnedTasks(userId, goalId, taskIds) {
+      assert.equal(userId, a);
+      assert.equal(goalId, goal);
+      assert.deepEqual(taskIds, ids);
+      calls++;
+      return ids.map((id, i) => ({ id, sort_order: (i + 1) * 1000 }));
+    },
+  });
+  assert.equal((await service.reorderTasks(a, goal, { taskIds: ids })).length, 2);
+  assert.equal(calls, 1);
+});
+
+test('reordering foreign goals never reaches the database mutation', async () => {
+  let writes = 0;
+  const service = buildPlanningService({
+    async getOwnedGoal() { throw Object.assign(new Error('not found'), { code:'NOT_FOUND' }); },
+    async reorderOwnedTasks() { writes++; },
+  });
+  await assert.rejects(service.reorderTasks(a, goal, { taskIds: [task, material] }),
+    (error) => error.code === 'NOT_FOUND');
+  assert.equal(writes, 0);
 });

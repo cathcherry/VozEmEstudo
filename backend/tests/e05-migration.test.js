@@ -38,3 +38,14 @@ test('preflight and postflight never mutate data', () => {
     assert.doesNotMatch(s,/\b(create table|drop table|insert into|delete from|update public\.)\b/i);
   }
 });
+
+test('task ordering and study links require transactional and restricted server-only RPC', () => {
+  assert.match(migration, /sort_order bigint not null default/);
+  assert.match(migration, /reference_url text check/);
+  assert.match(migration, /create function public\.study_reorder_tasks\(/);
+  assert.match(migration, /security invoker/);
+  assert.match(migration, /for update/);
+  assert.match(migration, /cardinality\(p_task_ids\) <> v_count/);
+  assert.match(migration, /revoke all on function public\.study_reorder_tasks/);
+  assert.match(migration, /to service_role/);
+});

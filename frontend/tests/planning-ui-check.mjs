@@ -20,6 +20,7 @@ test('planning is hidden by default and uses scoped dashboard styles', () => {
     'data-planning-goal-select','data-planning-material-select',
     'data-planning-subgoal-form','data-planning-subgoal-goal',
     'data-planning-task-subgoal','data-planning-task-filter','data-planning-task-sort',
+    'data-planning-task-link',
     'data-planning-status role="status" aria-live="polite"',
   ]) assert(html.includes(name),name);
 });
@@ -54,5 +55,19 @@ test('planning edit controls use DOM text, not injected HTML for user fields', (
   assert.match(code, /createSubgoal/);
   assert.match(code, /textContent = goal\.title/);
   assert.match(code, /textContent = subgoal\.title/);
+  assert.doesNotMatch(code, /innerHTML/);
+});
+
+test('manual ordering follows persisted sort_order rather than dates', () => {
+  const tasks = [
+    { id: 'c', title: 'C', sort_order: 3000, created_at: '2026-11-02' },
+    { id: 'a', title: 'A', sort_order: 1000, created_at: '2026-11-04' },
+    { id: 'b', title: 'B', sort_order: 2000, created_at: '2026-11-03' },
+  ];
+  assert.deepEqual(sortedPlanningTasks(tasks, { sort:'manual' }).map((t) => t.id), ['a','b','c']);
+  assert.equal(tasks[0].id, 'c');
+  assert.match(code, /reorderGoalTasks/);
+  assert.match(code, /inlineEditSubgoal/);
+  assert.match(code, /noopener noreferrer/);
   assert.doesNotMatch(code, /innerHTML/);
 });
