@@ -1,6 +1,5 @@
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
-import { AppError } from '../domain/errors.js';
-import { errors } from '../domain/errors.js';
+import { AppError, errors } from '../domain/errors.js';
 
 function ensureDatabaseResult(error) {
   if (!error) return;
