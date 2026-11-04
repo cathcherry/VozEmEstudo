@@ -1,11 +1,10 @@
 import {
   createQuizSession, getQuizSession, submitQuizAnswer, finishQuizSession,
-  listQuizSessions, createReviewQuizSession,
+  listQuizSessions,
 } from '../api/quiz-session.api.js';
-import { feedbackForQuestion, quizScore, firstUnanswered } from '../utils/quiz-v2-view.js';
+import { feedbackForQuestion, firstUnanswered } from '../utils/quiz-v2-view.js';
 import { emptyState } from '../utils/material-ui.js';
 import { renderQuizDiagnosticPanel } from './quiz-diagnostic-panel.js';
-import { isFeatureEnabled } from '../utils/feature-flags.js';
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -28,7 +27,6 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
   let sessionData = null;
   let current = 0;
   let busy = false;
-  const reviewEnabled = await isFeatureEnabled('quiz_review');
 
   function showFailure(error) {
     main.replaceChildren();
@@ -191,56 +189,6 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     form.append(fieldset, feedback, nav);
     card.append(label, heading, form);
     main.replaceChildren(progressSection);
-    if (finished) {
-      const score = quizScore(answers);
-      const incorrect = questions.map((q) => ({
-        question: q,
-        answer: answers.find((item) => item.questionId === q.id),
-      })).filter(({ answer }) => answer?.correct === false);
-      const result = el('section', null, 'quiz-v2-result');
-      result.setAttribute('aria-label', 'Diagnóstico da tentativa');
-      result.append(el('h2', 'Resultado da tentativa'));
-      result.append(el('p', `${score.correct} de ${questions.length} acertos · ${Math.round((score.correct / questions.length) * 100)}% pelo gabarito gerado.`));
-      if (incorrect.length) {
-        result.append(el('h3', `${incorrect.length} ${incorrect.length === 1 ? 'questão para revisar' : 'questões para revisar'}`));
-        const list = el('ol', null, 'quiz-v2-errors');
-        for (const { question: missed, answer } of incorrect) {
-          const row = el('li');
-          row.append(el('strong', missed.statement));
-          row.append(el('p', `Você marcou ${String.fromCharCode(65 + answer.selectedIndex)}. O gabarito indica ${String.fromCharCode(65 + answer.correctIndex)}.`));
-          if (answer.explanation) row.append(el('p', answer.explanation));
-          list.append(row);
-        }
-        result.append(list);
-        if (reviewEnabled) {
-          const review = el('button', 'Refazer apenas as questões erradas', 'secondary-action');
-          review.type = 'button';
-          review.addEventListener('click', async () => {
-            if (busy) return;
-            busy = true;
-            review.disabled = true;
-            try {
-              const created = await createReviewQuizSession(session.id, 'immediate');
-              const url = new URL(window.location.href);
-              url.searchParams.set('session', created.id);
-              url.searchParams.set('batch', session.batch_id);
-              window.location.href = url.toString();
-            } catch (error) {
-              review.disabled = false;
-              busy = false;
-              const warning = el('p', error.message || 'Não foi possível criar a revisão.');
-              warning.setAttribute('role', 'alert');
-              result.append(warning);
-            }
-          });
-          result.append(review);
-        }
-      } else {
-        result.append(el('p', 'Todas as respostas coincidiram com o gabarito gerado.'));
-      }
-      result.append(el('p', 'Este resultado compara alternativas com respostas geradas automaticamente; confira o conteúdo original se encontrar alguma divergência.', 'quiz-v2-disclaimer'));
-      main.append(result);
-    }
     main.append(card);
     if (finished) {
       void renderQuizDiagnosticPanel({
