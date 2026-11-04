@@ -27,15 +27,21 @@
 ## E04 — duas visões da biblioteca
 
 - [x] Preservar a página existente como fallback da flag desativada; formulários novos ficam ocultos quando OFF.
-- [ ] Implementar navegação completa “Por aula/unidade” e “Por tipo de recurso” sem duplicação (a primeira fatia já acrescentou agrupamento por unidade, mas **não** as duas visões completas).
-- [ ] Adicionar filtros e ações agregadas com IDs originais, estados vazios e carregamento acessível.
-- [ ] Validar responsividade e teclado com testes automatizados; revisão visual humana apenas no aceite integrado.
+- [x] Implementar a navegação por aula/unidade e por tipo de recurso, sem duplicar conteúdos: a segunda visão lista apenas referências a áudios preservados, transcrições, resumos atuais e lotes de questões existentes, usando seus IDs originais. Requer validação integrada antes de aceite.
+- [x] Reutilizar busca, filtros existentes, estados vazios e links com IDs originais nas duas visões. Ações agregadas adicionais e refinamentos de navegação ficam para iteração posterior.
+- [ ] Concluir validação de responsividade, teclado e navegação com a flag ligada no banco real; testes estáticos e automáticos sem integração remota serão executados no CI, mas não substituem o aceite humano.
 
 ## Incremento E03 — implementação guardada por feature flag
 
 Arquivos novos: `backend/src/{routes,controllers,services,repositories,validators}/catalog.*.js`, `frontend/js/api/catalog.api.js`, `frontend/js/pages/catalog-panel.js`, `frontend/css/catalog.css`, testes de catálogo e interface. Integração: `backend/src/app.js` monta o novo router somente com a flag ativa; `GET /api/materials` só requisita `subject_id`/`unit_id` quando o schema estiver habilitado. A edição de disciplina em texto livre desassocia IDs em uma atualização atômica, evitando vínculo contraditório. A UI adiciona criar disciplina/unidade, vincular aula e agrupar por unidade.
 
 **Não pronto para ativar:** o SQL continua na pasta `database/proposals/` e ainda não é uma migration aprovada. Sem aplicação e testes no Supabase, a flag deve permanecer OFF. A interface não recebeu validação visual real. Novos uploads com texto livre não são vinculados automaticamente a um ID; a associação pode ser feita na biblioteca após a ativação.
+
+## Incremento E04 — recursos sem replicação
+
+A consulta autenticada `GET /api/catalog/resources` percorre somente os materiais da conta, em páginas, e devolve **quatro booleanos por material** (`audio`, `transcription`, `summary`, `questions`). Ela não inclui texto de transcrições/resumos, gabaritos, nem caminhos de áudio. A versão “Por tipo de recurso” apresenta apenas itens existentes, agrupados por tipo, referenciando a aula original com âncoras `#transcricao`, `#resumo` e `#questoes`. Os filtros de busca, disciplina, tags, estado e atividade continuam valendo nas duas visões. A seleção é realizada com botões de opção acessíveis e fica oculta quando a flag está OFF. Em falha de consulta, a interface volta para “Por aula/unidade”.
+
+Limites: o conteúdo não é duplicado, mas um mesmo título pode aparecer em categorias diferentes como **referências ao mesmo material**, por exemplo, uma entrada em “Transcrições” e outra em “Resumos”. A API oferece disponibilidade, não pré-visualização do conteúdo nem garantia de que o áudio remoto ainda esteja acessível. E04 depende da migration E03 e da flag para teste integrado; banco remoto **não foi alterado**.
 
 ## Gates que não vamos simular como aprovados
 
