@@ -3,6 +3,8 @@ import { initAuthenticatedShell } from '../utils/shell.js';
 import { getMaterial, answerQuestion } from '../api/material.api.js';
 import { recordAnswer, visitMaterial } from '../utils/study-store.js';
 import { emptyState } from '../utils/material-ui.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { runQuizV2 } from './quiz-v2.page.js';
 
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search);
@@ -13,7 +15,12 @@ visitMaterial(materialId);
 const batch = material.questionBatches?.find((b) => b.id === batchId) || material.questionBatches?.[0];
 
 const main = document.querySelector('.quiz-session-main');
-if (!batch?.questions?.length) {
+if (await isFeatureEnabled('quiz_v2')) {
+  await runQuizV2({
+    main, material, materialId, batch,
+    sessionId: params.get('session'),
+  });
+} else if (!batch?.questions?.length) {
   main.replaceChildren(emptyState('Nenhuma questão disponível.', 'Gere um lote na página da aula para iniciar a revisão.', { href: `./material.html?id=${encodeURIComponent(materialId)}#questoes`, action: 'Voltar ao material' }));
 } else {
   const questions = batch.questions;
