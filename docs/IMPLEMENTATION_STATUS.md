@@ -1,3 +1,9 @@
+# Continuação da etapa 3 — E06 (subobjetivos e edição)
+
+No PR #2 estão agora **subobjetivos de um nível**, edição de objetivos e tarefas, vínculos seguros a subobjetivos e ordenação/filtros na interface. A migration candidata E05/E06 foi **alterada antes de qualquer aplicação**, incluindo a tabela `study_subgoals` e constraints compostas de escopo. Nenhum SQL foi aplicado ao Supabase; `FEATURE_PLANNING` segue OFF. A revisão atual e os limites constam no [plano de planejamento](implementation-2.0/05-planejamento-workplan.md).
+
+---
+
 # Etapa 3 iniciada — Planejamento de estudos E05/E06
 
 API, primeiro painel de objetivos/tarefas, migração candidata e verificações SQL foram versionados no **PR #2 em Draft**, usando a flag `FEATURE_PLANNING=false` por padrão. A nova migração `20261104203000_study_planning.sql` **depende da E03**, não foi aplicada e não deve ser executada diretamente sem preflight, backup e aprovação. Veja [o plano E05/E06](implementation-2.0/05-planejamento-workplan.md). A implementação de subobjetivos e funcionalidades avançadas continua pendente.
