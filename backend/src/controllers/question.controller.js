@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { isFeatureEnabled } from '../config/feature-flags.js';
+import { AppError } from '../domain/errors.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import { listBatches } from '../repositories/question.repository.js';
 import { enqueueQuestions } from '../services/material.service.js';
@@ -27,6 +29,9 @@ export async function createBatch(req, res, next) {
 }
 export async function answer(req, res, next) {
   try {
+    // E10: prevent bypassing deferred feedback through the legacy endpoint.
+    if (isFeatureEnabled('quiz_v2'))
+      throw new AppError('QUIZ_SESSION_REQUIRED', 'Use uma tentativa para responder às questões.', 409);
     const { selectedIndex } = z
       .object({ selectedIndex: z.number().int().min(0).max(3) })
       .parse(req.body);
