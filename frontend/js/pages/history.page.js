@@ -100,8 +100,8 @@ async function load() {
           controls.group.append(option);
         }
       } catch (error) {
-        const message = document.querySelector('[data-catalog-status]');
-        setStatus(message, error.message || 'Não foi possível carregar o catálogo.', 'error');
+        const catalogNotice = document.querySelector('[data-catalog-status]');
+        setStatus(catalogNotice, error.message || 'Não foi possível carregar o catálogo.', 'error');
       }
     }
     catalogPanel?.setMaterials(materials);
