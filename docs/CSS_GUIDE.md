@@ -25,6 +25,9 @@ Prevenir conflitos de aparência entre telas sem reescrever o design atual. O hi
 5. **Regressão barata:** `npm test` na raiz inclui `node frontend/tests/auth-style-check.mjs`. O teste confere estrutura e ordem de CSS das três páginas; não é screenshot nem avaliação visual completa.
 6. **Aprimorar incrementalmente:** ao alterar cada módulo E03–E21, mover ou isolar somente as regras tocadas e registrar o motivo. Sem refatoração massiva em uma entrega de correção de CI.
 
+
+7. **Formatação gradual:** o CI executa lint e testes essenciais; `npm run format:check` permanece disponível, mas a dívida de Prettier acumulada não impede esta etapa. Ao editar um componente novo, formate somente os arquivos alterados, sem uma reorganização global.
+
 ## Aceite desta etapa
 
 Os seletores de autenticação seguem isolados em `auth-pages.css`, o fluxo de teste passa a verificá-los automaticamente e alterações futuras têm responsável definido. A organização integral das demais páginas fica para os módulos em que forem editadas; não há alegação de que conflitos de CSS foram totalmente eliminados.
