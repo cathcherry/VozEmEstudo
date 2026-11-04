@@ -2,8 +2,8 @@ import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { setStatus } from '../utils/shell.js';
 import { progressForGoal, dateLabel, sortedPlanningTasks } from '../utils/planning-view.js';
 import {
-  getPlanning, createGoal, updateGoal, createSubgoal, createTask, updateTask,
-  setTaskCompleted,
+  getPlanning, createGoal, updateGoal, createSubgoal, updateSubgoal, createTask,
+  updateTask, reorderGoalTasks, setTaskCompleted,
 } from '../api/planning.api.js';
 
 function option(value, label) {
@@ -19,7 +19,8 @@ function inputField(labelText, value, { type = 'text', maxLength = 180 } = {}) {
   const input = document.createElement('input');
   input.type = type;
   input.value = value || '';
-  if (type === 'text') input.maxLength = maxLength;
+  if (type === 'text' || type === 'url') input.maxLength = maxLength;
+  if (type === 'url') input.pattern = 'https://.*';
   label.append(input);
   return { label, input };
 }
@@ -47,6 +48,7 @@ export async function initPlanningPanel({ materials }) {
   const materialSelect = panel.querySelector('[data-planning-material-select]');
   const taskFilter = panel.querySelector('[data-planning-task-filter]');
   const taskSort = panel.querySelector('[data-planning-task-sort]');
+  const referenceInput = formTask.querySelector('[data-planning-task-link]');
   const list = panel.querySelector('[data-planning-list]');
   const notice = panel.querySelector('[data-planning-status]');
   const allowedMaterials = new Map(materials.map((m) => [m.id, m]));
@@ -126,12 +128,72 @@ export async function initPlanningPanel({ materials }) {
     host.append(edit, form);
   }
 
+  function inlineEditSubgoal(subgoal, host) {
+    const form = document.createElement('form');
+    form.className = 'planning-edit-form';
+    form.hidden = true;
+    const title = inputField('Nome do subobjetivo', subgoal.title, { maxLength: 160 });
+    const due = inputField('Prazo', subgoal.due_date, { type: 'date' });
+    const save = document.createElement('button');
+    save.type = 'submit';
+    save.textContent = 'Salvar subobjetivo';
+    form.append(title.label, due.label, save);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity() || !title.input.value.trim()) return;
+      save.disabled = true;
+      void mutate(async () => {
+        const updated = await updateSubgoal(subgoal.id, {
+          title: title.input.value, dueDate: due.input.value || null,
+        });
+        subgoals = subgoals.map((s) => s.id === updated.id ? updated : s);
+        render();
+      }, 'Subobjetivo atualizado.').finally(() => { save.disabled = false; });
+    });
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'planning-inline-button';
+    edit.textContent = 'Editar subobjetivo';
+    edit.setAttribute('aria-expanded', 'false');
+    edit.addEventListener('click', () => {
+      form.hidden = !form.hidden;
+      edit.setAttribute('aria-expanded', String(!form.hidden));
+      if (!form.hidden) title.input.focus();
+    });
+    host.append(edit, form);
+  }
+
+  async function moveTask(task, siblingTasks, delta) {
+    const siblings = sortedPlanningTasks(siblingTasks, { sort: 'manual' });
+    const i = siblings.findIndex((item) => item.id === task.id);
+    const next = i + delta;
+    if (i < 0 || next < 0 || next >= siblings.length) return;
+    const ordering = sortedPlanningTasks(
+      tasks.filter((item) => item.goal_id === task.goal_id),
+      { sort: 'manual' },
+    ).map((item) => item.id);
+    const original = ordering.indexOf(siblings[i].id);
+    const target = ordering.indexOf(siblings[next].id);
+    [ordering[original], ordering[target]] = [ordering[target], ordering[original]];
+    await mutate(async () => {
+      const changed = await reorderGoalTasks(task.goal_id, ordering);
+      const ranks = new Map(changed.map((item) => [item.id, item.sort_order]));
+      tasks = tasks.map((item) => ranks.has(item.id)
+        ? { ...item, sort_order: ranks.get(item.id) }
+        : item);
+      render();
+    }, 'Ordem das tarefas salva.');
+  }
+
   function inlineEditTask(task, host) {
     const form = document.createElement('form');
     form.className = 'planning-edit-form';
     form.hidden = true;
     const title = inputField('Tarefa', task.title);
     const due = inputField('Prazo', task.due_date, { type: 'date' });
+    const reference = inputField('Link de apoio (HTTPS)', task.reference_url, {
+      type: 'url', maxLength: 2048,
+    });
     const linkedSubgoals = subgoals.filter((s) => s.goal_id === task.goal_id);
     const subgoal = selectField('Subobjetivo', linkedSubgoals, task.subgoal_id, 'Sem subobjetivo');
     const materialItems = materials.map((m) => ({ id: m.id, title: m.title }));
@@ -139,7 +201,7 @@ export async function initPlanningPanel({ materials }) {
     const save = document.createElement('button');
     save.type = 'submit';
     save.textContent = 'Salvar tarefa';
-    form.append(title.label, due.label, subgoal.label, material.label, save);
+    form.append(title.label, due.label, subgoal.label, material.label, reference.label, save);
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!form.reportValidity() || !title.input.value.trim()) return;
@@ -147,7 +209,9 @@ export async function initPlanningPanel({ materials }) {
       void mutate(async () => {
         const updated = await updateTask(task.id, {
           title: title.input.value, dueDate: due.input.value || null,
-          subgoalId: subgoal.select.value || null, materialId: material.select.value || null,
+          subgoalId: subgoal.select.value || null,
+          materialId: material.select.value || null,
+          referenceUrl: reference.input.value || null,
         });
         tasks = tasks.map((t) => t.id === updated.id ? updated : t);
         render();
@@ -186,12 +250,41 @@ export async function initPlanningPanel({ materials }) {
         due.textContent = 'Até ' + dateLabel(task.due_date);
         li.append(due);
       }
+      if (task.reference_url) {
+        const external = document.createElement('a');
+        external.href = task.reference_url;
+        external.target = '_blank';
+        external.rel = 'noopener noreferrer';
+        external.textContent = 'Link de apoio';
+        li.append(external);
+      }
       const material = allowedMaterials.get(task.material_id);
       if (material) {
         const link = document.createElement('a');
         link.href = `./material.html?id=${encodeURIComponent(material.id)}`;
         link.textContent = 'Abrir aula';
         li.append(link);
+      }
+      if (taskSort.value === 'manual' && taskFilter.value === 'all' && related.length > 1) {
+        const controls = document.createElement('span');
+        controls.className = 'planning-order-controls';
+        const siblings = sortedPlanningTasks(related, { sort: 'manual' });
+        const index = siblings.findIndex((item) => item.id === task.id);
+        for (const [direction, delta] of [['Subir', -1], ['Descer', 1]]) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'planning-inline-button';
+          button.textContent = direction;
+          button.setAttribute('aria-label', `${direction} tarefa: ${task.title}`);
+          button.disabled = index + delta < 0 || index + delta >= siblings.length;
+          button.addEventListener('click', async () => {
+            button.disabled = true;
+            await moveTask(task, related, delta);
+            button.disabled = false;
+          });
+          controls.append(button);
+        }
+        li.append(controls);
       }
       inlineEditTask(task, li);
       check.addEventListener('change', async () => {
@@ -253,6 +346,7 @@ export async function initPlanningPanel({ materials }) {
         const label = document.createElement('h4');
         label.textContent = subgoal.title;
         child.append(label);
+        inlineEditSubgoal(subgoal, child);
         if (subgoal.due_date) {
           const due = document.createElement('p');
           due.className = 'planning-meta';
@@ -330,11 +424,13 @@ export async function initPlanningPanel({ materials }) {
       const task = await createTask(goalSelect.value, {
         title: title.value, dueDate: due.value || null,
         materialId: materialSelect.value || null, subgoalId: taskSubgoalSelect.value || null,
+        referenceUrl: referenceInput.value || null,
       });
       tasks.push(task);
       title.value = '';
       due.value = '';
       materialSelect.value = '';
+      referenceInput.value = '';
       taskSubgoalSelect.value = '';
       render();
     }, 'Tarefa criada.');

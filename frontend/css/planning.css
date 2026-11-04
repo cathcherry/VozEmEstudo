@@ -119,3 +119,18 @@ body[data-page='dashboard'] .planning-tasks li {
 body[data-page='dashboard'] .planning-tasks li > label span {
   overflow-wrap: anywhere;
 }
+
+/* E06: manual reordering and explicit external study references. */
+body[data-page='dashboard'] .planning-order-controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+body[data-page='dashboard'] .planning-order-controls button:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+body[data-page='dashboard'] .planning-tasks a {
+  overflow-wrap: anywhere;
+}

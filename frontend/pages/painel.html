@@ -32,6 +32,7 @@
 <label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
 <label for="planning-task-date">Prazo (opcional)<input id="planning-task-date" name="dueDate" type="date"></label>
 <label for="planning-task-material">Aula relacionada (opcional)<select id="planning-task-material" data-planning-material-select></select></label>
+<label for="planning-task-link">Link de apoio (opcional)<input id="planning-task-link" data-planning-task-link name="referenceUrl" type="url" maxlength="2048" pattern="https://.*" placeholder="https://exemplo.com/material"></label>
 <button type="submit" class="secondary-action">Adicionar tarefa</button></form>
 </div>
 <div class="planning-controls" aria-label="Organização das tarefas">
@@ -41,7 +42,7 @@
 </select></label>
 <label for="planning-task-sort">Ordenar tarefas
 <select id="planning-task-sort" data-planning-task-sort>
-<option value="due">Prazo e pendências</option><option value="recent">Mais recentes</option><option value="title">Título</option>
+<option value="due">Prazo e pendências</option><option value="recent">Mais recentes</option><option value="title">Título</option><option value="manual">Ordem manual</option>
 </select></label>
 </div>
 <p data-planning-status role="status" aria-live="polite"></p>

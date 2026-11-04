@@ -17,6 +17,10 @@ export function sortedPlanningTasks(tasks, { filter = 'all', sort = 'due' } = {}
     return true;
   });
   return [...filtered].sort((a, b) => {
+    if (sort === 'manual')
+      return (Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0))
+        || (a.created_at || '').localeCompare(b.created_at || '')
+        || a.id.localeCompare(b.id);
     if (sort === 'title') return a.title.localeCompare(b.title, 'pt-BR') || a.id.localeCompare(b.id);
     if (sort === 'recent')
       return (b.created_at || '').localeCompare(a.created_at || '') || a.id.localeCompare(b.id);

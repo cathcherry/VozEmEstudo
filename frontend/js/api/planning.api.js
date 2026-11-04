@@ -12,6 +12,14 @@ export const createSubgoal = (goalId, data) =>
   apiFetch(`/api/planning/goals/${encodeURIComponent(goalId)}/subgoals`, {
     method: 'POST', body: JSON.stringify(data),
   });
+export const updateSubgoal = (subgoalId, changes) =>
+  apiFetch(`/api/planning/subgoals/${encodeURIComponent(subgoalId)}`, {
+    method: 'PATCH', body: JSON.stringify(changes),
+  });
+export const reorderGoalTasks = (goalId, taskIds) =>
+  apiFetch(`/api/planning/goals/${encodeURIComponent(goalId)}/tasks/order`, {
+    method: 'PUT', body: JSON.stringify({ taskIds }),
+  });
 export const createTask = (goalId, task) =>
   apiFetch(`/api/planning/goals/${encodeURIComponent(goalId)}/tasks`, {
     method: 'POST', body: JSON.stringify(task),
