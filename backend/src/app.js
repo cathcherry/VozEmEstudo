@@ -14,6 +14,7 @@ import { materialRouter } from './routes/material.routes.js';
 import { catalogRouter } from './routes/catalog.routes.js';
 import { planningRouter } from './routes/planning.routes.js';
 import { quizSessionRouter } from './routes/quiz-session.routes.js';
+import { flashcardRouter } from './routes/flashcard.routes.js';
 import { questionRouter } from './routes/question.routes.js';
 import { jobRouter } from './routes/job.routes.js';
 import { mediaRouter } from './routes/media.routes.js';
@@ -54,6 +55,7 @@ app.use('/api/materials', requireAuth, materialRouter);
 if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);
 if (isFeatureEnabled('quiz_v2')) app.use('/api/quiz-sessions', requireAuth, quizSessionRouter);
+if (isFeatureEnabled('flashcards')) app.use('/api/flashcards', requireAuth, flashcardRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 app.use('/api/jobs', requireAuth, jobRouter);
 
