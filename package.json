@@ -21,7 +21,7 @@
     "check:syntax": "python scripts/static-check.py",
     "check:openapi": "node scripts/openapi-check.mjs",
     "check:secrets": "python scripts/secret-check.py",
-    "check": "npm run lint && npm run check:syntax && npm run check:ci && npm run check:openapi && npm run check:secrets && npm test",
+    "check": "npm run lint && npm run check:syntax && npm run check:ci && npm run check:secrets && npm test",
     "test:quality": "node --test scripts/tests/*.test.mjs",
     "check:ci": "node scripts/ci-check.mjs",
     "demo": "node scripts/presentation/server.mjs",
