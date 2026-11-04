@@ -13,6 +13,7 @@ test('planning migration is gated by E03, transactional and non destructive', ()
   assert.match(migration, /E05_ABORT: aplicar e verificar E03/);
   assert.match(migration, /create table public\.study_goals/);
   assert.match(migration, /create table public\.study_tasks/);
+  assert.match(migration, /create table public\.study_subgoals/);
   assert.match(migration, /\bbegin;/i);
   assert.match(migration, /\bcommit;/i);
   assert.doesNotMatch(migration, /\b(drop table|truncate|delete from)\b/i);
@@ -23,8 +24,10 @@ test('database enforces task owner consistency including linked materials', () =
   assert.match(migration, /foreign key \(goal_id, user_id\)/);
   assert.match(migration, /foreign key \(material_id, user_id\)/);
   assert.match(migration, /on delete set null \(material_id\)/);
+  assert.match(migration, /foreign key \(subgoal_id, goal_id, user_id\)/);
+  assert.match(migration, /on delete set null \(subgoal_id\)/);
   assert.match(migration, /enable row level security/g);
-  assert.match(migration, /revoke all on table public\.study_goals, public\.study_tasks/);
+  assert.match(migration, /revoke all on table public\.study_goals, public\.study_subgoals, public\.study_tasks/);
 });
 
 test('preflight and postflight never mutate data', () => {

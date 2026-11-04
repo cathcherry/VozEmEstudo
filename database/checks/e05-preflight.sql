@@ -8,6 +8,7 @@ select to_regclass('public.materials') is not null as has_materials,
        to_regclass('public.material_permissions') is not null as has_e02_permissions,
        to_regclass('public.study_goals') is not null as goals_already_exist,
        to_regclass('public.study_tasks') is not null as tasks_already_exist,
+       to_regclass('public.study_subgoals') is not null as subgoals_already_exist,
        to_regprocedure('public.set_updated_at()') is not null as updated_at_function_exists;
 
 select
