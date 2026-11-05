@@ -33,7 +33,10 @@ test('E03/E05/E14/E18/E19 execute together with revision anchors, calendar scope
     await assert.rejects(saveEvent(b,20,1,24,{title:'invasão'}),/LEARNING_NOT_FOUND/);
     const feed=await call('study_calendar_feed_admin',[a,'2026-11-01T00:00Z','2026-12-01T00:00Z','2026-11-01','2026-12-01',0]);
     assert.equal(Number(feed.total),2);assert(feed.items.some((x)=>x.kind==='task'));assert(!feed.items.some((x)=>x.title==='Tarefa da conta B'));
-    await db.query('select * from public.study_reorder_tasks($1,$2,$3::uuid[])',[a,id(10),[id(12)]]);
+    await assert.rejects(db.query('select * from public.study_reorder_tasks($1,$2,$3::uuid[])',[a,id(10),[id(12)]]),/PLANNING_ORDER_INVALID/);
+    await db.query("insert into public.study_tasks(id,user_id,goal_id,title) values($1,$2,$3,'Outra tarefa da conta A')",[id(14),a,id(10)]);
+    const ordered=await db.query('select * from public.study_reorder_tasks($1,$2,$3::uuid[])',[a,id(10),[id(14),id(12)]]);
+    assert.deepEqual(ordered.rows.map((item)=>item.id),[id(14),id(12)]);
     const raw='ab'.repeat(32),hash=createHash('sha256').update(raw).digest('hex');
     const shareArgs=[a,id(30),mat,id(31),hash,revisionIds.a,true,false,7,PERMISSION_DECLARATION.version];
     const share=await call('study_create_share_admin',shareArgs);assert.equal(share.id,id(30));
