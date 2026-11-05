@@ -1,34 +1,41 @@
-# Teste integrado — etapas 1–9 e acessibilidade experimental
+# Teste integrado — etapas 1–9 e preferências de acessibilidade
 
-Esta branch parte de `feat/etapa-2-biblioteca-2-0`, incluindo o trabalho acumulado do PR #2. A `main` não foi alterada.
+Esta branch parte de `feat/etapa-2-biblioteca-2-0`, incluindo as etapas 1–9. A `main` não foi alterada.
 
-## Instalação local no Windows
+## O que mudou na interface
 
-1. Abra [a branch de teste](https://github.com/cathcherry/VozEmEstudo/tree/feat/acessibilidade-teste-integrado), escolha **Code > Download ZIP** e extraia em uma pasta nova. Alternativamente, use GitHub Desktop e selecione a branch.
-2. Copie seu `backend/.env` funcional para `backend/.env` desta pasta, sem compartilhar nem versionar segredos.
-3. Instale Node.js 22.19+ (preferência 24). Dê dois cliques em `INICIAR.cmd` e abra `http://localhost:3000/painel.html`.
-4. Comece com todas as flags opcionais em `false`. Verifique login, aulas existentes, upload de áudio, transcrição, revisão e geração de conteúdo.
-5. No painel, abra **Opções de acessibilidade (teste)**. Experimente cada apresentação e os três controles independentes. Recarregue a página para confirmar persistência. Clique em **Restaurar opções** para desfazer.
-6. Teste com Tab/Shift+Tab, Enter e Espaço, com zoom de 200% e 400%, largura equivalente a 320 CSS px, e com leitor de tela (NVDA no Windows). Observe especialmente upload, status do processamento, revisão e player.
-7. Registre resultado, navegador, largura/zoom, etapa, comportamento esperado e observado, sem incluir tokens ou dados pessoais.
+Não existe mais um painel separado de "Opções de acessibilidade (teste)" na tela inicial. As escolhas agora usam os controles existentes:
 
-**Limite desta versão:** o painel recebeu controles experimentais de apresentação. Não há comprovação de contraste de todos os componentes, reflow em todas as páginas, cobertura de leitor de tela, nem conformidade WCAG 2.2. Outras páginas ainda podem usar apenas as preferências preexistentes. Não faça merge sem avaliação.
+- **Aparência** (`/aparencia.html`): temas Alto contraste claro, Alto contraste escuro e Fundo suave, junto dos temas anteriores e das cores personalizadas.
+- **Leitura e foco** (`/leitura.html`): tamanho do texto, espaçamento de leitura, movimento reduzido, contraste reforçado, tipografia de leitura e opções de foco. Não há duplicatas.
+- Preferências locais e perfis salvos continuam usando `VozAppearance`. Escolhas do antigo painel experimental são transferidas uma vez para o sistema de preferências integrado.
+- Não há alteração no banco de dados para esses ajustes.
 
-## Banco de dados — não executar automaticamente
+## Teste local (Windows)
 
-As opções de acessibilidade desta branch são locais e **não precisam de migration**. As etapas 2–9, sim. Siga integralmente `docs/first-integrated-test.md` da mesma branch, incluindo inventário, preflight, ordem das migrations, postflight e ativação gradual das flags.
+1. Baixe o ZIP da branch `feat/acessibilidade-teste-integrado` ou selecione-a no GitHub Desktop.
+2. Preserve o arquivo `backend/.env` funcional em sua máquina, sem compartilhar chaves.
+3. No PowerShell dentro de `backend`, instale dependências com `npm install` (se necessário); inicie `node src/server.js`. Em um segundo terminal, inicie `node src/worker.js`.
+4. Abra `http://localhost:3000/painel.html`. Confirme que o painel antigo de acessibilidade **não aparece**.
+5. Em **Aparência**, teste cada um dos três temas novos; navegue até Biblioteca e outras telas e recarregue. Confirme que as cores continuam.
+6. Em **Leitura e foco**, altere tamanho, espaçamento, movimento reduzido e contraste reforçado. Recarregue e navegue entre páginas. Confirme que **Restaurar preferências** funciona.
+7. Para testar a conversão de preferências antigas, use um navegador em que o painel experimental tenha sido utilizado. Confirme que as escolhas permanecem disponíveis nas novas seções.
+8. Teste Tab/Shift+Tab, Enter/Espaço, zoom de 200% e 400%, janela estreita (~320px CSS) e, se possível, NVDA.
+9. Anote tela, configuração, comportamento esperado e observado, sem incluir segredos.
 
-Antes de qualquer SQL: confirme o projeto Supabase apontado pelo `.env`, faça um backup **atual** e valide como restaurá-lo. Prefira um Supabase separado para testes. No SQL Editor, comece apenas com `database/checks/first-test-inventory.sql`, que é de leitura. Não reaplique `001_initial.sql` ou E02 sem verificar o schema. As migrations novas são candidatas; não foram executadas por esta alteração. A ordem e nomes completos estão no roteiro integrado.
+**Limitação:** isso não é uma auditoria completa de WCAG 2.2. Contraste por componente, leitor de tela, teclado e reflow ainda precisam de testes. Os módulos das etapas 2–9 também precisam de homologação.
 
-## Registro de aceite
+## Banco de dados
 
-- [ ] Fluxo principal sem regressões, com todas as flags OFF
-- [ ] Temas claro/escuro/suave legíveis e opções persistentes
-- [ ] Foco de teclado visível e percurso principal sem mouse
-- [ ] Zoom/reflow sem perda de função
-- [ ] Mensagens de processamento e erros compreensíveis com leitor de tela
-- [ ] Backup/restauração conferidos e inventário revisado
-- [ ] Migrations aplicadas individualmente em ambiente autorizado, com checks
-- [ ] 12 casos do roteiro integrado concluídos com duas contas
+Os ajustes de interface não precisam de migrations. Para as etapas 2–9, siga `docs/first-integrated-test.md` e comece pelo inventário somente leitura. Antes de executar SQL, confirme o Supabase alvo, faça backup manual do PostgreSQL e valide como seria restaurado; prefira um projeto separado para testes. Não aplique migrations automaticamente.
 
-**Não homologado:** este arquivo descreve procedimentos, não resultados de testes reais.
+## Aceite
+
+- [ ] Painel principal sem seção duplicada
+- [ ] Três temas novos disponíveis em Aparência e aplicados em todas as telas
+- [ ] Ajustes de leitura sem duplicação e persistentes
+- [ ] Testes de teclado, zoom e leitor de tela registrados
+- [ ] Fluxo de login, upload, transcrição e estudo sem regressões
+- [ ] Etapas 2–9 avaliadas segundo o roteiro integrado
+
+**Status:** implementado em branch de teste; sem validação completa em ambiente real.
