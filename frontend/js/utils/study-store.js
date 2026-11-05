@@ -1,8 +1,14 @@
 // Personal study history: scoped to the authenticated account in this browser.
 // Processing completion is deliberately separate from study/review completion.
 let owner = '';
+let studyObserver = null;
 const memory = new Map();
-export function setStudyUser(userId) { owner = String(userId || ''); }
+export function setStudyUser(userId) { const next=String(userId||'');if(next!==owner)studyObserver=null;owner=next; }
+export function setStudyObserver(observer) { studyObserver = observer; }
+export function applyRemoteStudy(id, patch) {
+  if (!owner || !id || ['__proto__','constructor','prototype'].includes(id)) return false;
+  const state=read(); state[id]={...studyFor(id),...patch}; return write(state);
+}
 const key = () => owner ? `voz-study-v1:${owner}` : '';
 function read() {
   if (!key()) return {};
@@ -29,7 +35,9 @@ export function updateStudy(id, patch) {
   if (!owner || !id || ['__proto__', 'constructor', 'prototype'].includes(id)) return false;
   const state = read();
   state[id] = { ...studyFor(id), ...patch };
-  return write(state);
+  const saved = write(state);
+  studyObserver?.(id,patch,state[id]);
+  return saved;
 }
 export function visitMaterial(id) {
   const old = studyFor(id), now = Date.now();

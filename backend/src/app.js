@@ -18,6 +18,7 @@ import { flashcardRouter } from './routes/flashcard.routes.js';
 import { questionRouter } from './routes/question.routes.js';
 import { jobRouter } from './routes/job.routes.js';
 import { mediaRouter } from './routes/media.routes.js';
+import { studyRouter } from './routes/study.routes.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -56,6 +57,7 @@ if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, cata
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);
 if (isFeatureEnabled('quiz_v2')) app.use('/api/quiz-sessions', requireAuth, quizSessionRouter);
 if (isFeatureEnabled('flashcards')) app.use('/api/flashcards', requireAuth, flashcardRouter);
+if (isFeatureEnabled('study_tracking')) app.use('/api/study', requireAuth, studyRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 app.use('/api/jobs', requireAuth, jobRouter);
 

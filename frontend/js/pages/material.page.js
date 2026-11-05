@@ -17,12 +17,18 @@ import { tagList } from '../utils/library-ui.js';
 import { MediaPlayer } from '../utils/media-player.js';
 import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, removeOriginalVideo } from '../api/playback.api.js';
+import { initStudyTrackingPanel } from './study-tracking-panel.js';
+import { isStudySyncEnabled } from '../utils/study-sync.js';
 
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search);
 const materialId = params.get('id');
 const initialJobId = params.get('job');
 if (!materialId) location.href = './historico.html';
+if(materialId) void initStudyTrackingPanel({materialId}).catch((error)=>{
+  const panel=document.querySelector('[data-study-tracking-panel]');
+  if(panel&&!panel.hidden)panel.textContent=error.message||'Progresso indisponível.';
+});
 
 const titleEl = document.querySelector('[data-material-title]');
 const metaEl = document.querySelector('[data-material-meta]');
@@ -69,7 +75,7 @@ reviewButton.addEventListener('click', () => {
   const saved = completeReview(materialId, !studyFor(materialId).completed);
   updateReview();
   document.querySelector('[data-review-message]').textContent = saved
-    ? 'Seu andamento foi salvo neste navegador.'
+    ? (isStudySyncEnabled()?'Andamento salvo neste navegador e aguardando sincronização com a conta.':'Seu andamento foi salvo neste navegador.')
     : 'Não foi possível salvar o andamento neste navegador.';
 });
 document.querySelector('[data-organize-material]').href =

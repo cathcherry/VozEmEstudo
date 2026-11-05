@@ -7,10 +7,12 @@ import { formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
+import { initStudyTrackingPanel } from './study-tracking-panel.js';
 
 const session=await initAuthenticatedShell();
 let planningInitialized = false;
 let flashcardsInitialized = false;
+let trackingInitialized = false;
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
@@ -19,6 +21,13 @@ async function load() {
   container.setAttribute('aria-busy','true');
   try {
     const materials=await listMaterials();
+    if(!trackingInitialized) {
+      trackingInitialized=true;
+      void initStudyTrackingPanel({materials}).catch((error)=>{
+        const panel=document.querySelector('[data-study-tracking-panel]');
+        if(panel&&!panel.hidden)panel.textContent=error.message||'Progresso indisponível.';
+      });
+    }
     // E13 is entirely optional: failing to load cards must not break the dashboard.
     if (!flashcardsInitialized) {
       flashcardsInitialized = true;
@@ -74,3 +83,4 @@ async function load() {
   finally { container.setAttribute('aria-busy','false'); }
 }
 load();
+

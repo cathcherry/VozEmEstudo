@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { studyService } from '../services/study.service.js';
+export const studyRouter=Router();
+studyRouter.use((_req,res,next) => { res.set('Cache-Control','no-store'); next(); });
+const action=(fn) => async(req,res,next) => { try { res.json(await fn(req)); } catch(error) { next(error); } };
+studyRouter.get('/progress',action((req) => studyService.list(req.user.id,req.query)));
+studyRouter.put('/progress/:materialId',action((req) => studyService.save(req.user.id,req.params.materialId,req.body)));
+studyRouter.get('/overview',action((req) => studyService.overview(req.user.id)));
+studyRouter.put('/settings',action((req) => studyService.settings(req.user.id,req.body)));
+studyRouter.post('/sessions',action((req) => studyService.start(req.user.id,req.body)));
+studyRouter.post('/sessions/:sessionId/tick',action((req) => studyService.tick(req.user.id,req.params.sessionId,req.body)));

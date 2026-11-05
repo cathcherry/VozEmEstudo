@@ -1,3 +1,9 @@
+# Etapa 7 — Progresso, tempo e metas implementados; homologação integrada pendente
+
+Andamento por conta/aula sincronizável com fila de reenvio e resolução explícita de conflitos; histórico local preservado e importação sem fabricar minutos retroativos. Sessões exclusivas por conta, tempo confirmado pelo servidor, Pomodoro 25/5 e meta semanal com fuso configurável. Código e migration candidata E08/E09 preparados; `FEATURE_STUDY_TRACKING` permanece OFF. Nenhum SQL remoto, deploy ou merge na `main`. Lint e 16 testes novos locais passaram, além das 16 regressões direcionadas da etapa 6. Testes HTTP/SQL e validação real continuam sujeitos às evidências de CI e homologação. Ver [guia da etapa 7](implementation-2.0/09-study-tracking-workplan.md).
+
+---
+
 # Etapa 6 — Player 2.0 implementado; homologação integrada pendente
 
 Reprodução com busca/destaque de trechos, acompanhamento opcional, velocidades 0,5×–3×, atalhos, retomada local por conta, troca áudio/vídeo e renovação de URLs assinadas. Conservação opcional do MP4 original inteiro preparada com bucket privado, registro por conta/aula e recorte relativo à transcrição; migration E07 candidata, checks e teste SQL embarcado. `FEATURE_MP4_RETENTION` permanece OFF; nenhum SQL remoto, deploy ou merge. Lint e 16 novos testes direcionados passaram localmente, além de 28 regressões da etapa 5. Teste real com Supabase/Storage permanece pendente. Ver [guia da etapa 6](implementation-2.0/08-player-workplan.md).

@@ -1,6 +1,7 @@
 import { requireSession, signOut } from '../api/auth.api.js';
 import { getAvatar } from './avatars.js';
 import { setStudyUser } from './study-store.js';
+import { initStudySync } from './study-sync.js';
 
 export async function initAuthenticatedShell() {
   let session;
@@ -18,6 +19,7 @@ export async function initAuthenticatedShell() {
   }
   updateUserIdentity(session.user);
   setStudyUser(session.user.id);
+  try { await initStudySync(session.user.id); } catch { /* Optional sync must never block access. */ }
   window.VozAppearance?.setUser(session.user.id);
   document.querySelectorAll('[data-logout]').forEach((el) => {
     el.addEventListener('click', async (event) => {
