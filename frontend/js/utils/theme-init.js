@@ -10,6 +10,7 @@
     textSize: 'default',
     readingSpacing: 'comfortable',
   });
+  const allowedThemes = ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom', 'contrast-light', 'contrast-dark', 'soft'];
   const fonts = [
     "Inter, 'Segoe UI', Arial, sans-serif",
     "'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif",
@@ -100,7 +101,7 @@
     const saved = storage.get('audioestudo-theme', 'paper');
     const font = storage.get('audioestudo-custom-font', fonts[0]);
     return {
-      theme: ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom'].includes(saved)
+      theme: allowedThemes.includes(saved)
         ? saved
         : 'paper',
       accent: validHex(storage.get('audioestudo-custom-color', '#4f8ef7'), '#4f8ef7'),
@@ -137,6 +138,9 @@
         forest: '#f7f7f1',
         wine: '#f8f3f4',
         night: '#151a21',
+        'contrast-light': '#ffffff',
+        'contrast-dark': '#090909',
+        soft: '#f3efe4',
       }[settings.theme] || settings.background;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', background);
   }
@@ -175,7 +179,7 @@
   }
   function normalizeAppearance(value = {}) {
     return {
-      theme: ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom'].includes(value.theme)
+      theme: allowedThemes.includes(value.theme)
         ? value.theme
         : 'paper',
       accent: validHex(value.accent, '#3265bd'),
@@ -275,6 +279,29 @@
     applyProfile,
     removeProfile,
   };
+  // Converte escolhas feitas no painel experimental para os controles permanentes.
+  // Executa uma única vez, sem apagar outras preferências e sem depender do Supabase.
+  function migrateLegacyAccessibility() {
+    const raw = storage.get('voz-accessibility-test-v1', '');
+    if (!raw || storage.get('voz-accessibility-merged-v1', '') === 'true') return;
+    try {
+      const legacy = JSON.parse(raw);
+      if (!legacy || typeof legacy !== 'object') return;
+      const prefs = JSON.parse(storage.get('audioestudo-ui-preferences', '{}')) || {};
+      if (legacy.large === true && (!prefs.textSize || prefs.textSize === 'default'))
+        prefs.textSize = 'large';
+      if (legacy.spaced === true && (!prefs.readingSpacing || prefs.readingSpacing === 'comfortable'))
+        prefs.readingSpacing = 'wide';
+      if (legacy.motion === true) prefs.reducedMotion = true;
+      storage.set('audioestudo-ui-preferences', JSON.stringify(prefs));
+      if (['contrast-light', 'contrast-dark', 'soft'].includes(legacy.preset))
+        storage.set('audioestudo-theme', legacy.preset);
+      storage.set('voz-accessibility-merged-v1', 'true');
+    } catch {
+      // Uma configuração antiga inválida não deve impedir o acesso ao sistema.
+    }
+  }
+  migrateLegacyAccessibility();
   applyAppearance(loadAppearance());
   applyUi(loadUi());
   root.dataset.profile = storage.get('voz-active-theme-profile', '');
