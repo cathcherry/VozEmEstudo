@@ -1,3 +1,9 @@
+# Etapa 6 — Player 2.0 implementado; homologação integrada pendente
+
+Reprodução com busca/destaque de trechos, acompanhamento opcional, velocidades 0,5×–3×, atalhos, retomada local por conta, troca áudio/vídeo e renovação de URLs assinadas. Conservação opcional do MP4 original inteiro preparada com bucket privado, registro por conta/aula e recorte relativo à transcrição; migration E07 candidata, checks e teste SQL embarcado. `FEATURE_MP4_RETENTION` permanece OFF; nenhum SQL remoto, deploy ou merge. Lint e 16 novos testes direcionados passaram localmente, além de 28 regressões da etapa 5. Teste real com Supabase/Storage permanece pendente. Ver [guia da etapa 6](implementation-2.0/08-player-workplan.md).
+
+---
+
 # Etapa 5 — implementação concluída, homologação integrada pendente
 
 Flashcards manuais, revisão espaçada, histórico, filtros e paginação foram complementados por prévia de cartões por IA da transcrição confirmada, trechos de apoio e conferência individual antes de salvar. Resumos agora aceitam formato (parágrafos/tópicos) e extensão (breve/intermediária/detalhada), preservados nos parâmetros do job e utilizados pelo worker. Nenhuma nova migration nesta conclusão. Lint e 28 testes direcionados aprovados localmente; IA/banco reais e interface em navegador real ainda não homologados. O PR #2 permanece em rascunho; nenhum merge na `main`, deploy ou SQL remoto. Ver [guia E13](implementation-2.0/07-flashcards-workplan.md).

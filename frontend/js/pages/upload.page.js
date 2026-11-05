@@ -5,6 +5,7 @@ import { createMaterialWithUpload, processMaterial } from '../api/material.api.j
 import { MEDIA_EXTENSIONS, mediaExtension, inspectMedia, convertMedia } from '../api/media.api.js';
 import { saveTags } from '../utils/study-store.js';
 import { MediaPlayer, timeLabel } from '../utils/media-player.js';
+import { retainOriginalVideo } from '../api/playback.api.js';
 
 await initAuthenticatedShell();
 const form = document.querySelector('.transcription-form'),
@@ -27,8 +28,11 @@ let step = 1,
 const permissionInput = document.querySelector('#permission-declaration');
 const reviewPanel = document.querySelector('[data-upload-review]');
 let declaration, reviewedChoices;
+let videoRetentionEnabled = false;
 try {
-  declaration = (await getPublicConfig()).permissionDeclaration;
+  const config = await getPublicConfig();
+  declaration = config.permissionDeclaration;
+  videoRetentionEnabled = config.featureFlags?.mp4_retention === true;
 } catch {
   /* Keep upload blocked when configuration is unavailable. */
 }
@@ -99,6 +103,8 @@ async function chooseFile() {
   const token = ++generation;
   analysisController?.abort();
   info = null;
+  document.querySelector('[data-video-retention-choice]').hidden = true;
+  document.querySelector('#keep-original-video').checked = false;
   createdMaterial = null;
   reviewedChoices = null;
   reviewPanel.hidden = true;
@@ -145,6 +151,8 @@ async function chooseFile() {
     const result = await inspectMedia(sourceFile, analysisController.signal);
     if (token !== generation) return;
     info = result;
+    document.querySelector('[data-video-retention-choice]').hidden =
+      !videoRetentionEnabled || !result.hasVideo || mediaExtension(sourceFile) !== 'mp4';
     player.setSource({
       src: objectUrl,
       title: sourceFile.name,
@@ -245,6 +253,11 @@ form.addEventListener('reset', (event) => {
   }, 0);
 });
 async function startProcessing() {
+  if (reviewedChoices?.retainVideo) {
+    setStatus(status, 'Guardando o MP4 original sem alterações…');
+    await retainOriginalVideo(createdMaterial.id, { file: reviewedChoices.file,
+      durationMs: reviewedChoices.sourceDurationMs, range: reviewedChoices.range });
+  }
   const job = await processMaterial(createdMaterial.id);
   location.href = `./material.html?id=${encodeURIComponent(createdMaterial.id)}&job=${encodeURIComponent(job.jobId)}&from=upload`;
 }
@@ -265,6 +278,9 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     subject: document.querySelector('#subject').value.trim(),
     questionCount: Number(document.querySelector('#question-count').value),
     retainAudio: document.querySelector('#keep-original-audio').checked,
+    retainVideo: videoRetentionEnabled && info.hasVideo && mediaExtension(sourceFile) === 'mp4' &&
+      document.querySelector('#keep-original-video').checked,
+    sourceDurationMs: info.durationMs,
     permissionAccepted: permissionInput.checked,
     permissionVersion: declaration.version,
     range: Object.freeze({ ...range }),
@@ -291,9 +307,8 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     ],
     [
       'Conservação',
-      reviewedChoices.retainAudio
-        ? 'Guardar o áudio do trecho; o vídeo original não será guardado.'
-        : 'Remover o áudio após transcrever; o player ficará indisponível.',
+      (reviewedChoices.retainAudio ? 'Guardar o áudio do trecho. ' : 'Remover o áudio após transcrever. ') +
+        (reviewedChoices.retainVideo ? 'Guardar também o MP4 original inteiro, incluindo partes fora do recorte.' : 'Não guardar o vídeo original.'),
     ],
     [
       'Questões',
@@ -380,7 +395,7 @@ form.addEventListener('submit', async (event) => {
     } else {
       setStatus(
         status,
-        `O áudio foi salvo, mas o processamento não iniciou. ${error.message || ''}`,
+        `O áudio foi salvo. Falta concluir o envio adicional ou iniciar o processamento. ${error.message || ''}`,
         'error',
       );
       document.querySelector('.upload-progress .loading-indicator').hidden = true;
@@ -391,7 +406,7 @@ form.addEventListener('submit', async (event) => {
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.className = 'primary-action';
-      retry.textContent = 'Tentar processamento';
+      retry.textContent = fields.retainVideo ? 'Concluir envio e iniciar transcrição' : 'Tentar processamento';
       retry.addEventListener('click', async () => {
         retry.disabled = true;
         try {
@@ -421,3 +436,4 @@ window.addEventListener('beforeunload', () => {
   player.destroy();
 });
 setStep(1, false);
+

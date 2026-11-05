@@ -140,7 +140,7 @@ export function createSupabaseHttpFixture() {
         : response({ message: 'Object not found' }, 404);
     }
     if (url.pathname.startsWith('/storage/v1/object/info/')) {
-      const key = decodeURIComponent(url.pathname.replace('/storage/v1/object/info/audios/', ''));
+      const key = decodeURIComponent(url.pathname.replace(/^\/storage\/v1\/object\/info\/(?:audios|study-videos)\//, ''));
       return objects.has(key)
         ? response(objects.get(key))
         : response({ message: 'Object not found', statusCode: '404' }, 404);
@@ -164,6 +164,9 @@ export function createSupabaseHttpFixture() {
       return response({});
     assert(url.pathname.startsWith('/rest/v1/'), 'Unexpected fixture endpoint');
     const table = url.pathname.split('/').at(-1);
+    // Additive E07 table is absent in the legacy E00/E02 database fixture.
+    if (table === 'material_videos' && !Object.hasOwn(tables, table))
+      return response({ code: '42P01', message: 'relation does not exist' }, 404);
     assert(Object.hasOwn(tables, table), `Unexpected fixture table: ${table}`);
     if (failures[table])
       return response({ message: failures[table], code: 'FIXTURE_FAILURE' }, 500);

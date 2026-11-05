@@ -12,6 +12,7 @@ import { listBatches } from '../repositories/question.repository.js';
 import { createJob } from '../repositories/job.repository.js';
 import { createAudioSignedUrl } from './audio.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
+import { videoService } from './video.service.js';
 
 function assertStorageOwnership(storagePath, userId, materialId) {
   assertSafeStoragePath(storagePath);
@@ -48,6 +49,7 @@ export async function get(userId, materialId) {
   const currentRevision = transcription?.current_revision || 0;
   return {
     ...material,
+    ...(isFeatureEnabled('mp4_retention') ? await videoService.playback(userId, materialId) : {}),
     audio,
     signedAudioUrl,
     transcription,
@@ -83,6 +85,7 @@ export async function patch(userId, materialId, input) {
 }
 
 export async function remove(userId, materialId) {
+  await videoService.remove(userId, materialId, { allowMissingSchema: true });
   return materials.deleteOwnedMaterial(userId, materialId);
 }
 

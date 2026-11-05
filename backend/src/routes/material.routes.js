@@ -4,6 +4,8 @@ import * as material from '../controllers/material.controller.js';
 import * as transcription from '../controllers/transcription.controller.js';
 import * as summary from '../controllers/summary.controller.js';
 import * as question from '../controllers/question.controller.js';
+import * as playback from '../controllers/playback.controller.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
 
 export const materialRouter = Router();
 materialRouter.get('/', material.list);
@@ -12,6 +14,11 @@ materialRouter.get('/:materialId', material.get);
 materialRouter.patch('/:materialId', material.patch);
 materialRouter.delete('/:materialId', material.remove);
 materialRouter.post('/:materialId/process', material.processInitial);
+materialRouter.get('/:materialId/playback', playback.playback);
+if (isFeatureEnabled('mp4_retention')) {
+  materialRouter.post('/:materialId/video', playback.attachVideo);
+  materialRouter.delete('/:materialId/video', playback.removeVideo);
+}
 
 materialRouter.get('/:materialId/transcription', transcription.get);
 materialRouter.patch('/:materialId/transcription', transcription.patch);

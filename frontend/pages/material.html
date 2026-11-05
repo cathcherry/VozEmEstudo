@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/css/product.css" />
     <link rel="stylesheet" href="/css/library.css" />
     <link rel="stylesheet" href="/css/academic.css" />
+    <link rel="stylesheet" href="/css/player-v2.css" />
   <link rel="stylesheet" href="/css/voz-redesign.css" />
   <script defer src="/js/utils/card-motion.js"></script>
 </head>
@@ -253,9 +254,16 @@
         </details>
       </section>
       <section class="article-section" data-audio-section="" hidden="">
-        <h2>Áudio da aula</h2>
+        <h2>Reprodução da aula</h2>
+        <div class="playback-options">
+          <label>Formato de reprodução <select data-playback-kind><option value="audio">Áudio</option><option value="video">Vídeo original</option></select></label>
+          <button type="button" class="secondary-action" data-refresh-playback>Renovar acesso à mídia</button>
+          <button type="button" class="text-action" data-remove-video hidden>Remover vídeo guardado</button>
+          <a data-open-original-video target="_blank" rel="noopener noreferrer" hidden>Abrir MP4 original inteiro</a>
+        </div>
+        <p data-playback-status role="status" aria-live="polite"></p>
         <div data-audio-player></div>
-        <p class="plain-note">O áudio aparece somente quando sua retenção foi solicitada.</p>
+        <p class="plain-note">Disponível conforme sua escolha de conservação. A linha do tempo corresponde ao trecho transcrito, mesmo no MP4 original. Retomada e velocidade são salvas por conta neste navegador.</p>
       </section>
       <section class="article-section" id="transcricao" data-transcription-section="" hidden="">
         <div class="section-title-row">
@@ -273,6 +281,7 @@
             </button>
           </div>
         </div>
+        <div class="transcript-player-toolbar" data-transcript-player-toolbar></div>
         <section class="transcription-review-box" aria-labelledby="transcription-review-heading">
           <h3 id="transcription-review-heading" data-review-state>
             Transcrição pronta para conferência

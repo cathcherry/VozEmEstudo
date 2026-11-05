@@ -15,6 +15,8 @@ import { statusLabel } from '../utils/material-ui.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
 import { tagList } from '../utils/library-ui.js';
 import { MediaPlayer } from '../utils/media-player.js';
+import { initTranscriptPlayer } from '../utils/transcript-player.js';
+import { getPlayback, removeOriginalVideo } from '../api/playback.api.js';
 
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search);
@@ -29,7 +31,12 @@ const processingText = document.querySelector('[data-processing-status]');
 const eventList = document.querySelector('[data-processing-events]');
 const segmentsContainer = document.querySelector('[data-transcription-segments]');
 const transcriptMessage = document.querySelector('[data-transcription-message]');
-const audioPlayer = new MediaPlayer(document.querySelector('[data-audio-player]'));
+const audioPlayer = new MediaPlayer(document.querySelector('[data-audio-player]'), {
+  onError: () => { void renewPlayback({ automatic: true }); },
+});
+const transcriptPlayer = initTranscriptPlayer({ container: segmentsContainer,
+  toolbar: document.querySelector('[data-transcript-player-toolbar]'), player: audioPlayer });
+let playbackIdentity = '', renewBusy = false, lastRenewedAt = 0, playbackRequest = 0;
 let waveformController, stopTracking;
 let currentMaterial,
   editingRevision,
@@ -136,12 +143,15 @@ function renderSegments(transcription) {
     const article = document.createElement('article');
     article.className = 'transcription-segment';
     article.dataset.segmentId = segment.id;
+    article.dataset.startMs = segment.start_ms;
+    article.dataset.endMs = segment.end_ms;
     article.dataset.segmentPosition = segment.position ?? index;
     const timestamp = document.createElement('button');
     timestamp.type = 'button';
     timestamp.className = 'segment-timestamp';
     timestamp.textContent = `${formatTimestamp(segment.start_ms)}–${formatTimestamp(segment.end_ms)}`;
-    timestamp.title = currentMaterial?.signedAudioUrl
+    timestamp.disabled = !audioPlayer.source;
+    timestamp.title = audioPlayer.source
       ? 'Reproduzir a partir deste trecho'
       : 'Timestamp do trecho';
     timestamp.addEventListener('click', () => {
@@ -155,6 +165,7 @@ function renderSegments(transcription) {
     article.append(timestamp, textarea);
     segmentsContainer.appendChild(article);
   });
+  transcriptPlayer.refresh();
 }
 
 function renderMaterial(material) {
@@ -194,33 +205,7 @@ function renderMaterial(material) {
   )
     processingText.textContent = 'Pronto para gerar resumo e questões desta revisão.';
 
-  const audioSection = document.querySelector('[data-audio-section]');
-  if (material.signedAudioUrl) {
-    audioSection.hidden = false;
-    if (audioPlayer.source !== material.signedAudioUrl) {
-      const wasPlaying = !audioPlayer.media.paused;
-      stopTracking?.();
-      waveformController?.abort();
-      waveformController = new AbortController();
-      audioPlayer.setSource({
-        src: material.signedAudioUrl,
-        title: material.title,
-        format: material.audio?.extension || 'áudio',
-        duration: (material.audio?.duration_ms || 0) / 1000,
-      });
-      stopTracking = trackPlayback(audioPlayer, materialId);
-      if (wasPlaying)
-        audioPlayer.media.addEventListener('loadedmetadata', () => audioPlayer.play(), {
-          once: true,
-        });
-      loadWaveform(material.signedAudioUrl, waveformController.signal).catch(() => {});
-    }
-  } else {
-    audioSection.hidden = true;
-    stopTracking?.();
-    stopTracking = null;
-    audioPlayer.media.pause();
-  }
+  renderPlayback(material);
 
   const transcription = material.transcription;
   const transcriptionSection = document.querySelector('[data-transcription-section]');
@@ -283,6 +268,85 @@ function renderMaterial(material) {
   }
 }
 
+function renderPlayback(material, force = false) {
+  const section = document.querySelector('[data-audio-section]');
+  const kind = document.querySelector('[data-playback-kind]');
+  const audioAvailable = Boolean(material.signedAudioUrl);
+  const videoAvailable = Boolean(material.signedVideoUrl && material.video);
+  kind.querySelector('[value="audio"]').disabled = !audioAvailable;
+  kind.querySelector('[value="video"]').disabled = !videoAvailable;
+  if (kind.value === 'video' && !videoAvailable) kind.value = 'audio';
+  if (!audioAvailable && videoAvailable) kind.value = 'video';
+  document.querySelector('[data-remove-video]').hidden = !videoAvailable;
+  const originalLink = document.querySelector('[data-open-original-video]');
+  originalLink.hidden = !videoAvailable;
+  if (videoAvailable) originalLink.href = material.signedVideoUrl;
+  else originalLink.removeAttribute('href');
+  section.hidden = !audioAvailable && !videoAvailable;
+  if (section.hidden) {
+    stopTracking?.(); stopTracking = null;
+    audioPlayer.media.pause(); audioPlayer.source = '';
+    audioPlayer.audio.removeAttribute('src'); audioPlayer.video.removeAttribute('src');
+    playbackIdentity = '';
+    return;
+  }
+  const video = kind.value === 'video';
+  const identity = `${materialId}:${kind.value}`;
+  if (!force && identity === playbackIdentity && audioPlayer.source) return;
+  stopTracking?.(); stopTracking = null;
+  waveformController?.abort();
+  waveformController = new AbortController();
+  audioPlayer.setSource({
+    src: video ? material.signedVideoUrl : material.signedAudioUrl,
+    title: material.title, video, format: video ? 'mp4' : material.audio?.extension || 'áudio',
+    duration: video ? (material.video.clipEndMs - material.video.clipStartMs) / 1000 : (material.audio?.duration_ms || 0) / 1000,
+    timelineStart: video ? material.video.clipStartMs / 1000 : 0,
+    timelineDuration: video ? (material.video.clipEndMs - material.video.clipStartMs) / 1000 : 0,
+    preservePosition: Boolean(playbackIdentity),
+  });
+  playbackIdentity = identity;
+  stopTracking = trackPlayback(audioPlayer, materialId);
+  if (!video) loadWaveform(material.signedAudioUrl, waveformController.signal).catch(() => {});
+}
+
+async function renewPlayback({ automatic = false } = {}) {
+  if (!currentMaterial || renewBusy || (automatic && Date.now() - lastRenewedAt < 30000)) return;
+  renewBusy = true; lastRenewedAt = Date.now();
+  const version = ++playbackRequest;
+  const button = document.querySelector('[data-refresh-playback]');
+  button.disabled = true;
+  const message = document.querySelector('[data-playback-status]');
+  setStatus(message, 'Renovando acesso à mídia…');
+  try {
+    const result = await getPlayback(materialId);
+    if (version !== playbackRequest) return;
+    Object.assign(currentMaterial, result);
+    renderPlayback(currentMaterial, true);
+    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !audioPlayer.source; });
+    setStatus(message, 'Acesso renovado. Posição e velocidade preservadas.', 'success');
+  } catch (error) {
+    if (version === playbackRequest) setStatus(message, error.message || 'Não foi possível renovar. Tente novamente.', 'error');
+  } finally { renewBusy = false; button.disabled = false; }
+}
+document.querySelector('[data-refresh-playback]').addEventListener('click', () => { void renewPlayback(); });
+document.querySelector('[data-playback-kind]').addEventListener('change', () => renderPlayback(currentMaterial));
+document.querySelector('[data-remove-video]').addEventListener('click', async (event) => {
+  if (!confirm('Remover o vídeo guardado desta aula?')) return;
+  const button = event.currentTarget;
+  button.disabled = true; ++playbackRequest;
+  try {
+    await removeOriginalVideo(materialId);
+    Object.assign(currentMaterial, { video: null, signedVideoUrl: null });
+    renderPlayback(currentMaterial, true);
+    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !audioPlayer.source; });
+    setStatus(document.querySelector('[data-playback-status]'), 'Vídeo removido.', 'success');
+  } catch (error) { setStatus(document.querySelector('[data-playback-status]'), error.message, 'error'); }
+  finally { button.disabled = false; }
+});
+const playbackRefreshTimer = setInterval(() => {
+  if (audioPlayer.source && !audioPlayer.media.paused) void renewPlayback({ automatic: true });
+}, 8 * 60 * 1000);
+
 async function loadWaveform(url, signal) {
   const bytes = await fetch(url, { signal }).then((response) => {
     if (!response.ok) throw new Error('AUDIO_UNAVAILABLE');
@@ -313,6 +377,8 @@ async function loadWaveform(url, signal) {
 window.addEventListener('beforeunload', () => {
   stopTracking?.();
   waveformController?.abort();
+  clearInterval(playbackRefreshTimer);
+  transcriptPlayer.destroy();
   audioPlayer.destroy();
 });
 

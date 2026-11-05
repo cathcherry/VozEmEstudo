@@ -61,13 +61,13 @@ export function trackPlayback(player, id) {
   let last = null, intervals = studyFor(id).intervals, lastSave = 0, played = false;
   const media = player.media;
   function save(markPlayed = false) {
-    const patch = { position: media.currentTime || 0, duration: player.duration || media.duration || 0, intervals };
+    const patch = { position: player.currentTime ?? media.currentTime ?? 0, duration: player.duration || media.duration || 0, intervals, playbackRate: media.playbackRate };
     if (markPlayed && played) patch.playedAt = Date.now();
     updateStudy(id, patch); lastSave = Date.now();
   }
   const seek = () => { last = null; };
   const time = (allowPaused = false) => {
-    const now = Date.now(), current = media.currentTime;
+    const now = Date.now(), current = player.currentTime ?? media.currentTime;
     if ((!media.paused || allowPaused === true) && !media.seeking && played) {
       if (last) {
         const delta = current-last.position, wall = (now-last.at)/1000;
@@ -78,18 +78,20 @@ export function trackPlayback(player, id) {
     }
   };
   const pause = () => { time(true); save(true); last = null; };
-  const play = () => { played = true; last = { position: media.currentTime, at: Date.now() }; save(true); };
-  const restore = () => { const saved = studyFor(id); if (saved.position > 0 && saved.position < player.duration - .2) player.seekTo(saved.position, false); };
+  const play = () => { played = true; last = { position: player.currentTime ?? media.currentTime, at: Date.now() }; save(true); };
+  const restore = () => { const saved = studyFor(id); player.setPlaybackRate?.(saved.playbackRate || 1); if (saved.position > 0 && saved.position < player.duration - .2) player.seekTo(saved.position, false); };
+  const rate = () => save(false);
   media.addEventListener('timeupdate', time);
   media.addEventListener('play', play);
   media.addEventListener('pause', pause);
   media.addEventListener('ended', pause);
   media.addEventListener('seeking', seek);
+  media.addEventListener('ratechange', rate);
   media.addEventListener('loadedmetadata', restore, { once: true });
   if (media.readyState >= 1) restore();
   const pageHide = () => save(!media.paused);
   window.addEventListener('pagehide', pageHide);
-  return () => { time(true); save(); media.removeEventListener('timeupdate',time); media.removeEventListener('play',play); media.removeEventListener('pause',pause); media.removeEventListener('ended',pause); media.removeEventListener('seeking',seek); media.removeEventListener('loadedmetadata',restore); window.removeEventListener('pagehide',pageHide); };
+  return () => { time(true); save(); media.removeEventListener('timeupdate',time); media.removeEventListener('play',play); media.removeEventListener('pause',pause); media.removeEventListener('ended',pause); media.removeEventListener('seeking',seek); media.removeEventListener('ratechange',rate); media.removeEventListener('loadedmetadata',restore); window.removeEventListener('pagehide',pageHide); };
 }
 export function metadataTags(material) {
   const audio = Array.isArray(material.audio_files) ? material.audio_files[0] : material.audio_files || material.audio;
@@ -97,3 +99,4 @@ export function metadataTags(material) {
 }
 
 window.addEventListener('storage', event => { if(event.key) memory.delete(event.key); else memory.clear(); });
+

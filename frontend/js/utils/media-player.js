@@ -15,7 +15,10 @@ export function timeLabel(seconds = 0, precision = false) {
 export class MediaPlayer {
   constructor(container, { trim = false, onRangeChange = () => {}, onError = () => {} } = {}) {
     this.root = container; this.trim = trim; this.onRangeChange = onRangeChange; this.onError = onError; this.duration = 0; this.start = 0; this.end = 0; this.previewSelection = false; this.peaks = [];
+    this.timelineStart = 0; this.timelineDuration = 0; this.pendingPosition = null;
     container.classList.add('media-player');
+    container.tabIndex = 0;
+    container.setAttribute('aria-label', 'Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.');
     container.innerHTML = `<div class="player-heading"><span class="player-cover" aria-hidden="true">♫</span><div><strong data-player-title>Gravação da aula</strong><span data-player-type>Áudio</span></div><span class="player-format" data-player-format></span></div>
       <div class="video-preview" hidden><video playsinline preload="metadata"></video></div><audio preload="metadata"></audio>
       <div class="waveform-shell"><canvas aria-hidden="true"></canvas><div class="waveform-selection" hidden></div><input type="range" class="player-seek" min="0" max="0" step="0.01" value="0" aria-label="Posição da reprodução"><span class="waveform-note">Linha do tempo</span></div>
@@ -24,16 +27,37 @@ export class MediaPlayer {
     this.audio = container.querySelector('audio'); this.video = container.querySelector('video'); this.media = this.audio;
     this.seek = container.querySelector('.player-seek'); this.playButton = container.querySelector('.player-play'); this.canvas = container.querySelector('canvas');
     for (const media of [this.audio, this.video]) {
-      media.addEventListener('loadedmetadata', () => { if (media === this.media && Number.isFinite(media.duration)) this.setDuration(media.duration, !this.duration); });
-      media.addEventListener('timeupdate', () => this.updateTime());
+      media.addEventListener('loadedmetadata', () => {
+        if (media !== this.media || !Number.isFinite(media.duration)) return;
+        this.setDuration(this.timelineDuration ? Math.min(this.timelineDuration, media.duration - this.timelineStart) : media.duration, !this.duration);
+        if (this.pendingPosition !== null) { this.seekTo(this.pendingPosition, false); this.pendingPosition = null; }
+        if (this.resumeOnLoad) { this.resumeOnLoad = false; void this.play(); }
+      });
+      media.addEventListener('timeupdate', () => { if (media === this.media) this.updateTime(); });
       media.addEventListener('play', () => this.updatePlay()); media.addEventListener('pause', () => this.updatePlay()); media.addEventListener('ended', () => this.updatePlay());
-      media.addEventListener('error', () => { if (media.src) this.message('A prévia deste formato não está disponível no navegador. Você ainda pode recortar, baixar e transcrever pelo servidor.'); });
+      media.addEventListener('error', () => {
+        if (media !== this.media || !this.source) return;
+        this.message(this.trim ? 'A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.' : 'Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.');
+        this.onError();
+      });
     }
     this.playButton.addEventListener('click', () => { this.previewSelection = false; if (this.media.paused) this.play(); else this.media.pause(); });
     container.querySelector('[data-rewind]').addEventListener('click', () => this.jump(-10));
     container.querySelector('[data-forward]').addEventListener('click', () => this.jump(10));
-    this.seek.addEventListener('input', () => { this.previewSelection = false; this.media.currentTime = Number(this.seek.value); this.updateTime(); });
-    container.querySelector('.player-speed select').addEventListener('change', (e) => { this.media.playbackRate = Number(e.target.value); });
+    this.seek.addEventListener('input', () => this.seekTo(Number(this.seek.value), false));
+    const speed = container.querySelector('.player-speed select');
+    speed.insertBefore(new Option('0,5×', '0.5'), speed.firstChild);
+    speed.append(new Option('2,5×', '2.5'), new Option('3×', '3'));
+    speed.addEventListener('change', (e) => this.setPlaybackRate(Number(e.target.value)));
+    container.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey ||
+          event.target.closest('input,textarea,select,button,a,[contenteditable]')) return;
+      if ([' ', 'k', 'K'].includes(event.key)) {
+        event.preventDefault(); if (this.media.paused) void this.play(); else this.media.pause();
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault(); this.jump(event.key === 'ArrowLeft' ? -10 : 10);
+      }
+    });
     container.querySelector('.player-volume input').addEventListener('input', (e) => { this.media.volume = Number(e.target.value); });
     const rangeFields = [['[data-trim-start-range]', 'start'], ['[data-trim-end-range]', 'end'], ['[data-trim-start]', 'start'], ['[data-trim-end]', 'end']];
     for (const [selector, edge] of rangeFields) container.querySelector(selector).addEventListener('input', (e) => this.setEdge(edge, e.target.value));
@@ -41,9 +65,12 @@ export class MediaPlayer {
     container.querySelector('[data-reset-trim]').addEventListener('click', () => { this.start = 0; this.end = this.duration; this.updateRange(); });
     if (typeof ResizeObserver !== 'undefined') { this.observer = new ResizeObserver(() => this.draw()); this.observer.observe(container); }
   }
-  setSource({ src, title = 'Gravação da aula', video = false, format = '', duration = 0, peaks = [] }) {
+  setSource({ src, title = 'Gravação da aula', video = false, format = '', duration = 0, peaks = [], timelineStart = 0, timelineDuration = 0, preservePosition = false }) {
     if (this.source !== src) {
+      this.pendingPosition = preservePosition ? this.currentTime : 0;
+      this.resumeOnLoad = preservePosition && !this.media.paused;
       this.media.pause(); this.audio.removeAttribute('src'); this.video.removeAttribute('src');
+      this.timelineStart = Math.max(0, timelineStart); this.timelineDuration = Math.max(0, timelineDuration);
       this.source = src; this.media = video ? this.video : this.audio; this.media.src = src;
       this.media.playbackRate = Number(this.root.querySelector('.player-speed select').value); this.media.volume = Number(this.root.querySelector('.player-volume input').value);
       this.root.querySelector('.video-preview').hidden = !video; this.duration = 0; this.start = 0; this.end = 0; this.previewSelection = false; this.peaks = [];
@@ -81,13 +108,32 @@ export class MediaPlayer {
     this.onRangeChange(this.getRange()); this.draw();
   }
   getRange() { return { start: this.start, end: this.end }; }
-  async play() { try { await this.media.play(); this.message(''); } catch { this.message('Não foi possível reproduzir a prévia neste navegador. O recorte continua disponível.'); } }
-  jump(delta) { this.previewSelection = false; this.media.currentTime = Math.max(0, Math.min(this.duration, this.media.currentTime + delta)); this.updateTime(); }
-  seekTo(seconds, play = true) { this.previewSelection = false; this.media.currentTime = seconds; this.updateTime(); if (play) this.play(); }
+  async play() { try {
+    if (this.timelineDuration && this.currentTime >= this.duration - .05) this.seekTo(0, false);
+    await this.media.play(); this.message('');
+  } catch { this.message(this.trim ? 'Não foi possível reproduzir a prévia neste navegador. O recorte continua disponível.' : 'Não foi possível reproduzir. Tente renovar o acesso à mídia.'); } }
+  get currentTime() { return Math.max(0, (this.media.currentTime || 0) - this.timelineStart); }
+  setPlaybackRate(value) {
+    const speed = this.root.querySelector('.player-speed select');
+    const safe = [...speed.options].some((option) => Number(option.value) === value) ? value : 1;
+    speed.value = String(safe); this.media.playbackRate = safe;
+  }
+  jump(delta) { this.seekTo(this.currentTime + delta, false); }
+  seekTo(seconds, play = true) {
+    if (!Number.isFinite(Number(seconds))) return;
+    this.previewSelection = false;
+    const position = Math.max(0, Math.min(this.duration || Infinity, Number(seconds)));
+    if (this.media.readyState < 1) this.pendingPosition = position;
+    else this.media.currentTime = this.timelineStart + position;
+    this.updateTime(); if (play) void this.play();
+  }
   updateTime() {
-    if (this.previewSelection && this.media.currentTime >= this.end) { this.media.pause(); this.previewSelection = false; this.media.currentTime = this.end; }
-    this.seek.value = String(this.media.currentTime || 0); this.seek.setAttribute('aria-valuetext', `${timeLabel(this.media.currentTime)} de ${timeLabel(this.duration)}`);
-    this.root.querySelector('[data-current-time]').textContent = timeLabel(this.media.currentTime); this.draw();
+    if (this.previewSelection && this.currentTime >= this.end) { this.media.pause(); this.previewSelection = false; this.media.currentTime = this.timelineStart + this.end; }
+    if (this.timelineDuration && this.currentTime >= this.duration && !this.media.paused) {
+      this.media.pause(); this.media.currentTime = this.timelineStart + this.duration;
+    }
+    this.seek.value = String(this.currentTime); this.seek.setAttribute('aria-valuetext', `${timeLabel(this.currentTime)} de ${timeLabel(this.duration)}`);
+    this.root.querySelector('[data-current-time]').textContent = timeLabel(this.currentTime); this.draw();
   }
   updatePlay() { const playing = !this.media.paused; this.playButton.innerHTML = svg(playing ? 'pause' : 'play'); this.playButton.setAttribute('aria-label', playing ? 'Pausar' : 'Reproduzir'); }
   message(text) { this.root.querySelector('.player-message').textContent = text; }
@@ -100,10 +146,11 @@ export class MediaPlayer {
     const count = Math.min(this.peaks.length, Math.floor(width / 4)), max = Math.max(.05, ...this.peaks);
     for (let i = 0; i < count; i++) {
       const peak = this.peaks[Math.floor(i * this.peaks.length / count)], x = i * width / count, h = Math.max(3, peak / max * 60), second = i / count * this.duration;
-      context.fillStyle = second <= this.media.currentTime ? accent : muted;
+      context.fillStyle = second <= this.currentTime ? accent : muted;
       context.globalAlpha = this.trim && (second < this.start || second > this.end) ? .25 : 1;
       context.fillRect(x, (height - h) / 2, Math.max(2, width / count - 2), h);
     }
   }
   destroy() { this.observer?.disconnect(); for (const m of [this.audio, this.video]) { m.pause(); m.removeAttribute('src'); m.load(); } }
 }
+
