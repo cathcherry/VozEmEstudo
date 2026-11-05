@@ -13,7 +13,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const modeLabel=make('label','Tipo de sessão');const mode=make('select');
   for(const [value,text] of [['reading','Estudo livre'],['pomodoro','Foco de 25 minutos'],['break','Pausa de 5 minutos']])mode.append(new Option(text,value));
   modeLabel.append(mode);
-  const timer=make('output','00:00');timer.setAttribute('aria-label','Tempo da sessão');
+  const timer=make('output','00:00');timer.setAttribute('aria-label','Tempo da sessão');timer.setAttribute('aria-live','off');
   const start=make('button','Iniciar / retomar');start.type='button';
   const pause=make('button','Pausar');pause.type='button';pause.disabled=true;
   const status=make('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
@@ -23,7 +23,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       mode.value=state.mode;mode.disabled=state.running||state.busy;
       timer.textContent=clockLabel(state.mode==='reading'?state.elapsed:Math.ceil(state.remaining));
       start.disabled=state.running||state.busy;pause.disabled=!state.running||state.busy;
-      status.textContent=state.message;
+      if(status.textContent!==state.message)status.textContent=state.message;
       const marker=state.session?`${state.session.id}:${state.session.last_sequence}`:'';
       if(marker!==lastSessionMarker){lastSessionMarker=marker;void refresh();}
     },

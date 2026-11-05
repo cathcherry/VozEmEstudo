@@ -19,6 +19,7 @@ test('study panel renders metrics and validates settings without breaking other 
   try {
     await init();const panel=dom.window.document.querySelector('section');
     assert.equal(panel.hidden,false);assert.match(panel.textContent,/10 min de estudo/);assert.match(panel.textContent,/Pausa de 5 minutos/);
+    assert.equal(panel.querySelector('output').getAttribute('aria-live'),'off');
     assert.equal(dom.window.document.querySelector('#existing').textContent,'Biblioteca');
     const form=panel.querySelector('form');form.querySelector('[type="number"]').value='90';form.querySelector('input:not([type="number"])').value='America/Sao_Paulo';
     form.dispatchEvent(new dom.window.Event('submit',{cancelable:true,bubbles:true}));await new Promise((resolve)=>setImmediate(resolve));
