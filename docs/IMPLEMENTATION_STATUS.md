@@ -1,5 +1,7 @@
 # Etapa 5 iniciada — Flashcards e revisão espaçada (E13)
 
+Continuação: paginação do gerenciador, filtros por aula e situação, histórico de revisões visível e tratamento de falha ao recarregar após avaliação confirmada. Testes direcionados de API e DOM incluídos; geração por IA e personalização de resumos ainda pendentes. Sem nova migration nesta continuação. O teste integrado no Supabase e o aceite humano continuam pendentes.
+
 Primeira implementação da API, do Painel e da migration E13 salva no PR #2 em Draft, `FEATURE_FLASHCARDS=false`. Inclui histórico, agendamento atômico e testes; **nenhum SQL aplicado e nenhum merge na `main`**. Ver [guia E13](implementation-2.0/07-flashcards-workplan.md). Teste real do PostgreSQL/Supabase e avaliação da interface ainda necessários.
 
 ---
@@ -90,3 +92,4 @@ Título/disciplinas via API existente. Perfil/avatar via Supabase Auth. Tags ext
 - [ ] Conferir manualmente com leitores de tela e navegadores adicionais.
 
 Nenhuma configuração remota, deploy ou conta real foi alterada. A especificação original em docs/engineering permanece como referência. Itens futuros de infraestrutura da engenharia original não foram adicionados ao escopo desta revisão.
+

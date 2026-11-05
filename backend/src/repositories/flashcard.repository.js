@@ -24,22 +24,29 @@ function assertDb(error) {
   throw error;
 }
 
-export async function listOwnedFlashcards(userId, filter) {
-  const db = getAdminSupabase();
+export function buildFlashcardListQuery(db, userId, filter, options = {}, now = new Date()) {
+  const { offset = 0, materialId, status = 'all' } = options;
   let query = db.from('study_flashcards')
     .select(cardFields, { count: 'exact' })
     .eq('user_id', userId)
-    .limit(PAGE_LIMIT);
+    .range(offset, offset + PAGE_LIMIT - 1);
+  if (materialId) query = query.eq('material_id', materialId);
   if (filter === 'due') {
-    query = query.eq('status', 'active').lte('due_at', new Date().toISOString())
+    query = query.eq('status', 'active').lte('due_at', now.toISOString())
       .order('due_at', { ascending: true }).order('id', { ascending: true });
   } else {
+    if (status !== 'all') query = query.eq('status', status);
     query = query.order('created_at', { ascending: false })
       .order('id', { ascending: true });
   }
+  return query;
+}
+
+export async function listOwnedFlashcards(userId, filter, options = {}) {
+  const query = buildFlashcardListQuery(getAdminSupabase(), userId, filter, options);
   const { data, count, error } = await query;
   assertDb(error);
-  return { cards: data || [], total: count || 0, limit: PAGE_LIMIT };
+  return { cards: data || [], total: count || 0, limit: PAGE_LIMIT, offset: options.offset || 0 };
 }
 
 export async function assertOwnedMaterial(userId, materialId) {
@@ -92,3 +99,4 @@ export async function reviewOwnedFlashcard(userId, cardId, rating, requestId) {
   assertDb(error);
   return data;
 }
+

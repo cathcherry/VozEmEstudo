@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildFlashcardService } from '../src/services/flashcard.service.js';
+import { buildFlashcardListQuery } from '../src/repositories/flashcard.repository.js';
 import {
   flashcardId, validateNewFlashcard, validateFlashcardPatch,
   validateFlashcardQuery, validateFlashcardReview,
@@ -20,7 +21,7 @@ test('flashcards validate strict forms, lengths, UUID and rating', () => {
   });
   assert.deepEqual(validateFlashcardPatch({ archived: true }), { status: 'archived' });
   assert.deepEqual(validateFlashcardPatch({ materialId: null }), { material_id: null });
-  assert.deepEqual(validateFlashcardQuery({}), { filter: 'due' });
+  assert.deepEqual(validateFlashcardQuery({}), { filter: 'due', status: 'all', offset: 0 });
   assert.equal(flashcardId(cardId), cardId);
   assert.deepEqual(validateFlashcardReview({ rating: 0, requestId }), { rating: 0, requestId });
   assert.throws(() => validateNewFlashcard({ front: '', back: 'Verso' }));
@@ -119,3 +120,49 @@ test('a missing or foreign card blocks review-history lookup', async () => {
   await assert.rejects(service.history(owner, cardId), (error) => error.code === 'NOT_FOUND');
   assert.equal(reads, 0);
 });
+
+test('pagination rejects invalid ranges and untrusted query fields', () => {
+  assert.deepEqual(validateFlashcardQuery({ filter: 'all', offset: '100', materialId, status: 'archived' }),
+    { filter: 'all', offset: 100, materialId, status: 'archived' });
+  for (const offset of ['-1', '1.5', 'NaN', 'Infinity', '1000001'])
+    assert.throws(() => validateFlashcardQuery({ offset }));
+  assert.throws(() => validateFlashcardQuery({ materialId: 'invalid' }));
+  assert.throws(() => validateFlashcardQuery({ user_id: owner }));
+  assert.throws(() => validateFlashcardQuery({ status: 'deleted' }));
+});
+
+test('list forwards validated pagination and filters with the authenticated owner', async () => {
+  const service = buildFlashcardService({
+    async listOwnedFlashcards(userId, filter, options) {
+      assert.equal(userId, owner);
+      assert.equal(filter, 'all');
+      assert.deepEqual(options, { status: 'archived', offset: 100, materialId });
+      return { cards: [], total: 101, offset: 100, limit: 100 };
+    },
+  });
+  const result = await service.list(owner, { filter: 'all', status: 'archived', offset: '100', materialId });
+  assert.equal(result.offset, 100);
+});
+
+test('database pagination retains account scope, stable ordering and the active-only due queue', () => {
+  const calls = [];
+  const query = new Proxy({}, { get: (_, method) => (...args) => {
+    calls.push([method, ...args]);
+    return query;
+  } });
+  const db = { from(table) { calls.push(['from', table]); return query; } };
+  const now = new Date('2026-11-05T12:00:00Z');
+  buildFlashcardListQuery(db, owner, 'all', { offset: 100, materialId, status: 'archived' }, now);
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['eq', 'user_id', owner])));
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['eq', 'material_id', materialId])));
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['range', 100, 199])));
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['eq', 'status', 'archived'])));
+  assert.deepEqual(calls.filter((call) => call[0] === 'order').map((call) => call[1]), ['created_at', 'id']);
+  calls.length = 0;
+  buildFlashcardListQuery(db, owner, 'due', { status: 'archived' }, now);
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['eq', 'status', 'active'])));
+  assert(!calls.some((call) => call.includes('archived')));
+  assert(calls.some((call) => JSON.stringify(call) === JSON.stringify(['lte', 'due_at', now.toISOString()])));
+  assert.deepEqual(calls.filter((call) => call[0] === 'order').map((call) => call[1]), ['due_at', 'id']);
+});
+

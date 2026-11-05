@@ -41,6 +41,9 @@ export function validateFlashcardPatch(body) {
 export function validateFlashcardQuery(input) {
   return z.object({
     filter: z.enum(['due', 'all']).default('due'),
+    materialId: uuid.optional(),
+    status: z.enum(['all', 'active', 'archived']).default('all'),
+    offset: z.coerce.number().int().min(0).max(1000000).default(0),
   }).strict().parse(input);
 }
 
@@ -50,3 +53,4 @@ export function validateFlashcardReview(body) {
     requestId: uuid,
   }).strict().parse(body);
 }
+

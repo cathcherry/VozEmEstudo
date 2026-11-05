@@ -11,7 +11,8 @@ export function buildFlashcardService(store = repository) {
 
   return {
     list(userId, query) {
-      return store.listOwnedFlashcards(userId, validateFlashcardQuery(query).filter);
+      const { filter, ...options } = validateFlashcardQuery(query);
+      return store.listOwnedFlashcards(userId, filter, options);
     },
     async create(userId, body) {
       const item = validateNewFlashcard(body);
@@ -38,3 +39,4 @@ export function buildFlashcardService(store = repository) {
 }
 
 export const flashcardService = buildFlashcardService();
+

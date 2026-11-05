@@ -66,3 +66,31 @@ body[data-page='dashboard'] [data-flashcard-review-status][data-state='error'] {
   color: var(--error, #a52828);
 }
 body[data-page='dashboard'] .flashcard-form :disabled { opacity: .55; }
+body[data-page='dashboard'] .flashcard-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+body[data-page='dashboard'] .flashcard-filters label {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 220px;
+  min-width: 0;
+  font-size: .8rem;
+}
+body[data-page='dashboard'] .flashcard-filters select {
+  width: 100%;
+  min-height: 44px;
+}
+body[data-page='dashboard'] .flashcard-pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+}
+body[data-page='dashboard'] .flashcard-pagination button { min-height: 44px; }
+body[data-page='dashboard'] .flashcard-history { overflow-wrap: anywhere; }
+body[data-page='dashboard'] .flashcard-history li { margin-bottom: 8px; font-size: .85rem; }
+
