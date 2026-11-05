@@ -1,5 +1,5 @@
 export const QUESTION_COUNTS = Object.freeze([3, 5, 10, 20]);
-export const AUDIO_EXTENSIONS = Object.freeze(['mp3', 'wav', 'm4a']);
+export const AUDIO_EXTENSIONS = Object.freeze(['mp3', 'wav', 'm4a', 'mp4']);
 export const MAX_AUDIO_BYTES = 100 * 1024 * 1024;
 
 export const MATERIAL_STATUS = Object.freeze({

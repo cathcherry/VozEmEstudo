@@ -40,21 +40,36 @@ def transcribe(inputs, task):
         inputs,
         batch_size=BATCH_SIZE,
         generate_kwargs={"task": task},
-        return_timestamps=True,
+        return_timestamps="word",
     )
 
     segments = []
-    for index, chunk in enumerate(result.get("chunks", [])):
+    pending = None
+    for chunk in result.get("chunks", []):
         timestamp = chunk.get("timestamp") or (0, 0)
         start, end = timestamp
-        segments.append(
-            {
-                "position": index,
-                "startMs": round(float(start or 0) * 1000),
-                "endMs": round(float(end or start or 0) * 1000),
-                "text": (chunk.get("text") or "").strip(),
-            }
-        )
+        start_ms = round(float(start or 0) * 1000)
+        end_ms = round(float(end or start or 0) * 1000)
+        text = (chunk.get("text") or "").strip()
+        if not text:
+            continue
+        if pending and (
+            end_ms - pending["startMs"] > 6000 or len(pending["text"]) + len(text) > 84
+        ):
+            segments.append(pending)
+            pending = None
+        if pending is None:
+            pending = {"startMs": start_ms, "endMs": end_ms, "text": text}
+        else:
+            pending["endMs"] = end_ms
+            pending["text"] += " " + text
+        if text.endswith((".", "!", "?")):
+            segments.append(pending)
+            pending = None
+    if pending:
+        segments.append(pending)
+    for index, segment in enumerate(segments):
+        segment["position"] = index
 
     return {
         "text": (result.get("text") or "").strip(),

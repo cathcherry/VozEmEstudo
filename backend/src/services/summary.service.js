@@ -5,8 +5,9 @@ import { createSummaryVersion } from '../repositories/summary.repository.js';
 
 export async function generateSummary(job, source) {
   const text = await createTextCompletion({
-    messages: buildSummaryMessages(source.full_text),
-    maxTokens: 1800,
+    messages: buildSummaryMessages(source.full_text, job.params),
+    maxTokens:
+      job.params?.length === 'detailed' ? 3600 : job.params?.length === 'brief' ? 900 : 1800,
   });
   if (!text) throw new Error('Resumo vazio retornado pelo modelo.');
   return createSummaryVersion(job.material_id, {

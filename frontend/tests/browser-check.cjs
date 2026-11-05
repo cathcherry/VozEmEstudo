@@ -8,6 +8,7 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..'),
   backend = path.resolve(root, '../backend');
 const express = require(path.join(backend, 'node_modules/express'));
+const summaryCalls = [];
 const reports = [],
   errors = [],
   requests = [],
@@ -81,7 +82,8 @@ let mode = 'success',
   createCount = 0,
   uploadCount = 0,
   generationCount = 0,
-  questionFail = false;
+  questionFail = false,
+  jobPending = false;
 const sdk = `export function createClient(url,key,options){window.__authOptions=options;let user=${JSON.stringify(user)};user.user_metadata={...user.user_metadata,...JSON.parse(localStorage.getItem('test-profile')||'{}')};return {auth:{
 getSession:async()=>({data:{session:localStorage.getItem('test-logged-out')?null:{user,access_token:'mock-token'}},error:null}),
 getUser:async()=>({data:{user},error:null}),
@@ -161,6 +163,7 @@ async function main() {
         : res.status(401).json({ error: { message: 'Sessão inválida.' } }),
     mediaRouter,
   );
+  app.get('/__fixture.mp4', (_req, res) => res.sendFile(mp4));
   app.get('/__fixture.wav', (_req, res) => res.sendFile(wav));
   app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png')));
   app.use('/assets', express.static(path.join(root, 'assets')));
@@ -237,6 +240,14 @@ async function main() {
       const data = request.postDataJSON();
       requests.push(data);
       const material = fixture(data.id, data.title);
+      if (data.extension === 'mp4') {
+        material.audio = {
+          extension: 'mp4',
+          duration_ms: data.durationMs,
+          retain_original: data.retainAudio,
+        };
+        material.signedAudioUrl = base + '/__fixture.mp4';
+      }
       materials.unshift(material);
       return reply(material, 201);
     }
@@ -245,6 +256,16 @@ async function main() {
         processFail = false;
         return reply({ error: { message: 'Worker indisponível.' } }, 503);
       }
+      return reply({ jobId: 'job-1' });
+    }
+    if (p.endsWith('/summaries')) {
+      summaryCalls.push(request.postDataJSON());
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      m.summaries.unshift({
+        ...m.summaries[0],
+        version: m.summaries[0].version + 1,
+        is_current: true,
+      });
       return reply({ jobId: 'job-1' });
     }
     if (p.endsWith('/question-batches')) {
@@ -355,7 +376,13 @@ async function main() {
         ? []
         : new URL(route.request().url()).pathname.endsWith('/job-failed')
           ? { status: 'FALHOU', error_message: 'Falha simulada na geração.' }
-          : { status: 'CONCLUIDA' },
+          : jobPending
+            ? {
+                status: 'EM_EXECUCAO',
+                current_stage: 'TRANSCRICAO',
+                created_at: new Date(Date.now() - 125000).toISOString(),
+              }
+            : { status: 'CONCLUIDA' },
     }),
   );
   await context.route(base + '/api/questions/**', (route) =>
@@ -441,10 +468,7 @@ async function main() {
     assert(download.suggestedFilename().endsWith('.mp4'));
     await download.saveAs(path.join(output, 'clip.mp4'));
     record('Download real do recorte MP4');
-    assert.equal(
-      await page.locator('[data-trim-duration]').textContent(),
-      '00:00,80 → 00:01,55 · 00:00,75',
-    );
+    assert.equal(await page.locator('[data-trim-duration]').textContent(), '00:00 → 00:01 · 00:00');
     await screenshot(page, output, 'player-desktop.png');
     await page.getByRole('button', { name: 'Continuar para identificação' }).click();
     assert.equal(
@@ -452,18 +476,25 @@ async function main() {
       '2',
     );
     await page.getByRole('button', { name: 'Voltar', exact: true }).click();
-    assert.equal(await page.locator('[data-trim-start]').inputValue(), '0.8');
+    assert.equal(await page.locator('[data-trim-start-range]').inputValue(), '0.8');
     await page.getByRole('button', { name: 'Continuar para identificação' }).click();
     await page.locator('#class-title').fill('Aula de teste recortada');
-    await page.locator('#keep-original-audio').check();
+    await page.locator('#media-retention').selectOption('audio');
+    await page.locator('#upload-tags').fill('solos');
+    await page.locator('#upload-tags').press('Enter');
+    await page.locator('#upload-tags').fill('preparação,');
+    assert.equal(await page.locator('.tag-chip').count(), 2);
+    assert.equal(await page.locator('[data-dropzone]').isVisible(), false);
     assert.equal(await page.locator('#permission-declaration').isChecked(), false);
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
     assert.equal(await page.locator('[data-upload-review]').isVisible(), false);
     await page.locator('#permission-declaration').check();
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
-    assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 7);
+    assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 8);
     await screenshot(page, output, 'upload-review-desktop.png');
-    assert((await page.locator('[data-upload-choice-list]').textContent()).includes('00:00,75'));
+    assert(
+      (await page.locator('[data-upload-choice-list]').textContent()).includes('00:00 → 00:01'),
+    );
     record('Permissão não pré-marcada e escolhas revisadas antes do envio');
     permissionDeclaration = {
       version: 'permission-test-updated',
@@ -535,62 +566,44 @@ async function main() {
         exact: true,
       })
       .click();
-    await page.locator('#gerar-questoes').waitFor();
+    await page.locator('[data-questions-dialog][open]').waitFor();
     assert.equal(
       await page.locator('#more-question-count').evaluate((n) => document.activeElement === n),
       true,
     );
-    assert.equal(
-      await page
-        .locator('#more-question-count')
-        .evaluate(
-          (n) =>
-            n.getBoundingClientRect().top >=
-            document.querySelector('.material-tabs').getBoundingClientRect().bottom,
-        ),
-      true,
-      'Campo de geração visível abaixo da navegação fixa',
-    );
     await page.locator('#more-question-count').selectOption('10');
-    await page.getByRole('button', { name: 'Gerar novo lote', exact: true }).click();
-    await page.getByText('Novo lote gerado.', { exact: true }).waitFor();
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.waitForFunction(() => document.querySelectorAll('.question-batch-row').length === 2);
     assert.equal(generationCount, 1);
-    assert.equal(await page.locator('.question-batch-card').count(), 2);
-    record('Áudio antigo gera novo lote pela Biblioteca sem perder lotes anteriores');
+    assert.equal(await page.locator('[data-summary-section]').isVisible(), false);
+    assert.equal(await page.locator('[data-transcription-section]').isVisible(), false);
+    record('Abas reais e geração por diálogo preservam conjuntos anteriores');
     questionFail = true;
-    await page.getByRole('button', { name: 'Gerar novo lote', exact: true }).click();
+    await page.locator('[data-open-questions]').click();
+    await page.locator('[data-more-questions-form] [type=submit]').click();
     await page.getByText('Falha simulada na geração.', { exact: true }).waitFor();
-    assert.equal(await page.locator('.question-batch-card').count(), 2);
-    assert(await page.getByRole('button', { name: 'Gerar novo lote', exact: true }).isEnabled());
+    assert.equal(await page.locator('.question-batch-row').count(), 2);
+    assert(await page.locator('[data-open-questions]').isEnabled());
     questionFail = false;
     const academicMaterial = materials.find((item) => item.id === 'aula-real');
     academicMaterial.review.state = 'awaiting_review';
     academicMaterial.initial_question_count = 3;
     await page.goto(base + '/material.html?id=aula-real');
-    await page.locator('[data-transcription-section]').waitFor();
-    assert.equal(await page.locator('[data-generate-summary]').isDisabled(), true);
-    assert.equal(
-      await page.locator('[data-more-questions-form] [type="submit"]').isDisabled(),
-      true,
-    );
+    await page.locator('[data-review-welcome]').waitFor();
+    assert.equal(await page.locator('[data-transcription-section]').isVisible(), false);
+    assert.equal(await page.locator('[data-regenerate-summary]').isDisabled(), true);
     assert.equal(await page.locator('#more-question-count').inputValue(), '3');
     await screenshot(page, output, 'confirmation-awaiting-desktop.png');
     await page.locator('[data-check-transcription]').click();
-    assert.equal(
-      await page
-        .locator('.transcription-segment textarea')
-        .evaluate((n) => n === document.activeElement),
-      true,
-    );
-    await page.locator('[data-confirm-transcription]').click();
-    await page.getByRole('heading', { name: 'Pronto para gerar', exact: true }).waitFor();
-    assert.equal(await page.locator('[data-generate-summary]').isDisabled(), false);
-    record('Geração bloqueada até confirmação explícita; conferir aponta trecho real');
     await page.locator('.transcription-segment textarea').fill('Texto de revisão corrigida.');
-    assert.equal(await page.locator('[data-generate-summary]').isDisabled(), true);
-    await page.locator('[data-save-transcription]').click();
-    await page.getByRole('heading', { name: 'Aguardando confirmação', exact: true }).waitFor();
+    await page.locator('[data-confirm-transcription]').click();
+    await page.locator('[data-summary-section]').waitFor();
     assert.equal(academicMaterial.transcription.current_revision, 2);
+    assert.equal(academicMaterial.review.state, 'ready_to_generate');
+    assert.equal(await page.locator('[data-transcription-section]').isVisible(), false);
+    record('Uma ação salva alterações, confirma a transcrição e abre a aba Resumo');
+    await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
+    await page.locator('.quiet-menu summary').first().click();
     await page.locator('[data-show-versions]').click();
     page.once('dialog', (dialog) => dialog.accept());
     await page
@@ -598,11 +611,14 @@ async function main() {
       .filter({ hasText: 'Revisão 1' })
       .getByRole('button', { name: 'Restaurar' })
       .click();
-    await page.waitForFunction(
-      () => document.querySelector('[data-transcription-revision]').textContent === '3',
+    await page.waitForFunction(() =>
+      document
+        .querySelector('.transcription-segment textarea')
+        ?.value.includes('Um carro elétrico'),
     );
+    assert.equal(academicMaterial.transcription.current_revision, 3);
     assert.equal(academicMaterial.review.state, 'awaiting_review');
-    record('Edição e restauração produzem novas revisões sem confirmação automática');
+    record('Histórico discreto restaura conteúdo sem confirmar automaticamente');
     academicMaterial.warnings = [
       {
         id: 'warning-fixture',
@@ -621,8 +637,8 @@ async function main() {
       },
     ];
     await page.reload();
-    await page.locator('[data-transcription-section]').waitFor();
-    await page.locator('[data-warning-panel] summary').click();
+    await page.locator('[data-check-transcription]').click();
+    await page.locator('[data-open-warnings]').click();
     await page.getByRole('button', { name: 'Conferir trecho ·', exact: false }).click();
     await page.locator('[data-warning-preview]').waitFor();
     assert(
@@ -634,8 +650,33 @@ async function main() {
       ),
     );
     await screenshot(page, output, 'warnings-desktop.png');
-    record('Aviso histórico conserva referência e abre o snapshot correto');
-    record('Erro na geração preserva lotes antigos e permite nova tentativa');
+    await page.locator('[data-warning-panel] .dialog-close').click();
+    await page.locator('[data-confirm-transcription]').click();
+    await page.locator('[data-summary-section]').waitFor();
+    academicMaterial.summaries[0].text =
+      '**Conceito** importante.\n\n- Primeiro ponto\n- Segundo ponto';
+    await page.reload();
+    await page.getByRole('tab', { name: 'Resumo', exact: true }).click();
+    await page.locator('[data-summary-text] strong').waitFor();
+    await screenshot(page, output, 'material-summary-redesign.png');
+    assert.equal(await page.locator('[data-summary-text] strong').textContent(), 'Conceito');
+    assert.equal(await page.locator('[data-summary-text] li').count(), 2);
+    await page.locator('[data-regenerate-summary]').click();
+    await page.locator('[data-summary-form] [name=format]').selectOption('bullets');
+    await page.locator('[data-summary-form] [name=length]').selectOption('brief');
+    await page.locator('[data-summary-form] [type=submit]').click();
+    await page.waitForFunction(
+      () => document.querySelector('[data-regenerate-summary]').disabled === false,
+    );
+    assert.equal(summaryCalls.at(-1).format, 'bullets');
+    assert.equal(summaryCalls.at(-1).length, 'brief');
+    await page.locator('[data-open-export]').click();
+    await page.locator('[data-export-form] [name=format]').selectOption('md');
+    const exportPromise = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    assert((await exportPromise).suggestedFilename().endsWith('.md'));
+    await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
+    record('Markdown formatado, personalização contextual, exportação oculta e avisos em diálogo');
     await page
       .locator('[data-audio-player]')
       .getByRole('button', { name: 'Reproduzir', exact: true })
@@ -994,33 +1035,37 @@ async function main() {
     await page.locator('#permission-declaration').check();
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
     await audit('E02 upload-review');
+    academicMaterial.review.state = 'awaiting_review';
     academicMaterial.review.permissionRequired = true;
     await page.goto(base + '/material.html?id=aula-real');
+    await page.locator('[data-check-transcription]').click();
     await page.locator('[data-material-permission]').waitFor();
     assert.equal(await page.locator('#material-permission').isChecked(), false);
-    await audit('E02 material-permission-required');
+    await audit('material-permission-required');
     academicMaterial.review.permissionRequired = false;
     await page.reload();
-    await page.locator('[data-transcription-section]').waitFor();
-    await page.locator('[data-warning-panel] summary').click();
+    await page.locator('[data-check-transcription]').click();
+    await page.locator('[data-open-warnings]').click();
     await page.getByRole('button', { name: 'Conferir trecho ·', exact: false }).click();
-    await audit('E02 material-warning-history');
+    await audit('material-warning-history');
+    await page.locator('[data-warning-panel] .dialog-close').click();
     await page.locator('[data-confirm-transcription]').click();
-    await page.getByRole('heading', { name: 'Pronto para gerar', exact: true }).waitFor();
-    await audit('E02 material-confirmed');
+    await page.locator('[data-summary-section]').waitFor();
+    await audit('material-confirmed');
+    await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
     await page
       .locator('.transcription-segment textarea')
       .fill('Alteração local não salva da fixture.');
-    assert.equal(await page.locator('[data-generate-summary]').isDisabled(), true);
-    await audit('E02 material-unsaved-edits');
+    assert.equal(await page.locator('[data-regenerate-summary]').isDisabled(), true);
+    await audit('material-unsaved-edits');
     assert.deepEqual(
       accessibility.flatMap((result) => result.violations),
       [],
-      'Novos estados E02',
+      'Novos estados do fluxo',
     );
-    record(
-      'Cinco estados E02 auditados por axe: escolhas, permissão, avisos, confirmação e edição pendente',
-    );
+    await page.locator('[data-confirm-transcription]').click();
+    await page.locator('[data-summary-section]').waitFor();
+    record('Fluxo progressivo auditado com axe: permissão, avisos, confirmação e edição');
 
     for (const width of [320, 390, 1280]) {
       await page.setViewportSize({ width, height: 900 });
@@ -1207,6 +1252,54 @@ async function main() {
     } finally {
       await actualContext.close();
     }
+    // The upload retains the selected video clip and opens the video player directly.
+    await page.goto(base + '/nova-transcricao.html');
+    await page.locator('#audio-file').setInputFiles(mp4Input);
+    await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
+    await page.locator('[data-wizard-next]').click();
+    await page.locator('#class-title').fill('Vídeo guardado para estudo');
+    assert.equal(await page.locator('#media-retention').inputValue(), '');
+    await page.locator('#media-retention').selectOption('video');
+    await page.locator('#permission-declaration').check();
+    await page.locator('[data-review-upload]').click();
+    assert(
+      (await page.locator('[data-upload-choice-list]').textContent()).includes('Vídeo com áudio'),
+    );
+    await page.locator('[data-transcribe]').click();
+    await page.waitForURL('**/material.html?**');
+    await page.locator('[data-audio-player] .video-preview:not([hidden])').waitFor();
+    assert.equal(requests.at(-1).extension, 'mp4');
+    assert.equal(requests.at(-1).retainAudio, true);
+    assert.equal(
+      await page.locator('[data-audio-player] select').count(),
+      1,
+      'Only playback speed, no redundant media-format selector',
+    );
+    await screenshot(page, output, 'material-video-redesign.png');
+    record('Escolha explícita de vídeo conserva MP4 e abre o player de vídeo');
+    const videoMaterial = materials[0];
+    jobPending = true;
+    await page.goto(base + '/processando.html?id=' + videoMaterial.id + '&job=job-1');
+    await page.getByRole('heading', { name: 'Transcrevendo o áudio…', exact: true }).waitFor();
+    await page.getByText('Iniciado há 2 minutos', { exact: true }).waitFor();
+    assert.equal(await page.locator('[data-open-export]').count(), 0);
+    assert.equal(await page.locator('[role=tab]').count(), 0);
+    await audit('tela separada de processamento');
+    assert.deepEqual(accessibility.at(-1).violations, []);
+    await screenshot(page, output, 'processing-redesign.png');
+    jobPending = false;
+    await page.waitForURL('**/material.html?**');
+    record('Espera separada mostra etapa e tempo decorrido e abre material ao concluir');
+    const safe = await page.evaluate(async () => {
+      const { renderMarkdown } = await import('/js/utils/markdown.js');
+      const target = document.createElement('div');
+      renderMarkdown(target, '**Texto** <img src=x onerror=alert(1)>');
+      return {
+        bold: target.querySelector('strong').textContent,
+        images: target.querySelectorAll('img').length,
+      };
+    });
+    assert.deepEqual(safe, { bold: 'Texto', images: 0 });
     fs.writeFileSync(
       path.join(output, 'browser-results.json'),
       JSON.stringify(

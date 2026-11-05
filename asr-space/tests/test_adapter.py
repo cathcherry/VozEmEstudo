@@ -57,7 +57,19 @@ class AdapterTests(unittest.TestCase):
                 {"position": 1, "startMs": 2500, "endMs": 2500, "text": "Segundo."},
             ],
         )
-        self.assertTrue(self.calls[0][1]["return_timestamps"])
+        self.assertEqual(self.calls[0][1]["return_timestamps"], "word")
+
+    def test_words_group_into_short_cues_with_real_boundaries(self):
+        self.results["chunks"] = [
+            {"timestamp": (index, index + 0.8), "text": "palavra"} for index in range(20)
+        ]
+        result = self.adapter.transcribe("synthetic.wav", "transcribe")
+        self.assertGreater(len(result["segments"]), 1)
+        for segment in result["segments"]:
+            self.assertLessEqual(segment["endMs"] - segment["startMs"], 6000)
+            self.assertLessEqual(len(segment["text"]), 84)
+        self.assertEqual(result["segments"][0]["startMs"], 0)
+        self.assertEqual(result["segments"][-1]["endMs"], 19800)
 
     def test_empty_chunks_keep_the_current_text_contract(self):
         result = self.adapter.transcribe("synthetic.wav", "translate")

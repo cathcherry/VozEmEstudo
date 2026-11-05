@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { JOB_TYPE } from '../config/constants.js';
 import { getReviewState, listWarnings } from '../repositories/review.repository.js';
 import { validateGeneration } from '../validators/review.validator.js';
@@ -86,8 +87,15 @@ export async function enqueueInitial(userId, materialId) {
 
 export async function enqueueSummary(userId, materialId, input) {
   await materials.getOwnedMaterial(userId, materialId);
-  const selection = validateGeneration(input);
-  return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, {}, selection);
+  const { format = 'paragraphs', length = 'intermediate', ...generation } = input || {};
+  const options = z
+    .object({
+      format: z.enum(['paragraphs', 'bullets']),
+      length: z.enum(['brief', 'intermediate', 'detailed']),
+    })
+    .parse({ format, length });
+  const selection = validateGeneration(generation);
+  return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, options, selection);
 }
 export async function enqueueQuestions(userId, materialId, count, input) {
   await materials.getOwnedMaterial(userId, materialId);

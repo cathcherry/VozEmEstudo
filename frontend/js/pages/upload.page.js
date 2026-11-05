@@ -3,6 +3,7 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { createMaterialWithUpload, processMaterial } from '../api/material.api.js';
 import { MEDIA_EXTENSIONS, mediaExtension, inspectMedia, convertMedia } from '../api/media.api.js';
+import { tagInput } from '../utils/tag-input.js';
 import { saveTags } from '../utils/study-store.js';
 import { MediaPlayer, timeLabel } from '../utils/media-player.js';
 
@@ -26,6 +27,35 @@ let step = 1,
   generation = 0;
 const permissionInput = document.querySelector('#permission-declaration');
 const reviewPanel = document.querySelector('[data-upload-review]');
+const tags = tagInput(document.querySelector('#upload-tags'));
+let preparationTimer;
+function shortName(name) {
+  return name.length > 55 ? name.slice(0, 32) + '…' + name.slice(-19) : name;
+}
+function durationLabel(seconds) {
+  if (seconds > 0 && seconds < 1) return 'Menos de 1 segundo';
+  const total = Math.floor(seconds),
+    minutes = Math.floor(total / 60),
+    rest = total % 60;
+  return (
+    [
+      minutes ? `${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}` : '',
+      rest ? `${rest} ${rest === 1 ? 'segundo' : 'segundos'}` : '',
+    ]
+      .filter(Boolean)
+      .join(' e ') || '0 segundos'
+  );
+}
+function progress(text) {
+  document.querySelector('[data-upload-progress-title]').textContent = text;
+  setStatus(status, '');
+}
+document.querySelector('[data-change-file]').addEventListener('click', () => fileInput.click());
+document.querySelector('[data-edit-upload]').addEventListener('click', () => {
+  reviewPanel.hidden = true;
+  document.querySelector('[data-identification-fields]').hidden = false;
+  document.querySelector('[data-identification-actions]').hidden = false;
+});
 let declaration, reviewedChoices;
 try {
   declaration = (await getPublicConfig()).permissionDeclaration;
@@ -80,7 +110,7 @@ function updateRange() {
   nextButton.disabled = !ready || range.end - range.start > (info?.maxTranscriptionSeconds || 3276);
   downloadButton.disabled = !ready || exporting;
   document.querySelector('[data-selected-range]').textContent = ready
-    ? `${timeLabel(range.start, true)} – ${timeLabel(range.end, true)} · ${timeLabel(range.end - range.start, true)} de áudio`
+    ? `${timeLabel(range.start)} – ${timeLabel(range.end)} · ${durationLabel(range.end - range.start)} de áudio`
     : '';
   if (ready && nextButton.disabled)
     setStatus(
@@ -88,12 +118,7 @@ function updateRange() {
       'Escolha um trecho de até 54 minutos para transcrever. Você ainda pode exportar um recorte maior.',
       'error',
     );
-  else if (ready)
-    setStatus(
-      fileMessage,
-      'Gravação pronta. Ajuste o trecho ou continue com o arquivo inteiro.',
-      'success',
-    );
+  else if (ready) setStatus(fileMessage, '', 'success');
 }
 async function chooseFile() {
   const token = ++generation;
@@ -111,10 +136,12 @@ async function chooseFile() {
   objectUrl = '';
   sourceFile = fileInput.files?.[0] || null;
   fileInput.setCustomValidity('');
-  document.querySelector('[data-file-description]').textContent = sourceFile
-    ? `${sourceFile.name} · ${(sourceFile.size / 1024 / 1024).toFixed(1)} MB`
-    : 'Nenhum arquivo selecionado.';
-  document.querySelector('[data-selected-file]').textContent = sourceFile?.name || '';
+  dropzone.hidden = Boolean(sourceFile);
+  document.querySelector('.drop-hint').hidden = Boolean(sourceFile);
+  document.querySelector('[data-change-file]').hidden = !sourceFile;
+  document.querySelector('[data-file-description]').textContent = 'Nenhum arquivo selecionado.';
+  document.querySelector('[data-selected-file]').textContent = shortName(sourceFile?.name || '');
+  document.querySelector('[data-selected-file]').title = sourceFile?.name || '';
   document.querySelector('[data-selected-range]').textContent = '';
   if (!sourceFile) {
     setStatus(fileMessage, '');
@@ -139,12 +166,21 @@ async function chooseFile() {
     video,
     format: mediaExtension(sourceFile),
   });
-  setStatus(fileMessage, 'Lendo a gravação e preparando a forma de onda…');
+  clearTimeout(preparationTimer);
+  preparationTimer = setTimeout(() => {
+    if (token === generation && !info) setStatus(fileMessage, 'Preparando prévia…');
+  }, 1200);
   analysisController = new AbortController();
   try {
     const result = await inspectMedia(sourceFile, analysisController.signal);
     if (token !== generation) return;
+    clearTimeout(preparationTimer);
     info = result;
+    document.querySelector('[data-video-retention]').hidden = !result.hasVideo;
+    document.querySelector('[data-audio-retention]').hidden = result.hasVideo;
+    document.querySelector('#media-retention').value = '';
+    document.querySelector('#media-retention').disabled = !result.hasVideo;
+    document.querySelector('#media-retention').required = result.hasVideo;
     player.setSource({
       src: objectUrl,
       title: sourceFile.name,
@@ -156,6 +192,7 @@ async function chooseFile() {
     updateRange();
   } catch (error) {
     if (token !== generation || error.name === 'AbortError') return;
+    clearTimeout(preparationTimer);
     setStatus(fileMessage, error.message || 'Não foi possível preparar a gravação.', 'error');
     const retry = document.createElement('button');
     retry.className = 'text-action';
@@ -205,7 +242,7 @@ downloadButton.addEventListener('click', async () => {
   if (!info || !sourceFile || exporting) return;
   exporting = true;
   downloadButton.disabled = true;
-  downloadButton.textContent = 'Preparando recorte…';
+  downloadButton.querySelector('.download-label').textContent = 'Preparando…';
   player.media.pause();
   const file = sourceFile,
     range = player.getRange(),
@@ -226,7 +263,7 @@ downloadButton.addEventListener('click', async () => {
     if (selectedGeneration === generation) setStatus(fileMessage, error.message, 'error');
   } finally {
     exporting = false;
-    downloadButton.textContent = 'Baixar trecho';
+    downloadButton.querySelector('.download-label').textContent = 'Baixar trecho';
     updateRange();
   }
 });
@@ -235,18 +272,25 @@ form.addEventListener('reset', (event) => {
     event.preventDefault();
     return;
   }
+  if (!confirm('Recomeçar e apagar o preenchimento desta aula?')) {
+    event.preventDefault();
+    return;
+  }
+  tags.reset();
   setTimeout(() => {
+    document.querySelector('[data-identification-fields]').hidden = false;
+    document.querySelector('[data-identification-actions]').hidden = false;
     chooseFile();
     setStep(1);
     setStatus(status, '');
     document.querySelectorAll('[data-retry-actions]').forEach((node) => node.remove());
     document.querySelector('.upload-progress .loading-indicator').hidden = false;
-    document.querySelector('.upload-progress h2').textContent = 'Preparando seu material';
+    document.querySelector('.upload-progress h2').textContent = 'Preparando o áudio…';
   }, 0);
 });
 async function startProcessing() {
   const job = await processMaterial(createdMaterial.id);
-  location.href = `./material.html?id=${encodeURIComponent(createdMaterial.id)}&job=${encodeURIComponent(job.jobId)}&from=upload`;
+  location.href = `./processando.html?id=${encodeURIComponent(createdMaterial.id)}&job=${encodeURIComponent(job.jobId)}&from=upload`;
 }
 document.querySelector('[data-review-upload]').addEventListener('click', () => {
   if (busy || !form.reportValidity() || !info || !sourceFile) return;
@@ -264,42 +308,32 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     title: document.querySelector('#class-title').value.trim(),
     subject: document.querySelector('#subject').value.trim(),
     questionCount: Number(document.querySelector('#question-count').value),
-    retainAudio: document.querySelector('#keep-original-audio').checked,
+    retainAudio: info.hasVideo
+      ? document.querySelector('#media-retention').value !== 'none'
+      : document.querySelector('#keep-original-audio').checked,
+    retainVideo: info.hasVideo && document.querySelector('#media-retention').value === 'video',
     permissionAccepted: permissionInput.checked,
     permissionVersion: declaration.version,
     range: Object.freeze({ ...range }),
     file: sourceFile,
-    tags: document.querySelector('#upload-tags').value,
+    tags: tags.value(),
   });
   const choices = [
     ['Título', reviewedChoices.title],
     ['Disciplina', reviewedChoices.subject || 'Sem disciplina'],
+    ['Arquivo', shortName(sourceFile.name) + ' · ' + mediaExtension(sourceFile).toUpperCase()],
+    ['Trecho', timeLabel(range.start) + ' → ' + timeLabel(range.end)],
+    ['Duração', durationLabel(range.end - range.start)],
     [
-      'Arquivo e formato',
-      sourceFile.name +
-        ' · ' +
-        mediaExtension(sourceFile).toUpperCase() +
-        (info.hasVideo ? ' (somente o áudio será transcrito)' : ''),
+      'Guardar para depois',
+      reviewedChoices.retainVideo
+        ? 'Vídeo com áudio'
+        : reviewedChoices.retainAudio
+          ? 'Somente o áudio'
+          : 'Não guardar',
     ],
-    [
-      'Duração e recorte',
-      timeLabel(range.start, true) +
-        ' – ' +
-        timeLabel(range.end, true) +
-        ' · ' +
-        timeLabel(range.end - range.start, true),
-    ],
-    [
-      'Conservação',
-      reviewedChoices.retainAudio
-        ? 'Guardar o áudio do trecho; o vídeo original não será guardado.'
-        : 'Remover o áudio após transcrever; o player ficará indisponível.',
-    ],
-    [
-      'Questões',
-      reviewedChoices.questionCount + ' questões, após conferir e confirmar a transcrição',
-    ],
-    ['Permissão', 'Declaração confirmada por você'],
+    ['Questões', reviewedChoices.questionCount + ' questões'],
+    ['Tags', reviewedChoices.tags || 'Sem tags'],
   ];
   const list = document.querySelector('[data-upload-choice-list]');
   list.replaceChildren();
@@ -308,8 +342,11 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
       detail = document.createElement('dd');
     term.textContent = label;
     detail.textContent = value;
+    if (label === 'Arquivo') detail.title = sourceFile.name;
     list.append(term, detail);
   }
+  document.querySelector('[data-identification-fields]').hidden = true;
+  document.querySelector('[data-identification-actions]').hidden = true;
   reviewPanel.hidden = false;
   document.querySelector('[data-review-upload]').hidden = true;
   const heading = document.querySelector('#upload-review-title');
@@ -353,25 +390,22 @@ form.addEventListener('submit', async (event) => {
       if (latest?.text) document.querySelector('[data-permission-label]').textContent = latest.text;
       throw new Error('A declaração mudou. Leia e confirme novamente antes de enviar.');
     }
-    setStatus(
-      status,
-      info.hasVideo
-        ? 'Extraindo o áudio do trecho escolhido…'
-        : 'Preparando o áudio do trecho escolhido…',
-    );
-    const clip = await convertMedia(file, range, 'wav');
-    setStatus(status, 'Enviando o áudio preparado…');
+    progress(fields.retainVideo ? 'Preparando o vídeo…' : 'Preparando o áudio…');
+    const clip = await convertMedia(file, range, fields.retainVideo ? 'mp4' : 'wav');
+    progress(fields.retainVideo ? 'Enviando o vídeo…' : 'Enviando o áudio…');
     createdMaterial = await createMaterialWithUpload({
       ...fields,
       file: clip.file,
       durationMs: clip.durationMs,
     });
     saveTags(createdMaterial.id, fields.tags);
-    setStatus(status, 'Áudio enviado. Iniciando a transcrição…');
+    progress('Iniciando a transcrição…');
     await startProcessing();
   } catch (error) {
     if (!createdMaterial) {
       setStep(2);
+      document.querySelector('[data-identification-fields]').hidden = false;
+      document.querySelector('[data-identification-actions]').hidden = false;
       setStatus(
         status,
         error.message || 'Não foi possível enviar a gravação. Tente novamente.',
