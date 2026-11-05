@@ -16,7 +16,7 @@ test('Windows launcher starts the persistent Supabase API and worker', () => {
   assert.doesNotMatch(unified, /presentation\/server|live\/server/);
 });
 test('runtime verifies E02 and audio bucket before starting workers', () => {
-  const checker=read('backend/src/diagnostics/check-runtime.js');
+  const checker=read('backend/src/diagnostics/check-runtime.js') + read('backend/src/diagnostics/readiness.js');
   for (const target of ['material_permissions', 'transcription_confirmations','content_warnings','current_permission_version','getBucket'])
     assert.ok(checker.includes(target));
   assert.doesNotMatch(checker, /\.insert\(|\.update\(|\.delete\(/);
@@ -27,3 +27,4 @@ test('actual frontend does not contain demo banner', () => {
     assert.doesNotMatch(html,/Login e biblioteca temporários|IA REAL · transcrição/);
   }
 });
+

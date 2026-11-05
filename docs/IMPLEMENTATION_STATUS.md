@@ -1,3 +1,11 @@
+# Preparação para a primeira rodada — 05/11/2026
+
+Diagnóstico de inicialização ampliado para os recursos ativos, sem gravar dados; exemplo de ambiente com todas as flags; inventário SQL somente de leitura e [roteiro único de testes](first-integrated-test.md). Regressão adicionada para executar todas as migrations candidatas na mesma base descartável, preservar o conteúdo legado e testar questões/revisão entre contas. A execução automatizada deve ser conferida no Actions do commit; não equivale a homologação do Supabase real. Nenhuma migration remota, alteração de credenciais, ativação de flag, deploy ou merge realizada nesta preparação. Os limites funcionais e o que ainda requer validação humana estão no roteiro.
+
+O histórico abaixo registra cada etapa; a primeira rodada integrada permanece pendente.
+
+---
+
 # Etapas 8 e 9 — Código preparado; homologação integrada pendente
 
 Anotações/destaques privados por revisão, busca e exportação TXT/Markdown/impressão para PDF; calendário mensal com tarefas pendentes, horários próprios e exportação ICS; cópias de texto congeladas com token hashed, validade e revogação. Flags `annotations`, `calendar` e `sharing` permanecem OFF. Candidatas E14/E18/E19 e checks preparados; **nenhum SQL real, deploy ou merge**. A candidata E05 foi corrigida (regex interrompida e conteúdo duplicado) e a cadeia completa passou a ser exercitada em PostgreSQL de teste. Lint, 13 testes novos locais e seis regressões aprovados; CI e homologação real devem ser conferidos separadamente. Ver [guia das etapas 8/9](implementation-2.0/10-notes-calendar-sharing-workplan.md).
