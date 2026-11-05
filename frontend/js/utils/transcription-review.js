@@ -30,6 +30,8 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
   function updateControls() {
     const review = currentMaterial()?.review;
     const locked = actionBusy || generationBusy;
+    for (const select of document.querySelectorAll('[data-summary-format],[data-summary-length]'))
+      select.disabled = locked;
     document.querySelector('[data-review-state]').textContent = hasUnsavedEdits()
       ? 'Alterações não salvas'
       : isReady()
@@ -255,3 +257,4 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
     },
   };
 }
+

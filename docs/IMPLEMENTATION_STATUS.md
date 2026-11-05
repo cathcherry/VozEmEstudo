@@ -1,3 +1,11 @@
+# Etapa 5 — implementação concluída, homologação integrada pendente
+
+Flashcards manuais, revisão espaçada, histórico, filtros e paginação foram complementados por prévia de cartões por IA da transcrição confirmada, trechos de apoio e conferência individual antes de salvar. Resumos agora aceitam formato (parágrafos/tópicos) e extensão (breve/intermediária/detalhada), preservados nos parâmetros do job e utilizados pelo worker. Nenhuma nova migration nesta conclusão. Lint e 28 testes direcionados aprovados localmente; IA/banco reais e interface em navegador real ainda não homologados. O PR #2 permanece em rascunho; nenhum merge na `main`, deploy ou SQL remoto. Ver [guia E13](implementation-2.0/07-flashcards-workplan.md).
+
+O registro abaixo preserva o histórico de desenvolvimento e não substitui esta atualização.
+
+---
+
 # Etapa 5 iniciada — Flashcards e revisão espaçada (E13)
 
 Continuação: paginação do gerenciador, filtros por aula e situação, histórico de revisões visível e tratamento de falha ao recarregar após avaliação confirmada. Testes direcionados de API e DOM incluídos; geração por IA e personalização de resumos ainda pendentes. Sem nova migration nesta continuação. O teste integrado no Supabase e o aceite humano continuam pendentes.

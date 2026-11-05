@@ -440,7 +440,12 @@ document.querySelector('[data-show-versions]')?.addEventListener('click', async 
 async function runGeneration(kind, count, message) {
   if (generationBusy) return;
   const sourceRevisionId = scientificReview.sourceRevisionId();
-  const operation = kind + ':' + sourceRevisionId + ':' + (count || '');
+  const summaryOptions = {
+    format: document.querySelector('[data-summary-format]').value,
+    length: document.querySelector('[data-summary-length]').value,
+  };
+  const operation = kind + ':' + sourceRevisionId + ':' + (count || '') +
+    (kind === 'summary' ? ':' + JSON.stringify(summaryOptions) : '');
   let key = pendingGeneration.get(operation);
   if (!key) {
     key = crypto.randomUUID();
@@ -452,7 +457,7 @@ async function runGeneration(kind, count, message) {
     setStatus(message, 'Enfileirando geração da revisão confirmada…');
     const job =
       kind === 'summary'
-        ? await regenerateSummary(materialId, sourceRevisionId, key)
+        ? await regenerateSummary(materialId, sourceRevisionId, key, summaryOptions)
         : await generateQuestions(materialId, count, sourceRevisionId, key);
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => {
@@ -494,3 +499,4 @@ document.querySelector('[data-more-questions-form]')?.addEventListener('submit',
     setStatus(message, error.message, 'error');
   }
 });
+

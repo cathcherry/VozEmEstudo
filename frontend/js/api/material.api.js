@@ -8,10 +8,10 @@ export const deleteMaterial = (id) => apiFetch(`/api/materials/${id}`, { method:
 export const updateMaterial = (id, body) =>
   apiFetch(`/api/materials/${id}`, { method: 'PATCH', body: JSON.stringify(body) });
 export const processMaterial = (id) => apiFetch(`/api/materials/${id}/process`, { method: 'POST' });
-export const regenerateSummary = (id, sourceRevisionId, idempotencyKey) =>
+export const regenerateSummary = (id, sourceRevisionId, idempotencyKey, options) =>
   apiFetch(`/api/materials/${id}/summaries`, {
     method: 'POST',
-    body: JSON.stringify({ sourceRevisionId, idempotencyKey }),
+    body: JSON.stringify({ sourceRevisionId, idempotencyKey, ...(options ? { options } : {}) }),
   });
 export const generateQuestions = (id, count, sourceRevisionId, idempotencyKey) =>
   apiFetch(`/api/materials/${id}/question-batches`, {

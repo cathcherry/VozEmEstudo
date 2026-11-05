@@ -239,7 +239,8 @@ test('E02 HTTP and worker gates use real services, immutable PostgreSQL RPCs and
         assert.equal(confirmation.body.confirmation.id, repeated.body.confirmation.id);
         const job = await request('/api/materials/' + resourceIds.materialA + '/summaries', {
           method: 'POST',
-          body: { sourceRevisionId: revisionIds.a, idempotencyKey: randomUUID() },
+          body: { sourceRevisionId: revisionIds.a, idempotencyKey: randomUUID(),
+            options: { format: 'topics', length: 'detailed' } },
         });
         assert.equal(job.status, 202);
         const material = await request('/api/materials/' + resourceIds.materialA);
@@ -253,6 +254,7 @@ test('E02 HTTP and worker gates use real services, immutable PostgreSQL RPCs and
         });
         assert.equal(edit.status, 200);
         const queued = f.state.tables.processing_jobs.find((row) => row.id === job.body.jobId);
+        assert.deepEqual(queued.params.summaryOptions, { format: 'topics', length: 'detailed' });
         await executeClaimedJob({ ...queued, attempt_count: 1, max_attempts: 3 });
         const generated = f.state.tables.summary_versions.find(
           (row) => row.processing_job_id === queued.id,
@@ -260,6 +262,9 @@ test('E02 HTTP and worker gates use real services, immutable PostgreSQL RPCs and
         assert.equal(generated.source_transcription_version_id, revisionIds.a);
         assert.equal(generated.source_transcription_revision, 1);
         const summaryRequest = providerRequests.find((payload) => !payload.response_format);
+        assert.equal(summaryRequest.max_completion_tokens, 3500);
+        assert.match(summaryRequest.messages[0].content, /Organize em tópicos/);
+        assert.match(summaryRequest.messages[0].content, /mais detalhe/);
         assert(
           summaryRequest.messages.some((message) =>
             message.content.includes('Energia é conservada.'),

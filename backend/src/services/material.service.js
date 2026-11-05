@@ -1,6 +1,7 @@
 import { JOB_TYPE } from '../config/constants.js';
 import { getReviewState, listWarnings } from '../repositories/review.repository.js';
 import { validateGeneration } from '../validators/review.validator.js';
+import { validateSummaryGeneration } from '../validators/summary-options.validator.js';
 import { errors } from '../domain/errors.js';
 import { validateCreateMaterial, validateMaterialPatch } from '../validators/material.validator.js';
 import { assertSafeStoragePath } from '../validators/storage-path.validator.js';
@@ -94,8 +95,10 @@ export async function enqueueInitial(userId, materialId) {
 
 export async function enqueueSummary(userId, materialId, input) {
   await materials.getOwnedMaterial(userId, materialId);
-  const selection = validateGeneration(input);
-  return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, {}, selection);
+  const { selection, options } = validateSummaryGeneration(input);
+  // Preserve params for legacy callers (including retries of already queued jobs).
+  const params = input.options === undefined ? {} : { summaryOptions: options };
+  return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, params, selection);
 }
 export async function enqueueQuestions(userId, materialId, count, input) {
   await materials.getOwnedMaterial(userId, materialId);

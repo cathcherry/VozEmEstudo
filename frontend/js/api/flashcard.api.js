@@ -1,5 +1,11 @@
 import { apiFetch } from './http.js';
 
+export const getFlashcardSource = (materialId) =>
+  apiFetch(`/api/materials/${encodeURIComponent(materialId)}`);
+
+export const previewFlashcards = (data) =>
+  apiFetch('/api/flashcards/preview', { method: 'POST', body: JSON.stringify(data) });
+
 export const listFlashcards = (filter = 'due', options = {}) => {
   const params = new URLSearchParams({ filter });
   if (options.materialId) params.set('materialId', options.materialId);

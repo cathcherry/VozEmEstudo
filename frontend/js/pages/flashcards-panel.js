@@ -3,6 +3,7 @@ import { setStatus } from '../utils/shell.js';
 import {
   listFlashcards, createFlashcard, updateFlashcard, reviewFlashcard,
   listFlashcardReviews,
+  getFlashcardSource, previewFlashcards,
 } from '../api/flashcard.api.js';
 import {
   FLASHCARD_RATINGS, formatFlashcardDue, flashcardSummary,
@@ -48,6 +49,73 @@ export async function initFlashcardsPanel({ materials }) {
   let pageLimit = 100;
   let refreshVersion = 0;
   let historyVersion = 0;
+  let generating = false;
+
+  const generator = make('section', null, 'flashcard-generator');
+  generator.setAttribute('aria-label', 'Gerar cartões com IA');
+  const generateForm = make('form');
+  const generateLessonLabel = make('label', 'Aula para gerar cartões');
+  const generateLesson = make('select');
+  generateLesson.required = true;
+  generateLesson.append(new Option('Selecione uma aula', ''));
+  for (const material of materials) generateLesson.append(new Option(material.title, material.id));
+  generateLessonLabel.append(generateLesson);
+  const amountLabel = make('label', 'Quantidade máxima');
+  const amount = make('select');
+  for (const value of [5, 10, 20]) amount.append(new Option(String(value), String(value)));
+  amountLabel.append(amount);
+  const generateButton = make('button', 'Gerar prévia', 'secondary-action');
+  generateButton.type = 'submit';
+  const generateMessage = make('p');
+  generateMessage.setAttribute('role', 'status');
+  generateMessage.setAttribute('aria-live', 'polite');
+  const drafts = make('div');
+  generateForm.append(generateLessonLabel, amountLabel, generateButton);
+  generator.append(make('h3', 'Criar cartões com IA'),
+    make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.'),
+    generateForm, generateMessage, drafts);
+  createForm.before(generator);
+
+  generateForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (generating || !generateForm.reportValidity()) return;
+    generating = true;
+    const selectedMaterial = generateLesson.value;
+    generateButton.disabled = generateLesson.disabled = amount.disabled = true;
+    drafts.replaceChildren();
+    setStatus(generateMessage, 'Gerando prévia da revisão confirmada…');
+    void (async () => {
+      try {
+        const material = await getFlashcardSource(selectedMaterial);
+        if (material.review?.state !== 'ready_to_generate')
+          throw new Error('Abra a aula, confira e confirme a transcrição antes de gerar cartões.');
+        const result = await previewFlashcards({ materialId: selectedMaterial,
+          sourceRevisionId: material.review.sourceRevisionId, count: Number(amount.value) });
+        setStatus(generateMessage, `${result.cards.length} sugestões da revisão ${result.revision}. Confira cada uma; o trecho de apoio não garante que a resposta esteja correta.`, 'success');
+        for (const card of result.cards) {
+          const article = make('article', null, 'flashcard-draft');
+          article.append(make('h4', card.front), make('p', card.back, 'flashcard-content'),
+            make('p', `Trecho da transcrição: ${card.evidence}`, 'flashcard-muted'));
+          const use = make('button', 'Editar este cartão no formulário', 'secondary-action');
+          use.type = 'button';
+          use.addEventListener('click', () => {
+            frontInput.value = card.front;
+            backInput.value = card.back;
+            materialInput.value = selectedMaterial;
+            setStatus(createMessage, 'Sugestão copiada. Confira, edite e salve o cartão.');
+            frontInput.focus();
+          });
+          article.append(use);
+          drafts.append(article);
+        }
+      } catch (error) {
+        setStatus(generateMessage, error.message || 'Não foi possível gerar os cartões. Tente novamente.', 'error');
+      } finally {
+        generating = false;
+        generateButton.disabled = generateLesson.disabled = amount.disabled = false;
+      }
+    })();
+  });
 
   const filters = make('div', null, 'flashcard-filters');
   const lessonLabel = make('label', 'Filtrar por aula');

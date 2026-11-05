@@ -64,6 +64,8 @@ async function harness(overrides = {}) {
     updateFlashcard: async () => ({}),
     reviewFlashcard: async () => ({ dueAt: '2026-11-06T12:00:00Z' }),
     listFlashcardReviews: async () => [],
+    getFlashcardSource: async () => ({ review: { state: 'ready_to_generate', sourceRevisionId: 'source-a' } }),
+    previewFlashcards: async () => ({ cards: [], revision: 1 }),
     FLASHCARD_RATINGS, formatFlashcardDue, flashcardSummary,
     ...overrides,
   };
@@ -92,6 +94,65 @@ async function until(check) {
   }
   assert(check(), 'the expected UI state was not reached');
 }
+
+test('AI preview shows evidence, does not save automatically, and copies a suggestion for editing', async () => {
+  let writes = 0;
+  let requested;
+  const ui = await harness({
+    createFlashcard: async () => { writes++; },
+    previewFlashcards: async (input) => {
+      requested = input;
+      return { revision: 3, cards: [{ front: '<img src=x onerror=alert(1)>', back: 'Resposta para conferir', evidence: 'Trecho literal da aula.' }] };
+    },
+  });
+  try {
+    const form = ui.document.querySelector('.flashcard-generator form');
+    form.querySelector('select').value = 'lesson-a';
+    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    await until(() => ui.document.querySelector('.flashcard-draft'));
+    assert.deepEqual(requested, { materialId: 'lesson-a', sourceRevisionId: 'source-a', count: 5 });
+    assert.equal(writes, 0);
+    assert.equal(ui.document.querySelector('.flashcard-draft img'), null);
+    assert.match(ui.document.querySelector('.flashcard-draft').textContent, /Trecho literal/);
+    ui.document.querySelector('.flashcard-draft button').click();
+    const create = ui.document.querySelector('[data-flashcard-create-form]');
+    assert.equal(create.querySelector('[name="front"]').value, '<img src=x onerror=alert(1)>');
+    assert.equal(create.querySelector('[name="back"]').value, 'Resposta para conferir');
+    assert.equal(create.querySelector('[name="materialId"]').value, 'lesson-a');
+    assert.equal(writes, 0);
+  } finally { ui.close(); }
+});
+
+test('AI preview blocks an unconfirmed lesson and leaves a retryable error', async () => {
+  let previews = 0;
+  const ui = await harness({
+    getFlashcardSource: async () => ({ review: { state: 'awaiting_review' } }),
+    previewFlashcards: async () => { previews++; },
+  });
+  try {
+    const form = ui.document.querySelector('.flashcard-generator form');
+    form.querySelector('select').value = 'lesson-a';
+    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    await until(() => /confirme/.test(ui.document.querySelector('.flashcard-generator [role="status"]').textContent));
+    assert.equal(previews, 0);
+    assert.equal(form.querySelector('button').disabled, false);
+    assert.equal(ui.document.querySelector('.flashcard-draft'), null);
+  } finally { ui.close(); }
+});
+
+test('provider failure unlocks AI preview and preserves the manual creation form', async () => {
+  const ui = await harness({ previewFlashcards: async () => { throw new Error('Provedor indisponível'); } });
+  try {
+    const createFront = ui.document.querySelector('[data-flashcard-create-form] [name="front"]');
+    createFront.value = 'Meu cartão';
+    const form = ui.document.querySelector('.flashcard-generator form');
+    form.querySelector('select').value = 'lesson-a';
+    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    await until(() => /Provedor indisponível/.test(ui.document.querySelector('.flashcard-generator [role="status"]').textContent));
+    assert.equal(form.querySelector('button').disabled, false);
+    assert.equal(createFront.value, 'Meu cartão');
+  } finally { ui.close(); }
+});
 
 test('manager reaches card 101 and resets pagination when filtering by lesson or archive status', async () => {
   const calls = [];
