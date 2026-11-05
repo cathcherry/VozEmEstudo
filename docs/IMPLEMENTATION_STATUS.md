@@ -1,3 +1,9 @@
+# Etapas 8 e 9 — Código preparado; homologação integrada pendente
+
+Anotações/destaques privados por revisão, busca e exportação TXT/Markdown/impressão para PDF; calendário mensal com tarefas pendentes, horários próprios e exportação ICS; cópias de texto congeladas com token hashed, validade e revogação. Flags `annotations`, `calendar` e `sharing` permanecem OFF. Candidatas E14/E18/E19 e checks preparados; **nenhum SQL real, deploy ou merge**. A candidata E05 foi corrigida (regex interrompida e conteúdo duplicado) e a cadeia completa passou a ser exercitada em PostgreSQL de teste. Lint, 13 testes novos locais e seis regressões aprovados; CI e homologação real devem ser conferidos separadamente. Ver [guia das etapas 8/9](implementation-2.0/10-notes-calendar-sharing-workplan.md).
+
+---
+
 # Etapa 7 — Progresso, tempo e metas implementados; homologação integrada pendente
 
 Andamento por conta/aula sincronizável com fila de reenvio e resolução explícita de conflitos; histórico local preservado e importação sem fabricar minutos retroativos. Sessões exclusivas por conta, tempo confirmado pelo servidor, Pomodoro 25/5 e meta semanal com fuso configurável. Código e migration candidata E08/E09 preparados; `FEATURE_STUDY_TRACKING` permanece OFF. Nenhum SQL remoto, deploy ou merge na `main`. Lint e 16 testes novos locais passaram, além das 16 regressões direcionadas da etapa 6. Testes HTTP/SQL e validação real continuam sujeitos às evidências de CI e homologação. Ver [guia da etapa 7](implementation-2.0/09-study-tracking-workplan.md).

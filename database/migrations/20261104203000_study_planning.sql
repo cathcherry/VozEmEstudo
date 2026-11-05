@@ -66,7 +66,11 @@ create table public.study_tasks (
   -- External references are stored as URLs, never fetched by the server.
   reference_url text check (
     reference_url is null or
-    (char_length(reference_url) <= 2048 and reference_url ~ '^https://[^[:space:]]+
+    (char_length(reference_url) <= 2048 and reference_url ~ '^https://[^[:space:]]+$')
+  ),
+  -- New tasks naturally appear at the end, even after a manual reorder.
+  sort_order bigint not null default (floor(extract(epoch from clock_timestamp()) * 1000)::bigint),
+  completed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint study_tasks_goal_owner_fk
@@ -156,64 +160,6 @@ revoke all on function public.study_reorder_tasks(uuid, uuid, uuid[])
 from public, anon, authenticated;
 grant execute on function public.study_reorder_tasks(uuid, uuid, uuid[])
 to service_role;
-
-alter table public.study_goals enable row level security;
-alter table public.study_tasks enable row level security;
-alter table public.study_subgoals enable row level security;
-
-create policy study_goals_select_own on public.study_goals
-  for select to authenticated using (user_id = (select auth.uid()));
-create policy study_tasks_select_own on public.study_tasks
-  for select to authenticated using (user_id = (select auth.uid()));
-
-create policy study_subgoals_select_own on public.study_subgoals
-  for select to authenticated using (user_id = (select auth.uid()));
-
-revoke all on table public.study_goals, public.study_subgoals, public.study_tasks
-  from public, anon, authenticated;
-grant select, insert, update, delete on table public.study_goals, public.study_subgoals, public.study_tasks
-  to service_role;
-commit;
-)
-  ),
-  -- New tasks naturally appear at the end, even after a manual reorder.
-  sort_order bigint not null default (floor(extract(epoch from clock_timestamp()) * 1000)::bigint),
-  completed_at timestamptz,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint study_tasks_goal_owner_fk
-    foreign key (goal_id, user_id)
-    references public.study_goals(id, user_id) on delete cascade,
-  constraint study_tasks_subgoal_scope_fk
-    foreign key (subgoal_id, goal_id, user_id)
-    references public.study_subgoals(id, goal_id, user_id)
-    on delete set null (subgoal_id),
-  constraint study_tasks_material_owner_fk
-    foreign key (material_id, user_id)
-    references public.materials(id, user_id)
-    on delete set null (material_id)
-);
-
-create index study_goals_owner_created_idx on public.study_goals(user_id, created_at desc);
-create index study_subgoals_goal_created_idx
-  on public.study_subgoals(goal_id, created_at);
-create index study_tasks_subgoal_idx
-  on public.study_tasks(subgoal_id)
-  where subgoal_id is not null;
-create index study_tasks_goal_created_idx on public.study_tasks(goal_id, created_at);
-create index study_tasks_owner_due_idx on public.study_tasks(user_id, due_date);
-create index study_tasks_material_idx on public.study_tasks(material_id)
-  where material_id is not null;
-
-create trigger study_goals_set_updated_at
-  before update on public.study_goals
-  for each row execute function public.set_updated_at();
-create trigger study_subgoals_set_updated_at
-  before update on public.study_subgoals
-  for each row execute function public.set_updated_at();
-create trigger study_tasks_set_updated_at
-  before update on public.study_tasks
-  for each row execute function public.set_updated_at();
 
 alter table public.study_goals enable row level security;
 alter table public.study_tasks enable row level security;

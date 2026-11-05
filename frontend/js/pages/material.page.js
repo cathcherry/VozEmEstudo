@@ -19,6 +19,7 @@ import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, removeOriginalVideo } from '../api/playback.api.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
+import { initMaterialTools } from './material-tools.js';
 
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search);
@@ -44,6 +45,7 @@ const transcriptPlayer = initTranscriptPlayer({ container: segmentsContainer,
   toolbar: document.querySelector('[data-transcript-player-toolbar]'), player: audioPlayer });
 let playbackIdentity = '', renewBusy = false, lastRenewedAt = 0, playbackRequest = 0;
 let waveformController, stopTracking;
+let materialToolsInitialized=false;
 let currentMaterial,
   editingRevision,
   generationBusy = false;
@@ -223,6 +225,9 @@ function renderMaterial(material) {
   }
 
   scientificReview.render(material);
+  if(!materialToolsInitialized){materialToolsInitialized=true;void initMaterialTools({materialId,context:()=>currentMaterial,segments:segmentsContainer}).catch((error)=>{
+    const panel=document.querySelector('[data-material-tools]');panel.hidden=false;panel.textContent=error.message||'Ferramentas indisponíveis.';
+  });}
 
   const summarySection = document.querySelector('[data-summary-section]');
   const currentSummary = material.summaries?.find((s) => s.is_current) || material.summaries?.[0];

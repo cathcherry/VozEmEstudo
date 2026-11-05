@@ -8,11 +8,13 @@ import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
+import { initDashboardTools } from './dashboard-tools.js';
 
 const session=await initAuthenticatedShell();
 let planningInitialized = false;
 let flashcardsInitialized = false;
 let trackingInitialized = false;
+let dashboardToolsInitialized=false;
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
@@ -21,6 +23,7 @@ async function load() {
   container.setAttribute('aria-busy','true');
   try {
     const materials=await listMaterials();
+    if(!dashboardToolsInitialized){dashboardToolsInitialized=true;void initDashboardTools({materials});}
     if(!trackingInitialized) {
       trackingInitialized=true;
       void initStudyTrackingPanel({materials}).catch((error)=>{

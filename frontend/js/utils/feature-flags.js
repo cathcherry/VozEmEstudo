@@ -10,6 +10,8 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'flashcards',
   'social_basic',
   'sharing',
+  'annotations',
+  'calendar',
 ]);
 
 export function normalizeFeatureFlags(source = {}) {
@@ -27,3 +29,4 @@ export async function isFeatureEnabled(name) {
   if (!FEATURE_FLAG_NAMES.includes(name)) return false;
   return (await getFeatureFlags())[name];
 }
+

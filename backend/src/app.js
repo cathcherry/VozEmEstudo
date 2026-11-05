@@ -19,6 +19,7 @@ import { questionRouter } from './routes/question.routes.js';
 import { jobRouter } from './routes/job.routes.js';
 import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
+import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -53,6 +54,12 @@ app.get('/api/config', (_req, res) => {
 
 app.use('/api/media', requireAuth, mediaRouter);
 app.use('/api/materials', requireAuth, materialRouter);
+if(isFeatureEnabled('annotations'))app.use('/api/annotations',requireAuth,annotationRouter);
+if(isFeatureEnabled('calendar'))app.use('/api/calendar',requireAuth,calendarRouter);
+if(isFeatureEnabled('sharing')){
+  app.use('/api/sharing',requireAuth,sharingRouter);
+  app.post('/api/shared-material',publicShare);
+}
 if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);
 if (isFeatureEnabled('quiz_v2')) app.use('/api/quiz-sessions', requireAuth, quizSessionRouter);

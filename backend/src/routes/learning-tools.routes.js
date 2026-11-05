@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import { learningToolsService as service } from '../services/learning-tools.service.js';
+const action=(fn)=>async(req,res,next)=>{try{res.set({'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Robots-Tag':'noindex, nofollow'});res.json(await fn(req));}catch(error){next(error);}};
+export const annotationRouter=Router();
+annotationRouter.get('/',action((r)=>service.notes(r.user.id,r.query)));
+annotationRouter.put('/',action((r)=>service.saveNote(r.user.id,r.body)));
+export const calendarRouter=Router();
+calendarRouter.get('/',action((r)=>service.calendar(r.user.id,r.query)));
+calendarRouter.put('/',action((r)=>service.saveEvent(r.user.id,r.body)));
+export const sharingRouter=Router();
+sharingRouter.get('/:materialId',action((r)=>service.shares(r.user.id,r.params.materialId,r.query)));
+sharingRouter.post('/:materialId',action((r)=>service.createShare(r.user.id,r.params.materialId,r.body)));
+sharingRouter.delete('/:materialId/:shareId',action((r)=>service.revoke(r.user.id,r.params.materialId,r.params.shareId)));
+export const publicShare=action((r)=>service.publicShare(r.body));
