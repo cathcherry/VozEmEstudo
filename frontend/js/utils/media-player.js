@@ -18,6 +18,7 @@ export class MediaPlayer {
     this.timelineStart = 0; this.timelineDuration = 0; this.pendingPosition = null;
     container.classList.add('media-player');
     container.tabIndex = 0;
+    container.setAttribute('role', 'group');
     container.setAttribute('aria-label', 'Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.');
     container.innerHTML = `<div class="player-heading"><span class="player-cover" aria-hidden="true">♫</span><div><strong data-player-title>Gravação da aula</strong><span data-player-type>Áudio</span></div><span class="player-format" data-player-format></span></div>
       <div class="video-preview" hidden><video playsinline preload="metadata"></video></div><audio preload="metadata"></audio>
