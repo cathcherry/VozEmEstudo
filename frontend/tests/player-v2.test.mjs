@@ -111,7 +111,7 @@ test('transcript search respects accents, uses draft text and navigates without 
 test('study history stores video-relative position and restores position and speed per account', () => {
   const h = harness();
   try {
-    const store = new Function('window', 'localStorage', `${studySource}; return {setStudyUser, studyFor, updateStudy, trackPlayback};`)(h.window, h.window.localStorage);
+    const store = new Function('window', 'localStorage', 'CustomEvent', `${studySource}; return {setStudyUser, studyFor, updateStudy, trackPlayback};`)(h.window, h.window.localStorage, h.window.CustomEvent);
     store.setStudyUser('a'); store.updateStudy('lesson', { position: 6, playbackRate: 2 });
     h.player.setSource({ src: 'https://test.invalid/video', video: true, duration: 20, timelineStart: 30, timelineDuration: 20 });
     const stop = store.trackPlayback(h.player, 'lesson'); h.metadata(100);
