@@ -568,7 +568,7 @@ async function main() {
     await page.locator('[data-library-count]').filter({ hasText: '1 aula' }).waitFor();
     assert.equal(await page.locator('.library-material').count(), 1);
     assert.equal(materials.find((m) => m.id === 'aula-real').subject, 'Física');
-    await page.locator('.library-filter-panel > summary').click();
+    await page.getByRole('button', { name: 'Filtros', exact: true }).click();
     await page.locator('#library-tag').selectOption('revisão');
     assert.equal(await page.locator('.library-material').count(), 1);
     await page.locator('#library-subject').selectOption('Física');
