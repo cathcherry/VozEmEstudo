@@ -18,10 +18,12 @@ nomes do diálogo antes de calcular a chave de idempotência e chamar a API.
 - Manter `main` como destino oficial e `consolidacao/tcc` até revisão e integração.
 - Após integração com histórico preservado e validação em main, as branches
   de acessibilidade, simplificação e biblioteca podem ser removidas.
-- Manter `chore/etapa-1-estabilizacao`: oito commits exclusivos de CI, documentação
-  e inicializador Windows precisam de revisão própria. Não substituir o package.json
-  atual pelo dessa branch, pois isso retiraria scripts dos módulos posteriores.
-- Não houve push, exclusão de branches ou integração em main nesta consolidação.
+- O histórico de `chore/etapa-1-estabilizacao` também foi incorporado. Os oito
+  commits foram comparados com a consolidação: as correções de inicialização,
+  lint e documentação já estavam presentes; preservamos os testes dos módulos
+  posteriores no package.json e o histórico completo das etapas no relatório.
+- Após publicar a candidata, revisar o PR para main e seus resultados de CI.
+  A integração em main e a exclusão de branches são passos posteriores.
 
 ## Próxima etapa: Gemini
 

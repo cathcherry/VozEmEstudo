@@ -1,3 +1,9 @@
+# Estado da consolidação — 18/11/2026
+
+A versão candidata é `consolidacao/tcc`: base de acessibilidade, interface simplificada e histórico de estabilização integrados. Consulte [o relatório da consolidação e o plano futuro Gemini](CONSOLIDACAO_TCC.md). Os registros datados abaixo preservam o histórico; não indicam ausência dos módulos posteriores. A homologação do banco remoto e os resultados do GitHub Actions devem ser conferidos separadamente.
+
+---
+
 # Preparação para a primeira rodada — 05/11/2026
 
 Diagnóstico de inicialização ampliado para os recursos ativos, sem gravar dados; exemplo de ambiente com todas as flags; inventário SQL somente de leitura e [roteiro único de testes](first-integrated-test.md). Regressão adicionada para executar todas as migrations candidatas na mesma base descartável, preservar o conteúdo legado e testar questões/revisão entre contas. A execução automatizada deve ser conferida no Actions do commit; não equivale a homologação do Supabase real. Nenhuma migration remota, alteração de credenciais, ativação de flag, deploy ou merge realizada nesta preparação. Os limites funcionais e o que ainda requer validação humana estão no roteiro.
