@@ -431,7 +431,7 @@ async function main() {
     assert.match(await page.locator('[data-overview]').textContent(), /2 aulas no acervo/);
     assert.equal(await page.locator('main .theme-option').count(), 0);
     assert.equal(await page.locator('.insights-rail').count(), 0);
-    assert.equal(await page.locator('[data-recent-list] .library-material').count(), 2);
+    assert.equal(await page.locator('[data-recent-list] .dashboard-lesson-card').count(), 2);
     await screenshot(page, output, 'dashboard-desktop.png');
     record('Painel como biblioteca, com dados reais e sem controles de tema no conteúdo');
     await page.getByRole('button', { name: 'Recolher barra lateral', exact: true }).click();
