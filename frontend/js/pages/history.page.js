@@ -306,7 +306,7 @@ function groupMaterials(visible) {
 
 function lessonCountLabel(total) { return `${total} ${total === 1 ? 'aula' : 'aulas'}`; }
 
-function renderFolderGroups(visible, needle) {
+function renderFolderGroups(visible, _needle) {
   const folderGroups = groupMaterials(visible);
   let groupIndex = 0;
   for (const group of folderGroups) {
@@ -340,12 +340,12 @@ function renderFolderGroups(visible, needle) {
       ? catalog.units.filter((unit) => unit.subject_id === group.id)
       : [];
     if (catalogEnabled && group.id) {
-      const createUnit = document.createElement('button');
-      createUnit.type = 'button';
-      createUnit.className = 'catalog-add-unit';
-      createUnit.textContent = '+ Nova unidade';
-      createUnit.addEventListener('click', () => openUnitDialog({ id: group.id, name: group.name }));
-      content.append(createUnit);
+      const createUnitButton = document.createElement('button');
+      createUnitButton.type = 'button';
+      createUnitButton.className = 'catalog-add-unit';
+      createUnitButton.textContent = '+ Nova unidade';
+      createUnitButton.addEventListener('click', () => openUnitDialog({ id: group.id, name: group.name }));
+      content.append(createUnitButton);
     }
 
     const groupedIds = new Set();
