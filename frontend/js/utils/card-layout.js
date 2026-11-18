@@ -92,7 +92,7 @@ function attachDrag(card,saveOrder) {
         document.body.append(ghost);card.classList.add('is-dragging');document.body.classList.add('card-manipulating');tick();
       }
       ghost.style.left=`${e.clientX+16}px`;ghost.style.top=`${e.clientY+12}px`;
-      let target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-custom-block]');
+      const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-custom-block]');
       if(!target || target===card || target.parentElement!==grid) return;
       const rect=target.getBoundingClientRect();
       const after = Math.abs(e.clientY-(rect.top+rect.height/2))<rect.height*.35 ? e.clientX>rect.left+rect.width/2 : e.clientY>rect.top+rect.height/2;
