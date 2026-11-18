@@ -1,0 +1,339 @@
+[hidden] {
+  display: none !important;
+}
+.material-breadcrumb {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.material-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+.material-heading > div {
+  min-width: 0;
+}
+.material-header-actions,
+.review-navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.compact-edit {
+  font-size: 0.85rem;
+}
+.title-placeholder {
+  display: block;
+  width: min(15rem, 65vw);
+  height: 1em;
+  background: var(--border);
+  border-radius: 0.2rem;
+  opacity: 0.5;
+}
+.waiting-screen,
+.review-welcome {
+  text-align: center;
+  padding: clamp(2rem, 6vw, 5rem) 1.5rem;
+}
+.waiting-screen .loading-indicator {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.waiting-screen h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+}
+.waiting-screen > p {
+  color: var(--muted);
+}
+.waiting-screen .waiting-tip {
+  margin-block: 2rem;
+  font-size: 0.95rem;
+}
+.material-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.material-tabs [role='tab'] {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  font: inherit;
+}
+.material-tabs [aria-selected='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+  font-weight: 700;
+}
+[role='tabpanel'] {
+  margin-top: 0;
+  min-height: 18rem;
+}
+.quiet-menu {
+  position: relative;
+  font-size: 0.9rem;
+}
+.quiet-menu summary {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+.quiet-menu[open] {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--surface);
+}
+.quiet-menu button,
+.quiet-menu label {
+  display: block;
+  margin: 0.5rem;
+}
+.transcription-segment {
+  border: 0;
+  padding: 0.75rem 0;
+}
+.transcription-segment textarea {
+  border: 1px solid transparent;
+  background: transparent;
+  resize: vertical;
+  width: 100%;
+  line-height: 1.8;
+}
+.transcription-segment textarea:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+.transcription-segment.is-playing {
+  border-inline-start: 3px solid var(--accent);
+  padding-inline-start: 0.75rem;
+}
+.confirmation-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.material-study-tools {
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+.workflow-dialog {
+  width: min(34rem, calc(100vw - 2rem));
+  max-height: 85dvh;
+  overflow: auto;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  color: var(--text);
+  background: var(--surface);
+}
+.workflow-dialog::backdrop {
+  background: rgb(0 0 0 / 0.35);
+}
+.workflow-dialog label {
+  display: block;
+  margin-block: 1rem;
+}
+.workflow-dialog select {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+.dialog-close {
+  float: right;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.question-batch-row {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+}
+.question-batch-row summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+}
+.question-batch-row[open] .small-action {
+  display: inline-block;
+  margin-top: 1rem;
+}
+.markdown-content {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.markdown-content p {
+  white-space: normal;
+}
+.markdown-content li {
+  margin-block: 0.5rem;
+}
+.markdown-content pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+.tag-editor {
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  padding: 0.5rem;
+}
+.tag-editor:focus-within {
+  outline: 2px solid var(--accent);
+}
+.tag-editor input {
+  border: 0;
+  width: 100%;
+  box-shadow: none;
+}
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  animation: chip-in 0.16s ease-out;
+}
+.tag-chip button {
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  min-width: 1.5rem;
+}
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.download-clip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  padding: 0.6rem;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+.download-clip .download-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.2s;
+}
+.download-clip:hover .download-label,
+.download-clip:focus-visible .download-label {
+  max-width: 10rem;
+}
+.clip-export-row {
+  justify-content: flex-end;
+}
+.player-heading strong,
+[data-selected-file] {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player-heading > div {
+  min-width: 0;
+}
+.trim-ranges {
+  display: none;
+}
+.waveform-selection {
+  pointer-events: none;
+}
+.waveform-handle {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 18px;
+  z-index: 4;
+  border: 0;
+  border-inline: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  cursor: ew-resize;
+  touch-action: none;
+  transform: translateX(-50%);
+}
+.review-navigation {
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.privacy-link {
+  display: inline-block;
+  font-size: 0.85rem;
+  margin-block: 0.75rem;
+}
+.restart-action {
+  margin-inline-start: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tag-chip {
+    animation: none;
+  }
+  .download-label {
+    transition: none;
+  }
+}
+@media (max-width: 600px) {
+  .material-heading {
+    flex-direction: column;
+  }
+  .material-tabs [role='tab'] {
+    padding-inline: 0.6rem;
+  }
+  .section-title-row {
+    flex-wrap: wrap;
+  }
+  .review-navigation {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .material-header-actions {
+    flex-wrap: wrap;
+  }
+}
+@media print {
+  body.print-export * {
+    visibility: hidden;
+  }
+  body.print-export [data-print-export],
+  body.print-export [data-print-export] * {
+    visibility: visible;
+  }
+  [data-print-export] {
+    position: absolute;
+    inset: 0;
+    background: white;
+    color: black;
+    padding: 2rem;
+  }
+}
+.identification-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}

@@ -14,6 +14,7 @@ import {
   getReviewState,
   requirePermission,
 } from '../repositories/review.repository.js';
+import { convertMedia } from './media.service.js';
 import { downloadAudioBuffer, finalizeAudioStorage } from './audio.service.js';
 import { transcribeMaterial } from './transcription.service.js';
 import { generateSummary } from './summary.service.js';
@@ -92,7 +93,9 @@ async function runInitial(job) {
   if (!transcription) {
     if (!audio?.storage_path) throw new Error('Arquivo de áudio temporário não encontrado.');
     await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Transcrevendo o áudio.');
-    const bytes = await downloadAudioBuffer(audio.storage_path);
+    let bytes = await downloadAudioBuffer(audio.storage_path);
+    if (audio.extension === 'mp4')
+      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
     await transcribeMaterial(material.id, bytes, { durationMs: audio.duration_ms || 0 });
   }
   // Retention is resolved after the ASR snapshot is durable, independently of human review or LLM success.

@@ -1,4 +1,3 @@
-import { initTranscriptionReview } from '../utils/transcription-review.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { formatDate, formatTimestamp } from '../utils/format.js';
@@ -10,123 +9,186 @@ import {
   regenerateSummary,
   generateQuestions,
 } from '../api/material.api.js';
-import { getJob, getJobEvents, pollJob } from '../api/job.api.js';
-import { statusLabel } from '../utils/material-ui.js';
+import { pollJob } from '../api/job.api.js';
+import { initTranscriptionReview } from '../utils/transcription-review.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
-import { tagList } from '../utils/library-ui.js';
 import { MediaPlayer } from '../utils/media-player.js';
 import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, removeOriginalVideo } from '../api/playback.api.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
+import { renderMarkdown } from '../utils/markdown.js';
 
 await initAuthenticatedShell();
-const params = new URLSearchParams(location.search);
-const materialId = params.get('id');
-const initialJobId = params.get('job');
-if (!materialId) location.href = './historico.html';
-if(materialId) void initStudyTrackingPanel({materialId}).catch((error)=>{
-  const panel=document.querySelector('[data-study-tracking-panel]');
-  if(panel&&!panel.hidden)panel.textContent=error.message||'Progresso indisponível.';
-});
-
-const titleEl = document.querySelector('[data-material-title]');
-const metaEl = document.querySelector('[data-material-meta]');
-const statusEl = document.querySelector('[data-material-status]');
-const processingText = document.querySelector('[data-processing-status]');
-const eventList = document.querySelector('[data-processing-events]');
-const segmentsContainer = document.querySelector('[data-transcription-segments]');
-const transcriptMessage = document.querySelector('[data-transcription-message]');
-const audioPlayer = new MediaPlayer(document.querySelector('[data-audio-player]'), {
-  onError: () => { void renewPlayback({ automatic: true }); },
-});
-const transcriptPlayer = initTranscriptPlayer({ container: segmentsContainer,
-  toolbar: document.querySelector('[data-transcript-player-toolbar]'), player: audioPlayer });
-let playbackIdentity = '', renewBusy = false, lastRenewedAt = 0, playbackRequest = 0;
-let waveformController, stopTracking;
-let materialToolsInitialized=false;
+const $ = (selector) => document.querySelector(selector);
+const params = new URLSearchParams(location.search),
+  materialId = params.get('id');
+if (!materialId) location.replace('./historico.html');
 let currentMaterial,
   editingRevision,
-  generationBusy = false;
-const pendingGeneration = new Map();
-let questionCountInitialized = false;
-let originalSegmentText = new Map();
-let didInitialScroll = false,
-  visited = false;
-function hasUnsavedEdits() {
-  return [...document.querySelectorAll('.transcription-segment')].some(
-    (node) =>
-      node.querySelector('textarea').value.trim() !==
-      originalSegmentText.get(node.dataset.segmentId),
-  );
+  original = new Map(),
+  reviewOpened = false,
+  busy = false,
+  stopTracking,
+  waveformController;
+let activeTab =
+  { '#resumo': 'summary', '#questoes': 'questions', '#gerar-questoes': 'questions' }[
+    location.hash
+  ] || 'transcription';
+let waitingSince,
+  initialRender = true;
+const pending = new Map();
+const player = new MediaPlayer($('[data-audio-player]'), {
+  onError: () => {
+    $('[data-retry-media]').hidden = false;
+    void renewPlayback({ automatic: true });
+  },
+});
+const segmentsContainer = $('[data-transcription-segments]');
+const transcriptMessage = $('[data-transcription-message]');
+const transcriptPlayer = initTranscriptPlayer({
+  container: segmentsContainer,
+  toolbar: $('[data-transcript-player-toolbar]'),
+  player,
+});
+let playbackIdentity = '', renewBusy = false, lastRenewedAt = 0, playbackRequest = 0;
+let materialToolsInitialized = false;
+if (materialId) void initStudyTrackingPanel({ materialId }).catch((error) => {
+  const panel = $('[data-study-tracking-panel]');
+  if (panel && !panel.hidden) panel.textContent = error.message || 'Progresso indisponível.';
+});
+// One delegated listener keeps both existing follow controls in agreement.
+const followAudio = $('[data-follow-audio]');
+const toolbarFollow = $('[data-transcript-player-toolbar] input[type="checkbox"]');
+function syncFollowControls(event) {
+  if (event.target !== followAudio && event.target !== toolbarFollow) return;
+  followAudio.checked = toolbarFollow.checked = event.target.checked;
 }
+document.addEventListener('change', syncFollowControls);
+const messages = {
+  summary: $('[data-summary-message]'),
+  questions: $('[data-more-questions-message]'),
+};
 const scientificReview = initTranscriptionReview({
   materialId,
   currentMaterial: () => currentMaterial,
   reload,
   hasUnsavedEdits,
+  saveEdits,
+  onOpen: () => {
+    reviewOpened = true;
+    activeTab = 'transcription';
+    layout();
+  },
+  onConfirmed: () => {
+    activeTab = 'summary';
+    layout();
+    const heading = $('[data-summary-section] h2');
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+    heading.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  },
 });
-const reviewButton = document.querySelector('[data-complete-review]');
-function updateReview() {
-  const complete = studyFor(materialId).completed;
-  reviewButton.setAttribute('aria-pressed', String(complete));
-  reviewButton.textContent = complete ? 'Revisão concluída · desfazer' : 'Marcar revisão concluída';
+function hasUnsavedEdits() {
+  return [...document.querySelectorAll('.transcription-segment')].some(
+    (n) => n.querySelector('textarea').value.trim() !== original.get(n.dataset.segmentId),
+  );
 }
-reviewButton.addEventListener('click', () => {
-  const saved = completeReview(materialId, !studyFor(materialId).completed);
-  updateReview();
-  document.querySelector('[data-review-message]').textContent = saved
-    ? (isStudySyncEnabled()?'Andamento salvo neste navegador e aguardando sincronização com a conta.':'Seu andamento foi salvo neste navegador.')
-    : 'Não foi possível salvar o andamento neste navegador.';
-});
-document.querySelector('[data-organize-material]').href =
-  './historico.html?edit=' + encodeURIComponent(materialId);
-const workflow = document.querySelector('.workflow-steps');
-workflow.hidden = params.get('from') !== 'upload';
-function updateWorkflow(done) {
-  workflow.querySelectorAll('[data-workflow-step]').forEach((item) => {
-    const number = Number(item.dataset.workflowStep);
-    const current = !done && number === 3;
-    item.classList.toggle('current', current);
-    item.classList.toggle('completed', done || number < 3);
-    if (current) item.setAttribute('aria-current', 'step');
-    else item.removeAttribute('aria-current');
-    item.querySelector('.step-number').textContent = done || number < 3 ? '✓' : number;
-  });
+function ready() {
+  return currentMaterial?.review?.state === 'ready_to_generate';
 }
-
-function jobLabel(job) {
-  const stages = {
-    VALIDACAO: 'Validando',
-    TRANSCRICAO: 'Transcrevendo',
-    RESUMO: 'Gerando resumo',
-    QUESTOES: 'Gerando questões',
-    FINALIZACAO: 'Finalizando',
-  };
-  if (job.status === 'CONCLUIDA') return 'Processamento concluído.';
-  if (job.status === 'FALHOU') return job.error_message || 'O processamento falhou.';
-  if (job.status === 'CANCELADA') return 'Processamento cancelado.';
-  if (job.status === 'AGUARDANDO_REPETICAO')
-    return 'Falha temporária. O sistema tentará novamente.';
-  return stages[job.current_stage] || 'Aguardando processamento...';
-}
-
-async function renderJob(jobId) {
-  if (!jobId) return;
-  try {
-    const events = await getJobEvents(jobId);
-    eventList.innerHTML = '';
-    events.forEach((event) => {
-      const li = document.createElement('li');
-      li.textContent = `${formatDate(event.created_at)} — ${event.message || event.stage || event.status}`;
-      eventList.appendChild(li);
-    });
-  } catch {
-    /* Job events are optional; preserve material content when the event endpoint fails. */
+function layout() {
+  if (!currentMaterial) return;
+  const transcript = Boolean(currentMaterial.transcription);
+  const waiting = !transcript;
+  $('[data-processing-section]').hidden = !waiting;
+  $('[data-review-welcome]').hidden = waiting || ready() || reviewOpened;
+  const showContent = transcript && (ready() || reviewOpened);
+  $('.material-tabs').hidden = !showContent || !ready();
+  $('[data-material-actions]').hidden = !showContent;
+  $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
+  for (const name of ['transcription', 'summary', 'questions']) {
+    const tab = $(`[data-material-tab="${name}"]`);
+    tab.setAttribute('aria-selected', String(activeTab === name));
+    tab.tabIndex = activeTab === name ? 0 : -1;
+    $(`[data-${name}-section]`).hidden = !showContent || activeTab !== name;
   }
+  $('[data-open-export]').hidden = !transcript;
+  $('[data-follow-audio]').closest('label').hidden = !player.source || !hasUsefulTiming();
 }
-
+function selectTab(name, focus = false) {
+  if (!ready() && name !== 'transcription') return;
+  activeTab = name;
+  layout();
+  history.replaceState(
+    null,
+    '',
+    '#' + { transcription: 'transcricao', summary: 'resumo', questions: 'questoes' }[name],
+  );
+  if (focus) $(`[data-material-tab="${name}"]`).focus();
+}
+const tabs = [...document.querySelectorAll('[data-material-tab]')];
+tabs.forEach((tab, index) => {
+  tab.addEventListener('click', () => selectTab(tab.dataset.materialTab));
+  tab.addEventListener('keydown', (e) => {
+    let next;
+    if (e.key === 'ArrowRight') next = (index + 1) % tabs.length;
+    if (e.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+    if (e.key === 'Home') next = 0;
+    if (e.key === 'End') next = tabs.length - 1;
+    if (next !== undefined) {
+      e.preventDefault();
+      selectTab(tabs[next].dataset.materialTab, true);
+    }
+  });
+});
+function jobLabel(job) {
+  if (job.status === 'FALHOU')
+    return job.error_message || 'Não foi possível concluir. Tente novamente.';
+  if (job.status === 'CANCELADA') return 'Processamento cancelado';
+  if (job.status === 'AGUARDANDO_REPETICAO') return 'Aguardando nova tentativa…';
+  return (
+    {
+      VALIDACAO: 'Preparando o áudio…',
+      TRANSCRICAO: 'Transcrevendo o áudio…',
+      FINALIZACAO: 'Finalizando a transcrição…',
+      RESUMO: 'Gerando resumo…',
+      QUESTOES: 'Gerando questões…',
+    }[job.current_stage] || 'Na fila…'
+  );
+}
+function updateWaiting(job) {
+  waitingSince ||= job.created_at || currentMaterial?.created_at || new Date().toISOString();
+  $('[data-processing-status]').textContent = jobLabel(job);
+  if (job.events) {
+    const list = $('[data-processing-events]');
+    list.replaceChildren();
+    for (const event of job.events) {
+      const item = document.createElement('li');
+      item.textContent = event.message;
+      list.append(item);
+    }
+  }
+  $('[data-processing-spinner]').hidden = ['FALHOU', 'CANCELADA'].includes(job.status);
+}
+const tips = [
+  'Organize suas aulas por disciplina e tags.',
+  'Você pode personalizar o formato e a extensão dos resumos.',
+  'Use as questões para praticar o conteúdo da aula.',
+];
+const clock = setInterval(() => {
+  if ($('[data-processing-section]').hidden) return;
+  const seconds = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(waitingSince || Date.now()).getTime()) / 1000),
+  );
+  $('[data-elapsed]').textContent =
+    seconds < 60
+      ? 'Iniciado há poucos segundos'
+      : `Iniciado há ${Math.floor(seconds / 60)} ${seconds < 120 ? 'minuto' : 'minutos'}`;
+  $('[data-waiting-tip]').textContent = tips[Math.floor(seconds / 12) % tips.length];
+}, 1000);
 function renderSegments(transcription) {
   const drafts = new Map(
     [...document.querySelectorAll('.transcription-segment')].map((node) => [
@@ -145,9 +207,9 @@ function renderSegments(transcription) {
   }
   editingRevision = transcription.current_revision;
   segmentsContainer.innerHTML = '';
-  originalSegmentText = new Map();
+  original = new Map();
   (transcription.transcription_segments || []).forEach((segment, index) => {
-    originalSegmentText.set(segment.id, segment.current_text);
+    original.set(segment.id, segment.current_text);
     const article = document.createElement('article');
     article.className = 'transcription-segment';
     article.dataset.segmentId = segment.id;
@@ -158,12 +220,12 @@ function renderSegments(transcription) {
     timestamp.type = 'button';
     timestamp.className = 'segment-timestamp';
     timestamp.textContent = `${formatTimestamp(segment.start_ms)}–${formatTimestamp(segment.end_ms)}`;
-    timestamp.disabled = !audioPlayer.source;
-    timestamp.title = audioPlayer.source
+    timestamp.disabled = !player.source;
+    timestamp.title = player.source
       ? 'Reproduzir a partir deste trecho'
       : 'Timestamp do trecho';
     timestamp.addEventListener('click', () => {
-      if (audioPlayer.source) audioPlayer.seekTo(segment.start_ms / 1000);
+      if (player.source) player.seekTo(segment.start_ms / 1000);
     });
     const textarea = document.createElement('textarea');
     textarea.value =
@@ -176,109 +238,52 @@ function renderSegments(transcription) {
   transcriptPlayer.refresh();
 }
 
-function renderMaterial(material) {
-  currentMaterial = material;
-  if (!questionCountInitialized && [3, 5, 10, 20].includes(material.initial_question_count)) {
-    document.querySelector('#more-question-count').value = String(material.initial_question_count);
-    questionCountInitialized = true;
-  }
-  if (!visited) {
-    visitMaterial(materialId);
-    visited = true;
-  }
-  updateReview();
-  document.querySelector('[data-material-tags]').replaceChildren(tagList(material));
-  titleEl.textContent = material.title;
-  metaEl.textContent = `${material.subject || 'Sem disciplina'} · criado em ${formatDate(material.created_at)}`;
-  statusEl.textContent =
-    material.review?.state === 'awaiting_review' && material.status !== 'PROCESSANDO'
-      ? 'Aguardando confirmação'
-      : statusLabel(material);
-  updateWorkflow(['PRONTO', 'PARCIAL'].includes(material.status));
-  processingText.textContent =
-    material.status === 'PRONTO'
-      ? 'Material pronto para estudar.'
-      : material.status === 'PARCIAL'
-        ? 'A transcrição está disponível. Confira os materiais abaixo.'
-        : material.current_stage
-          ? jobLabel({ current_stage: material.current_stage, status: material.status })
-          : statusLabel(material);
-
-  if (material.review?.state === 'awaiting_review' && material.status !== 'PROCESSANDO')
-    processingText.textContent = 'Transcrição pronta para conferência. Aguardando confirmação.';
-  else if (
-    material.review?.state === 'ready_to_generate' &&
-    material.status !== 'PROCESSANDO' &&
-    material.status !== 'PRONTO'
-  )
-    processingText.textContent = 'Pronto para gerar resumo e questões desta revisão.';
-
-  renderPlayback(material);
-
-  const transcription = material.transcription;
-  const transcriptionSection = document.querySelector('[data-transcription-section]');
-  transcriptionSection.hidden = !transcription;
-  if (transcription) {
-    document.querySelector('[data-transcription-revision]').textContent =
-      transcription.current_revision;
-    renderSegments(transcription);
-  }
-
-  scientificReview.render(material);
-  if(!materialToolsInitialized){materialToolsInitialized=true;void initMaterialTools({materialId,context:()=>currentMaterial,segments:segmentsContainer}).catch((error)=>{
-    const panel=document.querySelector('[data-material-tools]');panel.hidden=false;panel.textContent=error.message||'Ferramentas indisponíveis.';
-  });}
-
-  const summarySection = document.querySelector('[data-summary-section]');
-  const currentSummary = material.summaries?.find((s) => s.is_current) || material.summaries?.[0];
-  summarySection.hidden = !currentSummary;
-  if (currentSummary) {
-    document.querySelector('[data-summary-text]').textContent = currentSummary.text;
-    document.querySelector('[data-summary-meta]').textContent =
-      `Versão ${currentSummary.version} · baseada na revisão ${currentSummary.source_transcription_revision}${currentSummary.stale ? ' · a revisão atual mudou' : ''}`;
-  }
-
-  const questionsSection = document.querySelector('[data-questions-section]');
-  const batches = material.questionBatches || [];
-  questionsSection.hidden = !transcription;
-  const batchesEl = document.querySelector('[data-question-batches]');
-  batchesEl.innerHTML = '';
-  if (!batches.length) {
-    const note = document.createElement('p');
-    note.className = 'plain-note';
-    note.textContent = 'Ainda não há questões. Gere um novo lote usando a transcrição desta aula.';
-    batchesEl.append(note);
-  }
-  batches.forEach((batch, index) => {
-    const block = document.createElement('article');
-    block.className = 'question-batch-card';
-    block.innerHTML = `<h3>Lote ${batches.length - index}</h3><p>${batch.generated_count} questões · revisão de origem ${batch.source_transcription_revision}${batch.stale ? ' · <strong>a revisão atual mudou</strong>' : ''}</p><a class="small-action">Responder este lote</a>`;
-    block.querySelector('a').href =
-      `./responder.html?material=${encodeURIComponent(material.id)}&batch=${encodeURIComponent(batch.id)}`;
-    batchesEl.appendChild(block);
-  });
-  const latest = batches[0];
-  const answerLink = document.querySelector('[data-answer-latest]');
-  answerLink.hidden = !latest;
-  if (latest)
-    answerLink.href = `./responder.html?material=${encodeURIComponent(material.id)}&batch=${encodeURIComponent(latest.id)}`;
-  document.querySelector('[data-material-tab="transcription"]').hidden = !transcription;
-  document.querySelector('[data-material-tab="summary"]').hidden = !currentSummary;
-  document.querySelector('[data-material-tab="questions"]').hidden = !transcription;
-  if (!didInitialScroll && location.hash) {
-    const target = document.getElementById(location.hash.slice(1));
-    if (target && !target.hidden) {
-      didInitialScroll = true;
-      requestAnimationFrame(() => {
-        target.scrollIntoView();
-        const focus = target.querySelector('select,input,button') || target;
-        if (focus === target) focus.tabIndex = -1;
-        focus.focus({ preventScroll: true });
-      });
-    }
-  }
+async function saveEdits() {
+  if (busy) return;
+  const edits = [...document.querySelectorAll('.transcription-segment')]
+    .map((n) => ({ id: n.dataset.segmentId, text: n.querySelector('textarea').value.trim() }))
+    .filter((e) => e.text !== original.get(e.id));
+  if (!edits.length) return;
+  await saveTranscriptionEdits(materialId, editingRevision, edits);
+  original = new Map();
+  $('[data-transcription-segments]').replaceChildren();
+  await reload();
 }
-
+$('[data-save-transcription]').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try { await saveEdits(); }
+  catch (error) { setStatus(transcriptMessage, error.message, 'error'); }
+  finally { button.disabled = false; }
+});
+function hasUsefulTiming() {
+  const segments = currentMaterial?.transcription?.transcription_segments || [];
+  return (
+    segments.length > 1 &&
+    segments.every((s) => s.end_ms > s.start_ms && s.end_ms - s.start_ms < 45000)
+  );
+}
+function installCaptions() {
+  player.video.querySelectorAll('track').forEach((n) => n.remove());
+  if (player.captionUrl) URL.revokeObjectURL(player.captionUrl);
+  if (!hasUsefulTiming()) return;
+  const stamp = (ms) => new Date(Math.max(0, ms)).toISOString().slice(11, 23);
+  const offset = player.media === player.video ? player.timelineStart * 1000 : 0;
+  const cues = currentMaterial.transcription.transcription_segments
+    .map(
+      (s) =>
+        `${stamp(s.start_ms + offset)} --> ${stamp(s.end_ms + offset)}\n${s.current_text.replaceAll('-->', '→').replaceAll('<', '‹')}\n`,
+    )
+    .join('\n');
+  player.captionUrl = URL.createObjectURL(new Blob(['WEBVTT\n\n' + cues], { type: 'text/vtt' }));
+  const track = document.createElement('track');
+  track.kind = 'captions';
+  track.srclang = 'pt';
+  track.label = 'Português';
+  track.src = player.captionUrl;
+  track.default = true;
+  player.video.append(track);
+}
 function renderPlayback(material, force = false) {
   const section = document.querySelector('[data-audio-section]');
   const kind = document.querySelector('[data-playback-kind]');
@@ -296,18 +301,18 @@ function renderPlayback(material, force = false) {
   section.hidden = !audioAvailable && !videoAvailable;
   if (section.hidden) {
     stopTracking?.(); stopTracking = null;
-    audioPlayer.media.pause(); audioPlayer.source = '';
-    audioPlayer.audio.removeAttribute('src'); audioPlayer.video.removeAttribute('src');
+    player.media.pause(); player.source = '';
+    player.audio.removeAttribute('src'); player.video.removeAttribute('src');
     playbackIdentity = '';
     return;
   }
   const video = kind.value === 'video';
   const identity = `${materialId}:${kind.value}`;
-  if (!force && identity === playbackIdentity && audioPlayer.source) return;
+  if (!force && identity === playbackIdentity && player.source) return;
   stopTracking?.(); stopTracking = null;
   waveformController?.abort();
   waveformController = new AbortController();
-  audioPlayer.setSource({
+  player.setSource({
     src: video ? material.signedVideoUrl : material.signedAudioUrl,
     title: material.title, video, format: video ? 'mp4' : material.audio?.extension || 'áudio',
     duration: video ? (material.video.clipEndMs - material.video.clipStartMs) / 1000 : (material.audio?.duration_ms || 0) / 1000,
@@ -316,7 +321,8 @@ function renderPlayback(material, force = false) {
     preservePosition: Boolean(playbackIdentity),
   });
   playbackIdentity = identity;
-  stopTracking = trackPlayback(audioPlayer, materialId);
+  installCaptions();
+  stopTracking = trackPlayback(player, materialId);
   if (!video) loadWaveform(material.signedAudioUrl, waveformController.signal).catch(() => {});
 }
 
@@ -333,7 +339,9 @@ async function renewPlayback({ automatic = false } = {}) {
     if (version !== playbackRequest) return;
     Object.assign(currentMaterial, result);
     renderPlayback(currentMaterial, true);
-    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !audioPlayer.source; });
+    $('[data-retry-media]').hidden = true;
+    layout();
+    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !player.source; });
     setStatus(message, 'Acesso renovado. Posição e velocidade preservadas.', 'success');
   } catch (error) {
     if (version === playbackRequest) setStatus(message, error.message || 'Não foi possível renovar. Tente novamente.', 'error');
@@ -349,13 +357,13 @@ document.querySelector('[data-remove-video]').addEventListener('click', async (e
     await removeOriginalVideo(materialId);
     Object.assign(currentMaterial, { video: null, signedVideoUrl: null });
     renderPlayback(currentMaterial, true);
-    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !audioPlayer.source; });
+    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !player.source; });
     setStatus(document.querySelector('[data-playback-status]'), 'Vídeo removido.', 'success');
   } catch (error) { setStatus(document.querySelector('[data-playback-status]'), error.message, 'error'); }
   finally { button.disabled = false; }
 });
 const playbackRefreshTimer = setInterval(() => {
-  if (audioPlayer.source && !audioPlayer.media.paused) void renewPlayback({ automatic: true });
+  if (player.source && !player.media.paused) void renewPlayback({ automatic: true });
 }, 8 * 60 * 1000);
 
 async function loadWaveform(url, signal) {
@@ -380,200 +388,316 @@ async function loadWaveform(url, signal) {
       for (let j = from; j < to; j += stride) peak = Math.max(peak, Math.abs(samples[j]));
       peaks.push(peak);
     }
-    if (!signal.aborted && audioPlayer.source === url) audioPlayer.setPeaks(peaks);
+    if (!signal.aborted && player.source === url) player.setPeaks(peaks);
   } finally {
     await context.close();
   }
 }
-window.addEventListener('beforeunload', () => {
-  stopTracking?.();
-  waveformController?.abort();
-  clearInterval(playbackRefreshTimer);
-  transcriptPlayer.destroy();
-  audioPlayer.destroy();
-});
 
+$('[data-retry-media]').addEventListener('click', () => { void renewPlayback(); });
+function renderSummary(summary) {
+  renderMarkdown($('[data-summary-text]'), summary?.text || '');
+}
+function render(material) {
+  currentMaterial = material;
+  if (initialRender) {
+    visitMaterial(materialId);
+    initialRender = false;
+    if (params.has('from') && !ready()) activeTab = 'transcription';
+  }
+  $('[data-material-title]').textContent = material.title;
+  $('[data-material-title]').removeAttribute('aria-busy');
+  document.title = material.title + ' | Voz em Estudo';
+  $('[data-material-meta]').textContent = material.subject || '';
+  const tags = document.createElement('ul');
+  tags.className = 'material-tags';
+  tags.setAttribute('aria-label', 'Tags');
+  for (const tag of studyFor(materialId).tags) {
+    const item = document.createElement('li');
+    item.textContent = tag;
+    tags.append(item);
+  }
+  $('[data-material-tags]').replaceChildren(tags);
+  $('[data-organize-material]').href = './historico.html?edit=' + encodeURIComponent(materialId);
+  renderPlayback(material);
+  if (!material.transcription)
+    updateWaiting({
+      status: material.status,
+      current_stage: material.current_stage,
+      created_at: material.created_at,
+    });
+  else {
+    $('[data-transcription-revision]').textContent = material.transcription.current_revision;
+    renderSegments(material.transcription);
+  }
+  installCaptions();
+  scientificReview.render(material);
+  $('[data-save-transcription]').disabled = busy || !material.transcription;
+  if (!materialToolsInitialized) {
+    materialToolsInitialized = true;
+    void initMaterialTools({ materialId, context: () => currentMaterial, segments: segmentsContainer }).catch((error) => {
+      const panel = $('[data-material-tools]');
+      panel.hidden = false;
+      panel.textContent = error.message || 'Ferramentas indisponíveis.';
+    });
+  }
+  const summaries = material.summaries || [],
+    summary = summaries.find((s) => s.is_current) || summaries[0];
+  renderSummary(summary);
+  $('[data-regenerate-summary]').textContent = summary ? 'Novo resumo' : 'Gerar resumo';
+  $('[data-summary-history]').hidden = summaries.length < 2;
+  $('[data-summary-version-list]').replaceChildren();
+  summaries.forEach((s) => {
+    const b = document.createElement('button');
+    b.className = 'text-action';
+    b.type = 'button';
+    b.textContent = `Versão ${s.version}`;
+    b.addEventListener('click', () => {
+      renderSummary(s);
+      $('[data-summary-history]').open = false;
+    });
+    $('[data-summary-version-list]').append(b);
+  });
+  $('[data-question-batches]').replaceChildren();
+  (material.questionBatches || []).forEach((batch, i, batches) => {
+    const row = document.createElement('details'),
+      heading = document.createElement('summary'),
+      link = document.createElement('a');
+    row.className = 'question-batch-row';
+    const answered = (batch.questions || []).filter(
+      (q) => studyFor(materialId).answers[q.id],
+    ).length;
+    heading.textContent = `${batch.generated_count} questões · Conjunto ${batches.length - i}${answered ? ` · ${answered} respondidas` : ''}`;
+    link.className = 'small-action';
+    link.textContent = 'Responder questões';
+    link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
+    row.append(heading, link);
+    $('[data-question-batches]').append(row);
+  });
+  $('[data-complete-review]').setAttribute('aria-pressed', String(studyFor(materialId).completed));
+  $('[data-complete-review]').textContent = studyFor(materialId).completed
+    ? 'Revisão concluída · desfazer'
+    : 'Marcar revisão concluída';
+  if (material.initial_question_count && !$('#more-question-count').dataset.initialized) {
+    $('#more-question-count').value = String(material.initial_question_count);
+    $('#more-question-count').dataset.initialized = 'true';
+  }
+  layout();
+  if (location.hash === '#gerar-questoes' && ready() && !$('#more-question-count').dataset.opened) {
+    $('#more-question-count').dataset.opened = 'true';
+    $('[data-questions-dialog]').showModal();
+    $('#more-question-count').focus();
+  }
+}
 async function reload() {
   const material = await getMaterial(materialId);
-  renderMaterial(material);
+  render(material);
   return material;
 }
-
-await reload().catch((error) => {
-  titleEl.textContent = 'Não foi possível abrir o material';
-  metaEl.textContent = error.message;
-  processingText.textContent = 'Volte à Biblioteca para tentar novamente.';
+$('[data-complete-review]').addEventListener('click', () => {
+  const saved = completeReview(materialId, !studyFor(materialId).completed);
+  $('[data-review-message]').textContent = saved
+    ? (isStudySyncEnabled() ? 'Andamento salvo neste navegador e aguardando sincronização com a conta.' : 'Seu andamento foi salvo neste navegador.')
+    : 'Não foi possível salvar o andamento neste navegador.';
+  render(currentMaterial);
 });
-
-if (initialJobId) {
-  const initial = await getJob(initialJobId).catch(() => null);
-  if (initial) {
-    if (initial.status !== 'CONCLUIDA') processingText.textContent = jobLabel(initial);
-    updateWorkflow(initial.status === 'CONCLUIDA');
-    if (document.querySelector('.processing-details').open) await renderJob(initialJobId);
-    if (!['CONCLUIDA', 'FALHOU', 'CANCELADA'].includes(initial.status)) {
-      pollJob(initialJobId, {
-        onUpdate: async (job) => {
-          if (processingText.textContent !== jobLabel(job))
-            processingText.textContent = jobLabel(job);
-          statusEl.textContent =
-            job.status === 'CONCLUIDA'
-              ? 'Pronto'
-              : job.status === 'FALHOU'
-                ? 'Com erro'
-                : job.status === 'CANCELADA'
-                  ? 'Cancelado'
-                  : 'Processando';
-          updateWorkflow(job.status === 'CONCLUIDA');
-          if (document.querySelector('.processing-details').open) await renderJob(initialJobId);
-        },
-      })
-        .then(async () => {
-          await reload();
-        })
-        .catch((e) => {
-          processingText.textContent = e.message;
-        });
-    }
-  }
-}
-
-document.querySelector('.processing-details')?.addEventListener('toggle', () => {
-  if (initialJobId && document.querySelector('.processing-details').open) renderJob(initialJobId);
-});
-
-document.querySelector('[data-save-transcription]')?.addEventListener('click', async () => {
-  const transcription = currentMaterial?.transcription;
-  if (!transcription) return;
-  const edits = [];
-  document.querySelectorAll('.transcription-segment').forEach((node) => {
-    const id = node.dataset.segmentId;
-    const text = node.querySelector('textarea').value.trim();
-    if (text !== originalSegmentText.get(id)) edits.push({ id, text });
-  });
-  if (!edits.length) {
-    setStatus(transcriptMessage, 'Nenhuma alteração para salvar.', '');
-    return;
-  }
-  try {
-    setStatus(transcriptMessage, 'Salvando nova revisão...', '');
-    const result = await saveTranscriptionEdits(materialId, editingRevision, edits);
-    setStatus(
-      transcriptMessage,
-      `Transcrição salva como revisão ${result.revision}. Confira e confirme a nova revisão para gerar novamente; os materiais anteriores permanecem ligados à fonte original.`,
-      'success',
-    );
-    originalSegmentText = new Map();
-    segmentsContainer.replaceChildren();
-    await reload();
-  } catch (error) {
-    setStatus(transcriptMessage, error.message, 'error');
-  }
-});
-
-document.querySelector('[data-show-versions]')?.addEventListener('click', async () => {
-  const panel = document.querySelector('[data-version-panel]');
-  panel.hidden = !panel.hidden;
-  if (panel.hidden) return;
-  const list = document.querySelector('[data-version-list]');
-  list.textContent = 'Carregando versões...';
+$('[data-show-versions]').addEventListener('click', async () => {
+  const dialog = $('[data-version-panel]'),
+    list = $('[data-version-list]');
+  dialog.showModal();
+  list.textContent = 'Abrindo versões…';
   try {
     const versions = await getTranscriptionVersions(materialId);
-    list.innerHTML = '';
-    versions.forEach((version) => {
-      const row = document.createElement('div');
+    list.replaceChildren();
+    versions.forEach((v) => {
+      const row = document.createElement('div'),
+        b = document.createElement('button');
       row.className = 'version-row';
-      row.innerHTML = `<span><strong>Revisão ${version.revision}</strong> · ${version.origin} · ${formatDate(version.created_at)}</span><button type="button" class="small-action">Restaurar</button>`;
-      row.querySelector('button').disabled =
-        version.revision === currentMaterial.transcription.current_revision;
-      row.querySelector('button').addEventListener('click', async () => {
-        const restoreButton = row.querySelector('button');
-        if (restoreButton.disabled) return;
-        if (
-          !confirm(
-            `Restaurar o conteúdo da revisão ${version.revision}? Uma nova revisão será criada.${hasUnsavedEdits() ? ' Suas alterações não salvas serão descartadas.' : ''}`,
-          )
-        )
-          return;
+      row.append(document.createTextNode(`Revisão ${v.revision} · ${formatDate(v.created_at)}`));
+      b.type = 'button';
+      b.className = 'text-action';
+      b.textContent = 'Restaurar';
+      b.disabled = v.revision === editingRevision;
+      b.addEventListener('click', async () => {
+        if (!confirm('Restaurar esta versão? Alterações não salvas serão descartadas.')) return;
+        b.disabled = true;
         try {
-          restoreButton.disabled = true;
-          await restoreTranscriptionVersion(materialId, version.revision);
-          segmentsContainer.replaceChildren();
-          originalSegmentText = new Map();
+          await restoreTranscriptionVersion(materialId, v.revision);
+          original = new Map();
+          $('[data-transcription-segments]').replaceChildren();
           await reload();
-          panel.hidden = true;
-        } catch (error) {
-          alert(error.message);
-          restoreButton.disabled = false;
+          dialog.close();
+        } catch (e) {
+          setStatus($('[data-transcription-message]'), e.message, 'error');
+          b.disabled = false;
         }
       });
-      list.appendChild(row);
+      row.append(b);
+      list.append(row);
     });
-  } catch (error) {
-    list.textContent = error.message;
+  } catch (e) {
+    list.textContent = e.message;
   }
 });
-
-async function runGeneration(kind, count, message) {
-  if (generationBusy) return;
-  const sourceRevisionId = scientificReview.sourceRevisionId();
-  const summaryOptions = {
-    format: document.querySelector('[data-summary-format]').value,
-    length: document.querySelector('[data-summary-length]').value,
+$('[data-open-warnings]').addEventListener('click', () => $('[data-warning-panel]').showModal());
+$('[data-regenerate-summary]').addEventListener('click', () => {
+  if (!busy) $('[data-summary-dialog]').showModal();
+});
+$('[data-open-questions]').addEventListener('click', () => {
+  if (!busy) $('[data-questions-dialog]').showModal();
+});
+function normalizeSummaryOptions(options) {
+  return {
+    format: ({ bullets: 'topics' })[options.format] || options.format,
+    length: ({ brief: 'short', intermediate: 'standard' })[options.length] || options.length,
   };
-  const operation = kind + ':' + sourceRevisionId + ':' + (count || '') +
-    (kind === 'summary' ? ':' + JSON.stringify(summaryOptions) : '');
-  let key = pendingGeneration.get(operation);
-  if (!key) {
-    key = crypto.randomUUID();
-    pendingGeneration.set(operation, key);
-  }
-  generationBusy = true;
+}
+async function generate(kind, options) {
+  if (busy) return;
+  if (kind === 'summary') options = normalizeSummaryOptions(options);
+  const source = scientificReview.sourceRevisionId(),
+    operation = JSON.stringify([kind, source, options]);
+  if (!pending.has(operation)) pending.set(operation, crypto.randomUUID());
+  busy = true;
   scientificReview.setBusy(true);
+  const generationFields = [...document.querySelectorAll('[data-summary-form] select, [data-summary-form] button, [data-more-questions-form] select, [data-more-questions-form] button')];
+  const previousDisabled = generationFields.map((field) => field.disabled);
+  generationFields.forEach((field) => { field.disabled = true; });
+  $('[data-save-transcription]').disabled = true;
+  $('[data-open-questions]').disabled = true;
+  const message = messages[kind];
+  setStatus(message, kind === 'summary' ? 'Gerando resumo…' : 'Gerando questões…');
   try {
-    setStatus(message, 'Enfileirando geração da revisão confirmada…');
     const job =
       kind === 'summary'
-        ? await regenerateSummary(materialId, sourceRevisionId, key, summaryOptions)
-        : await generateQuestions(materialId, count, sourceRevisionId, key);
+        ? await regenerateSummary(materialId, source, pending.get(operation), { format: options.format, length: options.length })
+        : await generateQuestions(materialId, options.count, source, pending.get(operation));
     const result = await pollJob(job.jobId, {
-      onUpdate: (state) => {
-        if (kind === 'summary') processingText.textContent = jobLabel(state);
-        else setStatus(message, jobLabel(state));
-      },
+      onUpdate: (state) => setStatus(message, jobLabel(state)),
     });
     if (result.status !== 'CONCLUIDA') {
-      pendingGeneration.delete(operation);
-      throw new Error(result.error_message || 'A geração não foi concluída. Tente novamente.');
+      pending.delete(operation);
+      throw Error(result.error_message || 'Não foi possível concluir. Tente novamente.');
     }
-    pendingGeneration.delete(operation);
-    setStatus(message, kind === 'summary' ? 'Resumo gerado.' : 'Novo lote gerado.', 'success');
+    pending.delete(operation);
     await reload();
+    setStatus(message, '');
+  } catch (e) {
+    setStatus(message, e.message, 'error');
   } finally {
-    generationBusy = false;
+    busy = false;
+    generationFields.forEach((field, index) => { field.disabled = previousDisabled[index]; });
     scientificReview.setBusy(false);
+    $('[data-save-transcription]').disabled = !currentMaterial?.transcription;
+    $('[data-open-questions]').disabled = false;
   }
 }
-for (const button of document.querySelectorAll('[data-regenerate-summary],[data-generate-summary]'))
-  button.addEventListener('click', () => {
-    if (button.disabled) return;
-    runGeneration('summary', null, processingText).catch((error) => {
-      setStatus(processingText, error.message, 'error');
-    });
-  });
-document.querySelector('[data-more-questions-form]')?.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const button = event.currentTarget.querySelector('[type="submit"]');
-  if (button.disabled) return;
-  const message = document.querySelector('[data-more-questions-message]');
-  try {
-    await runGeneration(
-      'questions',
-      Number(document.querySelector('#more-question-count').value),
-      message,
+$('[data-summary-form]').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(e.currentTarget);
+  $('[data-summary-dialog]').close();
+  generate('summary', { format: data.get('format'), length: data.get('length') });
+});
+$('[data-more-questions-form]').addEventListener('submit', (e) => {
+  e.preventDefault();
+  $('[data-questions-dialog]').close();
+  generate('questions', { count: Number($('#more-question-count').value) });
+});
+$('[data-open-export]').addEventListener('click', () => {
+  $('[data-export-note]').textContent = hasUnsavedEdits()
+    ? 'As alterações ainda não confirmadas não serão exportadas.'
+    : '';
+  $('[name=summary]').disabled = !currentMaterial.summaries?.length;
+  $('[name=notes]').disabled = !studyFor(materialId).notes;
+  $('[data-export-dialog]').showModal();
+});
+$('[data-export-form]').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(e.currentTarget),
+    parts = ['# ' + currentMaterial.title];
+  if (data.has('transcription'))
+    parts.push(
+      '## Transcrição\n\n' +
+        currentMaterial.transcription.transcription_segments
+          .map((s) => s.current_text)
+          .join('\n\n'),
     );
-  } catch (error) {
-    setStatus(message, error.message, 'error');
+  if (data.has('summary'))
+    parts.push(
+      '## Resumo\n\n' +
+        (currentMaterial.summaries?.find((s) => s.is_current)?.text ||
+          currentMaterial.summaries?.[0]?.text ||
+          ''),
+    );
+  if (data.has('notes') && studyFor(materialId).notes)
+    parts.push('## Minhas anotações\n\n' + studyFor(materialId).notes);
+  const text = parts.join('\n\n'),
+    format = data.get('format');
+  if (parts.length === 1) {
+    $('[data-export-note]').textContent = 'Escolha pelo menos um conteúdo.';
+    return;
+  }
+  if (format === 'pdf') {
+    $('[data-export-dialog]').close();
+    const print = document.createElement('article');
+    print.dataset.printExport = '';
+    renderMarkdown(print, text);
+    document.body.append(print);
+    document.body.classList.add('print-export');
+    window.print();
+    document.body.classList.remove('print-export');
+    print.remove();
+  } else {
+    const a = document.createElement('a'),
+      url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    a.href = url;
+    a.download = currentMaterial.title.replace(/[^\p{L}\p{N} _-]/gu, '') + '.' + format;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    $('[data-export-dialog]').close();
   }
 });
-
+window.addEventListener('beforeunload', (e) => {
+  if (hasUnsavedEdits()) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+window.addEventListener('pagehide', () => {
+  clearInterval(clock);
+  clearInterval(playbackRefreshTimer);
+  stopTracking?.();
+  transcriptPlayer.destroy();
+  document.removeEventListener('change', syncFollowControls);
+  waveformController?.abort();
+  player.destroy();
+  if (player.captionUrl) URL.revokeObjectURL(player.captionUrl);
+});
+await reload().catch((e) => {
+  $('[data-material-title]').textContent = 'Não foi possível abrir a aula';
+  $('[data-material-meta]').textContent = e.message;
+});
+if (currentMaterial && !currentMaterial.transcription) {
+  const jobId = params.get('job') || currentMaterial.activeJobId;
+  if (jobId)
+    pollJob(jobId, { onUpdate: updateWaiting })
+      .then(() => reload())
+      .catch((e) => {
+        $('[data-processing-status]').textContent = e.message;
+      });
+  else {
+    const interval = setInterval(async () => {
+      try {
+        await reload();
+        if (
+          currentMaterial.transcription ||
+          ['ERRO', 'FALHOU', 'CANCELADA'].includes(currentMaterial.status)
+        )
+          clearInterval(interval);
+      } catch (e) {
+        $('[data-processing-status]').textContent = e.message;
+      }
+    }, 4000);
+    window.addEventListener('pagehide', () => clearInterval(interval), { once: true });
+  }
+}

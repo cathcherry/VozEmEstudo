@@ -8,7 +8,15 @@ import {
 import { formatDate, formatTimestamp } from './format.js';
 import { setStatus } from './shell.js';
 
-export function initTranscriptionReview({ materialId, currentMaterial, reload, hasUnsavedEdits }) {
+export function initTranscriptionReview({
+  materialId,
+  currentMaterial,
+  reload,
+  hasUnsavedEdits,
+  saveEdits,
+  onConfirmed,
+  onOpen,
+}) {
   let actionBusy = false,
     generationBusy = false,
     warningAttempt = null;
@@ -30,22 +38,10 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
   function updateControls() {
     const review = currentMaterial()?.review;
     const locked = actionBusy || generationBusy;
-    for (const select of document.querySelectorAll('[data-summary-format],[data-summary-length]'))
-      select.disabled = locked;
-    document.querySelector('[data-review-state]').textContent = hasUnsavedEdits()
-      ? 'Alterações não salvas'
-      : isReady()
-        ? 'Pronto para gerar'
-        : 'Aguardando confirmação';
     confirmationButton.textContent = isReady()
-      ? 'Revisão confirmada'
-      : 'Conferir e confirmar transcrição';
-    confirmationButton.disabled =
-      locked ||
-      !review?.sourceRevisionId ||
-      review.permissionRequired ||
-      hasUnsavedEdits() ||
-      isReady();
+      ? 'Continuar para o resumo'
+      : 'Confirmar e continuar';
+    confirmationButton.disabled = locked || !review?.sourceRevisionId || review.permissionRequired;
     permissionButton.disabled = locked || !permissionInput.checked;
     analyzeButton.disabled =
       locked || !review?.sourceRevisionId || review.permissionRequired || hasUnsavedEdits();
@@ -64,6 +60,7 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
     try {
       await callback();
       await reload();
+      if (button === confirmationButton) onConfirmed?.();
     } catch (error) {
       setStatus(message, error.message, 'error');
     } finally {
@@ -74,6 +71,7 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
   document.querySelector('[data-check-transcription]').addEventListener('click', () => {
     const first = document.querySelector('.transcription-segment textarea');
     if (first) {
+      onOpen?.();
       first.scrollIntoView({ block: 'center' });
       first.focus({ preventScroll: true });
     }
@@ -102,13 +100,10 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
   );
   confirmationButton.addEventListener('click', () =>
     action(confirmationButton, async () => {
+      await saveEdits?.();
       const sourceId = currentMaterial().review.sourceRevisionId;
       await confirmTranscription(materialId, sourceId);
-      setStatus(
-        message,
-        'Revisão confirmada. Esta revisão será a fonte do resumo e das questões.',
-        'success',
-      );
+      setStatus(message, '', 'success');
     }),
   );
   analyzeButton.addEventListener('click', () =>
@@ -173,6 +168,7 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
     const allWarnings = material.warnings || [],
       seen = new Set();
     const warnings = allWarnings
+      .filter((w) => ['warning', 'insufficient'].includes(w.state))
       .filter((warning) => {
         const key = warning.sourceRevisionId + ':' + warning.type;
         if (seen.has(key)) return false;
@@ -180,6 +176,7 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
         return true;
       })
       .slice(0, 6);
+    document.querySelector('[data-open-warnings]').hidden = !warnings.length;
     if (!warnings.length) {
       const note = document.createElement('p');
       note.textContent =
@@ -200,12 +197,7 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
       guidance.textContent = warning.guidance;
       meta.className = 'section-description';
       meta.textContent =
-        warning.model +
-        ' · ' +
-        warning.promptVersion +
-        ' · ' +
-        formatDate(warning.createdAt) +
-        (warning.stale ? ' · pertence a uma revisão anterior' : '');
+        formatDate(warning.createdAt) + (warning.stale ? ' · pertence a uma revisão anterior' : '');
       article.append(heading, reason, guidance, meta);
       for (const reference of warning.segmentRefs || []) {
         const button = document.createElement('button');
@@ -224,9 +216,6 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
   }
   async function render(material) {
     const review = material.review;
-    document.querySelector('[data-review-state]').textContent = isReady()
-      ? 'Pronto para gerar'
-      : 'Aguardando confirmação';
     const permissionSection = document.querySelector('[data-material-permission]');
     permissionSection.hidden = !review?.permissionRequired;
     if (review?.permissionRequired) {
@@ -241,9 +230,6 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
           'Não foi possível carregar a declaração. Recarregue antes de confirmar.';
       }
     }
-    confirmationButton.textContent = isReady()
-      ? 'Revisão confirmada'
-      : 'Conferir e confirmar transcrição';
     renderWarnings(material);
     updateControls();
   }
@@ -257,4 +243,3 @@ export function initTranscriptionReview({ materialId, currentMaterial, reload, h
     },
   };
 }
-
