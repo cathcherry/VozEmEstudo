@@ -449,7 +449,7 @@ async function main() {
     assert.equal(await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).count(), 0);
     const focusDockTrigger = page.getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true });
     assert.equal(await focusDockTrigger.isVisible(), true);
-    await focusDockTrigger.click();
+    await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
     assert.equal(await page.locator('#focus-dock a').count(), 4);
     await page.reload();
