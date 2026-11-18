@@ -552,7 +552,7 @@ async function main() {
     assert.equal(createCount, 1);
     record('Só o áudio do recorte é enviado; retry não repete upload');
     await page.goto(base + '/historico.html');
-    await page.locator('.library-material').first().waitFor();
+    await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('inexistente');
     await page.getByText('Nenhum material encontrado.', { exact: true }).waitFor();
     await page.locator('#library-search').fill('carro');
@@ -573,7 +573,7 @@ async function main() {
     assert(await page.getByRole('heading', { name: /^energia/ }).isVisible());
     await page.locator('#library-group').selectOption('subject');
     await page.reload();
-    await page.locator('.library-material').first().waitFor();
+    await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('revisão');
     assert.equal(await page.locator('.library-material').count(), 1);
     await screenshot(page, output, 'library-desktop.png');
