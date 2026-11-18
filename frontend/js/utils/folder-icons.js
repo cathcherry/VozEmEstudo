@@ -59,10 +59,10 @@ export function createFolderIcons(owner) {
       validate:()=>validateFolderPng(input.files[0]),
       async commit(id) {
         const file=input.files[0];if(!file)return;
-        const name=key(kind,id);
-        await saveProfileMedia(owner,`folder-${name}`,file);
-        if(urls.has(name))URL.revokeObjectURL(urls.get(name));urls.set(name,URL.createObjectURL(file));
-        index[name]=true;await saveCloudState(owner,'catalog-icons',index);
+        const folderKey=key(kind,id);
+        await saveProfileMedia(owner,`folder-${folderKey}`,file);
+        if(urls.has(folderKey))URL.revokeObjectURL(urls.get(folderKey));urls.set(folderKey,URL.createObjectURL(file));
+        index[folderKey]=true;await saveCloudState(owner,'catalog-icons',index);
       },
     };
   }
