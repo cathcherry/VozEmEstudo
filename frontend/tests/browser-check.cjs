@@ -554,7 +554,7 @@ async function main() {
     await page.goto(base + '/historico.html');
     await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('inexistente');
-    await page.getByText('Nenhum material encontrado.', { exact: true }).waitFor();
+    await page.getByText('Nenhuma aula encontrada.', { exact: true }).waitFor();
     await page.locator('#library-search').fill('carro');
     const row = page.locator('[data-material-id="aula-real"]');
     await row.locator('summary').click();
@@ -568,16 +568,17 @@ async function main() {
     await page.locator('[data-library-count]').filter({ hasText: '1 aula' }).waitFor();
     assert.equal(await page.locator('.library-material').count(), 1);
     assert.equal(materials.find((m) => m.id === 'aula-real').subject, 'Física');
-    await page.locator('summary').filter({ hasText: 'Organizar e filtrar' }).click();
-    await page.locator('#library-group').selectOption('tags');
-    assert(await page.getByRole('heading', { name: /^energia/ }).isVisible());
-    await page.locator('#library-group').selectOption('subject');
+    await page.locator('.library-filter-panel > summary').click();
+    await page.locator('#library-tag').selectOption('revisão');
+    assert.equal(await page.locator('.library-material').count(), 1);
+    await page.locator('#library-subject').selectOption('Física');
+    assert(await page.locator('.library-subject-folder > summary strong').filter({ hasText: 'Física' }).isVisible());
     await page.reload();
     await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('revisão');
     assert.equal(await page.locator('.library-material').count(), 1);
     await screenshot(page, output, 'library-desktop.png');
-    record('Busca por tags, agrupamento e edição de título/disciplina; tags persistem por conta');
+    record('Busca por tags, filtros por disciplina e edição de título; tags persistem por conta');
     await page
       .getByRole('link', {
         name: 'Gerar novas questões para Carros elétricos — energia',
