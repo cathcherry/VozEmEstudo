@@ -37,7 +37,7 @@ export async function loadCloudState(owner, key, fallback = null) {
 }
 export async function retryCloudState(owner) {
   const prefix = `voz-cloud-v1:${owner}:`;
-  for (const key of Object.keys(localStorage).filter(key => key.startsWith(prefix))) {
+  for (const key of Object.keys(localStorage).filter(candidateKey => candidateKey.startsWith(prefix))) {
     const entry = cached(owner,key.slice(prefix.length));
     if (entry?.pending) await saveCloudState(owner,key.slice(prefix.length),entry.data);
   }
