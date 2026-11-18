@@ -558,7 +558,7 @@ async function main() {
     await page.locator('#library-search').fill('carro');
     const row = page.locator('[data-material-id="aula-real"]');
     await row.locator('summary').click();
-    await row.getByRole('button', { name: 'Editar disciplina e tags', exact: true }).click();
+    await row.getByRole('button', { name: 'Editar título, disciplina e tags', exact: true }).click();
     await page.locator('#metadata-name').fill('Carros elétricos — energia');
     await page.locator('#metadata-subject').fill('Física');
     await page.locator('#metadata-tags').fill('energia, revisão, energia');
