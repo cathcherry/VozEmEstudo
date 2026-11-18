@@ -6,7 +6,7 @@ import { exportDocument,exportText,downloadText,printStudyDocument } from '../ut
 export async function initMaterialTools({materialId,context,segments}){
   const root=document.querySelector('[data-material-tools]');root.hidden=false;
   const form=document.createElement('div');form.className='learning-tools-controls';
-  const heading=document.createElement('h2');heading.textContent='Exportar textos salvos';root.append(heading,form);
+  root.append(form);
   const options={};for(const [key,label,checked] of [['transcript','Transcrição',true],['summary','Resumo',true],['notes','Minhas anotações',false]]){
     const wrap=document.createElement('label'),field=document.createElement('input');field.type='checkbox';field.checked=checked;wrap.append(field,' '+label);form.append(wrap);options[key]=field;
   }

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="paper">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fffbf6" />
+    <title>Voz em Estudo | Configurações</title>
+    <script src="/js/utils/theme-init.js"></script>
+    <link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3" />
+    <link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <script type="module" src="/js/utils/preferences.js"></script>
+    <script type="module" src="/js/pages/settings-hub.page.js"></script>
+    <link rel="stylesheet" href="/css/marque.css" />
+    <link rel="stylesheet" href="/css/product.css" />
+    <link rel="stylesheet" href="/css/library.css" />
+    <link rel="stylesheet" href="/css/voz-redesign.css" />
+    <link rel="stylesheet" href="/css/settings-redesign.css" />
+    <link rel="stylesheet" href="/css/account-settings.css" />
+  </head>
+  <body class="app-page" data-page="settings-hub">
+    <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+    <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo">
+      <div class="sidebar-inner">
+        <button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button>
+        <a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt="" /><span class="brand-name"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span></a>
+        <nav aria-label="Navegação principal" class="primary-navigation"><a href="./painel.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Painel</span></a><a href="./nova-transcricao.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/></svg><span>Nova transcrição</span></a><a href="./historico.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/></svg><span>Biblioteca</span></a></nav><nav class="sidebar-settings" aria-label="Configurações"><a href="./configuracoes.html" class="active" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.6 2-2 .9-2-.5-2 3.4 1.5 1.5v2.4L2.4 14l2 3.4 2-.6 2 .9L9 20h4l.6-2.3 2-.9 2 .6 2-3.4-1.5-1.3v-2.4L19.6 9l-2-3.4-2 .6-2-.9L13 3z"/><circle cx="11" cy="11.5" r="3"/></svg><span>Configurações</span></a></nav>
+
+      </div>
+    </aside>
+    <button class="menu-backdrop" data-menu-backdrop type="button" aria-label="Fechar menu"></button>
+    <header class="site-header app-topbar">
+      <div class="topbar-title"><button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg></button><span>Configurações</span></div>
+      <div class="header-navigation">
+        <a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e leitura" title="Aparência e leitura"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8" /><path d="M12 4a8 8 0 0 0 0 16z" /></svg></a>
+        <div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
+        <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5" /></svg><span data-focus-toggle-label>Modo foco</span></button>
+        <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a>
+      </div>
+    </header>
+    <main tabindex="-1" class="article-content settings-hub" id="conteudo-principal">
+      <header class="article-heading"><span class="eyebrow">Sua conta e preferências</span><h1>Configurações</h1></header>
+      <section class="settings-hub-card settings-account-card" aria-labelledby="account-settings-title">
+        <div class="settings-card-heading"><div><span class="eyebrow">Conta</span><h2 id="account-settings-title">Dados da conta</h2></div><a class="text-action" href="./conta.html">Abrir perfil <span aria-hidden="true">→</span></a></div>
+        <dl class="account-facts"><div><dt>E-mail</dt><dd data-settings-email>Carregando…</dd></div><div><dt>Conta criada</dt><dd data-settings-created>—</dd></div><div><dt>Forma de acesso</dt><dd data-settings-providers>—</dd></div></dl>
+      </section>
+      <nav class="settings-category-nav" aria-label="Categorias de configurações"><a href="#account-settings-title">Conta</a><a href="#preferences-title">Aparência e leitura</a><a href="#security-title">Segurança</a><a href="#privacy-title">Privacidade</a><a href="#help-title">Ajuda</a></nav><div class="settings-hub-grid">
+        <section class="settings-hub-card" aria-labelledby="preferences-title"><div class="settings-card-heading"><div><span class="eyebrow">Leitura</span><h2 id="preferences-title">Aparência e foco</h2></div><span class="settings-card-icon" aria-hidden="true">◐</span></div><p>Temas, cores, fontes, tamanho do texto, espaçamento e movimento.</p><a class="settings-card-link" href="./aparencia.html">Ajustar aparência e leitura <span aria-hidden="true">→</span></a></section>
+        <section class="settings-hub-card" aria-labelledby="privacy-title"><div class="settings-card-heading"><div><span class="eyebrow">Dados</span><h2 id="privacy-title">Privacidade e armazenamento</h2></div><span class="settings-card-icon" aria-hidden="true">◈</span></div><p>Veja o que fica na sua conta, o que permanece neste navegador e como os arquivos são processados.</p><div class="settings-card-links"><a class="settings-card-link" href="./ajuda.html#seus-dados">Onde seus dados ficam <span aria-hidden="true">→</span></a><a class="settings-card-link" href="./privacidade.html">Política de privacidade <span aria-hidden="true">→</span></a></div></section>
+        <section class="settings-hub-card" aria-labelledby="security-title"><div class="settings-card-heading"><div><span class="eyebrow">Acesso</span><h2 id="security-title">Senha e segurança</h2></div><span class="settings-card-icon" aria-hidden="true">⌑</span></div><p>Enviaremos um link de redefinição para o e-mail associado à conta.</p><form data-password-reset-form class="password-reset-form"><label for="settings-reset-email">E-mail da conta<input id="settings-reset-email" type="email" readonly /></label><button class="secondary-action" type="submit">Enviar link para trocar a senha</button><p class="form-status" data-password-reset-message role="status" aria-live="polite"></p></form></section>
+        <section class="settings-hub-card" aria-labelledby="help-title"><div class="settings-card-heading"><div><span class="eyebrow">Orientação</span><h2 id="help-title">Ajuda</h2></div><span class="settings-card-icon" aria-hidden="true">?</span></div><p>Encontre instruções para enviar aulas, organizar a Biblioteca e usar os recursos de estudo.</p><div class="settings-card-links"><a class="settings-card-link" href="./ajuda.html">Perguntas e instruções <span aria-hidden="true">→</span></a><a class="settings-card-link" href="./ajuda.html#foco-leitura">Leitura e modo foco <span aria-hidden="true">→</span></a><a class="settings-card-link" href="./ajuda.html#nova-transcricao">Enviar uma aula <span aria-hidden="true">→</span></a></div></section>
+      </div>
+      <section class="settings-hub-card settings-details-card" aria-labelledby="device-title"><div class="settings-card-heading"><h2 id="device-title">Conta e dispositivo</h2></div><details><summary>Dados de acesso e perfil</summary><p>Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no <a href="./conta.html">perfil</a>.</p></details><details><summary>Preferências neste navegador</summary><p>Aparência, leitura e movimento são ajustados em <a href="./aparencia.html#reading-settings">Aparência e leitura</a>. Consulte <a href="./ajuda.html#seus-dados">Onde seus dados ficam</a> para saber o que é salvo na conta ou neste dispositivo.</p></details><details><summary>Conteúdo incorporado no perfil</summary><p>Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.</p></details><details><summary>Encerrar o acesso</summary><p>Abra seu avatar no canto superior direito e escolha Sair da conta.</p></details></section>
+    </main>
+    <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer>
+  </body>
+</html>

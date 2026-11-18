@@ -1,6 +1,11 @@
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
 let syncNavigation = () => {};
+let focusDock = null;
+let focusDockTrigger = null;
+let focusDockOpen = false;
+let focusDockPointerType = 'mouse';
+let focusDockWasOpenBeforePointer = false;
 function clearActiveProfile() {
   appearance.storage.set('voz-active-theme-profile', '');
   document.documentElement.dataset.profile = '';
@@ -21,12 +26,13 @@ function updateControls() {
     }
   });
   document.querySelectorAll('[data-focus-toggle]').forEach((b) => {
-    const name = uiPreferences.focusMode ? 'Sair do foco' : 'Modo foco';
+    const name = uiPreferences.focusMode ? 'Sair do modo foco' : 'Modo foco';
     b.setAttribute('aria-pressed', String(uiPreferences.focusMode));
     b.setAttribute('aria-label', name);
-    b.title = `${name} (Alt + F)`;
+    b.dataset.tooltip = name;
+    b.removeAttribute('title');
     const label = b.querySelector('[data-focus-toggle-label]');
-    if (label) label.textContent = name;
+    if (label) label.textContent = 'Modo foco';
   });
   document.querySelectorAll('[data-focus-reading-tools]').forEach((n) => {
     n.hidden = !uiPreferences.focusMode;
@@ -42,6 +48,7 @@ function updateControls() {
         ),
     );
   syncNavigation();
+  syncFocusDock();
 }
 function saveUi(next) {
   if (uiPreferences.focusMode !== next.focusMode) resetFocusNavigation();
@@ -55,11 +62,27 @@ function saveUi(next) {
 function updateUiPreference(key, value) {
   if (!(key in appearance.defaults)) return;
   const saved = saveUi({ ...uiPreferences, [key]: value });
-  const message = document.querySelector('#personalization-message');
-  if (message)
-    message.textContent = saved
-      ? 'Preferência aplicada e salva neste navegador.'
-      : 'Preferência aplicada. Não foi possível salvá-la neste navegador.';
+  showToast(
+    saved
+      ? 'Preferência atualizada.'
+      : 'Preferência aplicada, mas não foi possível salvá-la neste navegador.',
+  );
+}
+let toastTimer;
+function showToast(message) {
+  let toast = document.querySelector('[data-app-toast]');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.className = 'app-toast';
+    toast.dataset.appToast = '';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.append(toast);
+  }
+  toast.textContent = message;
+  toast.dataset.visible = 'true';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (toast.dataset.visible = 'false'), 3200);
 }
 function markTheme() {
   const current = appearance.loadAppearance().theme;
@@ -202,8 +225,127 @@ function initializeNavigation() {
       ),
     ).observe(tabs);
 }
+function setFocusDockOpen(open) {
+  if (!focusDock || !focusDockTrigger) return;
+  focusDockOpen = Boolean(open && uiPreferences.focusMode);
+  focusDock.dataset.open = String(focusDockOpen);
+  focusDock.inert = !focusDockOpen;
+  focusDockTrigger.setAttribute('aria-expanded', String(focusDockOpen));
+}
+function syncFocusDock() {
+  if (!focusDock || !focusDockTrigger) return;
+  const enabled = uiPreferences.focusMode;
+  focusDock.hidden = !enabled;
+  focusDockTrigger.hidden = !enabled;
+  if (!enabled) setFocusDockOpen(false);
+}
+function initializeFocusDock() {
+  if (!document.body.classList.contains('app-page')) return;
+  const iconMarkup = {
+    dashboard: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    transcription: '<path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/>',
+    library: '<path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/>',
+    appearance: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
+    reading: '<path d="M3 20 10 4l7 16M6 14h8M20 4v16"/>',
+    help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',
+  };
+  const links = [
+    ['Painel', './painel.html', 'dashboard'],
+    ['Nova transcrição', './nova-transcricao.html', 'transcription'],
+    ['Biblioteca', './historico.html', 'library'],
+    ['Configurações', './configuracoes.html', 'appearance'],
+  ];
+  focusDockTrigger = document.createElement('button');
+  focusDockTrigger.type = 'button';
+  focusDockTrigger.className = 'focus-dock-trigger';
+  focusDockTrigger.setAttribute('aria-label', 'Mostrar navegação do modo foco');
+  focusDockTrigger.setAttribute('aria-controls', 'focus-dock');
+  focusDockTrigger.setAttribute('aria-expanded', 'false');
+  focusDock = document.createElement('nav');
+  focusDock.id = 'focus-dock';
+  focusDock.className = 'focus-dock';
+  focusDock.setAttribute('aria-label', 'Navegação no modo foco');
+  for (const [label, href, iconName] of links) {
+    const link = document.createElement('a');
+    link.href = href;
+    link.className = 'focus-dock-link';
+    link.setAttribute('aria-label', label);
+    const path = location.pathname.split('/').at(-1) || 'painel.html';
+    if (path === href.slice(2) || (href === './configuracoes.html' && ['aparencia.html', 'leitura.html', 'ajuda.html', 'privacidade.html'].includes(path))) {
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    }
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.setAttribute('fill', 'none');
+    icon.setAttribute('stroke', 'currentColor');
+    icon.setAttribute('stroke-width', '1.8');
+    icon.setAttribute('stroke-linecap', 'round');
+    icon.setAttribute('stroke-linejoin', 'round');
+    icon.innerHTML = iconMarkup[iconName];
+    const text = document.createElement('span');
+    text.textContent = label;
+    link.append(icon, text);
+    focusDock.append(link);
+  }
+  document.body.append(focusDockTrigger, focusDock);
+  focusDock.inert = true;
+  focusDockTrigger.addEventListener('pointerdown', (event) => {
+    focusDockPointerType = event.pointerType;
+    focusDockWasOpenBeforePointer = focusDockOpen;
+  });
+  focusDockTrigger.addEventListener('click', () => {
+    if (focusDockPointerType === 'touch') setFocusDockOpen(!focusDockWasOpenBeforePointer);
+    else setFocusDockOpen(true);
+    setTimeout(() => { focusDockPointerType = 'mouse'; }, 0);
+  });
+  focusDockTrigger.addEventListener('focus', () => {
+    if (focusDockPointerType !== 'touch') setFocusDockOpen(true);
+  });
+  focusDockTrigger.addEventListener('focusout', (event) => {
+    if (!focusDock.contains(event.relatedTarget)) setFocusDockOpen(false);
+  });
+  focusDock.addEventListener('pointerenter', () => setFocusDockOpen(true));
+  focusDock.addEventListener('pointerleave', (event) => {
+    if (event.pointerType !== 'touch' && window.innerHeight - event.clientY > 96)
+      setFocusDockOpen(false);
+  });
+  focusDock.addEventListener('focusout', (event) => {
+    if (!focusDock.contains(event.relatedTarget) && event.relatedTarget !== focusDockTrigger)
+      setFocusDockOpen(false);
+  });
+  document.addEventListener('pointermove', (event) => {
+    if (!uiPreferences.focusMode || event.pointerType === 'touch') return;
+    const nearBottom = window.innerHeight - event.clientY <= 96;
+    if (nearBottom || focusDock.matches(':hover')) setFocusDockOpen(true);
+    else if (!focusDock.contains(document.activeElement)) setFocusDockOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && focusDockOpen) {
+      setFocusDockOpen(false);
+      focusDockTrigger.focus();
+    }
+  });
+  syncFocusDock();
+}
 function initialize() {
   initializeNavigation();
+  initializeFocusDock();
+  document.querySelectorAll('[data-open-dialog]').forEach((button) =>
+    button.addEventListener('click', () => {
+      const dialog = document.getElementById(button.dataset.openDialog);
+      if (dialog?.showModal) dialog.showModal();
+    }),
+  );
+  document.querySelectorAll('[data-close-dialog]').forEach((button) =>
+    button.addEventListener('click', () => button.closest('dialog')?.close()),
+  );
+  document.querySelectorAll('.settings-dialog').forEach((dialog) =>
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    }),
+  );
   updateControls();
   markTheme();
   document
@@ -232,7 +374,7 @@ function initialize() {
     );
   document.querySelector('#reset-personalization')?.addEventListener('click', () => {
     saveUi({ ...appearance.defaults });
-    document.querySelector('#personalization-message').textContent = 'Preferências restauradas.';
+    showToast('Preferências de leitura restauradas.');
   });
   document.addEventListener('keydown', (event) => {
     const editing = event.target.closest?.('input,textarea,select,[contenteditable="true"]');
@@ -277,10 +419,8 @@ function initialize() {
     document.querySelector('#custom-background-color-value').textContent =
       s.background.toUpperCase();
     document.querySelector('#custom-text-color-value').textContent = s.text.toUpperCase();
-    document.querySelector('[data-contrast-note]').textContent =
-      corrected !== s.text
-        ? 'O texto será ajustado automaticamente para manter o contraste com o fundo.'
-        : 'As cores escolhidas permitem uma leitura confortável.';
+    const contrastNote = document.querySelector('[data-contrast-note]');
+    if (contrastNote) contrastNote.textContent = '';
   }
   function populateColors() {
     if (!color) return;
@@ -292,8 +432,7 @@ function initialize() {
     updatePreview();
   }
   function notify(message) {
-    const node = document.querySelector('#theme-message');
-    if (node) node.textContent = message;
+    showToast(message);
     markTheme();
     renderProfiles();
   }
@@ -308,23 +447,43 @@ function initialize() {
   document.querySelectorAll('[data-accent-preset]').forEach((b) =>
     b.addEventListener('click', () => {
       color.value = b.dataset.accentPreset;
+      if (b.dataset.backgroundPreset) background.value = b.dataset.backgroundPreset;
+      if (b.dataset.textPreset) text.value = b.dataset.textPreset;
+      if (b.dataset.fontPreset) font.value = b.dataset.fontPreset;
       updatePreview();
     }),
   );
   document.querySelector('#apply-custom-color')?.addEventListener('click', () => {
-    appearance.saveAppearance(readForm());
-    notify('Tema personalizado aplicado. Você pode dar um nome e salvá-lo em Meus temas.');
+    const settings = readForm();
+    const corrected = appearance.readable(settings.text, settings.background);
+    const contrastAdjusted = corrected !== settings.text;
+    if (contrastAdjusted) {
+      const accepted = window.confirm(
+        'O contraste entre o texto e o fundo pode ficar baixo. Quer que eu ajuste a cor do texto automaticamente?',
+      );
+      if (!accepted) {
+        showToast('Ajuste a cor do texto para melhorar o contraste.');
+        return;
+      }
+      settings.text = corrected;
+      text.value = corrected;
+      updatePreview();
+    }
+    appearance.saveAppearance(settings);
+    notify(contrastAdjusted ? 'Aparência aplicada com contraste ajustado.' : 'Aparência aplicada.');
+    document.querySelector('#custom-appearance-dialog')?.close();
   });
   document.querySelector('#reset-brand-theme')?.addEventListener('click', () => {
     appearance.saveAppearance({ ...appearance.loadAppearance(), theme: 'paper' });
-    notify('Tema Voz em Estudo restaurado.');
+    notify('Tema Claro restaurado.');
   });
   const list = document.querySelector('[data-saved-theme-list]'),
     form = document.querySelector('[data-save-theme-form]'),
     message = document.querySelector('[data-saved-theme-message]');
-  const kindNames = { light: 'Claro', dark: 'Escuro', focus: 'Foco' };
+  const kindNames = { light: 'Claro', dark: 'Escuro', focus: 'Personalizado' };
   function profileStatus(value) {
-    if (message) message.textContent = value;
+    if (message) message.textContent = '';
+    if (value) showToast(value);
   }
   function renderProfiles(focusId) {
     if (!list) return;
@@ -332,8 +491,8 @@ function initialize() {
     const profiles = appearance.loadProfiles();
     if (!profiles.length) {
       const empty = document.createElement('p');
-      empty.className = 'plain-note';
-      empty.textContent = 'Você ainda não salvou temas. Escolha uma aparência e dê um nome a ela.';
+      empty.className = 'saved-theme-empty';
+      empty.textContent = 'Ainda sem temas salvos.';
       list.append(empty);
       return;
     }
@@ -345,7 +504,7 @@ function initialize() {
         title = document.createElement('h3'),
         summary = document.createElement('p');
       title.textContent = profile.name;
-      summary.textContent = `${kindNames[profile.kind]} · ${profile.ui.focusMode ? 'modo foco ativo' : 'navegação completa'}`;
+      summary.textContent = `${kindNames[profile.kind] || 'Personalizado'} · ${profile.ui.focusMode ? 'modo foco ativo' : 'navegação completa'}`;
       description.append(title, summary);
       const actions = document.createElement('div');
       actions.className = 'saved-theme-actions';
@@ -406,9 +565,7 @@ function initialize() {
       });
       saveUi({
         ...uiPreferences,
-        focusMode: kind === 'focus',
-        lowStimulation: kind === 'focus',
-        reducedMotion: kind === 'focus',
+        focusMode: uiPreferences.focusMode,
       });
       populateColors();
       markTheme();
@@ -416,9 +573,7 @@ function initialize() {
       document.querySelector('#theme-profile-name').value =
         `Modo ${kindNames[kind].toLowerCase()} personalizado`;
       document.querySelector('#theme-profile-kind').value = kind;
-      profileStatus(
-        `Modo ${kindNames[kind].toLowerCase()} aplicado. Ajuste as preferências e salve com um nome.`,
-      );
+      profileStatus(`Modo ${kindNames[kind].toLowerCase()} aplicado. Dê um nome e salve.`);
     }),
   );
   form?.addEventListener('submit', (event) => {
@@ -431,6 +586,7 @@ function initialize() {
       );
       profileStatus(`Tema ${profile.name} salvo.`);
       renderProfiles();
+      document.querySelector('#saved-themes-dialog')?.close();
     } catch (e) {
       profileStatus(e.message);
     }

@@ -15,7 +15,7 @@ export function statusChip(material) {
 }
 export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true } = {}) {
   const card = document.createElement('div'); card.className = 'empty-state-card';
-  if (mascot) { const img = document.createElement('img'); img.src = mascotReading; img.alt = ''; img.width = 90; img.height = 68; card.appendChild(img); }
+  if (mascot) { const img = document.createElement('img'); img.src = mascotReading; img.alt = ''; img.width = 90; img.height = 90; card.appendChild(img); }
   const content = document.createElement('div');
   const heading = document.createElement('strong'); heading.textContent = title;
   const paragraph = document.createElement('p'); paragraph.textContent = description;

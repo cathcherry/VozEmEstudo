@@ -1,9 +1,9 @@
 import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { listMaterials } from '../api/material.api.js';
-import { studyFor } from '../utils/study-store.js';
-import { materialRow, playbackAtEnd } from '../utils/library-ui.js';
-import { formatDuration } from '../utils/format.js';
+import { studyFor, listeningPercent } from '../utils/study-store.js';
+import { materialHref } from '../utils/library-ui.js';
+import { formatDate, formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
@@ -19,6 +19,94 @@ const name=session.user.user_metadata?.display_name || session.user.user_metadat
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
 const continued=document.querySelector('[data-continue-list]'), recent=document.querySelector('[data-recent-list]');
+function dashboardLesson(material) {
+  const study = studyFor(material.id);
+  const audio = Array.isArray(material.audio_files) ? material.audio_files[0] : material.audio_files || material.audio;
+  const durationMs = Number(audio?.duration_ms || study.duration * 1000 || 0);
+  const percent = listeningPercent(material.id);
+  const card = document.createElement('a');
+  card.className = 'dashboard-lesson-card';
+  card.href = materialHref(material.id);
+  card.dataset.materialId = material.id;
+
+  const copy = document.createElement('span');
+  copy.className = 'dashboard-lesson-copy';
+  const title = document.createElement('strong');
+  title.className = 'dashboard-lesson-title';
+  title.textContent = material.title;
+  const subject = document.createElement('span');
+  subject.className = 'dashboard-lesson-subject';
+  subject.textContent = material.subject || 'Sem disciplina';
+  copy.append(title, subject);
+  card.append(copy);
+
+  const created = document.createElement('time');
+  created.className = 'dashboard-lesson-date';
+  const createdDate = material.created_at ? new Date(material.created_at) : null;
+  const validCreatedDate = createdDate && !Number.isNaN(createdDate.getTime());
+  const fullDate = validCreatedDate ? formatDate(material.created_at) : '';
+  created.dateTime = validCreatedDate ? createdDate.toISOString() : '';
+  created.textContent = validCreatedDate
+    ? createdDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+    : '';
+  created.dataset.fullDate = fullDate;
+  if (fullDate) created.setAttribute('aria-label', `Enviada em ${fullDate}`);
+  card.append(created);
+
+  const tags = study.tags || [];
+  if (tags.length) {
+    const list = document.createElement('span');
+    list.className = 'dashboard-lesson-topics';
+    list.setAttribute('aria-label', 'Assuntos');
+    list.textContent = tags.join(' · ');
+    card.append(list);
+  }
+
+  const cue = document.createElement('span');
+  cue.className = 'dashboard-lesson-cue';
+  cue.setAttribute('aria-hidden', 'true');
+  cue.textContent = 'Abrir aula →';
+  card.append(cue);
+
+  if (durationMs > 0) {
+    const playback = document.createElement('div');
+    playback.className = 'dashboard-lesson-playback';
+    const progress = document.createElement('progress');
+    progress.max = 100;
+    progress.value = percent;
+    progress.setAttribute('aria-label', `Áudio ouvido de ${material.title}: ${percent}%`);
+    const duration = document.createElement('span');
+    duration.className = 'dashboard-lesson-duration';
+    duration.textContent = formatDuration(durationMs);
+    const percentLabel = document.createElement('span');
+    percentLabel.className = 'dashboard-lesson-percent';
+    percentLabel.textContent = `${percent}% ouvido`;
+    const tooltip = document.createElement('span');
+    tooltip.className = 'dashboard-lesson-tooltip';
+    tooltip.append(percentLabel);
+    if (study.playedAt) {
+      const lastPlayed = document.createElement('span');
+      lastPlayed.className = 'dashboard-lesson-last-played';
+      lastPlayed.textContent = `Última reprodução: ${new Date(study.playedAt).toLocaleDateString('pt-BR')}`;
+      tooltip.append(lastPlayed);
+    }
+    playback.addEventListener('pointermove', (event) => {
+      const bounds = playback.getBoundingClientRect();
+      const halfTooltip = tooltip.offsetWidth / 2;
+      const x = Math.min(
+        Math.max(event.clientX - bounds.left, halfTooltip + 8),
+        bounds.width - halfTooltip - 8,
+      );
+      playback.style.setProperty('--dashboard-tooltip-x', `${x}px`);
+    });
+    playback.addEventListener('pointerleave', () => {
+      playback.style.removeProperty('--dashboard-tooltip-x');
+    });
+    playback.append(progress, duration, tooltip);
+    card.append(playback);
+  }
+  return card;
+}
 async function load() {
   container.setAttribute('aria-busy','true');
   try {
@@ -60,28 +148,24 @@ async function load() {
     continued.replaceChildren(); recent.replaceChildren();
     const last=materials.filter(m=>studyFor(m.id).openedAt).sort((a,b)=>(studyFor(b.id).playedAt||studyFor(b.id).openedAt)-(studyFor(a.id).playedAt||studyFor(a.id).openedAt)).slice(0,1);
     if (last.length) for (const material of last) {
-      const row=materialRow(material,{compact:true});
-      const s=studyFor(material.id);
-      const note=document.createElement('p'); note.className='last-access-note';
-      note.textContent=s.playedAt ? `Última reprodução: ${new Date(s.playedAt).toLocaleDateString('pt-BR')}${playbackAtEnd(material)?' · No fim do áudio':s.position>0?' · Retomar em '+formatDuration(s.position*1000):''}` : 'Último acesso: '+new Date(s.openedAt).toLocaleDateString('pt-BR');
-      row.querySelector('.library-material-main').append(note); continued.append(row);
-    } else continued.append(emptyState(materials.length?'Escolha uma aula para começar.':'Sua Biblioteca está pronta para começar.',materials.length?'Seu próximo acesso aparecerá aqui, com o andamento do estudo.':'Envie sua primeira aula para reunir transcrição, resumo e questões.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:false}));
+      continued.append(dashboardLesson(material));
+    } else continued.append(emptyState(materials.length?'Nenhuma aula em andamento.':'Sua Biblioteca está vazia.',materials.length?'Acesse a Biblioteca para escolher uma aula.':'Envie uma aula para começar.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:false}));
     const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,3);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
-    for (const material of recentMaterials) recent.append(materialRow(material,{compact:true}));
+    for (const material of recentMaterials) recent.append(dashboardLesson(material));
     const shelf=document.querySelector('[data-subject-list]'); shelf.replaceChildren();
     const subjects=new Map(); for(const m of materials) { const subject=m.subject||'Sem disciplina'; const list=subjects.get(subject)||[]; list.push(m); subjects.set(subject,list); }
     for(const [subject,items] of [...subjects].sort((a,b)=>a[0].localeCompare(b[0],'pt-BR'))) {
       const link=document.createElement('a'); link.className='subject-folder'; link.href='./historico.html?subject='+encodeURIComponent(subject);
-      const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.textContent='▱'; icon.setAttribute('aria-hidden','true');
+      const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.textContent='📁'; icon.setAttribute('aria-hidden','true');
       const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=`${items.length} ${items.length===1?'aula':'aulas'}${reviewed?' · '+reviewed+' '+(reviewed===1?'revisão concluída':'revisões concluídas'):''}`; copy.append(title,detail); link.append(icon,copy); shelf.append(link);
     }
-    if (!subjects.size) { const p=document.createElement('p'); p.className='quiet-empty'; p.textContent='As disciplinas das suas aulas aparecem aqui.'; shelf.append(p); }
+    if (!subjects.size) { const p=document.createElement('p'); p.className='quiet-empty'; p.textContent='Nenhuma disciplina atribuída.'; shelf.append(p); }
     const topics=new Map();
     for(const m of materials) { const s=studyFor(m.id); if(!s.visits) continue; for(const tag of s.tags.length ? s.tags : [m.subject||'Sem disciplina']) topics.set(tag,(topics.get(tag)||0)+s.visits); }
     const list=document.querySelector('[data-topic-list]'); list.replaceChildren();
     for(const [topic,visits] of [...topics].sort((a,b)=>b[1]-a[1]).slice(0,4)) { const li=document.createElement('li'), label=document.createElement('span'), count=document.createElement('small'); label.textContent=topic; count.textContent=`${visits} ${visits===1?'acesso':'acessos'}`; li.append(label,count); list.append(li); }
-    if(!topics.size) { const li=document.createElement('li'); li.className='quiet-empty'; li.textContent='Abra uma aula para começar seu histórico de estudo.'; list.append(li); }
+    document.querySelector('[data-topics-section]').hidden = !topics.size;
   } catch(error) { overview.textContent='Biblioteca indisponível no momento.'; continued.replaceChildren(errorState(error.message,load)); }
   finally { container.setAttribute('aria-busy','false'); }
 }

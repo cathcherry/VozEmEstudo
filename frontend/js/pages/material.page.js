@@ -289,6 +289,7 @@ function renderPlayback(material, force = false) {
   const kind = document.querySelector('[data-playback-kind]');
   const audioAvailable = Boolean(material.signedAudioUrl);
   const videoAvailable = Boolean(material.signedVideoUrl && material.video);
+  document.querySelector('[data-playback-choice]').hidden = !(audioAvailable && videoAvailable);
   kind.querySelector('[value="audio"]').disabled = !audioAvailable;
   kind.querySelector('[value="video"]').disabled = !videoAvailable;
   if (kind.value === 'video' && !videoAvailable) kind.value = 'audio';
@@ -330,10 +331,8 @@ async function renewPlayback({ automatic = false } = {}) {
   if (!currentMaterial || renewBusy || (automatic && Date.now() - lastRenewedAt < 30000)) return;
   renewBusy = true; lastRenewedAt = Date.now();
   const version = ++playbackRequest;
-  const button = document.querySelector('[data-refresh-playback]');
-  button.disabled = true;
   const message = document.querySelector('[data-playback-status]');
-  setStatus(message, 'Renovando acesso à mídia…');
+  setStatus(message, 'Atualizando o link de reprodução…');
   try {
     const result = await getPlayback(materialId);
     if (version !== playbackRequest) return;
@@ -342,12 +341,11 @@ async function renewPlayback({ automatic = false } = {}) {
     $('[data-retry-media]').hidden = true;
     layout();
     document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !player.source; });
-    setStatus(message, 'Acesso renovado. Posição e velocidade preservadas.', 'success');
+    setStatus(message, 'Link atualizado. Posição e velocidade preservadas.', 'success');
   } catch (error) {
     if (version === playbackRequest) setStatus(message, error.message || 'Não foi possível renovar. Tente novamente.', 'error');
-  } finally { renewBusy = false; button.disabled = false; }
+  } finally { renewBusy = false; }
 }
-document.querySelector('[data-refresh-playback]').addEventListener('click', () => { void renewPlayback(); });
 document.querySelector('[data-playback-kind]').addEventListener('change', () => renderPlayback(currentMaterial));
 document.querySelector('[data-remove-video]').addEventListener('click', async (event) => {
   if (!confirm('Remover o vídeo guardado desta aula?')) return;
@@ -604,58 +602,7 @@ $('[data-more-questions-form]').addEventListener('submit', (e) => {
   generate('questions', { count: Number($('#more-question-count').value) });
 });
 $('[data-open-export]').addEventListener('click', () => {
-  $('[data-export-note]').textContent = hasUnsavedEdits()
-    ? 'As alterações ainda não confirmadas não serão exportadas.'
-    : '';
-  $('[name=summary]').disabled = !currentMaterial.summaries?.length;
-  $('[name=notes]').disabled = !studyFor(materialId).notes;
   $('[data-export-dialog]').showModal();
-});
-$('[data-export-form]').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const data = new FormData(e.currentTarget),
-    parts = ['# ' + currentMaterial.title];
-  if (data.has('transcription'))
-    parts.push(
-      '## Transcrição\n\n' +
-        currentMaterial.transcription.transcription_segments
-          .map((s) => s.current_text)
-          .join('\n\n'),
-    );
-  if (data.has('summary'))
-    parts.push(
-      '## Resumo\n\n' +
-        (currentMaterial.summaries?.find((s) => s.is_current)?.text ||
-          currentMaterial.summaries?.[0]?.text ||
-          ''),
-    );
-  if (data.has('notes') && studyFor(materialId).notes)
-    parts.push('## Minhas anotações\n\n' + studyFor(materialId).notes);
-  const text = parts.join('\n\n'),
-    format = data.get('format');
-  if (parts.length === 1) {
-    $('[data-export-note]').textContent = 'Escolha pelo menos um conteúdo.';
-    return;
-  }
-  if (format === 'pdf') {
-    $('[data-export-dialog]').close();
-    const print = document.createElement('article');
-    print.dataset.printExport = '';
-    renderMarkdown(print, text);
-    document.body.append(print);
-    document.body.classList.add('print-export');
-    window.print();
-    document.body.classList.remove('print-export');
-    print.remove();
-  } else {
-    const a = document.createElement('a'),
-      url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
-    a.href = url;
-    a.download = currentMaterial.title.replace(/[^\p{L}\p{N} _-]/gu, '') + '.' + format;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    $('[data-export-dialog]').close();
-  }
 });
 window.addEventListener('beforeunload', (e) => {
   if (hasUnsavedEdits()) {

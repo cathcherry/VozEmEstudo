@@ -34,9 +34,10 @@ export function studyFor(id) {
 export function updateStudy(id, patch) {
   if (!owner || !id || ['__proto__', 'constructor', 'prototype'].includes(id)) return false;
   const state = read();
-  state[id] = { ...studyFor(id), ...patch };
+  state[id] = { ...studyFor(id), ...patch, stateUpdatedAt:Date.now() };
   const saved = write(state);
   studyObserver?.(id,patch,state[id]);
+  window.dispatchEvent(new CustomEvent('study-state-changed', { detail:{ owner, id, snapshot:state[id] } }));
   return saved;
 }
 export function visitMaterial(id) {

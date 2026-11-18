@@ -1,0 +1,32 @@
+.settings-hub { max-width:1180px; }
+.settings-hub-card { min-width:0; padding:clamp(18px,2.5vw,26px); border:1px solid var(--border-light); border-radius:16px; background:var(--surface); box-shadow:0 5px 22px color-mix(in srgb,var(--text) 4%,transparent); }
+.settings-account-card { margin:0 0 18px; }
+.settings-card-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:12px; }
+.settings-card-heading h2 { margin:0; font-size:1.18rem; }
+.settings-card-heading .eyebrow { display:block; margin:0 0 4px; }
+.settings-hub-card > p { max-width:58ch; margin:0 0 16px; color:var(--muted); font-size:.86rem; line-height:1.55; }
+.settings-hub-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.settings-card-icon { display:grid; flex:0 0 38px; width:38px; height:38px; place-items:center; border-radius:11px; color:var(--accent-strong); background:var(--accent-soft); font-size:1.15rem; }
+.settings-card-link { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:40px; padding:9px 0; border-top:1px solid var(--border-light); color:var(--accent-strong); font-size:.84rem; font-weight:600; text-decoration:none; }
+.settings-card-link:hover { text-decoration:underline; }
+.settings-card-links { display:grid; }
+.account-facts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:0; }
+.account-facts > div { min-width:0; padding:12px; border-radius:10px; background:var(--surface-alt); }
+.account-facts dt { margin-bottom:5px; color:var(--muted); font-size:.72rem; }
+.account-facts dd { margin:0; overflow-wrap:anywhere; color:var(--text); font-size:.83rem; font-weight:600; }
+.password-reset-form { display:grid; gap:12px; }
+.password-reset-form label { display:grid; gap:6px; font-size:.78rem; font-weight:600; }
+.password-reset-form input[readonly] { width:100%; min-width:0; }
+.password-reset-form .secondary-action { justify-self:start; font-size:.8rem; }
+.password-reset-form .form-status { min-height:0; margin:0; font-size:.78rem; }
+@media(max-width:780px) { .settings-hub-grid { grid-template-columns:1fr; } .account-facts { grid-template-columns:1fr; } }
+
+.settings-category-nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
+.settings-category-nav a { padding:8px 14px; border:1px solid var(--border-light); border-radius:999px; background:var(--surface); color:var(--text); font-size:.8rem; text-decoration:none; }
+.settings-category-nav a:hover { background:var(--surface-alt); }
+.settings-details-card { margin-top:20px; }
+.settings-details-card details { border-top:1px solid var(--border-light); padding:14px 0; }
+.settings-details-card summary { cursor:pointer; font-size:.85rem; font-weight:600; }
+.settings-details-card p { color:var(--muted); font-size:.8rem; line-height:1.6; max-width:80ch; }
+.settings-hub [id] { scroll-margin-top:110px; }
+

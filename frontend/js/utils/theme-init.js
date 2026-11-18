@@ -10,13 +10,18 @@
     textSize: 'default',
     readingSpacing: 'comfortable',
   });
-  const allowedThemes = ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom', 'contrast-light', 'contrast-dark', 'soft'];
+  const allowedThemes = ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom', 'contrast-light', 'contrast-dark', 'soft', 'ocean'];
   const fonts = [
     "Inter, 'Segoe UI', Arial, sans-serif",
+    "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
     "'Trebuchet MS', 'Arial Rounded MT Bold', Arial, sans-serif",
     "Georgia, 'Times New Roman', serif",
+    "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
     'Verdana, Arial, sans-serif',
+    'Tahoma, Geneva, sans-serif',
+    'Arial, Helvetica, sans-serif',
     "'Courier New', monospace",
+    "Consolas, 'Courier New', monospace",
   ];
   const storage = {
     get(key, fallback) {
@@ -140,7 +145,8 @@
         night: '#151a21',
         'contrast-light': '#ffffff',
         'contrast-dark': '#090909',
-        soft: '#f3efe4',
+        soft: '#fff4d9',
+        ocean: '#e7f7f7',
       }[settings.theme] || settings.background;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', background);
   }
@@ -219,7 +225,7 @@
         .slice(0, 40),
       kind: ['light', 'dark', 'focus'].includes(kind) ? kind : 'light',
       appearance: loadAppearance(),
-      ui: loadUi(),
+      ui: { ...loadUi(), focusMode: false },
     };
     if (!profile.name) throw new Error('Dê um nome ao seu tema.');
     if (
@@ -308,7 +314,7 @@
   const file = location.pathname.split('/').pop();
   const aliases =
     file === 'conta.html'
-      ? { '#aparencia': './aparencia.html', '#foco': './leitura.html' }
+      ? { '#aparencia': './aparencia.html', '#foco': './aparencia.html#reading-settings' }
       : file === 'index.html'
         ? { '#nova-transcricao': './nova-transcricao.html', '#historico': './historico.html' }
         : {};

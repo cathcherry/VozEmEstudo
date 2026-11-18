@@ -22,9 +22,7 @@ body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
   font-weight: 600; letter-spacing: -.005em; line-height: 1.2; overflow: hidden;
   transition: background var(--kit-motion), border-color var(--kit-motion), transform 120ms ease;
 }
-.primary-action::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: repeating-linear-gradient(90deg,#ffffff19 0 1px,transparent 1px 8px); transition: opacity var(--kit-motion); }
 .primary-action:hover { text-decoration: none; filter: none; }
-.primary-action:hover::before { opacity: 1; }
 .primary-action:active { transform: translateY(1px); }
 .primary-action > svg { padding: 6px; width: 28px; height: 28px; border-radius: 50%; background: #ffffff24; transition: transform var(--kit-motion); }
 .primary-action:hover > svg { transform: translateX(2px); }

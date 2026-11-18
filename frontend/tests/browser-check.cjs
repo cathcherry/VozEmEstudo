@@ -683,9 +683,8 @@ async function main() {
     assert.deepEqual(summaryCalls.at(-1).options, { format: 'topics', length: 'short' });
     assert.equal(summaryCalls.at(-1).format, undefined);
     await page.locator('[data-open-export]').click();
-    await page.locator('[data-export-form] [name=format]').selectOption('md');
     const exportPromise = page.waitForEvent('download');
-    await page.locator('[data-export-form] [type=submit]').click();
+    await page.locator('[data-material-tools]').getByRole('button', { name: 'Baixar Markdown' }).click();
     assert((await exportPromise).suggestedFilename().endsWith('.md'));
     await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
     record('Markdown formatado, personalização contextual, exportação oculta e avisos em diálogo');
