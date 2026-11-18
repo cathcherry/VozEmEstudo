@@ -579,6 +579,7 @@ async function main() {
     assert.equal(await page.locator('.library-material').count(), 1);
     await screenshot(page, output, 'library-desktop.png');
     record('Busca por tags, filtros por disciplina e edição de título; tags persistem por conta');
+    await page.locator('[data-material-id="aula-real"] .row-menu > summary').click();
     await page
       .getByRole('link', {
         name: 'Gerar novas questões para Carros elétricos — energia',
