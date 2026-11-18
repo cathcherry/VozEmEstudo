@@ -167,7 +167,7 @@ function renderProfileBlocks() {
   const container = document.querySelector('[data-profile-blocks]');
   for (const node of container.querySelectorAll('[data-custom-block]')) node.remove();
   const blocks = loadBlocks();
-  for (const [index, block] of blocks.entries()) {
+  for (const block of blocks) {
     const card = document.createElement('article');
     card.className = `profile-block profile-block-${block.type}`;
     card.dataset.customBlock = block.id;
@@ -220,7 +220,7 @@ function renderProfileBlocks() {
         const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=Boolean(block.checkedItems?.[itemIndex]);
         const caption=document.createElement('span');caption.textContent=text;
         checkbox.addEventListener('change',()=>{
-          const current=loadBlocks();const item=current.find(item=>item.id===block.id);
+          const current=loadBlocks();const item=current.find(candidate=>candidate.id===block.id);
           if(item) { item.checkedItems={...item.checkedItems,[itemIndex]:checkbox.checked};saveBlocks(current); }
         });label.append(checkbox,caption);list.append(label);
       }
@@ -258,7 +258,7 @@ function renderProfileBlocks() {
     for(const child of [...card.children].filter(el=>el!==heading))body.append(child);
     card.append(body);container.append(card);
     cardCleanups.push(enhanceCard(card,block,{
-      saveLayout(layout){const items=loadBlocks();const item=items.find(item=>item.id===block.id);if(item){item.layout=layout;saveBlocks(items);}},
+      saveLayout(layout){const items=loadBlocks();const item=items.find(candidate=>candidate.id===block.id);if(item){item.layout=layout;saveBlocks(items);}},
       saveOrder(ids){const items=loadBlocks();saveBlocks(ids.map(id=>items.find(item=>item.id===id)).filter(Boolean));}
     }));
   }
