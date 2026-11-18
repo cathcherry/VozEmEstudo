@@ -694,6 +694,8 @@ async function main() {
     const exportPromise = page.waitForEvent('download');
     await page.locator('[data-material-tools]').getByRole('button', { name: 'Baixar Markdown' }).click();
     assert((await exportPromise).suggestedFilename().endsWith('.md'));
+    await page.locator('[data-export-dialog]').getByRole('button', { name: 'Fechar', exact: true }).click();
+    await page.locator('[data-export-dialog]').waitFor({ state: 'hidden' });
     await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
     record('Markdown formatado, personalização contextual, exportação oculta e avisos em diálogo');
     await page
