@@ -446,20 +446,26 @@ async function main() {
     await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
     assert.equal(await page.locator('.focus-secondary').first().isVisible(), false);
-    await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).click();
-    assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
+    assert.equal(await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).count(), 0);
+    const focusDockTrigger = page.getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true });
+    assert.equal(await focusDockTrigger.isVisible(), true);
+    await focusDockTrigger.click();
+    assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
+    assert.equal(await page.locator('#focus-dock a').count(), 4);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
     );
+    assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
+    assert.equal(await page.getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true }).isVisible(), true);
+    await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
-    await page.getByRole('button', { name: 'Sair do foco', exact: true }).click();
     await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
     await screenshot(page, output, 'dashboard-focus.png');
-    await page.getByRole('button', { name: 'Sair do foco', exact: true }).click();
+    await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
-    record('Sidebar recolhível; foco recolhe, permite reabrir e restaura preferência ao sair');
+    record('Sidebar recolhível; foco usa navegação inferior e restaura preferência ao sair');
     await page.goto(base + '/nova-transcricao.html');
     await page.locator('#audio-file').setInputFiles(mp4Input);
     await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
