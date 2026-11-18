@@ -2,7 +2,7 @@ import { createFolderIcons } from '../utils/folder-icons.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
-import { getCatalog, createSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
+import { getCatalog, getLibraryResources, createSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { studyFor, metadataTags, saveTags } from '../utils/study-store.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
@@ -14,6 +14,8 @@ const folderIcons = createFolderIcons(session.user.id);
 const query = new URLSearchParams(location.search);
 const search = document.querySelector('#library-search');
 const groups = document.querySelector('[data-library-groups]');
+document.addEventListener('click',event=>{for(const menu of groups.querySelectorAll('.row-menu[open]'))if(!menu.contains(event.target))menu.open=false;});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')for(const menu of groups.querySelectorAll('.row-menu[open]')){menu.open=false;menu.querySelector('summary').focus();}});
 const state = document.querySelector('[data-library-state]');
 const container = document.querySelector('[data-library-data]');
 const count = document.querySelector('[data-library-count]');
@@ -38,6 +40,8 @@ let returnFocus = null;
 let catalogEnabled = false;
 let catalog = { subjects: [], units: [] };
 let libraryViews = null;
+let treeResources = {};
+window.addEventListener('library-layout-changed',()=>{if(loaded)render();});
 const openSubjects = new Set();
 const openUnits = new Set();
 window.addEventListener('folder-icons-updated',()=>{if(loaded)render();});
@@ -175,7 +179,7 @@ async function moveMaterial(materialId, subjectId, unitId = null) {
 function enableDrag(element, material) {
   if (!catalogEnabled) return;
   element.draggable = true;
-  element.title = 'Arraste para mover para outra pasta';
+  element.removeAttribute('title');
   element.addEventListener('dragstart', (event) => {
     event.dataTransfer?.setData('text/plain', material.id);
     if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
@@ -206,6 +210,9 @@ function enableDrop(target, subjectId, unitId = null) {
 function row(material, { folderName = null, standalone = false } = {}) {
   const item = materialRow(material);
   const tagList = item.querySelector('.material-tags');
+  if(tagList) for(const tag of [...tagList.children]) {
+    if(/^(a\/?v|mp3|mp4|wav|m4a|ogg|webm|áudio|vídeo)$/i.test(tag.textContent.trim()))tag.remove();
+  }
   if (folderName && tagList) {
     for (const tag of [...tagList.children]) {
       if (tag.textContent.toLocaleLowerCase('pt-BR') === folderName.toLocaleLowerCase('pt-BR')) tag.remove();
@@ -224,13 +231,14 @@ function row(material, { folderName = null, standalone = false } = {}) {
   const menu = document.createElement('details');
   menu.className = 'row-menu';
   const summary = document.createElement('summary');
-  summary.textContent = 'Ações';
+  summary.textContent = '⋯';
+  summary.title = 'Mais opções';
   summary.setAttribute('aria-label', `Ações para ${material.title}`);
   const options = document.createElement('div');
   options.className = 'row-menu-content';
   const organize = document.createElement('button');
   organize.type = 'button';
-  organize.textContent = 'Editar título, disciplina e tags';
+  organize.textContent = 'Editar';
   organize.addEventListener('click', () => { menu.open = false; edit(material); });
   const questions = document.createElement('a');
   questions.href = materialHref(material.id) + '#questoes';
@@ -264,7 +272,13 @@ function row(material, { folderName = null, standalone = false } = {}) {
   const generate = actions.querySelector('a[aria-label^="Gerar novas questões"]');
   if (generate) options.append(generate);
   options.append(remove);
+  const menuIcons = ['M4 20h4L20 8l-4-4L4 16v4M14 6l4 4','M3 7h7l2 2h9v11H3zM3 7V4h7l2 3','M5 4h14v16H5zM8 8h8M8 12h8','M12 5v14M5 12h14'];
+  for(const [index,option] of [...options.children].entries()) {
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.6');svg.setAttribute('aria-hidden','true');
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',option===remove?'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7':menuIcons[index]||menuIcons[2]);svg.append(path);option.append(svg);
+  }
   menu.append(summary, options);
+  menu.addEventListener('toggle',()=>{if(menu.open)for(const other of groups.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
   actions.replaceChildren(actions.querySelector('a.secondary-action'), menu);
   enableDrag(item, material);
   return item;
@@ -306,25 +320,52 @@ function groupMaterials(visible) {
 
 function lessonCountLabel(total) { return `${total} ${total === 1 ? 'aula' : 'aulas'}`; }
 
+function treeFiles(material) {
+  const list=document.createElement('div');list.className='library-tree-files';
+  const available=treeResources[material.id]||{};
+  const types=[['audio','Áudio',''],['transcription','Transcrição','#transcricao'],['summary','Resumo','#resumo'],['questions','Questões','#questoes']];
+  for(const [key,label,fragment] of types)if(available[key]===true){
+    const link=document.createElement('a');link.href=materialHref(material.id)+fragment;
+    const icon=document.createElement('span');icon.textContent='▤';icon.setAttribute('aria-hidden','true');
+    const title=document.createElement('span');title.textContent=material.title;
+    const kind=document.createElement('small');kind.textContent=label;link.append(icon,title,kind);list.append(link);
+  }
+  if(!list.children.length){const link=document.createElement('a');link.href=materialHref(material.id);link.textContent='▤ '+material.title;list.append(link);}
+  return list;
+}
+function navigateFolder(subject = '', unit = '') {
+  const url=new URL(location.href);
+  for(const [key,value] of [['folder',subject],['unit',unit]]) { if(value)url.searchParams.set(key,value);else url.searchParams.delete(key); }
+  history.pushState(null,'',url);render();
+}
+window.addEventListener('popstate',()=>{if(loaded)render();});
 function renderFolderGroups(visible, _needle) {
   const folderGroups = groupMaterials(visible);
+  const route=new URLSearchParams(location.search),selected=route.get('folder'),selectedUnit=route.get('unit');
+  newSubjectButton.hidden = !catalogEnabled || Boolean(selected);
+  const breadcrumb=document.createElement('nav');breadcrumb.className='library-breadcrumb';breadcrumb.setAttribute('aria-label','Caminho da biblioteca');
+  const home=document.createElement('button');home.type='button';home.textContent='Biblioteca';home.onclick=()=>navigateFolder();breadcrumb.append(home);
+  const current=folderGroups.find(group=>String(group.id||group.name)===selected);
+  if(current){const parent=document.createElement('button');parent.type='button';parent.textContent=current.name;parent.onclick=()=>navigateFolder(selected);breadcrumb.append(document.createTextNode(' / '),parent);}
+  const currentUnit=catalog.units.find(unit=>String(unit.id)===selectedUnit);
+  if(currentUnit)breadcrumb.append(document.createTextNode(' / '+currentUnit.title));
+  groups.append(breadcrumb);groups.classList.toggle('is-folder-page',Boolean(selected));
+  folderToolbar.prepend(breadcrumb);
+  const toolbarTitle=folderToolbar.querySelector('h2');
+  breadcrumb.prepend(toolbarTitle);
+  for(const old of folderToolbar.querySelectorAll('.library-breadcrumb'))if(old!==breadcrumb)old.remove();
+  folderToolbar.querySelector('[data-create-unit-shortcut]')?.remove();
   let groupIndex = 0;
   for (const group of folderGroups) {
+    if(selected && String(group.id||group.name)!==selected)continue;
     const section = document.createElement('section');
     section.className = 'library-group library-folder-group';
     const folder = document.createElement('details');
     folder.className = 'library-subject-folder';
-  folder.open = openSubjects.has(String(group.id || group.name)) || hasFilters();
-    folder.addEventListener('toggle', () => {
-      section.classList.toggle('is-open', folder.open);
-      const key = String(group.id || group.name);
-      if (folder.open) openSubjects.add(key);
-      else openSubjects.delete(key);
-    });
-    section.classList.toggle('is-open', folder.open);
     const summary = document.createElement('summary');
     summary.id = `library-group-${groupIndex++}`;
-    summary.title = 'Abrir ou recolher esta disciplina';
+    summary.title = 'Abrir disciplina';
+    summary.addEventListener('click', event => { if(document.body.dataset.libraryLayout==='list')return;event.preventDefault(); navigateFolder(String(group.id || group.name)); });
     const icon = folderIcons.icon('subject',group.id);
     const name = document.createElement('strong');
     name.textContent = group.name;
@@ -339,13 +380,16 @@ function renderFolderGroups(visible, _needle) {
     const units = catalogEnabled && group.id
       ? catalog.units.filter((unit) => unit.subject_id === group.id)
       : [];
-    if (catalogEnabled && group.id) {
-      const createUnitButton = document.createElement('button');
+    let createUnitButton;
+    if (catalogEnabled && group.id && selected && !selectedUnit) {
+      createUnitButton = document.createElement('button');
       createUnitButton.type = 'button';
       createUnitButton.className = 'catalog-add-unit';
-      createUnitButton.textContent = '+ Nova unidade';
+      createUnitButton.textContent = '+';
+      createUnitButton.title = 'Nova unidade';
+      createUnitButton.setAttribute('aria-label','Nova unidade');
+      createUnitButton.dataset.createUnitShortcut='';
       createUnitButton.addEventListener('click', () => openUnitDialog({ id: group.id, name: group.name }));
-      content.append(createUnitButton);
     }
 
     const groupedIds = new Set();
@@ -361,6 +405,7 @@ function renderFolderGroups(visible, _needle) {
         else openUnits.delete(unitKey);
       });
       const unitSummary = document.createElement('summary');
+      unitSummary.addEventListener('click',event=>{if(document.body.dataset.libraryLayout==='list')return;event.preventDefault();navigateFolder(String(group.id||group.name),String(unit.id));});
       unitSummary.title = 'Abra a unidade ou arraste uma aula para movê-la';
       const unitIcon = folderIcons.icon('unit',unit.id);
       const unitName = document.createElement('strong');
@@ -373,18 +418,20 @@ function renderFolderGroups(visible, _needle) {
       const unitContent = document.createElement('div');
       unitContent.className = 'library-unit-content';
       if (unitMaterials.length) {
-        for (const material of unitMaterials) unitContent.append(row(material, { folderName: group.name }));
+        for (const material of unitMaterials) unitContent.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name }));
       } else {
-        unitContent.append(emptyState('Pasta vazia.', 'Arraste uma aula para cá ou use “Mover para pasta”.', { href: null, mascot: false }));
+        const empty=emptyState('Espaço para novas aulas', 'Suas aulas vão aparecer aqui.', { href: null, mascot: true });
+        empty.classList.add('library-folder-empty');unitContent.append(empty);
       }
       if (!unitMaterials.length && hasFilters()) continue;
       unitFolder.append(unitContent);
       enableDrop(unitFolder, group.id, unit.id);
-      content.append(unitFolder);
+      if(!selectedUnit)content.append(unitFolder);
+      else if(String(unit.id)===selectedUnit)content.append(unitContent);
     }
 
     const standalone = group.materials.filter((material) => !groupedIds.has(material.id));
-    if (standalone.length) {
+    if (standalone.length && !selectedUnit) {
       const heading = document.createElement('h3');
       heading.className = 'library-standalone-heading';
       const fileIcon = document.createElement('span');
@@ -393,15 +440,16 @@ function renderFolderGroups(visible, _needle) {
       heading.append(fileIcon, document.createTextNode('Aulas sem unidade'));
       const list = document.createElement('div');
       list.className = 'library-standalone-list';
-      for (const material of standalone) list.append(row(material, { folderName: group.name, standalone: true }));
-      content.append(heading, list);
+      for (const material of standalone) list.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name, standalone: true }));
+      content.append(list);
     } else if (!group.materials.length) {
       content.append(emptyState('Nenhuma aula nesta disciplina.', '', { href: null, mascot: false }));
     }
 
+    if(createUnitButton)folderToolbar.append(createUnitButton);
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
-    section.append(folder);
+    if(selected){section.classList.add('library-folder-page');section.append(content);}else section.append(folder);
     groups.append(section);
   }
 }
@@ -615,8 +663,9 @@ async function load() {
       catalogEnabled = await isFeatureEnabled('catalog_units');
       if (catalogEnabled) {
         catalog = await getCatalog();
+        try { treeResources=await getLibraryResources(); } catch { treeResources={}; }
         await folderIcons.load(catalog);
-        libraryViews = initLibraryViewSwitcher({ onChange: render });
+        // Each lesson provides its own resources.
       }
     } catch (error) {
       catalogEnabled = false;

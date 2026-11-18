@@ -76,3 +76,30 @@ body.app-page .account-page :is(.profile-content-section,.profile-about-section,
 [data-reduced-motion='true'] .account-page .profile-block-grid > .profile-block,
 [data-low-stimulation='true'] .account-page .profile-block-grid > .profile-block { transition:none; }
 [data-low-stimulation='true'] .account-page .study-section { backdrop-filter:none; box-shadow:none; }
+
+/* Dark glass uses tinted surfaces rather than white overlays. */
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid :is(.profile-stats-section,.achievements-section) {
+  background:linear-gradient(145deg,var(--surface-alt),var(--surface));
+  border-color:var(--border-light);
+  box-shadow:0 16px 40px #00000024,inset 0 1px 0 #ffffff08;
+}
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid :is(.profile-stats-section,.achievements-section)::before {
+  background:radial-gradient(ellipse at 18% 0%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 72%);
+}
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid [data-profile-level],
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid .profile-stat,
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid .achievement-card {
+  background:linear-gradient(145deg,color-mix(in srgb,var(--surface-alt) 72%,var(--surface)),var(--surface));
+  border-color:var(--border-light);
+  box-shadow:inset 0 1px 0 #ffffff08;
+}
+html:is([data-theme='night'],[data-theme='contrast-dark']) .profile-progression-grid .journey-emblem {
+  background:var(--accent-soft); color:var(--accent-strong);
+  border-color:var(--surface-alt); outline-color:var(--border-light);
+  box-shadow:0 5px 16px #00000028,inset 0 1px 0 #ffffff12;
+}
+html[data-theme='contrast-dark'] .profile-progression-grid :is(.profile-stats-section,.achievements-section,[data-profile-level],.profile-stat,.achievement-card) {
+  background:var(--surface); border-color:var(--border); box-shadow:none; backdrop-filter:none;
+}
+html[data-theme='contrast-dark'] .profile-progression-grid :is(.profile-stats-section,.achievements-section)::before { display:none; }
+.profile-progression-grid .profile-stat span { overflow-wrap:normal; word-break:normal; font-size:clamp(.65rem,1vw,.82rem); }

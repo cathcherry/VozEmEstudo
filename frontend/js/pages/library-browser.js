@@ -12,7 +12,7 @@ const drawings = {grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="
 for (const [mode,label] of [['grid','Grade'],['list','Lista']]) {
   const button=document.createElement('button'); button.type='button'; button.title=label; button.setAttribute('aria-label',label); button.setAttribute('aria-pressed',String(mode==='grid'));
   button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">'+drawings[mode]+'</svg>';
-  button.addEventListener('click',()=>{root.dataset.libraryLayout=mode;for(const item of layouts.children)item.setAttribute('aria-pressed',String(item===button));}); layouts.append(button);
+  button.addEventListener('click',()=>{root.dataset.libraryLayout=mode;window.dispatchEvent(new Event('library-layout-changed'));for(const item of layouts.children)item.setAttribute('aria-pressed',String(item===button));}); layouts.append(button);
 }
 toolbar.append(layouts);
 const filter=document.createElement('button');filter.type='button';filter.className='file-filter-toggle';filter.title='Filtros';filter.setAttribute('aria-label','Filtros');filter.setAttribute('aria-expanded','false');filter.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="8" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="9" cy="18" r="2"/></svg>';

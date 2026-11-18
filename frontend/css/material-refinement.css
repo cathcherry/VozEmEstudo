@@ -1,0 +1,24 @@
+/* A continuous study document, with a shared recording and quiet tab navigation. */
+body[data-page='material'] .article-content { max-width:1120px; }
+body[data-page='material'] .material-heading { padding:24px 28px; margin:16px 0 0; border:1px solid var(--border-light); border-bottom:0; border-radius:22px 22px 0 0; background:var(--surface); align-items:flex-start; gap:20px; }
+body[data-page='material'] .material-heading h1 { font-size:clamp(1.6rem,3vw,2.3rem); line-height:1.25; margin:0 0 10px; }
+body[data-page='material'] .material-heading [data-material-meta] { display:block; color:var(--muted); font-size:.78rem; margin:0; }
+body[data-page='material'] .material-header-actions { display:flex; gap:8px; flex-wrap:wrap; }
+body[data-page='material'] .material-header-actions :is(a,button) { min-height:34px; padding:7px 10px; font-size:.74rem; border-radius:9px; }
+body[data-page='material'] .material-recording { padding:20px 28px 24px; border-inline:1px solid var(--border-light); background:var(--surface); }
+body[data-page='material'] .recording-title { font:600 1rem/1.4 inherit; margin:0 0 14px; }
+body[data-page='material'] .material-recording .player-v2 { box-shadow:none; }
+body[data-page='material'] .material-tabs { display:flex; gap:24px; margin:0; padding:0 28px; border:1px solid var(--border-light); border-top:0; background:var(--surface); overflow-x:auto; }
+body[data-page='material'] .material-tabs[hidden] { display:none; }
+body[data-page='material'] .material-tabs button { border:0; border-bottom:2px solid transparent; border-radius:0; background:transparent; padding:15px 0; color:var(--muted); font-size:.9rem; white-space:nowrap; box-shadow:none; }
+body[data-page='material'] .material-tabs button[aria-selected='true'] { border-bottom-color:var(--accent); color:var(--accent-strong); font-weight:650; }
+body[data-page='material'] .article-section[role='tabpanel'] { margin:0; padding:28px; border:1px solid var(--border-light); border-top:0; border-radius:0 0 22px 22px; background:var(--surface); box-shadow:0 12px 30px color-mix(in srgb,var(--text) 4%,transparent); }
+body[data-page='material'] .section-title-row { margin-bottom:22px; align-items:center; gap:16px; }
+body[data-page='material'] .section-title-row h2 { font-size:1.25rem; margin:0; }
+body[data-page='material'] .transcription-segment { border:0; border-bottom:1px solid var(--border-light); border-radius:0; padding:18px 0; background:transparent; box-shadow:none; }
+body[data-page='material'] .transcription-segment textarea { border-color:transparent; background:transparent; line-height:1.85; padding:8px 12px; border-radius:10px; }
+body[data-page='material'] .transcription-segment textarea:focus { border-color:var(--border-light); background:var(--surface-alt); }
+body[data-page='material'] .generated-content { max-width:76ch; margin-inline:auto; line-height:1.85; }
+body[data-page='material'] .confirmation-footer { margin-top:28px; padding:20px; border-radius:14px; background:var(--surface-alt); border:0; }
+body[data-page='material'] .material-study-tools { margin-top:20px; }
+@media(max-width:680px){body[data-page='material'] :is(.material-heading,.material-recording,.article-section[role='tabpanel']) { padding:20px 16px; } body[data-page='material'] .material-heading { flex-wrap:wrap; } body[data-page='material'] .material-tabs { padding-inline:16px; gap:20px; }}

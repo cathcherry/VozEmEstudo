@@ -326,6 +326,14 @@ audio { width: 100%; }
 [data-theme="night"] { --button-text: #0e1b2a; --accent-contrast: #0e1b2a; }
 [data-theme="ocean"] { --accent-strong: #086771; }
 [data-theme="custom"] { --accent-strong: var(--custom-link); --accent-contrast: var(--custom-contrast); --button-background: var(--custom-accent); --button-text: var(--custom-contrast); }
+/* Gentle filled controls for the everyday palettes. */
+[data-theme="paper"] { --button-background:#e1e9ff; --button-text:#304e9d; }
+[data-theme="gabriela"] { --button-background:#eee3fa; --button-text:#65458e; }
+[data-theme="forest"] { --button-background:#deeee4; --button-text:#315f49; }
+[data-theme="wine"] { --button-background:#f4e1e8; --button-text:#85405d; }
+[data-theme="ocean"] { --button-background:#dceff1; --button-text:#28616a; }
+[data-theme="soft"] { --button-background:#efe4d2; --button-text:#755529; }
+[data-theme="night"] { --button-background:#263f54; --button-text:#d0e9ff; }
 [hidden] { display: none !important; }
 html { scroll-padding-top: calc(var(--topbar-height) + 24px); }
 body { font-size: 1rem; }
