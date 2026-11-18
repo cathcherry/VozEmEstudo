@@ -4,7 +4,7 @@ let activeOwner = '', timer;
 export async function initProfileStudySync(owner) {
   if (activeOwner === owner) return;
   activeOwner = owner;
-  let local = {};
+  let local;
   try { local = JSON.parse(localStorage.getItem(`voz-study-v1:${owner}`) || '{}'); } catch { local = {}; }
   const remote = await loadCloudState(owner,'study-history',null);
   const merged = {...(remote || {})};
