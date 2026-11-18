@@ -419,7 +419,7 @@ async function main() {
     assert((await page.evaluate(() => window.__paints)).every((p) => p.theme === 'night'));
     assert.equal(
       await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
-      'rgb(21, 26, 33)',
+      'rgb(14, 27, 42)',
     );
     await screenshot(page, output, 'dashboard-night.png');
     record('Tema noturno aplicado antes da primeira pintura');
