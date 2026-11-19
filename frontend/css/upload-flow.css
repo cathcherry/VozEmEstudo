@@ -1,0 +1,609 @@
+/*
+ * Nova transcrição — interior do assistente (envio, identificação, revisão e progresso).
+ * O contêiner da página, o cabeçalho e o indicador de etapas continuam definidos em
+ * academic.css/voz-redesign.css; aqui só se organiza o conteúdo de cada etapa.
+ * Somente tokens de tema, para funcionar em todos os temas claros e escuros.
+ */
+body[data-page='transcription'] .transcription-form legend {
+  margin-bottom: 4px;
+}
+
+/* ---------- Etapa 1: superfície de envio ---------- */
+body[data-page='transcription'] .upload-dropzone {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 44px 24px 40px;
+  border: 1.5px dashed var(--border);
+  border-radius: 6px;
+  background: var(--surface-alt);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+body[data-page='transcription'] .upload-dropzone:hover,
+body[data-page='transcription'] .upload-dropzone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+body[data-page='transcription'] .upload-dropzone:has(.upload-input:focus-visible) {
+  border-color: var(--accent-strong);
+  outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 2px;
+}
+body[data-page='transcription'] .upload-dropzone[data-state='error'] {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 6%, var(--surface));
+}
+/* Native input stays focusable and operable by keyboard; the surface is its visual. */
+body[data-page='transcription'] .upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+body[data-page='transcription'] .upload-dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent-strong);
+}
+body[data-page='transcription'] .upload-dropzone-icon svg {
+  width: 24px;
+  height: 24px;
+}
+body[data-page='transcription'] .upload-dropzone-label {
+  display: grid;
+  gap: 2px;
+  cursor: pointer;
+}
+body[data-page='transcription'] .upload-dropzone-title {
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+body[data-page='transcription'] .upload-dropzone-action {
+  color: var(--accent-strong);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+body[data-page='transcription'] .article-section p.upload-dropzone-formats {
+  max-width: 34rem;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* ---------- Etapa 1: arquivo selecionado (componente único) ---------- */
+body[data-page='transcription'] .upload-editor {
+  margin-top: 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--surface);
+  overflow: hidden;
+}
+body[data-page='transcription'] .upload-file-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+}
+body[data-page='transcription'] .upload-file-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+body[data-page='transcription'] .upload-file-icon svg {
+  width: 22px;
+  height: 22px;
+}
+body[data-page='transcription'] .upload-editor[data-kind='video'] [data-file-icon='audio'],
+body[data-page='transcription'] .upload-editor:not([data-kind='video']) [data-file-icon='video'] {
+  display: none;
+}
+body[data-page='transcription'] .upload-file-meta {
+  display: grid;
+  flex: 1 1 7rem;
+  gap: 2px;
+  min-width: 0;
+}
+body[data-page='transcription'] .upload-file-meta strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.95rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body[data-page='transcription'] [data-file-details] {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+body[data-page='transcription'] .file-analysis {
+  color: var(--accent-strong);
+}
+body[data-page='transcription'] .upload-file-bar .upload-change {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+body[data-page='transcription'] .upload-editor[data-state='loading'] .media-player {
+  opacity: 0.7;
+}
+
+/* O player compartilhado vira o corpo do componente: sem borda nem cabeçalho duplicado. */
+body[data-page='transcription'] .upload-editor .media-player {
+  padding: 18px 18px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+body[data-page='transcription'] .upload-editor .player-heading {
+  display: none;
+}
+body[data-page='transcription'] .upload-editor .video-preview {
+  margin-bottom: 14px;
+  border-radius: 4px;
+}
+body[data-page='transcription'] .upload-editor .trim-editor {
+  margin: 18px -18px 0;
+  padding: 16px 18px 18px;
+}
+body[data-page='transcription'] .upload-editor .trim-title {
+  align-items: center;
+}
+body[data-page='transcription'] .upload-editor .trim-title strong {
+  font-size: 0.9rem;
+}
+body[data-page='transcription'] .upload-editor .trim-fields {
+  margin-top: 12px;
+}
+body[data-page='transcription'] .upload-editor .player-message {
+  margin: 0 -18px;
+  padding: 0 18px 14px;
+  background: var(--surface-alt);
+}
+body[data-page='transcription'] .upload-editor .player-message:empty {
+  display: none;
+}
+body[data-page='transcription'] .upload-editor .download-clip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  margin-left: auto;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+body[data-page='transcription'] .upload-editor .download-clip svg {
+  width: 18px;
+  height: 18px;
+}
+body[data-page='transcription'] .upload-editor .download-clip .download-label {
+  max-width: none;
+}
+body[data-page='transcription'] .upload-editor .download-clip:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+body[data-page='transcription'] .upload-editor .download-clip:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ---------- Etapa 2: identificação ---------- */
+body[data-page='transcription'] .selected-file-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin: 14px 0 0;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--surface-alt);
+}
+body[data-page='transcription'] .selected-file-text {
+  display: grid;
+  flex: 1 1 16rem;
+  gap: 2px;
+  min-width: 0;
+}
+body[data-page='transcription'] .selected-file-text strong {
+  font-size: 0.92rem;
+}
+body[data-page='transcription'] .selected-file-text small {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+body[data-page='transcription'] .selected-file-actions {
+  display: flex;
+  gap: 18px;
+}
+body[data-page='transcription'] .selected-file-actions .text-action {
+  margin: 0;
+  padding: 4px 0;
+  font-size: 0.85rem;
+}
+body[data-page='transcription'] .selected-file-actions .restart-action {
+  color: var(--muted);
+}
+
+body[data-page='transcription'] .form-section {
+  padding: 22px 0;
+  border-top: 1px solid var(--border-light);
+}
+body[data-page='transcription'] .selected-file-summary + .form-section {
+  border-top: 0;
+}
+body[data-page='transcription'] .form-section h2.form-section-title {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+body[data-page='transcription'] .form-section p.form-section-hint {
+  margin: -8px 0 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+body[data-page='transcription'] .form-section .form-grid {
+  gap: 16px 20px;
+}
+body[data-page='transcription'] .form-section .form-grid label {
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+body[data-page='transcription'] .form-section .form-grid small {
+  font-size: 0.8rem;
+}
+
+body[data-page='transcription'] .choice-list {
+  display: grid;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+body[data-page='transcription'] .choice-list > * + * {
+  border-top: 1px solid var(--border-light);
+}
+body[data-page='transcription'] .form-section .storage-choice {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 0.92rem;
+}
+body[data-page='transcription'] .form-section .storage-choice strong {
+  font-weight: 600;
+}
+body[data-page='transcription'] .form-section .storage-choice small {
+  margin-top: 2px;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+body[data-page='transcription'] .form-section .storage-choice input {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+body[data-page='transcription'] .is-unavailable .storage-choice {
+  cursor: not-allowed;
+}
+body[data-page='transcription'] .is-unavailable .storage-choice strong {
+  color: var(--muted);
+}
+body[data-page='transcription'] .is-unavailable .storage-choice input {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+body[data-page='transcription'] .form-section .permission-choice {
+  padding: 0;
+}
+body[data-page='transcription'] [data-permission-label] {
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+body[data-page='transcription'] .upload-disclosure {
+  margin-top: 12px;
+  font-size: 0.86rem;
+}
+body[data-page='transcription'] .upload-disclosure summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  color: var(--accent-strong);
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+body[data-page='transcription'] .upload-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+body[data-page='transcription'] .upload-disclosure summary::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-right: 1.8px solid currentColor;
+  border-bottom: 1.8px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+body[data-page='transcription'] .upload-disclosure[open] summary::before {
+  transform: rotate(45deg);
+}
+body[data-page='transcription'] .upload-disclosure summary:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+body[data-page='transcription'] .upload-disclosure ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+body[data-page='transcription'] .article-section .upload-disclosure p {
+  max-width: 46rem;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+body[data-page='transcription'] .upload-disclosure .privacy-link {
+  margin: 6px 0 0;
+  font-size: 0.86rem;
+}
+body[data-page='transcription'] [data-identification-actions] {
+  margin-top: 4px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ---------- Revisão do envio ---------- */
+body[data-page='transcription'] .upload-choice-review {
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+}
+body[data-page='transcription'] .upload-choice-review h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+}
+body[data-page='transcription'] .upload-choice-review dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+}
+body[data-page='transcription'] .upload-choice-review dl > div {
+  min-width: 0;
+  padding: 11px 16px;
+  border-top: 1px solid var(--border-light);
+}
+body[data-page='transcription'] .upload-choice-review dl > div:nth-child(-n + 2) {
+  border-top: 0;
+}
+body[data-page='transcription'] .upload-choice-review dl > .wide {
+  grid-column: 1 / -1;
+}
+body[data-page='transcription'] .upload-choice-review dl > .wide:first-child + div {
+  border-top: 1px solid var(--border-light);
+}
+body[data-page='transcription'] .upload-choice-review dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+body[data-page='transcription'] .upload-choice-review dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+}
+body[data-page='transcription'] .article-section p.review-note {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+body[data-page='transcription'] .upload-choice-review .review-navigation {
+  margin-top: 18px;
+}
+
+/* ---------- Etapa 3: envio ---------- */
+body[data-page='transcription'] .upload-progress {
+  display: block;
+  padding: 18px 0 6px;
+}
+body[data-page='transcription'] .upload-progress-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+body[data-page='transcription'] .upload-progress-head .loading-indicator {
+  margin-top: 4px;
+}
+body[data-page='transcription'] .upload-progress h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+body[data-page='transcription'] .article-section [data-upload-progress-note] {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.progress-steps {
+  display: grid;
+  gap: 2px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.progress-steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.progress-steps li::before {
+  content: '';
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.progress-steps li[data-state='active'] {
+  color: var(--text);
+  font-weight: 600;
+}
+.progress-steps li[data-state='active']::before {
+  border: 5px solid var(--accent);
+}
+.progress-steps li[data-state='done']::before {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+}
+.progress-steps li[data-state='done']::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid var(--accent-contrast);
+  border-left: 2px solid var(--accent-contrast);
+  transform: translateY(-70%) rotate(-45deg);
+}
+.progress-steps li[data-state='done'] {
+  color: var(--text);
+}
+.progress-steps li[data-state='error'] {
+  color: var(--danger);
+  font-weight: 600;
+}
+.progress-steps li[data-state='error']::before {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 15%, var(--surface));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page='transcription'] .upload-dropzone,
+  body[data-page='transcription'] .upload-disclosure summary::before {
+    transition: none;
+  }
+}
+@media (max-width: 600px) {
+  body[data-page='transcription'] .upload-dropzone {
+    padding: 32px 16px 28px;
+  }
+  body[data-page='transcription'] .upload-editor .media-player {
+    padding: 14px 14px 0;
+  }
+  body[data-page='transcription'] .upload-editor .trim-editor {
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+  body[data-page='transcription'] .upload-editor .download-clip {
+    margin-left: 0;
+  }
+  body[data-page='transcription'] .upload-choice-review dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-page='transcription'] .upload-choice-review dl > div:nth-child(2) {
+    border-top: 1px solid var(--border-light);
+  }
+}
+
+/* ---------- Tela de processamento (processando.html) ---------- */
+.processing-status.waiting-screen {
+  padding: clamp(28px, 5vw, 48px) clamp(20px, 5vw, 48px);
+  text-align: left;
+}
+.processing-status > * {
+  max-width: 38rem;
+}
+.processing-status .processing-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.processing-status .processing-head .loading-indicator {
+  margin: 30px 0 0;
+}
+.processing-status .eyebrow {
+  display: block;
+  margin-bottom: 4px;
+}
+.processing-status h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+.processing-status p.processing-elapsed {
+  min-height: 1.5em;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.processing-status .progress-steps {
+  margin-top: 24px;
+}
+.processing-status p.processing-detail {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.processing-status[data-processing-state='error'] p.processing-detail {
+  color: var(--danger);
+}
+.processing-status .processing-leave {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
+}
+.processing-status .processing-leave p {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.processing-status [data-wait-error-actions] {
+  margin-top: 22px;
+}

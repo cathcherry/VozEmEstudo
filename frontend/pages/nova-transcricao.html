@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/css/academic.css" />
     <link rel="stylesheet" href="/css/voz-redesign.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
+    <link rel="stylesheet" href="/css/upload-flow.css" />
     <script defer src="/js/utils/card-motion.js"></script>
   </head>
   <body class="app-page" data-page="transcription">
@@ -141,59 +142,91 @@
       <section class="article-section first-section wizard-card">
         <form class="transcription-form" novalidate>
           <fieldset data-wizard-panel="1">
-            <legend>1. Escolha a gravação</legend>
-            <p class="section-description">
-              MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM ou MOV · até 100 MB.
-            </p>
-            <button class="text-action" type="button" data-change-file hidden>
-              Trocar arquivo
-            </button>
-            <div class="file-field upload-dropzone" data-dropzone>
-              <div>
-                <label for="audio-file">Arquivo de áudio ou vídeo</label
-                ><small class="file-requirements" data-file-description
-                  >Nenhum arquivo selecionado.</small
-                >
-              </div>
+            <legend>Escolha a gravação</legend>
+            <div class="upload-dropzone" data-dropzone>
               <input
                 id="audio-file"
+                class="upload-input"
                 name="audio-file"
                 type="file"
                 accept=".mp4,.mp3,.wav,.m4a,.aac,.ogg,.flac,.webm,.mov,audio/*,video/mp4,video/webm,video/quicktime"
                 required
-                aria-describedby="file-message"
+                aria-describedby="upload-formats file-message"
               />
-            </div>
-            <div class="drop-hint">
-              <svg
-                class="ui-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M3 10v4M7 6v12M12 3v18M17 6v12M21 10v4" /></svg
-              ><strong>Solte sua gravação aqui</strong
-              ><span>ou escolha um arquivo no seu dispositivo</span>
-            </div>
-            <p id="file-message" class="form-status" data-file-message aria-live="polite"></p>
-            <section class="upload-editor" data-upload-editor hidden>
-              <div data-upload-player></div>
-              <div class="clip-export-row">
-                <button
-                  class="download-clip"
-                  type="button"
-                  data-download-clip
-                  aria-label="Baixar trecho"
-                  disabled
+              <span class="upload-dropzone-icon" aria-hidden="true"
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <span aria-hidden="true">↓</span><span class="download-label">Baixar trecho</span>
+                  <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" />
+                  <path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" /></svg
+              ></span>
+              <label class="upload-dropzone-label" for="audio-file"
+                ><span class="upload-dropzone-title">Arraste a gravação para cá</span
+                ><span class="upload-dropzone-action">ou escolha um arquivo</span></label
+              >
+              <p class="upload-dropzone-formats" id="upload-formats">
+                Vídeo MP4, MOV ou WebM · Áudio MP3, WAV, M4A, AAC, OGG ou FLAC · até 100 MB
+              </p>
+            </div>
+            <section
+              class="upload-editor"
+              data-upload-editor
+              hidden
+              aria-labelledby="selected-file-name"
+            >
+              <div class="upload-file-bar">
+                <span class="upload-file-icon" aria-hidden="true"
+                  ><svg
+                    data-file-icon="video"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="3" y="6" width="13" height="12" rx="2" />
+                    <path d="m16 10 5-3v10l-5-3" /></svg
+                  ><svg
+                    data-file-icon="audio"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M3 10v4M7 6v12M12 3v18M17 6v12M21 10v4" /></svg
+                ></span>
+                <div class="upload-file-meta">
+                  <strong id="selected-file-name" data-file-name></strong>
+                  <span data-file-details></span>
+                </div>
+                <button class="secondary-action upload-change" type="button" data-change-file>
+                  Trocar arquivo
                 </button>
               </div>
+              <div data-upload-player></div>
+              <button class="download-clip" type="button" data-download-clip disabled>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14" /></svg
+                  ><span class="download-label">Baixar trecho</span>
+                </button>
             </section>
+            <p id="file-message" class="form-status" data-file-message aria-live="polite"></p>
             <div class="form-actions">
               <button class="primary-action" type="button" data-wizard-next disabled>
                 Continuar para identificação <span aria-hidden="true">→</span></button
@@ -201,102 +234,150 @@
             </div>
           </fieldset>
           <fieldset data-wizard-panel="2" hidden disabled>
-            <legend>2. Identifique a aula</legend>
+            <legend>Identifique a aula</legend>
             <div data-identification-fields>
-              <div class="identification-toolbar">
-                <button class="text-action restart-action" type="reset">Recomeçar</button>
-              </div>
               <div class="selected-file-summary">
-                <span>Gravação selecionada</span><strong data-selected-file></strong
-                ><small data-selected-range></small
-                ><button class="text-action" type="button" data-wizard-back>Trocar arquivo</button>
+                <div class="selected-file-text">
+                  <strong data-selected-file></strong><small data-selected-range></small>
+                </div>
+                <div class="selected-file-actions">
+                  <button class="text-action" type="button" data-wizard-back>
+                    Editar gravação</button
+                  ><button class="text-action restart-action" type="reset">Recomeçar</button>
+                </div>
               </div>
-              <div class="form-grid">
-                <label class="wide-field" for="class-title"
-                  ><span>Título da aula <small>(obrigatório)</small></span
+              <section class="form-section" aria-labelledby="lesson-heading">
+                <h2 class="form-section-title" id="lesson-heading">Sobre a aula</h2>
+                <div class="form-grid">
+                  <label class="wide-field" for="class-title"
+                    ><span>Título da aula <small>(obrigatório)</small></span
+                    ><input
+                      id="class-title"
+                      name="class-title"
+                      type="text"
+                      maxlength="200"
+                      required
+                      placeholder="Ex.: Introdução a Banco de Dados" /></label
+                  ><label for="subject"
+                    ><span>Disciplina <small>(opcional)</small></span
+                    ><input
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      maxlength="200"
+                      placeholder="Ex.: Banco de Dados" /></label
+                  ><label for="question-count"
+                    ><span>Quantidade de questões</span
+                    ><select id="question-count" name="question-count">
+                      <option value="3">3 questões</option>
+                      <option selected value="5">5 questões</option>
+                      <option value="10">10 questões</option>
+                      <option value="20">20 questões</option>
+                    </select></label
+                  ><label class="wide-field" for="upload-tags"
+                    ><span>Tags <small>(opcional)</small></span
+                    ><input
+                      id="upload-tags"
+                      maxlength="600"
+                      placeholder="Ex.: revisão, energia, vestibular"
+                      aria-describedby="upload-tags-note"
+                    /><small id="upload-tags-note"
+                      >Pressione vírgula ou Enter para adicionar. Até 12 tags.</small
+                    ></label
+                  >
+                </div>
+              </section>
+              <section class="form-section" aria-labelledby="storage-heading">
+                <h2 class="form-section-title" id="storage-heading">Depois da transcrição</h2>
+                <p class="form-section-hint">
+                  Opcional. A transcrição e os materiais de estudo ficam disponíveis de qualquer
+                  forma.
+                </p>
+                <div class="choice-list">
+                  <label class="storage-choice" for="keep-original-audio"
+                    ><input
+                      id="keep-original-audio"
+                      name="keep-original-audio"
+                      type="checkbox" /><span
+                      ><strong>Guardar o áudio do trecho</strong
+                      ><small
+                        >Para ouvir a aula junto da transcrição. Desmarcado, o áudio é apagado
+                        após a transcrição.</small
+                      ></span
+                    ></label
+                  >
+                  <div data-video-retention-choice hidden>
+                    <label class="storage-choice" for="keep-original-video"
+                      ><input
+                        id="keep-original-video"
+                        name="keep-original-video"
+                        type="checkbox"
+                        aria-describedby="video-retention-note" /><span
+                        ><strong>Guardar o vídeo MP4 original</strong
+                        ><small id="video-retention-note" data-video-retention-note
+                          >O arquivo inteiro, incluindo as partes fora do trecho. Não é enviado à
+                          IA.</small
+                        ></span
+                      ></label
+                    >
+                  </div>
+                </div>
+                <details class="upload-disclosure">
+                  <summary>Como funciona o armazenamento</summary>
+                  <ul>
+                    <li data-audio-only-note>
+                      Só o áudio do trecho escolhido é transcrito. Em vídeos, slides, imagens e
+                      fórmulas visuais não são analisados.
+                    </li>
+                    <li>
+                      O áudio guardado cobre apenas o trecho; o vídeo guardado é o MP4 original
+                      inteiro. As duas escolhas são independentes.
+                    </li>
+                    <li>
+                      Os arquivos ficam em armazenamento privado da sua conta. O vídeo pode ser
+                      removido depois, na página da aula.
+                    </li>
+                  </ul>
+                </details>
+              </section>
+              <section class="form-section" aria-labelledby="permission-heading">
+                <h2 class="form-section-title" id="permission-heading">Autorização</h2>
+                <label class="storage-choice permission-choice" for="permission-declaration"
                   ><input
-                    id="class-title"
-                    name="class-title"
-                    type="text"
-                    maxlength="200"
+                    id="permission-declaration"
+                    type="checkbox"
                     required
-                    placeholder="Ex.: Introdução a Banco de Dados" /></label
-                ><label for="subject"
-                  ><span>Disciplina <small>(opcional)</small></span
-                  ><input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    maxlength="200"
-                    placeholder="Ex.: Banco de Dados" /></label
-                ><label for="question-count"
-                  ><span>Quantidade de questões</span
-                  ><select id="question-count" name="question-count">
-                    <option value="3">3 questões</option>
-                    <option selected value="5">5 questões</option>
-                    <option value="10">10 questões</option>
-                    <option value="20">20 questões</option>
-                  </select></label
-                ><label class="wide-field" for="upload-tags"
-                  ><span>Tags extras <small>(opcional)</small></span
-                  ><input
-                    id="upload-tags"
-                    maxlength="600"
-                    placeholder="Ex.: revisão, energia, vestibular"
-                    aria-describedby="upload-tags-note"
-                  /><small id="upload-tags-note"
-                    >Digite uma tag e pressione vírgula ou Enter para adicionar. Até 12 tags.</small
+                    aria-describedby="permission-note"
+                  /><span
+                    ><span data-permission-label
+                      >Declaro que possuo permissão para utilizar esta gravação no Voz em Estudo e
+                      enviá-la para transcrição e geração dos materiais de revisão</span
+                    ><small id="permission-note"
+                      >Obrigatório. É uma declaração sua, sem verificação automática de direitos
+                      autorais.</small
+                    ></span
                   ></label
                 >
-              </div>
-              <div data-video-retention-choice hidden>
-                <label class="storage-choice" for="keep-original-video">
-                  <input id="keep-original-video" type="checkbox" />
-                  <span>Guardar o MP4 original inteiro para assistir depois</span>
-                </label>
-                <p>Opcional e separado do áudio: conserva também as partes fora do recorte, sem enviar imagens ao reconhecimento de fala. Você pode guardar só o áudio, só o vídeo, os dois ou nenhum. O vídeo poderá ser removido depois na aula.</p>
-              </div>
-              <label class="storage-choice" for="keep-original-audio"
-                ><input id="keep-original-audio" name="keep-original-audio" type="checkbox" /><span
-                  ><strong>Manter o áudio para ouvir depois</strong
-                  ><small
-                    >Será guardado apenas o áudio do trecho transcrito. Desmarcado: ele é removido do
-                    nosso armazenamento após a transcrição. O player ficará indisponível; a
-                    transcrição e os materiais continuam disponíveis.</small
-                  ></span
-                ></label
-              >
-              <p class="plain-note">
-                O áudio será enviado ao serviço de reconhecimento no Hugging Face. A transcrição será
-                enviada à Groq para avisos preliminares e, após sua confirmação, resumo e questões.
-                Confira as políticas desses provedores; não garantimos exclusão de dados por eles.
-              </p>
-              <p class="notice-box" data-audio-only-note>
-                Em vídeos, a IA usa somente a faixa de áudio. Slides, imagens e fórmulas visuais não
-                são analisados. Conservar o áudio não conserva o MP4 original.
-              </p>
-              <label class="storage-choice" for="permission-declaration"
-                ><input
-                  id="permission-declaration"
-                  type="checkbox"
-                  required
-                  aria-describedby="permission-note"
-                /><span data-permission-label
-                  >Declaro que possuo permissão para utilizar esta gravação no Voz em Estudo e
-                  enviá-la para transcrição e geração dos materiais de revisão</span
-                ></label
-              >
-              <p id="permission-note" class="section-description">
-                Esta é uma declaração sua, sem verificação automática de direitos autorais. A escolha
-                de conservar o áudio é independente.
-              </p>
-              <a
-                class="text-action privacy-link"
-                href="./privacidade.html"
-                target="_blank"
-                rel="noopener"
-                >Como seus dados são utilizados</a
-              >
+                <details class="upload-disclosure">
+                  <summary>Privacidade e processamento</summary>
+                  <p data-provider-disclosure>
+                    O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O
+                    texto transcrito é enviado a um serviço externo de IA para avisos preliminares
+                    e, após sua confirmação, resumo e questões. Imagens de vídeos não são enviadas.
+                  </p>
+                  <p>
+                    Cada provedor segue a própria política de dados; não garantimos a exclusão nos
+                    sistemas deles.
+                  </p>
+                  <a
+                    class="text-action privacy-link"
+                    href="./privacidade.html"
+                    target="_blank"
+                    rel="noopener"
+                    >Como seus dados são utilizados</a
+                  >
+                </details>
+              </section>
             </div>
             <section
               class="upload-choice-review"
@@ -306,27 +387,47 @@
             >
               <h2 id="upload-review-title">Confira o envio</h2>
               <dl data-upload-choice-list></dl>
+              <p class="review-note">
+                Mantenha esta página aberta até o envio terminar. Depois, a transcrição continua
+                mesmo se você sair.
+              </p>
               <div class="review-navigation">
-                <button class="secondary-action" type="button" data-edit-upload>← Voltar</button
+                <button class="secondary-action" type="button" data-edit-upload>Editar</button
                 ><button class="primary-action" type="submit" data-transcribe>
                   Enviar e transcrever
                 </button>
               </div>
             </section>
             <div class="form-actions" data-identification-actions>
-              <button class="secondary-action" type="button" data-wizard-back>Voltar</button
-              ><button class="primary-action" type="button" data-review-upload>
-                Revisar envio
-              </button>
+              <button class="primary-action" type="button" data-review-upload>
+                Revisar envio</button
+              ><button class="secondary-action" type="button" data-wizard-back>Voltar</button>
             </div>
           </fieldset>
           <fieldset data-wizard-panel="3" hidden disabled>
-            <legend>3. Envio e processamento</legend>
-            <div class="upload-progress">
-              <span class="loading-indicator" aria-hidden="true"></span>
-              <div>
-                <h2 data-upload-progress-title>Preparando o áudio…</h2>
+            <legend>Envio</legend>
+            <div class="upload-progress" data-upload-progress>
+              <div class="upload-progress-head">
+                <span class="loading-indicator" aria-hidden="true"></span>
+                <div>
+                  <h2 data-upload-progress-title>Preparando o áudio…</h2>
+                  <p data-upload-progress-note>Mantenha esta página aberta até o envio terminar.</p>
+                </div>
               </div>
+              <ol class="progress-steps" aria-label="Etapas do envio">
+                <li data-upload-step="prepare">
+                  Preparar o áudio do trecho<span class="sr-only" data-step-state></span>
+                </li>
+                <li data-upload-step="upload">
+                  Enviar o áudio<span class="sr-only" data-step-state></span>
+                </li>
+                <li data-upload-step="video" hidden>
+                  Guardar o vídeo original<span class="sr-only" data-step-state></span>
+                </li>
+                <li data-upload-step="start">
+                  Iniciar a transcrição<span class="sr-only" data-step-state></span>
+                </li>
+              </ol>
             </div>
           </fieldset>
           <p class="form-status" data-transcription-status role="status" aria-live="polite"></p>

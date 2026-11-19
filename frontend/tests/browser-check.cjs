@@ -114,6 +114,7 @@ async function main() {
     pathToFileURL(path.join(backend, 'src/config/permission-declaration.js')).href
   );
   let permissionDeclaration = PERMISSION_DECLARATION;
+  let mp4Retention = true;
   const output = path.join(root, 'tests/artifacts');
   fs.mkdirSync(output, { recursive: true });
   const ffmpegStatic = require(path.join(backend, 'node_modules/ffmpeg-static'));
@@ -208,7 +209,12 @@ async function main() {
         supabaseUrl: 'https://mock.supabase.co',
         supabasePublishableKey: 'mock-publishable-key',
         audioBucket: 'audios',
-        featureFlags: { mp4_retention: true },
+        featureFlags: { mp4_retention: mp4Retention },
+        processingDisclosure: {
+          recognitionProvider: 'Provedor ASR de teste',
+          textProvider: 'Provedor de texto de teste',
+          audioOnly: true,
+        },
         oauthProviders: ['google', 'github'],
         permissionDeclaration,
       },
@@ -486,8 +492,26 @@ async function main() {
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
     record('Sidebar recolhível; foco usa navegação inferior e restaura preferência ao sair');
     await page.goto(base + '/nova-transcricao.html');
+    await page.locator('[data-dropzone]').waitFor();
+    assert.equal(await page.locator('[data-upload-editor]').isVisible(), false);
+    assert.equal(await page.getByText('Nenhum arquivo selecionado', { exact: false }).count(), 0);
+    await screenshot(page, output, 'upload-empty-desktop.png');
+    await page.locator('#audio-file').setInputFiles({
+      name: 'anotacoes.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('texto'),
+    });
+    assert.equal(await page.locator('[data-dropzone]').getAttribute('data-state'), 'error');
+    assert.match(await page.locator('[data-file-message]').textContent(), /Use MP4, MP3/);
+    assert.equal(await page.locator('[data-wizard-next]').isDisabled(), true);
+    record('Área de envio única, com estado de erro para formato inválido');
     await page.locator('#audio-file').setInputFiles(mp4Input);
     await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
+    assert.equal(await page.locator('[data-dropzone]').isVisible(), false);
+    assert.match(
+      await page.locator('[data-file-details]').textContent(),
+      /^MP4 · [\d,]+ KB · 00:03$/,
+    );
     await page.locator('[data-trim-start]').fill('0.8');
     await page.locator('[data-trim-end]').fill('1.55');
     await page.getByRole('button', { name: 'Ouvir trecho', exact: true }).click();
@@ -516,6 +540,14 @@ async function main() {
     assert.equal(await page.locator('[data-trim-start-range]').inputValue(), '0.8');
     await page.getByRole('button', { name: 'Continuar para identificação' }).click();
     await page.locator('#class-title').fill('Aula de teste recortada');
+    assert.equal(await page.locator('#keep-original-video').isEnabled(), true);
+    assert.equal(await page.locator('#keep-original-video').isChecked(), false);
+    assert.match(
+      await page.locator('[data-provider-disclosure]').textContent(),
+      /Provedor ASR de teste.*Provedor de texto de teste/,
+    );
+    await screenshot(page, output, 'identification-desktop.png');
+    record('Áudio e vídeo têm escolhas separadas, opt-in; aviso de provedores vem da configuração');
     await page.locator('#keep-original-audio').check();
     await page.locator('#upload-tags').fill('solos');
     await page.locator('#upload-tags').press('Enter');
@@ -1358,6 +1390,22 @@ async function main() {
     } finally {
       await actualContext.close();
     }
+    // Without the server flag the video choice stays visible but explains why it is unavailable.
+    mp4Retention = false;
+    await page.goto(base + '/nova-transcricao.html');
+    await page.locator('#audio-file').setInputFiles(mp4Input);
+    await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
+    await page.locator('[data-wizard-next]').click();
+    assert.equal(await page.locator('#keep-original-video').isVisible(), true);
+    assert.equal(await page.locator('#keep-original-video').isDisabled(), true);
+    assert.match(
+      await page.locator('[data-video-retention-note]').textContent(),
+      /ainda não foi ativado/,
+    );
+    mp4Retention = true;
+    record(
+      'Sem a flag do servidor, o vídeo não é descartado em silêncio: a opção explica a indisponibilidade',
+    );
     // E07 sends WAV for ASR and retains the original MP4 separately.
     await page.goto(base + '/nova-transcricao.html');
     await page.locator('#audio-file').setInputFiles(mp4Input);

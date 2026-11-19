@@ -152,5 +152,11 @@ const LABELS = Object.freeze({
 /** User-facing disclosure of which vendors receive audio/text; contains no models or secrets. */
 export function disclosureLabels(config) {
   const vendors = [...new Set(Object.values(config.llm).map((entry) => LABELS[entry.provider]))];
-  return { recognitionProvider: LABELS[config.asr.provider], textProvider: vendors.join(', ') };
+  const fallback = config.asr.fallbackProvider ? LABELS[config.asr.fallbackProvider] : null;
+  return {
+    recognitionProvider: LABELS[config.asr.provider],
+    // Audio may also reach the fallback ASR vendor, so it must be disclosed when configured.
+    ...(fallback ? { fallbackRecognitionProvider: fallback } : {}),
+    textProvider: vendors.join(', '),
+  };
 }

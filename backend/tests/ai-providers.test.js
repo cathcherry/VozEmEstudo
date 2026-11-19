@@ -55,6 +55,24 @@ test('each task selects its own provider and model; AssemblyAI ASR defaults to S
       speakerLabels: false,
     },
   });
+  assert.deepEqual(disclosureLabels(config), {
+    recognitionProvider: 'AssemblyAI (ASR)',
+    textProvider: 'Groq, AssemblyAI LLM Gateway',
+  });
+});
+
+test('disclosure names the configured ASR fallback, since audio may reach it', () => {
+  const config = createAiConfig({
+    ASR_PROVIDER: 'assemblyai',
+    ASR_FALLBACK_PROVIDER: 'huggingface',
+    LLM_PROVIDER: 'assemblyai-gateway',
+    LLM_MODEL: 'gateway-model',
+  });
+  assert.deepEqual(disclosureLabels(config), {
+    recognitionProvider: 'AssemblyAI (ASR)',
+    fallbackRecognitionProvider: 'Hugging Face (ASR)',
+    textProvider: 'AssemblyAI LLM Gateway',
+  });
 });
 
 test('invalid providers and implicit fallbacks are rejected; missing credentials are listed by name', () => {

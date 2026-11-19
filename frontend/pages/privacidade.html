@@ -122,9 +122,10 @@
       <header class="article-heading"><h1>Privacidade e uso de dados</h1></header>
       <section class="article-section">
         <h2>O que é enviado</h2>
-        <p>
-          O áudio é enviado ao serviço de transcrição no Hugging Face. A transcrição é enviada à
-          Groq para análises preliminares e, após sua confirmação, geração de resumo e questões.
+        <p data-provider-disclosure>
+          O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O texto
+          transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua
+          confirmação, resumo e questões. Imagens de vídeos não são enviadas.
         </p>
         <p>
           Os arquivos e materiais são armazenados no Supabase. Você pode conservar o áudio do
@@ -137,8 +138,9 @@
           O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não
           garante a exclusão nos sistemas desses serviços.
         </p>
-        <p>
+        <p data-provider-policies>
           <a href="https://huggingface.co/privacy">Hugging Face</a> ·
+          <a href="https://www.assemblyai.com/legal/privacy-policy">AssemblyAI</a> ·
           <a href="https://groq.com/privacy-policy/">Groq</a> ·
           <a href="https://supabase.com/privacy">Supabase</a>
         </p>

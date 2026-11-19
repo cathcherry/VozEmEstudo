@@ -13,6 +13,19 @@ quando solicitado e habilitado por `FEATURE_MP4_RETENTION=true`, o MP4 original
 inteiro é conservado separadamente no bucket privado `study-videos`, com metadados
 em `material_videos`. Partes fora do recorte também são conservadas no original.
 
+Na etapa de identificação, a escolha “Guardar o vídeo MP4 original” aparece para
+toda gravação com vídeo e sempre começa desmarcada. Quando não pode ser atendida,
+ela fica visível e desabilitada com o motivo: arquivo MOV/WebM (somente MP4) ou
+`FEATURE_MP4_RETENTION` desligada no servidor. Assim o vídeo nunca é descartado em
+silêncio. Com a flag ligada, o envio só segue para a transcrição depois que o MP4 é
+guardado e registrado; uma falha mostra a etapa e oferece nova tentativa.
+
+Para ativar: (1) rodar `database/checks/e07-preflight.sql`; (2) aplicar a migration
+E07 no projeto de destino, com autorização; (3) rodar `database/checks/e07-postflight.sql`;
+(4) reiniciar o backend com `FEATURE_MP4_RETENTION=true` e conferir
+`node backend/src/diagnostics/check-runtime.js` (valida a tabela e o bucket privado
+`study-videos`, MP4, 100 MiB).
+
 O schema E07 está em `database/migrations/20261105003500_player_video.sql`.
 Antes de qualquer aplicação, verificar se já existe no banco e conferir o destino;
 essa migration não deve ser reaplicada cegamente. A migration de MP4 em

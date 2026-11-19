@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/css/academic.css" />
     <link rel="stylesheet" href="/css/voz-redesign.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
+    <link rel="stylesheet" href="/css/upload-flow.css" />
     <script defer src="/js/utils/card-motion.js"></script>
   </head>
   <body class="app-page" data-page="material">
@@ -118,14 +119,49 @@
       </div>
     </header>
     <main tabindex="-1" class="article-content" id="conteudo-principal">
-      <section class="article-section waiting-screen" aria-labelledby="processing-title">
-        <span class="loading-indicator" data-wait-spinner aria-hidden="true"></span>
-        <h1 id="processing-title" data-wait-status aria-live="polite">Iniciando a transcrição…</h1>
-        <p data-wait-elapsed></p>
-        <p class="waiting-tip" data-wait-tip></p>
-        <p>Você pode sair. A aula aparecerá na Biblioteca quando terminar.</p>
-        <a class="text-action" href="./historico.html">Ir para a Biblioteca</a>
-        <button class="text-action" type="button" data-wait-retry hidden>Tentar novamente</button>
+      <section
+        class="article-section waiting-screen processing-status"
+        aria-labelledby="processing-title"
+        data-processing-state="starting"
+      >
+        <div class="processing-head">
+          <span class="loading-indicator" data-wait-spinner aria-hidden="true"></span>
+          <div>
+            <span class="eyebrow">Transcrição</span>
+            <h1 id="processing-title" data-wait-status aria-live="polite">
+              Iniciando a transcrição…
+            </h1>
+            <p class="processing-elapsed" data-wait-elapsed></p>
+          </div>
+        </div>
+        <ol class="progress-steps" aria-label="Andamento da transcrição">
+          <li data-processing-step="upload" data-state="done">
+            Envio concluído<span class="sr-only" data-step-state> — concluído</span>
+          </li>
+          <li data-processing-step="queue">
+            Na fila de transcrição<span class="sr-only" data-step-state></span>
+          </li>
+          <li data-processing-step="transcribe">
+            Transcrição do áudio<span class="sr-only" data-step-state></span>
+          </li>
+          <li data-processing-step="ready">
+            Pronta para revisão<span class="sr-only" data-step-state></span>
+          </li>
+        </ol>
+        <p class="processing-detail" data-wait-detail hidden></p>
+        <div class="processing-leave" data-wait-leave>
+          <p>
+            Você pode sair desta página. A transcrição continua e a aula aparece na Biblioteca
+            quando terminar.
+          </p>
+          <a class="secondary-action button-link" href="./historico.html">Ir para a Biblioteca</a>
+        </div>
+        <div class="form-actions" data-wait-error-actions hidden>
+          <button class="primary-action" type="button" data-wait-retry>Tentar novamente</button
+          ><a class="secondary-action button-link" data-wait-material href="./historico.html"
+            >Abrir a aula</a
+          ><a class="text-action" href="./historico.html">Ir para a Biblioteca</a>
+        </div>
       </section>
     </main>
     <footer class="site-footer">
