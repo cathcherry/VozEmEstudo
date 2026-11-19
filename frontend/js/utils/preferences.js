@@ -1,5 +1,6 @@
 import { toast } from './toast.js';
 import { initReadingRuler } from './reading-ruler.js';
+import { initShortcutsHelp } from './shortcuts.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
@@ -335,7 +336,10 @@ function initializeFocusDock() {
 }
 function initialize() {
   initializeNavigation();
-  if (document.body.classList.contains('app-page')) initReadingRuler();
+  if (document.body.classList.contains('app-page')) {
+    initReadingRuler();
+    initShortcutsHelp();
+  }
   initializeFocusDock();
   document.querySelectorAll('[data-open-dialog]').forEach((button) =>
     button.addEventListener('click', () => {

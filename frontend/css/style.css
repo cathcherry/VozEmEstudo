@@ -806,3 +806,40 @@ html[data-reading-ruler='focus'] :is(.transcription-segment, .markdown-content >
   background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 85%, transparent);
 }
+
+/* Atalhos de teclado (js/utils/shortcuts.js). */
+.shortcuts-dialog {
+  width: min(36rem, calc(100vw - 32px));
+  max-height: 85dvh;
+  overflow: auto;
+  padding: 20px 24px 24px;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--ue-raised);
+}
+.shortcuts-dialog::backdrop { background: rgb(10 14 22 / 0.4); }
+.shortcuts-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.shortcuts-head h2 { margin: 0; font-size: 1.3rem; }
+.shortcuts-dialog .dialog-close { border: 0; background: transparent; color: inherit; font-size: 1.5rem; cursor: pointer; }
+.shortcuts-dialog h3 { margin: 18px 0 6px; color: var(--muted); font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.shortcuts-dialog dl { display: grid; grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr); gap: 8px 16px; margin: 0; }
+.shortcuts-dialog dt { white-space: nowrap; }
+.shortcuts-dialog dd { margin: 0; color: var(--text); font-size: .9rem; }
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--surface-alt);
+  color: var(--text);
+  font: 600 .8rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-align: center;
+}
+@media (max-width: 520px) {
+  .shortcuts-dialog dl { grid-template-columns: minmax(0, 1fr); }
+  .shortcuts-dialog dt { white-space: normal; }
+}

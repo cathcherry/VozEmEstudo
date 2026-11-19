@@ -540,6 +540,13 @@ async function main() {
     await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
     record('Sidebar recolhível; foco usa navegação inferior e restaura preferência ao sair');
+    await page.keyboard.press('Shift+Slash');
+    const shortcuts = page.getByRole('dialog', { name: 'Atalhos de teclado' });
+    await shortcuts.waitFor();
+    assert.match(await shortcuts.textContent(), /Alt \+ F.*modo foco/);
+    await page.keyboard.press('Escape');
+    await shortcuts.waitFor({ state: 'hidden' });
+    record('Atalhos de teclado em "?", fecha com Esc');
     await page.goto(base + '/nova-transcricao.html');
     await page.locator('[data-dropzone]').waitFor();
     assert.equal(await page.locator('[data-upload-editor]').isVisible(), false);
@@ -668,6 +675,12 @@ async function main() {
     );
     await page.goto(base + '/historico.html');
     await page.locator('[data-library-data][aria-busy="false"]').waitFor();
+    await page.locator('#library-search').press('Shift+Slash');
+    assert.equal(
+      await page.locator('.shortcuts-dialog[open]').count(),
+      0,
+      '"?" while typing is text',
+    );
     await page.locator('#library-search').fill('inexistente');
     await page.getByText('Nenhuma aula encontrada.', { exact: true }).waitFor();
     await page.locator('#library-search').fill('carro');
