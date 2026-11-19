@@ -27,7 +27,16 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const list = make('div', null, 'flashcard-set-list');
-  section.append(summary, make('p', 'Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.', 'flashcard-muted'), list, status);
+  section.append(
+    summary,
+    make(
+      'p',
+      'Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.',
+      'flashcard-muted',
+    ),
+    list,
+    status,
+  );
   container.after(section);
   let sets = [];
 
@@ -35,10 +44,19 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
     const full = await getFlashcardSet(set.id);
     const lesson = lessons.get(set.material_id) || '';
     if (format === 'csv')
-      downloadText(toFlashcardCsv([full], { lesson }), safeFilename(full.name, 'csv'), 'text/csv;charset=utf-8');
+      downloadText(
+        toFlashcardCsv([full], { lesson }),
+        safeFilename(full.name, 'csv'),
+        'text/csv;charset=utf-8',
+      );
     else
       downloadText(
-        toMarkdown(buildStudyDocument({ title: full.name, subject: lesson || 'Sem aula' }, { flashcardSets: [full] })),
+        toMarkdown(
+          buildStudyDocument(
+            { title: full.name, subject: lesson || 'Sem aula' },
+            { flashcardSets: [full] },
+          ),
+        ),
         safeFilename(full.name, 'md'),
         'text/markdown;charset=utf-8',
       );
@@ -86,14 +104,22 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
       });
       button(set.status === 'archived' ? 'Reativar' : 'Arquivar', async () => {
         await updateFlashcardSet(set.id, { archived: set.status !== 'archived' });
-        status.textContent = set.status === 'archived' ? 'Conjunto reativado; os cartões voltam à revisão.' : 'Conjunto arquivado; os cartões saem da revisão e o histórico é mantido.';
+        status.textContent =
+          set.status === 'archived'
+            ? 'Conjunto reativado; os cartões voltam à revisão.'
+            : 'Conjunto arquivado; os cartões saem da revisão e o histórico é mantido.';
         await load();
         await onChange();
       });
       button('Exportar CSV', () => exportSet(set, 'csv'));
       button('Exportar Markdown', () => exportSet(set, 'md'));
       button('Excluir', async () => {
-        if (!confirm(`Excluir o conjunto “${set.name}”, seus ${set.card_count} cartões e o histórico de revisões deles? Esta ação não pode ser desfeita.`)) return;
+        if (
+          !confirm(
+            `Excluir o conjunto “${set.name}”, seus ${set.card_count} cartões e o histórico de revisões deles? Esta ação não pode ser desfeita.`,
+          )
+        )
+          return;
         await deleteFlashcardSet(set.id);
         status.textContent = 'Conjunto excluído.';
         await load();

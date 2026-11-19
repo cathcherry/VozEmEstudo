@@ -28,7 +28,10 @@ export function planCoverage({ count, concepts, config, testedConcepts = [] }) {
   const tested = new Set(testedConcepts.map(conceptKey));
   const ordered =
     config.previousQuestions === 'prioritize_new'
-      ? [...concepts.filter((c) => !tested.has(c.key)), ...concepts.filter((c) => tested.has(c.key))]
+      ? [
+          ...concepts.filter((c) => !tested.has(c.key)),
+          ...concepts.filter((c) => tested.has(c.key)),
+        ]
       : concepts;
   const skills = config.skills;
   const pairs = [];
@@ -38,7 +41,9 @@ export function planCoverage({ count, concepts, config, testedConcepts = [] }) {
     );
   const target = Math.min(count, pairs.length);
   const levels = distributeLevels(target, config.difficulties);
-  const slots = pairs.slice(0, target).map((pair, index) => ({ ...pair, difficulty: levels[index] }));
+  const slots = pairs
+    .slice(0, target)
+    .map((pair, index) => ({ ...pair, difficulty: levels[index] }));
   if (config.distribution === 'progressive')
     slots.sort((a, b) => DIFFICULTIES.indexOf(a.difficulty) - DIFFICULTIES.indexOf(b.difficulty));
   else {

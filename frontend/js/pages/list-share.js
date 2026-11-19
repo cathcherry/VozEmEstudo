@@ -34,7 +34,10 @@ export function initListShare({ materialId }) {
       if (shares.length) list.append(make('strong', 'Links desta lista'));
       for (const share of shares) {
         const active = !share.revoked_at && Date.parse(share.expires_at) > Date.now();
-        const row = make('p', `${share.revoked_at ? 'Revogado' : active ? 'Disponível' : 'Expirado'} · expira em ${when(share.expires_at)}`);
+        const row = make(
+          'p',
+          `${share.revoked_at ? 'Revogado' : active ? 'Disponível' : 'Expirado'} · expira em ${when(share.expires_at)}`,
+        );
         if (active) {
           const revoke = make('button', 'Revogar');
           revoke.type = 'button';
@@ -83,7 +86,14 @@ export function initListShare({ materialId }) {
             () => field.select(),
           );
         });
-        result.replaceChildren(label, copy, make('p', `Expira em ${when(row.expiresAt)}. A cópia não acompanha alterações futuras da lista.`));
+        result.replaceChildren(
+          label,
+          copy,
+          make(
+            'p',
+            `Expira em ${when(row.expiresAt)}. A cópia não acompanha alterações futuras da lista.`,
+          ),
+        );
         identity = { id: crypto.randomUUID(), token: randomShareToken() };
         field.focus();
         field.select();

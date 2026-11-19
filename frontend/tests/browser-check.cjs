@@ -824,6 +824,13 @@ async function main() {
     );
     await row.getByRole('button', { name: 'Organizar', exact: true }).click();
     await page.locator('#metadata-dialog[open]').waitFor();
+    {
+      await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+      const organizeViolations = await page.evaluate(async () =>
+        (await axe.run(document.querySelector('#metadata-dialog'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })).violations.map((v) => v.id),
+      );
+      assert.deepEqual(organizeViolations, [], 'organize dialog accessibility');
+    }
     assert(
       (await page.locator('#metadata-dialog').evaluate((d) => d.getBoundingClientRect().width)) <= 420,
       'organize dialog is compact',
@@ -1961,6 +1968,20 @@ async function main() {
     await page.locator('[data-cancel-edit]').click();
     await page.locator('[data-transcription-section][data-mode="reading"]').waitFor();
     record('Biblioteca separa Abrir, Editar transcrição (modo edição direto) e Organizar compacto');
+    /** axe-core on one open dialog (WCAG A/AA); any automatic violation fails the run. */
+    async function auditDialog(selector, label) {
+      await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+      const violations = await page.evaluate(
+        async (target) =>
+          (
+            await axe.run(document.querySelector(target), {
+              runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] },
+            })
+          ).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+        selector,
+      );
+      assert.deepEqual(violations, [], `${label} has automatic accessibility violations`);
+    }
     // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
     authoringFlags.study_authoring = true;
     authoringFlags.sharing = true;
@@ -1996,6 +2017,7 @@ async function main() {
     await page.locator('[data-questions-advanced] > summary').click();
     await page.locator('[data-more-questions-form] [name=previousQuestions][value=prioritize_new]').check();
     await screenshot(page, output, 'question-list-dialog-desktop.png');
+    await auditDialog('[data-questions-dialog]', 'question list dialog');
     await page.locator('[data-more-questions-form] [type=submit]').click();
     await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Análise' }).waitFor();
     const listRequest = listCalls.at(-1);
@@ -2019,6 +2041,7 @@ async function main() {
     await newRow.locator('.row-menu > summary').click();
     await newRow.getByRole('button', { name: 'Renomear', exact: true }).click();
     await page.locator('[data-rename-dialog][open]').waitFor();
+    await auditDialog('[data-rename-dialog]', 'rename dialog');
     await page.locator('#rename-field').fill('Carros elétricos — Avaliação avançada');
     await page.locator('[data-rename-form] [type=submit]').click();
     await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Avaliação avançada' }).waitFor();
@@ -2031,6 +2054,7 @@ async function main() {
     assert.match(await page.locator('#export-dialog-title').textContent(), /^Exportar lista — Carros elétricos/);
     assert.equal(await page.locator('[data-export-form] [name=transcript]').isChecked(), false);
     assert.equal(await page.locator('[data-export-form] [name=list]:checked').count(), 1);
+    await auditDialog('[data-export-dialog]', 'export dialog');
     await page.locator('[data-export-form] [name=format][value=md]').check();
     let listDownload = page.waitForEvent('download');
     await page.locator('[data-export-form] [type=submit]').click();
@@ -2061,6 +2085,7 @@ async function main() {
     ]);
     assert.equal(shareRequest.days, 1);
     await page.locator('[data-list-share-list]').getByText(/^Disponível/).waitFor();
+    await auditDialog('[data-list-share-dialog]', 'share dialog');
     const publicPage = await context.newPage();
     await publicPage.goto(shareUrl);
     await publicPage.locator('.shared-questions > li').first().waitFor();
@@ -2121,6 +2146,8 @@ async function main() {
     await proposals.nth(0).locator('textarea').nth(1).fill('Verso 1 editado.');
     assert.equal(await page.locator('[data-flashcard-save]').textContent(), 'Salvar 2 cartões');
     await screenshot(page, output, 'flashcard-preview-desktop.png');
+    await page.locator('[data-flashcard-advanced] > summary').click();
+    await auditDialog('[data-flashcard-dialog]', 'flashcard dialog');
     await page.locator('[data-flashcard-save]').click();
     await page.getByText(/2 cartões salvos\. Eles entram na revisão do Painel\./).waitFor();
     const savedSet = flashcardSets.at(-1).body;

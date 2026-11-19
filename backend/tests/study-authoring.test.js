@@ -13,9 +13,16 @@ test('summary presets accept every format/length and keep legacy shapes', () => 
     for (const length of ['short', 'standard', 'detailed'])
       assert.deepEqual(validateSummaryOptions({ format, length }), { format, length });
   assert.deepEqual(validateSummaryOptions({}), { format: 'paragraphs', length: 'standard' });
-  assert.deepEqual(validateSummaryOptions({ focus: [] }), { format: 'paragraphs', length: 'standard' });
+  assert.deepEqual(validateSummaryOptions({ focus: [] }), {
+    format: 'paragraphs',
+    length: 'standard',
+  });
   assert.deepEqual(
-    validateSummaryOptions({ format: 'definitions', focus: ['terminology', 'exam'], label: '  Prova 1 ' }),
+    validateSummaryOptions({
+      format: 'definitions',
+      focus: ['terminology', 'exam'],
+      label: '  Prova 1 ',
+    }),
     { format: 'definitions', length: 'standard', focus: ['terminology', 'exam'], label: 'Prova 1' },
   );
   for (const bad of [
@@ -50,12 +57,22 @@ test('each summary format has a specific, source-bound instruction', () => {
 });
 
 test('focus areas are prioritized but omitted when the lesson lacks them', () => {
-  const content = buildSummaryMessages('Texto.', { focus: ['dates', 'examples', 'exam'] })[0].content;
-  assert.match(content, /Dê prioridade a: datas e eventos, somente quando presentes; exemplos dados na própria aula \(não crie exemplos novos\); preparação para prova/);
+  const content = buildSummaryMessages('Texto.', { focus: ['dates', 'examples', 'exam'] })[0]
+    .content;
+  assert.match(
+    content,
+    /Dê prioridade a: datas e eventos, somente quando presentes; exemplos dados na própria aula \(não crie exemplos novos\); preparação para prova/,
+  );
   assert.match(content, /omita-o em vez de completar com conteúdo externo/);
   assert.match(content, /## Pontos para revisar/);
-  assert.doesNotMatch(buildSummaryMessages('Texto.', { focus: ['dates'] })[0].content, /Pontos para revisar/);
+  assert.doesNotMatch(
+    buildSummaryMessages('Texto.', { focus: ['dates'] })[0].content,
+    /Pontos para revisar/,
+  );
   assert.doesNotMatch(buildSummaryMessages('Texto.', {})[0].content, /Dê prioridade/);
   // The name is metadata; it never reaches the model.
-  assert.doesNotMatch(buildSummaryMessages('Texto.', { label: 'Segredo do nome' })[0].content, /Segredo/);
+  assert.doesNotMatch(
+    buildSummaryMessages('Texto.', { label: 'Segredo do nome' })[0].content,
+    /Segredo/,
+  );
 });

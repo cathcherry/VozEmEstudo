@@ -22,9 +22,14 @@ const itemSchema = z.object({
 });
 
 const invalidOutput = () =>
-  new AppError('LLM_INVALID_OUTPUT', 'O modelo não retornou as questões no formato esperado.', 502, {
-    retryable: true,
-  });
+  new AppError(
+    'LLM_INVALID_OUTPUT',
+    'O modelo não retornou as questões no formato esperado.',
+    502,
+    {
+      retryable: true,
+    },
+  );
 
 /** Maps a literal quote to the transcript segments it came from (positions and times). */
 export function sourceReferences(evidence, segments = []) {
@@ -37,8 +42,12 @@ export function sourceReferences(evidence, segments = []) {
   const head = words.slice(0, 4).join(' '),
     tail = words.slice(-4).join(' ');
   const start = segments.findIndex((segment) => normalizeText(segment.text).includes(head));
-  const end = segments.findIndex((segment, index) => index >= start && normalizeText(segment.text).includes(tail));
-  return start >= 0 && end >= start ? segments.slice(start, Math.min(end + 1, start + 3)).map(reference) : [];
+  const end = segments.findIndex(
+    (segment, index) => index >= start && normalizeText(segment.text).includes(tail),
+  );
+  return start >= 0 && end >= start
+    ? segments.slice(start, Math.min(end + 1, start + 3)).map(reference)
+    : [];
 }
 function reference(segment) {
   return { position: segment.position, startMs: segment.startMs, endMs: segment.endMs };
@@ -63,7 +72,10 @@ export function buildQuestionGenerator({ complete }) {
     const analysis = conceptSchema.safeParse(
       await call(
         'concepts',
-        buildConceptMessages(text, { topicFocus: config.topicFocus, maxConcepts: Math.min(MAX_CONCEPTS, count * 2) }),
+        buildConceptMessages(text, {
+          topicFocus: config.topicFocus,
+          maxConcepts: Math.min(MAX_CONCEPTS, count * 2),
+        }),
         Math.min(6000, 800 + count * 120),
       ),
     );
@@ -94,13 +106,18 @@ export function buildQuestionGenerator({ complete }) {
     };
     const accepted = [];
     const filled = new Set();
-    const avoidStatements = config.previousQuestions === 'review' ? [] : previous.map((q) => q.statement);
+    const avoidStatements =
+      config.previousQuestions === 'review' ? [] : previous.map((q) => q.statement);
 
     async function round(stage, pending, avoid) {
       const parsed = questionsSchema.safeParse(
         await call(
           stage,
-          buildPlannedQuestionMessages(text, { slots: pending, avoid, topicFocus: config.topicFocus }),
+          buildPlannedQuestionMessages(text, {
+            slots: pending,
+            avoid,
+            topicFocus: config.topicFocus,
+          }),
           Math.min(16000, 1200 + pending.length * 600),
         ),
       );
@@ -150,7 +167,10 @@ export function buildQuestionGenerator({ complete }) {
     // 3. One bounded replacement round for slots left empty by invalid or redundant items.
     const missing = slots.filter((slot) => !filled.has(slot.id));
     if (missing.length && calls < MAX_MODEL_CALLS)
-      await round('replacement', missing, [...avoidStatements, ...accepted.map((q) => q.statement)]);
+      await round('replacement', missing, [
+        ...avoidStatements,
+        ...accepted.map((q) => q.statement),
+      ]);
 
     if (!accepted.length) throw invalidOutput();
     const order = new Map(slots.map((slot, index) => [slot.id, index]));
@@ -170,7 +190,11 @@ export function buildQuestionGenerator({ complete }) {
     });
     const questions = accepted.slice(0, count).map(toQuestion);
     const shortfall =
-      questions.length >= count ? null : slots.length < count ? 'insufficient_content' : 'redundancy';
+      questions.length >= count
+        ? null
+        : slots.length < count
+          ? 'insufficient_content'
+          : 'redundancy';
     return {
       questions,
       coverage: {

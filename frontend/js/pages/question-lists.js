@@ -63,7 +63,10 @@ export function initQuestionDialog({ flags, maxCount, material }) {
     ])
       list.append(el('li', line));
     panel.replaceChildren(
-      el('strong', `Para esta aula: cerca de ${result.min === result.max ? result.max : `${result.min} a ${result.max}`} questões.`),
+      el(
+        'strong',
+        `Para esta aula: cerca de ${result.min === result.max ? result.max : `${result.min} a ${result.max}`} questões.`,
+      ),
       list,
       ...result.notes.map((note) => el('p', note)),
       el(
@@ -132,9 +135,20 @@ const COVERAGE_NOTES = {
 };
 
 /** Compact list rows; questions and results stay one click away. */
-export function renderQuestionLists({ container, meta, batches, answers, materialId, flags, actions }) {
+export function renderQuestionLists({
+  container,
+  meta,
+  batches,
+  answers,
+  materialId,
+  flags,
+  actions,
+}) {
   container.replaceChildren();
-  const total = batches.reduce((sum, b) => sum + (b.questions?.length || b.generated_count || 0), 0);
+  const total = batches.reduce(
+    (sum, b) => sum + (b.questions?.length || b.generated_count || 0),
+    0,
+  );
   meta.textContent = batches.length
     ? `${batches.length} ${batches.length === 1 ? 'lista' : 'listas'} · ${total} questões`
     : 'Ainda não há questões desta aula.';
@@ -153,7 +167,9 @@ export function renderQuestionLists({ container, meta, batches, answers, materia
       batch.requested_count && batch.requested_count > count
         ? `${count} de ${batch.requested_count} questões pedidas`
         : `${count} questões`,
-      answered ? `${answered} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}` : 'ainda não respondidas',
+      answered
+        ? `${answered} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}`
+        : 'ainda não respondidas',
       batch.created_at ? formatDate(batch.created_at) : '',
       batch.stale ? 'revisão anterior' : '',
     ];
@@ -189,10 +205,13 @@ export function renderQuestionLists({ container, meta, batches, answers, materia
     });
     if (flags.study_authoring) add('Renomear', () => actions.rename(batch, name));
     if (actions.export) add('Exportar', () => actions.export(batch, name));
-    if (actions.share && flags.study_authoring && flags.sharing) add('Compartilhar', () => actions.share(batch, name));
+    if (actions.share && flags.study_authoring && flags.sharing)
+      add('Compartilhar', () => actions.share(batch, name));
     menu.append(summary, options);
     menu.addEventListener('toggle', () => {
-      if (menu.open) for (const other of container.querySelectorAll('.row-menu[open]')) if (other !== menu) other.open = false;
+      if (menu.open)
+        for (const other of container.querySelectorAll('.row-menu[open]'))
+          if (other !== menu) other.open = false;
     });
     head.append(title, metaLine, link, menu);
     card.append(head);
@@ -205,7 +224,13 @@ export function renderQuestionLists({ container, meta, batches, answers, materia
     }
     const shortfall = COVERAGE_NOTES[batch.coverage?.shortfall];
     if (shortfall && batch.requested_count > count)
-      card.append(el('p', `Foram geradas ${count} de ${batch.requested_count}: ${shortfall}.`, 'list-coverage-note'));
+      card.append(
+        el(
+          'p',
+          `Foram geradas ${count} de ${batch.requested_count}: ${shortfall}.`,
+          'list-coverage-note',
+        ),
+      );
     const progress = el('div', null, 'question-batch-progress');
     progress.setAttribute('aria-hidden', 'true');
     progress.style.setProperty('--answered', String(count ? answered / count : 0));
@@ -220,7 +245,11 @@ export function renderQuestionLists({ container, meta, batches, answers, materia
         item.dataset.result = result ? (result.correct ? 'correct' : 'wrong') : 'pending';
         item.append(
           el('span', q.statement),
-          el('span', result ? (result.correct ? '✓ Acertou' : '✗ Errou') : '– Não respondida', 'question-result'),
+          el(
+            'span',
+            result ? (result.correct ? '✓ Acertou' : '✗ Errou') : '– Não respondida',
+            'question-result',
+          ),
         );
         list.append(item);
       });

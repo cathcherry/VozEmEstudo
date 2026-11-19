@@ -42,11 +42,19 @@ export function publicWorksheet(snapshot) {
 function dbError(error) {
   if (!error) return;
   if (['42P01', '42703', 'PGRST205'].includes(error.code))
-    throw new AppError('AUTHORING_SCHEMA_REQUIRED', 'O compartilhamento de listas ainda não foi habilitado no banco.', 503);
+    throw new AppError(
+      'AUTHORING_SCHEMA_REQUIRED',
+      'O compartilhamento de listas ainda não foi habilitado no banco.',
+      503,
+    );
   throw error;
 }
 
-export function buildQuestionShareService({ db = getAdminSupabase, call = rpc, owned = getOwnedMaterial } = {}) {
+export function buildQuestionShareService({
+  db = getAdminSupabase,
+  call = rpc,
+  owned = getOwnedMaterial,
+} = {}) {
   return {
     async create(userId, materialId, batchId, body) {
       const data = validateListShare(body);
@@ -90,8 +98,11 @@ export function buildQuestionShareService({ db = getAdminSupabase, call = rpc, o
     },
     async resolve(body) {
       const value = z.object({ token }).strict().parse(body).token;
-      const snapshot = await call('resolve_question_list_share_admin', { p_hash: hashListToken(value) });
-      if (!snapshot) throw new AppError('SHARE_UNAVAILABLE', 'Link indisponível, expirado ou revogado.', 404);
+      const snapshot = await call('resolve_question_list_share_admin', {
+        p_hash: hashListToken(value),
+      });
+      if (!snapshot)
+        throw new AppError('SHARE_UNAVAILABLE', 'Link indisponível, expirado ou revogado.', 404);
       return publicWorksheet(snapshot);
     },
   };

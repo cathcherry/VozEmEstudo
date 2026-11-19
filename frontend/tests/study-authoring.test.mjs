@@ -11,10 +11,13 @@ import {
 } from '../js/utils/authoring.js';
 
 test('summary form values keep the legacy API shape and add only chosen extras', () => {
-  assert.deepEqual(normalizeSummaryOptions({ format: 'bullets', length: 'brief', readingLevel: '' }), {
-    format: 'topics',
-    length: 'short',
-  });
+  assert.deepEqual(
+    normalizeSummaryOptions({ format: 'bullets', length: 'brief', readingLevel: '' }),
+    {
+      format: 'topics',
+      length: 'short',
+    },
+  );
   assert.deepEqual(
     normalizeSummaryOptions({
       format: 'chronological',
@@ -22,7 +25,12 @@ test('summary form values keep the legacy API shape and add only chosen extras',
       focus: ['dates', 'dates', 'bogus', 'exam'],
       label: '  Linha do tempo ',
     }),
-    { format: 'chronological', length: 'standard', focus: ['dates', 'exam'], label: 'Linha do tempo' },
+    {
+      format: 'chronological',
+      length: 'standard',
+      focus: ['dates', 'exam'],
+      label: 'Linha do tempo',
+    },
   );
 });
 
@@ -38,14 +46,20 @@ test('summary versions are distinguishable by name, options and source revision'
     }),
     ['Versão 3', 'Definições e conceitos-chave', 'Breve', 'Linguagem simples', 'revisão 2'],
   );
-  assert.deepEqual(summaryDetails({ version: 1, options: {}, source_transcription_revision: 1 }), ['revisão 1']);
+  assert.deepEqual(summaryDetails({ version: 1, options: {}, source_transcription_revision: 1 }), [
+    'revisão 1',
+  ]);
 });
 
 test('question-count guidance follows duration bands and is tempered by content density', () => {
-  const word = (i) => 'termo' + [...i.toString(26)].map((c) => String.fromCharCode(97 + parseInt(c, 26))).join('');
+  const word = (i) =>
+    'termo' + [...i.toString(26)].map((c) => String.fromCharCode(97 + parseInt(c, 26))).join('');
   const rich = Array.from({ length: 400 }, (_, i) => word(i)).join(' ');
   assert.deepEqual(
-    [recommendQuestionCount({ durationMs: 3 * 60000, text: rich }).min, recommendQuestionCount({ durationMs: 3 * 60000, text: rich }).max],
+    [
+      recommendQuestionCount({ durationMs: 3 * 60000, text: rich }).min,
+      recommendQuestionCount({ durationMs: 3 * 60000, text: rich }).max,
+    ],
     [3, 5],
   );
   assert.equal(recommendQuestionCount({ durationMs: 10 * 60000, text: rich }).max, 10);
@@ -54,13 +68,18 @@ test('question-count guidance follows duration bands and is tempered by content 
   assert.equal(long.max, 30);
   assert.match(long.notes.join(' '), /densidade e da cobertura/);
   // A long but repetitive recording does not justify many questions.
-  const thin = recommendQuestionCount({ durationMs: 25 * 60000, text: 'energia energia conservada '.repeat(300) });
+  const thin = recommendQuestionCount({
+    durationMs: 25 * 60000,
+    text: 'energia energia conservada '.repeat(300),
+  });
   assert.deepEqual([thin.min, thin.max], [3, 3]);
   assert.match(thin.notes.join(' '), /poucos termos distintos/);
   // More cognitive skills allow testing the same concept with a different purpose.
   const medium = Array.from({ length: 48 }, (_, i) => word(i)).join(' ');
-  assert(recommendQuestionCount({ durationMs: 25 * 60000, text: medium, skills: 4 }).max >
-    recommendQuestionCount({ durationMs: 25 * 60000, text: medium, skills: 1 }).max);
+  assert(
+    recommendQuestionCount({ durationMs: 25 * 60000, text: medium, skills: 4 }).max >
+      recommendQuestionCount({ durationMs: 25 * 60000, text: medium, skills: 1 }).max,
+  );
   assert.equal(recommendQuestionCount({ durationMs: 50 * 60000, text: rich, max: 12 }).max, 12);
   assert.equal(distinctTerms('Energia, energia; ENERGIA e potencial.'), 2);
 });
@@ -68,9 +87,12 @@ test('question-count guidance follows duration bands and is tempered by content 
 test('lists are named or numbered and expose skills/difficulty labels', () => {
   assert.equal(listName({ title: 'História — Básico' }, 0, 3), 'História — Básico');
   assert.equal(listName({}, 0, 3), 'Conjunto 3');
-  assert.deepEqual(listDetails({ config: { difficulties: ['basic', 'advanced'], skills: ['recall', 'x'] } }), {
-    levels: ['Básico', 'Avançado'],
-    skills: ['Recordação'],
-  });
+  assert.deepEqual(
+    listDetails({ config: { difficulties: ['basic', 'advanced'], skills: ['recall', 'x'] } }),
+    {
+      levels: ['Básico', 'Avançado'],
+      skills: ['Recordação'],
+    },
+  );
   assert.deepEqual(listDetails({}), { levels: [], skills: [] });
 });

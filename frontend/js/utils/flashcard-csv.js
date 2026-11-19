@@ -3,7 +3,15 @@
 //   front, back, set, lesson, difficulty, focus, style, source_revision_id, evidence
 // Map "front"/"back" to the two card fields; the other columns are optional metadata.
 export const FLASHCARD_CSV_COLUMNS = Object.freeze([
-  'front', 'back', 'set', 'lesson', 'difficulty', 'focus', 'style', 'source_revision_id', 'evidence',
+  'front',
+  'back',
+  'set',
+  'lesson',
+  'difficulty',
+  'focus',
+  'style',
+  'source_revision_id',
+  'evidence',
 ]);
 
 /** Quotes every cell and neutralises spreadsheet formulas (=, +, -, @, tab, CR) with a leading apostrophe. */

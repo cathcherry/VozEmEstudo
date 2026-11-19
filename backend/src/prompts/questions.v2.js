@@ -13,7 +13,8 @@ const SKILL_GUIDE = {
   application: 'aplicação: usar o conceito da aula em uma situação descrita no enunciado',
   analysis: 'análise e comparação: relacionar ou distinguir ideias apresentadas na aula',
   cause_effect: 'causa e efeito: identificar causas ou consequências descritas na aula',
-  evaluation: 'avaliação crítica: julgar um argumento usando critérios que a própria aula apresenta',
+  evaluation:
+    'avaliação crítica: julgar um argumento usando critérios que a própria aula apresenta',
   synthesis: 'síntese: integrar duas ou mais ideias da aula em uma conclusão sustentada por ela',
 };
 const LEVEL_GUIDE = {
@@ -34,7 +35,9 @@ export function buildConceptMessages(transcript, { topicFocus, maxConcepts }) {
         'Não divida a mesma ideia em itens diferentes; não inclua conversas administrativas ou exemplos sem conteúdo.',
         'Para cada item, copie em evidence um trecho literal da transcrição (15 a 400 caracteres) que o sustenta.',
         'Se houver pouco conteúdo, retorne poucos itens; nunca invente.',
-        ...(topicFocus ? ['Priorize os itens relacionados ao foco temático informado, se existirem na aula.'] : []),
+        ...(topicFocus
+          ? ['Priorize os itens relacionados ao foco temático informado, se existirem na aula.']
+          : []),
         'Formato: {"concepts":[{"label":"nome curto do conceito","evidence":"trecho literal"}]}',
       ].join(' '),
     },

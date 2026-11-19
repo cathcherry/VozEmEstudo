@@ -36,7 +36,9 @@ export function buildStudyDocument(material, options = {}) {
           type: 'transcript',
           items: segments.length
             ? segments.map((s) => ({
-                time: timestamps ? `${formatTimestamp(s.start_ms)}–${formatTimestamp(s.end_ms)}` : null,
+                time: timestamps
+                  ? `${formatTimestamp(s.start_ms)}–${formatTimestamp(s.end_ms)}`
+                  : null,
                 text: s.current_text,
               }))
             : [{ time: null, text: transcription.current_text || '' }],
@@ -56,7 +58,11 @@ export function buildStudyDocument(material, options = {}) {
       blocks: [
         {
           type: 'notes',
-          items: notes.map((n) => ({ revision: n.source_revision, quote: n.quote || '', note: n.note_text || '' })),
+          items: notes.map((n) => ({
+            revision: n.source_revision,
+            quote: n.quote || '',
+            note: n.note_text || '',
+          })),
         },
       ],
     });
@@ -70,7 +76,11 @@ export function buildStudyDocument(material, options = {}) {
       meta: [
         `${questions.length} ${questions.length === 1 ? 'questão' : 'questões'}`,
         `fonte: revisão ${list.batch.source_transcription_revision}`,
-        withKey ? 'gabarito do professor' : attempt ? 'relatório da tentativa' : 'folha do aluno, sem respostas',
+        withKey
+          ? 'gabarito do professor'
+          : attempt
+            ? 'relatório da tentativa'
+            : 'folha do aluno, sem respostas',
       ].join(' · '),
       blocks: [
         {
@@ -80,7 +90,9 @@ export function buildStudyDocument(material, options = {}) {
             return {
               statement: q.statement,
               options: q.options || [],
-              ...(withKey ? { correctIndex: q.correctIndex, explanation: q.explanation || '' } : {}),
+              ...(withKey
+                ? { correctIndex: q.correctIndex, explanation: q.explanation || '' }
+                : {}),
               ...(attempt
                 ? {
                     selectedIndex: answer?.selectedIndex ?? null,
@@ -104,7 +116,12 @@ export function buildStudyDocument(material, options = {}) {
     sections.push({
       heading: set.name,
       meta: `${set.cards.length} ${set.cards.length === 1 ? 'cartão' : 'cartões'}`,
-      blocks: [{ type: 'cards', items: set.cards.map((c) => ({ front: c.front_text, back: c.back_text })) }],
+      blocks: [
+        {
+          type: 'cards',
+          items: set.cards.map((c) => ({ front: c.front_text, back: c.back_text })),
+        },
+      ],
     });
   return {
     title: material.title,
@@ -115,7 +132,10 @@ export function buildStudyDocument(material, options = {}) {
 
 /** Lowers summary headings so they nest under the section heading (## → ###). */
 const nestHeadings = (text, levels = 1) =>
-  String(text).replace(/^(#{1,5})(\s)/gm, (_, hashes, space) => '#'.repeat(Math.min(6, hashes.length + levels)) + space);
+  String(text).replace(
+    /^(#{1,5})(\s)/gm,
+    (_, hashes, space) => '#'.repeat(Math.min(6, hashes.length + levels)) + space,
+  );
 
 const optionLabel = (index) => `${LETTERS[index] || index + 1})`;
 
@@ -130,7 +150,10 @@ function questionMarkdown(item, number) {
     );
   }
   if (Number.isInteger(item.correctIndex)) {
-    lines.push('', `   **Resposta correta:** ${optionLabel(item.correctIndex)} ${item.options[item.correctIndex] ?? ''}`);
+    lines.push(
+      '',
+      `   **Resposta correta:** ${optionLabel(item.correctIndex)} ${item.options[item.correctIndex] ?? ''}`,
+    );
     if (item.explanation) lines.push(`   *Explicação:* ${item.explanation}`);
   }
   return lines.join('\n');
@@ -145,11 +168,21 @@ export function toMarkdown(doc) {
       out.push('');
       if (block.type === 'markdown') out.push(nestHeadings(block.text).trim());
       if (block.type === 'transcript')
-        out.push(block.items.map((i) => (i.time ? `**[${i.time}]** ${i.text}` : i.text)).join('\n\n'));
+        out.push(
+          block.items.map((i) => (i.time ? `**[${i.time}]** ${i.text}` : i.text)).join('\n\n'),
+        );
       if (block.type === 'notes')
         out.push(
           block.items
-            .map((n) => [`- Revisão ${n.revision}`, n.quote && `  - Destaque: ${n.quote}`, n.note && `  - Nota: ${n.note}`].filter(Boolean).join('\n'))
+            .map((n) =>
+              [
+                `- Revisão ${n.revision}`,
+                n.quote && `  - Destaque: ${n.quote}`,
+                n.note && `  - Nota: ${n.note}`,
+              ]
+                .filter(Boolean)
+                .join('\n'),
+            )
             .join('\n'),
         );
       if (block.type === 'questions') {
@@ -157,7 +190,11 @@ export function toMarkdown(doc) {
         out.push(block.items.map((item, i) => questionMarkdown(item, i + 1)).join('\n\n'));
       }
       if (block.type === 'cards')
-        out.push(block.items.map((c, i) => `${i + 1}. **${c.front}**\n   ${c.back.replace(/\n/g, '\n   ')}`).join('\n\n'));
+        out.push(
+          block.items
+            .map((c, i) => `${i + 1}. **${c.front}**\n   ${c.back.replace(/\n/g, '\n   ')}`)
+            .join('\n\n'),
+        );
     }
   }
   return out.join('\n') + '\n';
@@ -165,21 +202,24 @@ export function toMarkdown(doc) {
 
 /** Plain text keeps structure (titles, numbering, bullets) without Markdown syntax. */
 export function toPlainText(doc) {
-  const strip = (line) => line.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1').replace(/`([^`]+)`/g, '$1');
-  return (
-    toMarkdown(doc)
-      .split('\n')
-      .map((line) => {
-        const heading = line.match(/^(#{1,6})\s+(.*)$/);
-        if (!heading) return strip(line);
-        const text = strip(heading[2]);
-        if (heading[1].length === 1) return `${text}\n${'='.repeat(Math.min(72, text.length))}`;
-        if (heading[1].length === 2) return `\n${text.toLocaleUpperCase('pt-BR')}\n${'-'.repeat(Math.min(72, text.length))}`;
-        return text;
-      })
-      .join('\n')
-      .replace(/\n{3,}/g, '\n\n')
-  );
+  const strip = (line) =>
+    line
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1');
+  return toMarkdown(doc)
+    .split('\n')
+    .map((line) => {
+      const heading = line.match(/^(#{1,6})\s+(.*)$/);
+      if (!heading) return strip(line);
+      const text = strip(heading[2]);
+      if (heading[1].length === 1) return `${text}\n${'='.repeat(Math.min(72, text.length))}`;
+      if (heading[1].length === 2)
+        return `\n${text.toLocaleUpperCase('pt-BR')}\n${'-'.repeat(Math.min(72, text.length))}`;
+      return text;
+    })
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n');
 }
 
 export const PRINT_STYLE = `@page{size:A4;margin:18mm 18mm 20mm}
@@ -217,7 +257,11 @@ export function renderPrintable(doc, target) {
   const body = target.body;
   body.replaceChildren(make('h1', doc.title), make('p', doc.subtitle, 'doc-subtitle'));
   doc.sections.forEach((section, index) => {
-    const wrap = make('section', null, `doc-section${index > 0 && section.blocks[0]?.type === 'questions' ? ' page-start' : ''}`);
+    const wrap = make(
+      'section',
+      null,
+      `doc-section${index > 0 && section.blocks[0]?.type === 'questions' ? ' page-start' : ''}`,
+    );
     wrap.append(make('h2', section.heading));
     if (section.meta) wrap.append(make('p', section.meta, 'section-meta'));
     for (const block of section.blocks) {
@@ -267,7 +311,12 @@ export function renderPrintable(doc, target) {
           if (Number.isInteger(item.correctIndex)) {
             const key = make('div', null, 'key');
             const strong = make('strong', 'Resposta correta: ');
-            key.append(strong, target.createTextNode(`${optionLabel(item.correctIndex)} ${item.options[item.correctIndex] ?? ''}`));
+            key.append(
+              strong,
+              target.createTextNode(
+                `${optionLabel(item.correctIndex)} ${item.options[item.correctIndex] ?? ''}`,
+              ),
+            );
             if (item.explanation) key.append(make('p', `Explicação: ${item.explanation}`));
             li.append(key);
           } else if (item.selectedIndex === undefined) li.append(make('div', null, 'blank-line'));

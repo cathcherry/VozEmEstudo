@@ -2,7 +2,9 @@ import { z } from 'zod';
 import * as repository from '../repositories/flashcard-set.repository.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import {
-  validateNewFlashcardSet, validateSetCards, validateSetPatch,
+  validateNewFlashcardSet,
+  validateSetCards,
+  validateSetPatch,
 } from '../validators/flashcard-generation.validator.js';
 
 const uuid = z.string().uuid();

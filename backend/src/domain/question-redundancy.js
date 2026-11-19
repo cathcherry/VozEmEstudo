@@ -3,11 +3,12 @@ import { conceptKey } from './question-plan.js';
 // Lexical and concept-level redundancy checks. There are no embeddings: "semantic" redundancy is
 // detected through the planned concept + skill and the shared correct answer, not true meaning.
 const STOPWORDS = new Set(
-  ('que qual quais como para por com sem uma umas uns dos das nos nas pelo pela pelos pelas ' +
+  (
+    'que qual quais como para por com sem uma umas uns dos das nos nas pelo pela pelos pelas ' +
     'segundo aula sobre entre esta este essa esse isso isto ele ela eles elas seu sua seus suas ' +
     'mais menos muito pode podem deve devem ser sao foi era sera tem ter the and alternativa ' +
-    'correta afirmacao afirma indica descreve explica')
-    .split(' '),
+    'correta afirmacao afirma indica descreve explica'
+  ).split(' '),
 );
 
 export const normalizeText = (value = '') =>
@@ -19,7 +20,11 @@ export const normalizeText = (value = '') =>
     .trim();
 
 const tokens = (value) =>
-  new Set(normalizeText(value).split(' ').filter((word) => word.length > 2 && !STOPWORDS.has(word)));
+  new Set(
+    normalizeText(value)
+      .split(' ')
+      .filter((word) => word.length > 2 && !STOPWORDS.has(word)),
+  );
 const trigrams = (value) => {
   const text = ` ${normalizeText(value)} `,
     result = new Set();
@@ -46,15 +51,29 @@ export function compareQuestions(a, b) {
     sb = normalizeText(b.statement);
   if (sa && sa === sb) return 'exact';
   const tokenScore = jaccard(tokens(a.statement), tokens(b.statement));
-  if (jaccard(trigrams(a.statement), trigrams(b.statement)) >= PARAPHRASE_TRIGRAM || tokenScore >= PARAPHRASE_TOKENS)
+  if (
+    jaccard(trigrams(a.statement), trigrams(b.statement)) >= PARAPHRASE_TRIGRAM ||
+    tokenScore >= PARAPHRASE_TOKENS
+  )
     return 'paraphrase';
   // Same planned concept and same skill: the same knowledge with the same cognitive purpose.
-  if (a.concept && b.concept && conceptKey(a.concept) === conceptKey(b.concept) && a.skill && a.skill === b.skill)
+  if (
+    a.concept &&
+    b.concept &&
+    conceptKey(a.concept) === conceptKey(b.concept) &&
+    a.skill &&
+    a.skill === b.skill
+  )
     return 'same_knowledge';
   const answerA = answerOf(a),
     answerB = answerOf(b);
-  if (answerA && answerB && normalizeText(answerA) === normalizeText(answerB) &&
-    tokenScore >= SAME_ANSWER_TOKENS && (!a.skill || !b.skill || a.skill === b.skill))
+  if (
+    answerA &&
+    answerB &&
+    normalizeText(answerA) === normalizeText(answerB) &&
+    tokenScore >= SAME_ANSWER_TOKENS &&
+    (!a.skill || !b.skill || a.skill === b.skill)
+  )
     return 'same_knowledge';
   return null;
 }
@@ -63,7 +82,10 @@ export function compareQuestions(a, b) {
  * Keeps candidates in order, rejecting those redundant with an earlier accepted one or, unless
  * the policy is "review", with questions from earlier lists of the same material.
  */
-export function filterRedundant(candidates, { previous = [], policy = 'avoid', accepted: start = [] } = {}) {
+export function filterRedundant(
+  candidates,
+  { previous = [], policy = 'avoid', accepted: start = [] } = {},
+) {
   const accepted = [...start],
     rejected = [];
   for (const item of candidates) {

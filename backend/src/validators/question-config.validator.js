@@ -21,7 +21,8 @@ export const QUESTION_FORMATS = Object.freeze(['single_choice']);
 export const PREVIOUS_POLICIES = Object.freeze(['avoid', 'prioritize_new', 'review']);
 
 const unique = (values) => new Set(values).size === values.length;
-const set = (values) => z.array(z.enum(values)).min(1).max(values.length).refine(unique, 'Valor repetido.');
+const set = (values) =>
+  z.array(z.enum(values)).min(1).max(values.length).refine(unique, 'Valor repetido.');
 
 const configSchema = z
   .object({
@@ -53,4 +54,7 @@ export function assertListQuestionCount(value, { custom = false, max = 40 } = {}
 }
 
 export const validateListTitle = (input) =>
-  z.object({ title: z.string().trim().min(1).max(160) }).strict().parse(input).title;
+  z
+    .object({ title: z.string().trim().min(1).max(160) })
+    .strict()
+    .parse(input).title;

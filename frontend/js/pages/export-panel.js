@@ -35,7 +35,13 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
     const select = form.elements.summaryVersion;
     const summaries = current.summaries || [];
     select.replaceChildren(
-      ...summaries.map((s) => new Option(`${summaryName(s)}${s.is_current ? ' (mais recente)' : ''}`, String(s.version))),
+      ...summaries.map(
+        (s) =>
+          new Option(
+            `${summaryName(s)}${s.is_current ? ' (mais recente)' : ''}`,
+            String(s.version),
+          ),
+      ),
     );
     const latest = summaries.find((s) => s.is_current) || summaries[0];
     if (latest) select.value = String(latest.version);
@@ -82,7 +88,8 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
     const data = new FormData(form);
     const lists = data.getAll('list').length,
       sets = data.getAll('flashcardSet').length;
-    const onlyCards = sets > 0 && !lists && !data.get('transcript') && !data.get('summary') && !data.get('notes');
+    const onlyCards =
+      sets > 0 && !lists && !data.get('transcript') && !data.get('summary') && !data.get('notes');
     const csv = dialog.querySelector('[data-export-csv]');
     csv.hidden = !onlyCards;
     if (!onlyCards && form.elements.format.value === 'csv') form.elements.format.value = 'pdf';
@@ -128,7 +135,9 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
     const sessions = await listQuizSessions();
     const list = Array.isArray(sessions) ? sessions : sessions.sessions || [];
     const done = list
-      .filter((s) => s.batch_id === batchId && s.status === 'completed' && (s.kind || 'full') === 'full')
+      .filter(
+        (s) => s.batch_id === batchId && s.status === 'completed' && (s.kind || 'full') === 'full',
+      )
       .sort((a, b) => String(b.completed_at).localeCompare(String(a.completed_at)))[0];
     return done ? getQuizSession(done.id) : null;
   }
@@ -161,8 +170,12 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
       const sets = flashcards ? await flashcards.load(data.getAll('flashcardSet')) : [];
       const notes = data.get('notes') && notesAvailable() ? await collectNotes(current.id) : [];
       if (format === 'csv') {
-        downloadText(flashcards.csv(sets), safeFilename(current.title + '-flashcards', 'csv'), 'text/csv;charset=utf-8');
-        return 'Arquivo CSV preparado (colunas documentadas na Ajuda).';
+        downloadText(
+          flashcards.csv(sets),
+          safeFilename(current.title + '-flashcards', 'csv'),
+          'text/csv;charset=utf-8',
+        );
+        return 'CSV preparado. Colunas: front, back, set, lesson, difficulty, focus, style, source_revision_id, evidence.';
       }
       const summary = data.get('summary')
         ? (current.summaries || []).find((s) => String(s.version) === data.get('summaryVersion'))
@@ -183,7 +196,11 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
         return 'Na janela de impressão, escolha “Salvar como PDF”.';
       }
       if (format === 'md')
-        downloadText(toMarkdown(doc), safeFilename(current.title + suffix, 'md'), 'text/markdown;charset=utf-8');
+        downloadText(
+          toMarkdown(doc),
+          safeFilename(current.title + suffix, 'md'),
+          'text/markdown;charset=utf-8',
+        );
       else downloadText(toPlainText(doc), safeFilename(current.title + suffix, 'txt'));
       return 'Arquivo preparado com as versões salvas.';
     })()

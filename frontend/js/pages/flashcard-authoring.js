@@ -34,7 +34,8 @@ export function initFlashcardAuthoring({ material }) {
 
   form.elements.count.addEventListener('change', () => {
     customLabel.hidden = form.elements.count.value !== 'custom';
-    if (!customLabel.hidden && !form.elements.customCount.value) form.elements.customCount.value = '15';
+    if (!customLabel.hidden && !form.elements.customCount.value)
+      form.elements.customCount.value = '15';
   });
   form.elements.target.addEventListener('change', () => {
     nameLabel.hidden = form.elements.target.value !== 'new';
@@ -42,11 +43,15 @@ export function initFlashcardAuthoring({ material }) {
 
   function readConfig() {
     const data = new FormData(form);
-    const count = Number(data.get('count') === 'custom' ? data.get('customCount') : data.get('count'));
-    if (!Number.isInteger(count) || count < 1 || count > 50) throw new Error('Informe uma quantidade inteira de 1 a 50.');
+    const count = Number(
+      data.get('count') === 'custom' ? data.get('customCount') : data.get('count'),
+    );
+    if (!Number.isInteger(count) || count < 1 || count > 50)
+      throw new Error('Informe uma quantidade inteira de 1 a 50.');
     const difficulties = data.getAll('difficulty'),
       focus = data.getAll('focus');
-    if (!difficulties.length || !focus.length) throw new Error('Escolha pelo menos uma dificuldade e um foco.');
+    if (!difficulties.length || !focus.length)
+      throw new Error('Escolha pelo menos uma dificuldade e um foco.');
     if (data.get('target') === 'new' && !String(data.get('name') || '').trim())
       throw new Error('Dê um nome ao novo conjunto.');
     return { count, config: { difficulties, focus, style: data.get('style') } };
@@ -121,7 +126,8 @@ export function initFlashcardAuthoring({ material }) {
     try {
       // Every visible proposal (including rejected ones) is avoided, so the replacement is new.
       const result = await request(1, proposals.map((p) => p.front).filter(Boolean));
-      if (!result.cards.length) message.textContent = 'A transcrição não sustenta outro cartão distinto.';
+      if (!result.cards.length)
+        message.textContent = 'A transcrição não sustenta outro cartão distinto.';
       else {
         proposals[index] = { ...result.cards[0], rejected: false };
         message.textContent = 'Sugestão substituída.';
@@ -217,7 +223,10 @@ export function initFlashcardAuthoring({ material }) {
     const select = form.elements.target;
     const previous = select.value;
     const sets = await listFlashcardSets(material().id).catch(() => []);
-    select.replaceChildren(new Option('Novo conjunto', 'new'), ...sets.map((set) => new Option(`Adicionar a: ${set.name} (${set.card_count})`, set.id)));
+    select.replaceChildren(
+      new Option('Novo conjunto', 'new'),
+      ...sets.map((set) => new Option(`Adicionar a: ${set.name} (${set.card_count})`, set.id)),
+    );
     if ([...select.options].some((option) => option.value === previous)) select.value = previous;
     nameLabel.hidden = select.value !== 'new';
     return sets;
@@ -230,7 +239,8 @@ export function initFlashcardAuthoring({ material }) {
       renderProposals();
       generateButton.textContent = 'Gerar prévia';
       generateButton.className = 'primary-action';
-      if (!form.elements.name.value) form.elements.name.value = `${material().title} — flashcards`.slice(0, 160);
+      if (!form.elements.name.value)
+        form.elements.name.value = `${material().title} — flashcards`.slice(0, 160);
       dialog.showModal();
       await loadTargets();
     },
