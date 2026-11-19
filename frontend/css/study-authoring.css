@@ -343,3 +343,39 @@ body.app-page[data-page='material'] .question-batch-row {
 .workflow-dialog fieldset:disabled {
   opacity: 0.55;
 }
+
+/* Flashcard preview: each AI proposal is reviewed, edited or rejected before saving. */
+.flashcard-preview {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0;
+}
+.flashcard-proposal {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.flashcard-proposal[data-rejected='true'] {
+  opacity: 0.55;
+  border-style: dashed;
+}
+.flashcard-proposal textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 4px;
+  font: inherit;
+}
+.workflow-dialog .flashcard-proposal label {
+  margin-block: 6px;
+}
+.flashcard-proposal .proposal-evidence {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.proposal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

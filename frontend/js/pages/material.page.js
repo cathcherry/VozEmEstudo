@@ -15,6 +15,7 @@ import { getPublicConfig } from '../api/config.js';
 import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
 import { initExportPanel } from './export-panel.js';
 import { initListShare } from './list-share.js';
+import { initFlashcardAuthoring } from './flashcard-authoring.js';
 import {
   normalizeSummaryOptions,
   summaryName,
@@ -556,6 +557,7 @@ function renderSummary(summary) {
   name.textContent = summary ? summaryName(summary) : '';
   name.hidden = !summary;
   $('[data-rename-summary]').hidden = !summary || !flags.study_authoring;
+  $('[data-open-flashcards]').hidden = !(flags.flashcards && flags.flashcard_sets && ready());
   $('[data-summary-meta]').textContent = summary
     ? [
         ...summaryDetails(summary),
@@ -883,11 +885,15 @@ $('[data-more-questions-form]').addEventListener('submit', (e) => {
     if (ok) questionDialog.reset();
   });
 });
+// Flashcards 2.0 needs the flashcards feature and the sets migration.
+const flashcardSets = flags.flashcards && flags.flashcard_sets;
+const flashcardAuthoring = flashcardSets ? initFlashcardAuthoring({ material: () => currentMaterial }) : null;
+$('[data-open-flashcards]').addEventListener('click', () => void flashcardAuthoring?.open());
 const exportPanel = initExportPanel({
   material: () => currentMaterial,
   flags,
   notesEnabled: () => notesEnabled,
-  flashcards: null,
+  flashcards: flashcardAuthoring?.exporter || null,
 });
 $('[data-open-export]').addEventListener('click', () => exportPanel.open());
 const listShare = initListShare({ materialId });

@@ -116,3 +116,10 @@ body[data-page='dashboard'] .flashcard-draft {
   border-radius: .5rem;
   overflow-wrap: anywhere;
 }
+
+/* Flashcards 2.0: named sets in the existing panel. */
+.flashcard-set-list{display:grid;gap:8px;margin:8px 0}
+.flashcard-set-row{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.flashcard-set-row h4{margin:0;font-family:var(--ue-serif,Georgia,serif);overflow-wrap:anywhere}
+.flashcard-set-row p{margin:2px 0 6px}
+.flashcard-sets .proposal-actions{display:flex;flex-wrap:wrap;gap:4px 10px}

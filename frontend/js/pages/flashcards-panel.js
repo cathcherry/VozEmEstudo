@@ -3,11 +3,13 @@ import { setStatus } from '../utils/shell.js';
 import {
   listFlashcards, createFlashcard, updateFlashcard, reviewFlashcard,
   listFlashcardReviews,
-  getFlashcardSource, previewFlashcards,
+  getFlashcardSource, previewFlashcards, addFlashcardSetCards, deleteFlashcard,
 } from '../api/flashcard.api.js';
 import {
   FLASHCARD_RATINGS, formatFlashcardDue, flashcardSummary,
 } from '../utils/flashcard-view.js';
+
+import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
 
 function make(tag, value, className) {
   const element = document.createElement(tag);
@@ -130,6 +132,32 @@ export async function initFlashcardsPanel({ materials }) {
   statusLabel.append(statusFilter);
   filters.append(lessonLabel, statusLabel);
   panel.insertBefore(filters, panel.querySelector('.flashcard-columns'));
+  // Flashcards 2.0 (sets migration): filter by set, add manual cards to a set, delete cards.
+  const setsEnabled = await isFeatureEnabled('flashcard_sets').catch(() => false);
+  const setLabel = make('label', 'Conjunto');
+  const setFilter = make('select');
+  setFilter.append(new Option('Todos os conjuntos', ''));
+  setLabel.append(setFilter);
+  const createSetLabel = make('label', 'Conjunto (opcional)');
+  const createSet = make('select');
+  createSet.name = 'setId';
+  createSet.append(new Option('Sem conjunto', ''));
+  createSetLabel.append(createSet);
+  const deleteCardButton = make('button', 'Excluir cartão', 'text-action');
+  deleteCardButton.type = 'button';
+  if (setsEnabled) {
+    filters.append(setLabel);
+    materialInput.closest('label').after(createSetLabel);
+    manager.querySelector('[type="submit"]').after(deleteCardButton);
+  }
+  function fillSetOptions(sets) {
+    for (const select of [setFilter, createSet]) {
+      const previous = select.value;
+      select.replaceChildren(select.options[0]);
+      for (const set of sets) select.append(new Option(set.name, set.id));
+      if ([...select.options].some((o) => o.value === previous)) select.value = previous;
+    }
+  }
 
   const pagination = make('nav', null, 'flashcard-pagination');
   pagination.setAttribute('aria-label', 'Páginas dos flashcards');
@@ -155,6 +183,7 @@ export async function initFlashcardsPanel({ materials }) {
     for (const field of [managerFront, managerBack, managerArchived])
       field.disabled = locked || saving || !managerSelect.value;
     manager.querySelector('[type="submit"]').disabled = locked || saving || !managerSelect.value;
+    deleteCardButton.disabled = locked || saving || !managerSelect.value;
   }
 
   panel.hidden = false;
@@ -241,6 +270,7 @@ export async function initFlashcardsPanel({ materials }) {
     for (const field of [managerFront, managerBack, managerArchived])
       field.disabled = !selected;
     manager.querySelector('[type="submit"]').disabled = !selected;
+    deleteCardButton.disabled = !selected || saving;
     void renderHistory(selected);
   }
 
@@ -279,7 +309,10 @@ export async function initFlashcardsPanel({ materials }) {
     updateControls();
     dueArea.setAttribute('aria-busy', 'true');
     try {
-      const options = { materialId: lessonFilter.value || undefined };
+      const options = {
+        materialId: lessonFilter.value || undefined,
+        ...(setsEnabled && setFilter.value ? { setId: setFilter.value } : {}),
+      };
       const [due, initialAll] = await Promise.all([
         listFlashcards('due', options),
         listFlashcards('all', { ...options, status: statusFilter.value, offset }),
@@ -327,6 +360,7 @@ export async function initFlashcardsPanel({ materials }) {
     });
   }
   lessonFilter.addEventListener('change', () => changeView(0));
+  setFilter.addEventListener('change', () => changeView(0));
   statusFilter.addEventListener('change', () => changeView(0));
   previousPage.addEventListener('click', () => changeView(Math.max(0, offset - pageLimit)));
   nextPage.addEventListener('click', () => changeView(offset + pageLimit));
@@ -372,10 +406,13 @@ export async function initFlashcardsPanel({ materials }) {
     setStatus(createMessage, '');
     void (async () => {
       try {
-        await createFlashcard({
-          front: frontInput.value, back: backInput.value,
-          materialId: materialInput.value || null,
-        });
+        if (setsEnabled && createSet.value)
+          await addFlashcardSetCards(createSet.value, [{ front: frontInput.value, back: backInput.value }]);
+        else
+          await createFlashcard({
+            front: frontInput.value, back: backInput.value,
+            materialId: materialInput.value || null,
+          });
         createForm.reset();
         setStatus(createMessage, 'Cartão criado e disponível para a primeira revisão.', 'success');
         await refresh();
@@ -405,6 +442,37 @@ export async function initFlashcardsPanel({ materials }) {
       } finally { saving = false; updateControls(); }
     })();
   });
+
+  if (setsEnabled) {
+    const setsPanel = initFlashcardSetsPanel({
+      container: manager.closest('details'),
+      materials,
+      onChange: refresh,
+      onSelect: (setId) => {
+        setFilter.value = setId;
+        changeView(0);
+        manager.closest('details').open = true;
+        setFilter.focus();
+      },
+    });
+    const reloadSets = () => setsPanel.load().then(fillSetOptions).catch(() => {});
+    await reloadSets();
+    createForm.addEventListener('submit', () => setTimeout(reloadSets, 800));
+    deleteCardButton.addEventListener('click', () => {
+      const id = managerSelect.value;
+      if (!id || saving || !confirm('Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.')) return;
+      saving = true;
+      updateControls();
+      void deleteFlashcard(id)
+        .then(async () => {
+          setStatus(managerMessage, 'Cartão excluído.', 'success');
+          await refresh();
+          await reloadSets();
+        })
+        .catch((error) => setStatus(managerMessage, error.message || 'Não foi possível excluir.', 'error'))
+        .finally(() => { saving = false; updateControls(); });
+    });
+  }
 
   try { await refresh(); }
   catch (error) {

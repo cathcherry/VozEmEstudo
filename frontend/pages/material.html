@@ -275,6 +275,7 @@
               <div data-summary-version-list></div>
             </details>
             <button class="text-action" type="button" data-rename-summary hidden>Renomear</button
+            ><button class="text-action" type="button" data-open-flashcards hidden>Criar flashcards</button
             ><button class="secondary-action" data-regenerate-summary type="button">
               Gerar resumo
             </button>
@@ -548,6 +549,64 @@
         <p class="form-status" data-list-share-message role="status" aria-live="polite"></p>
         <div class="share-result" data-list-share-result></div>
         <div class="share-list" data-list-share-list></div>
+      </dialog>
+      <dialog class="workflow-dialog authoring-dialog" data-flashcard-dialog aria-labelledby="flashcard-dialog-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="flashcard-dialog-title">Criar flashcards</h2>
+        <p class="dialog-lead">
+          Usa a revisão confirmada. Revise, edite ou rejeite cada sugestão; nada é salvo antes de
+          você confirmar. A revisão dos cartões acontece no Painel.
+        </p>
+        <form data-flashcard-config novalidate>
+          <label for="flashcard-target"
+            >Conjunto<select id="flashcard-target" name="target"></select
+          ></label>
+          <label data-flashcard-name
+            >Nome do conjunto<input name="name" maxlength="160" placeholder="Ex.: Biologia — divisão celular"
+          /></label>
+          <div class="authoring-grid">
+            <label for="flashcard-count"
+              >Quantidade<select id="flashcard-count" name="count">
+                <option value="5">5 cartões</option>
+                <option value="10" selected>10 cartões</option>
+                <option value="20">20 cartões</option>
+                <option value="custom">Outra quantidade…</option>
+              </select></label
+            ><label for="flashcard-custom-count" data-flashcard-custom hidden
+              >Quantidade personalizada<input id="flashcard-custom-count" name="customCount" type="number" min="1" max="50" step="1"
+            /></label>
+            <label for="flashcard-style"
+              >Estilo<select id="flashcard-style" name="style">
+                <option value="question_answer">Pergunta e resposta</option>
+                <option value="term_definition">Termo e definição</option>
+                <option value="concise_explanation">Explicação concisa</option>
+              </select></label
+            >
+          </div>
+          <details class="advanced-options" data-flashcard-advanced>
+            <summary>Opções avançadas</summary>
+            <fieldset class="choice-row">
+              <legend>Dificuldade</legend>
+              <label><input type="checkbox" name="difficulty" value="basic" checked /> Básico</label>
+              <label><input type="checkbox" name="difficulty" value="intermediate" checked /> Intermediário</label>
+              <label><input type="checkbox" name="difficulty" value="advanced" /> Avançado</label>
+            </fieldset>
+            <fieldset class="choice-grid">
+              <legend>Foco</legend>
+              <label><input type="checkbox" name="focus" value="definitions" checked /> Definições</label>
+              <label><input type="checkbox" name="focus" value="facts" /> Fatos</label>
+              <label><input type="checkbox" name="focus" value="concepts" checked /> Conceitos</label>
+              <label><input type="checkbox" name="focus" value="processes" /> Processos</label>
+              <label><input type="checkbox" name="focus" value="comparisons" /> Comparações</label>
+              <label><input type="checkbox" name="focus" value="application" /> Aplicação</label>
+              <label><input type="checkbox" name="focus" value="cause_effect" /> Causa e efeito</label>
+            </fieldset>
+          </details>
+          <button class="primary-action" type="submit" data-flashcard-generate>Gerar prévia</button>
+        </form>
+        <p class="form-status" data-flashcard-message role="status" aria-live="polite"></p>
+        <div class="flashcard-preview" data-flashcard-preview></div>
+        <button class="primary-action" type="button" data-flashcard-save hidden>Salvar cartões</button>
       </dialog>
       <dialog class="workflow-dialog" data-version-panel aria-labelledby="version-dialog-title">
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>

@@ -30,3 +30,20 @@ export const reviewFlashcard = (cardId, rating, requestId) =>
 export const listFlashcardReviews = (cardId) =>
   apiFetch(`/api/flashcards/${encodeURIComponent(cardId)}/reviews`);
 
+
+// Flashcards 2.0: named sets (FEATURE_FLASHCARD_SETS).
+export const listFlashcardSets = (materialId) =>
+  apiFetch(`/api/flashcards/sets${materialId ? `?materialId=${encodeURIComponent(materialId)}` : ''}`);
+export const getFlashcardSet = (setId) => apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}`);
+export const createFlashcardSet = (data) =>
+  apiFetch('/api/flashcards/sets', { method: 'POST', body: JSON.stringify(data) });
+export const addFlashcardSetCards = (setId, cards) =>
+  apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}/cards`, {
+    method: 'POST', body: JSON.stringify({ cards }),
+  });
+export const updateFlashcardSet = (setId, data) =>
+  apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}`, { method: 'PATCH', body: JSON.stringify(data) });
+export const deleteFlashcardSet = (setId) =>
+  apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}`, { method: 'DELETE' });
+export const deleteFlashcard = (cardId) =>
+  apiFetch(`/api/flashcards/${encodeURIComponent(cardId)}`, { method: 'DELETE' });

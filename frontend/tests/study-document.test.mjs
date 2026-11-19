@@ -134,3 +134,26 @@ test('flashcard sets and filenames', () => {
   assert.equal(safeFilename('História do Brasil / 2º ano', 'md'), 'historia-do-brasil-2o-ano.md');
   assert.equal(safeFilename('', 'txt'), 'voz-em-estudo.txt');
 });
+
+test('flashcard CSV: documented header, RFC 4180 quoting, UTF-8 BOM and formula neutralisation', async () => {
+  const { toFlashcardCsv, csvCell, FLASHCARD_CSV_COLUMNS } = await import('../js/utils/flashcard-csv.js');
+  assert.deepEqual(FLASHCARD_CSV_COLUMNS, ['front', 'back', 'set', 'lesson', 'difficulty', 'focus', 'style', 'source_revision_id', 'evidence']);
+  const csv = toFlashcardCsv(
+    [{
+      name: 'Conjunto "A"',
+      source_revision_id: 'rev-1',
+      cards: [
+        { front_text: 'Mitose?', back_text: 'Duas células,\nidênticas.', difficulty: 'basic', focus: 'definitions', card_style: 'question_answer', evidence: 'A mitose…' },
+        { front_text: '=HYPERLINK("x")', back_text: '+1', difficulty: null },
+      ],
+    }],
+    { lesson: 'Biologia' },
+  );
+  assert(csv.startsWith('﻿front,back,set,lesson,difficulty,focus,style,source_revision_id,evidence\r\n'));
+  const lines = csv.slice(1).split('\r\n');
+  assert.equal(lines[1], '"Mitose?","Duas células,\nidênticas.","Conjunto ""A""","Biologia","basic","definitions","question_answer","rev-1","A mitose…"');
+  assert.equal(lines[2], `"'=HYPERLINK(""x"")","'+1","Conjunto ""A""","Biologia","","","","rev-1",""`);
+  assert.equal(csvCell('@SUM(A1)'), `"'@SUM(A1)"`);
+  assert.equal(csvCell('-2'), `"'-2"`);
+  assert(csv.endsWith('\r\n'));
+});

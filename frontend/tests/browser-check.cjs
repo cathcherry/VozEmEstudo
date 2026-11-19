@@ -12,6 +12,8 @@ const summaryCalls = [];
 const listCalls = [];
 const authoringFlags = {};
 const listShares = new Map();
+const flashcardSets = [];
+const flashcardPreviews = [];
 const reports = [],
   errors = [],
   requests = [],
@@ -503,6 +505,50 @@ async function main() {
     return found
       ? reply(found)
       : reply({ error: { code: 'NOT_FOUND', message: 'Material não encontrado.' } }, 404);
+  });
+  await context.route(base + '/api/flashcards/**', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url()),
+      p = url.pathname;
+    if (p.endsWith('/preview')) {
+      const body = request.postDataJSON();
+      flashcardPreviews.push(body);
+      const cards =
+        body.count === 1
+          ? [{ front: 'Cartão substituto', back: 'Verso substituto.', evidence: 'Um carro elétrico usa energia armazenada em baterias.' }]
+          : [1, 2, 3].slice(0, body.count).map((i) => ({
+              front: `Cartão ${i}`,
+              back: `Verso ${i}.`,
+              evidence: 'Um carro elétrico usa energia armazenada em baterias.',
+              sourceSegments: [{ position: 0, startMs: 0, endMs: 1500 }],
+              difficulty: 'basic',
+              focus: 'concepts',
+              style: body.config.style,
+            }));
+      return route.fulfill({
+        json: { cards, requested: body.count, revision: 2, shortfall: cards.length < body.count ? 'Somente estes cartões distintos têm apoio na transcrição.' : null },
+      });
+    }
+    if (p === '/api/flashcards/sets' && request.method() === 'POST') {
+      const body = request.postDataJSON();
+      const set = {
+        id: body.id,
+        name: body.name,
+        material_id: body.materialId,
+        source_revision_id: body.sourceRevisionId,
+        status: 'active',
+        card_count: body.cards.length,
+        due_count: body.cards.length,
+        body,
+        cards: body.cards.map((c, i) => ({ id: `${body.id}-${i}`, front_text: c.front, back_text: c.back, difficulty: c.difficulty, focus: c.focus, card_style: c.style, evidence: c.evidence })),
+      };
+      flashcardSets.push(set);
+      return route.fulfill({ status: 201, json: { ...set, added: body.cards.length } });
+    }
+    if (p === '/api/flashcards/sets') return route.fulfill({ json: flashcardSets });
+    if (p.startsWith('/api/flashcards/sets/'))
+      return route.fulfill({ json: flashcardSets.find((set) => set.id === p.split('/').pop()) });
+    return route.fulfill({ json: { cards: [], total: 0, limit: 100, offset: 0 } });
   });
   // Material-level shares are outside this scenario: an empty list keeps that panel quiet.
   await context.route(base + '/api/sharing/**', (route) =>
@@ -1918,6 +1964,8 @@ async function main() {
     // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
     authoringFlags.study_authoring = true;
     authoringFlags.sharing = true;
+    authoringFlags.flashcards = true;
+    authoringFlags.flashcard_sets = true;
     await page.goto(base + '/material.html?id=aula-real#questoes');
     await page.locator('[data-questions-section]').waitFor();
     assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
@@ -2043,6 +2091,60 @@ async function main() {
     await page.keyboard.press('Escape');
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
     await page.setViewportSize({ width: 1280, height: 900 });
+    // Flashcards 2.0 from the Resumo tab: preview, reject, regenerate one, edit, save as a named set.
+    // Only the hash differs from the current URL, so reload to pick up the new feature flags.
+    await page.goto(base + '/material.html?id=aula-real#resumo');
+    await page.reload();
+    await page.locator('[data-open-flashcards]').waitFor();
+    await page.locator('[data-open-flashcards]').click();
+    await page.locator('[data-flashcard-dialog][open]').waitFor();
+    assert.equal(await page.locator('[data-flashcard-advanced]').evaluate((n) => n.open), false);
+    await page.locator('[data-flashcard-config] [name=name]').fill('Carros elétricos — termos');
+    await page.locator('#flashcard-count').selectOption('custom');
+    await page.locator('#flashcard-custom-count').fill('7');
+    await page.locator('#flashcard-style').selectOption('term_definition');
+    await page.locator('[data-flashcard-generate]').click();
+    await page.locator('.flashcard-proposal').nth(2).waitFor();
+    assert.deepEqual(flashcardPreviews.at(-1).config, {
+      difficulties: ['basic', 'intermediate'],
+      focus: ['definitions', 'concepts'],
+      style: 'term_definition',
+    });
+    assert.equal(flashcardPreviews.at(-1).count, 7);
+    assert.match(await page.locator('[data-flashcard-message]').textContent(), /3 de 7 sugestões\. Somente estes cartões distintos/);
+    const proposals = page.locator('.flashcard-proposal');
+    await proposals.nth(1).getByRole('button', { name: 'Rejeitar', exact: true }).click();
+    await proposals.nth(2).getByRole('button', { name: 'Gerar outro', exact: true }).click();
+    await page.getByText('Sugestão substituída.', { exact: true }).waitFor();
+    assert.deepEqual(flashcardPreviews.at(-1).avoid, ['Cartão 1', 'Cartão 2', 'Cartão 3']);
+    assert.equal(await proposals.nth(2).locator('textarea').first().inputValue(), 'Cartão substituto');
+    await proposals.nth(0).locator('textarea').nth(1).fill('Verso 1 editado.');
+    assert.equal(await page.locator('[data-flashcard-save]').textContent(), 'Salvar 2 cartões');
+    await screenshot(page, output, 'flashcard-preview-desktop.png');
+    await page.locator('[data-flashcard-save]').click();
+    await page.getByText(/2 cartões salvos\. Eles entram na revisão do Painel\./).waitFor();
+    const savedSet = flashcardSets.at(-1).body;
+    assert.equal(savedSet.name, 'Carros elétricos — termos');
+    assert.equal(savedSet.materialId, 'aula-real');
+    assert.deepEqual(savedSet.cards.map((c) => [c.front, c.back]), [['Cartão 1', 'Verso 1 editado.'], ['Cartão substituto', 'Verso substituto.']]);
+    assert.deepEqual(savedSet.cards[0].sourceSegments, [{ position: 0, startMs: 0, endMs: 1500 }]);
+    await page.keyboard.press('Escape');
+    // The set is exportable as CSV from the material export dialog.
+    await page.locator('[data-open-export]').click();
+    await page.locator('[data-export-form] [name=flashcardSet]').first().waitFor();
+    await page.locator('[data-export-form] [name=transcript]').uncheck();
+    await page.locator('[data-export-form] [name=summary]').uncheck();
+    assert(await page.locator('[data-export-csv]').isHidden());
+    await page.locator('[data-export-form] [name=flashcardSet]').first().check();
+    await page.locator('[data-export-form] [name=format][value=csv]').check();
+    const csvDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const csvText = fs.readFileSync(await (await csvDownload).path(), 'utf8');
+    assert.match(csvText, /^\uFEFFfront,back,set,lesson,difficulty,focus,style,source_revision_id,evidence\r\n"Cartão 1","Verso 1 editado\.","Carros elétricos — termos"/);
+    await page.keyboard.press('Escape');
+    record('Flashcards 2.0: prévia editável, rejeitar e gerar outro cartão, conjunto nomeado e exportação CSV');
+    authoringFlags.flashcards = false;
+    authoringFlags.flashcard_sets = false;
     authoringFlags.study_authoring = false;
     authoringFlags.sharing = false;
     record('Listas nomeadas: quantidade personalizada limitada, recomendação sob demanda, níveis e habilidades, renomear');
