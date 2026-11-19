@@ -138,11 +138,11 @@
         </div>
         <div class="material-header-actions" data-material-actions hidden>
           <a class="secondary-action" data-organize-material>Organizar</a
-          ><button class="secondary-action" type="button" data-open-export>Exportar</button>
+          ><button class="secondary-action" type="button" data-open-export>Exportar</button
+          ><button class="secondary-action" type="button" data-open-material-share hidden>Compartilhar</button>
         </div>
       </header>
       <section class="learning-tools-panel" data-annotations-panel hidden aria-label="Anotações e destaques"></section>
-      <section class="learning-tools-panel" data-sharing-panel hidden aria-label="Compartilhar textos"></section>
       <section class="study-tracking-panel" data-study-tracking-panel hidden aria-label="Tempo e progresso de estudo"></section>
       <section class="article-section waiting-screen" data-processing-section hidden>
         <span class="loading-indicator" data-processing-spinner aria-hidden="true"></span>
@@ -539,6 +539,14 @@
           <button class="primary-action" type="submit">Exportar</button>
         </form>
         <section class="learning-tools-panel" data-material-tools aria-label="Ferramentas" hidden></section>
+      </dialog>
+      <dialog
+        class="workflow-dialog compact-dialog material-share-dialog"
+        data-material-share-dialog
+        aria-label="Compartilhar uma cópia para leitura"
+      >
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <section class="learning-tools-panel" data-sharing-panel hidden></section>
       </dialog>
       <dialog class="workflow-dialog compact-dialog" data-list-share-dialog aria-labelledby="list-share-title">
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>

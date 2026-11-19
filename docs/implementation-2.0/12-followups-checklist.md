@@ -1,0 +1,32 @@
+# 12 — Pendências para conferir depois (branch `feat/study-authoring-followups`)
+
+Esta branch parte de `feat/study-authoring` (pronta para merge) e reúne mudanças que ainda precisam da sua conferência. **Nada desta branch foi aplicado no banco de produção.**
+
+## 1. Banco: migration candidata de performance
+
+Arquivo: `database/migrations/20261119140000_rls_performance.sql` (não aplicada).
+
+- Reescreve 13 políticas de RLS da `001_initial` para `(select auth.uid())` usando `ALTER POLICY` (nenhuma política é apagada; mesmas regras, papéis e comandos). Resolve os avisos "Auth RLS Initialization Plan" do Supabase.
+- Cria índices para as chaves estrangeiras apontadas como sem índice, somente quando a tabela e as colunas existem.
+- Testada no PostgreSQL embutido: cada conta vê exatamente as mesmas linhas antes e depois, o dono continua conseguindo atualizar a própria aula e o outro usuário não; pode ser reaplicada.
+
+Para aplicar no `audioestudo`, quando puder conferir:
+1. Pedir o ensaio com `rollback` (o mesmo processo usado na migration de autoria).
+2. Aplicar com o nome `rls_performance`.
+3. Rodar os advisors de performance e segurança e conferir que os avisos `auth_rls_initplan` e `unindexed_foreign_keys` sumiram.
+
+Observação: `CREATE INDEX` sem `CONCURRENTLY` bloqueia escritas por instantes em cada tabela; com o volume atual (18 aulas) isso é imperceptível.
+
+## 2. Interface: "Compartilhar uma cópia para leitura"
+
+O formulário antigo (anterior a esta atualização), que aparecia como um bloco grande no meio da página da aula quando `FEATURE_SHARING` está ligado, agora abre num diálogo compacto pelo botão **Compartilhar** do cabeçalho da aula, ao lado de **Exportar**. O comportamento (transcrição/resumo, validade, revogação) é o mesmo. Conferir: captura `frontend/tests/artifacts/material-share-dialog.png` gerada pelo teste de navegador.
+
+## 3. Ainda dependem de você (fora do código)
+
+- **Supabase → Authentication → Password security:** ativar a proteção contra senhas vazadas.
+- **Merge de `feat/study-authoring`** e deploy; depois `FEATURE_STUDY_AUTHORING=true`.
+- **Conjuntos de flashcards:** dependem das migrations E03, E05 e E13, que não estão no `audioestudo`. Aplicá-las exige o mesmo processo de diagnóstico, ensaio e confirmação.
+
+## Como juntar esta branch
+
+Depois do merge de `feat/study-authoring` em `main`, esta branch pode ser comparada com `main` e mesclada separadamente; ela contém apenas os itens acima.

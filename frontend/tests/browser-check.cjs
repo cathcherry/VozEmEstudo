@@ -2019,6 +2019,17 @@ async function main() {
     await page.goto(base + '/material.html?id=aula-real#questoes');
     await page.locator('[data-questions-section]').waitFor();
     assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
+    // The material copy-for-reading form no longer sits in the page body: it opens from the header.
+    const shareButton = page.locator('[data-material-actions]').getByRole('button', { name: 'Compartilhar', exact: true });
+    await shareButton.waitFor();
+    assert(await page.locator('[data-sharing-panel]').isHidden());
+    await shareButton.click();
+    await page.locator('[data-material-share-dialog][open]').waitFor();
+    assert(await page.locator('[data-material-share-dialog]').getByRole('button', { name: 'Criar link de leitura' }).isVisible());
+    await auditDialog('[data-material-share-dialog]', 'material share dialog');
+    await screenshot(page, output, 'material-share-dialog.png');
+    await page.keyboard.press('Escape');
+    record('Compartilhar cópia da aula abre em diálogo compacto pelo cabeçalho');
     await page.locator('[data-open-questions]').click();
     await page.locator('[data-questions-dialog][open]').waitFor();
     assert.equal(await page.locator('[data-questions-advanced]').evaluate((n) => n.open), false);

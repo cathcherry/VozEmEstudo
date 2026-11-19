@@ -401,3 +401,30 @@ body.app-page[data-page='material'] .question-batch-row {
   float: right;
   margin: 2px 0 0 8px;
 }
+
+/* Material copy-for-reading: the pre-existing form, now compact inside a dialog. */
+.material-share-dialog .learning-tools-panel {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.material-share-dialog .learning-tools-panel h2 {
+  margin-top: 0;
+  padding-inline-end: 2rem;
+  font-size: 1.15rem;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
+}
+.material-share-dialog .learning-tools-panel > p {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.material-share-dialog form label:has(> input[type='checkbox']) {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+.material-share-dialog form button[type='submit'] {
+  justify-self: start;
+}
