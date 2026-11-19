@@ -39,7 +39,7 @@ let announceTimer;
 let returnFocus = null;
 let catalogEnabled = false;
 let catalog = { subjects: [], units: [] };
-let libraryViews = null;
+let libraryViews;
 let treeResources = {};
 window.addEventListener('library-layout-changed',()=>{if(loaded)render();});
 const openSubjects = new Set();
@@ -665,7 +665,7 @@ async function load() {
         catalog = await getCatalog();
         try { treeResources=await getLibraryResources(); } catch { treeResources={}; }
         await folderIcons.load(catalog);
-        // Each lesson provides its own resources.
+        libraryViews ??= initLibraryViewSwitcher({ onChange: render });
       }
     } catch (error) {
       catalogEnabled = false;

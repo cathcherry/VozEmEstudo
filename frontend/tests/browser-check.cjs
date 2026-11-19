@@ -405,7 +405,7 @@ async function main() {
   const page = await context.newPage();
   try {
     await page.goto(base + '/index.html');
-    await page.locator('.marketing-hero h1').waitFor();
+    await page.getByRole('heading', { level: 1 }).waitFor();
     await screenshot(page, output, 'landing-desktop.png');
     assert.equal(await page.locator('.feature-card').count(), 3);
     assert.equal(await page.locator('.team-placeholder').count(), 1);
