@@ -23,6 +23,7 @@
     'audioestudo-custom-text',
     'audioestudo-custom-font',
     'audioestudo-ui-preferences',
+    'voz-caption-preferences',
   ];
   const allowedThemes = [
     'paper',

@@ -162,12 +162,16 @@
       <section class="material-recording" data-audio-section hidden aria-label="Gravação da aula">
         <div data-audio-player></div>
         <div class="recording-footer">
-          <label class="playback-kind" data-playback-choice
-            ><span class="sr-only">Formato de reprodução</span
-            ><select data-playback-kind>
-              <option value="audio">Áudio</option>
-              <option value="video">Vídeo</option>
-            </select></label
+          <fieldset class="playback-kind" data-playback-choice hidden>
+            <legend class="sr-only">Formato de reprodução</legend>
+            <label
+              ><input type="radio" name="playback-kind" value="audio" checked /><span
+                >Áudio</span
+              ></label
+            ><label
+              ><input type="radio" name="playback-kind" value="video" /><span>Vídeo</span></label
+            >
+          </fieldset
           ><a
             class="text-action"
             data-open-original-video

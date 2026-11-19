@@ -64,3 +64,29 @@ export async function getVersion(materialId, sourceRevisionId) {
   if (!data) throw errors.notFound('Revisão');
   return data;
 }
+
+const MISSING_SCHEMA = ['42P01', 'PGRST205'];
+/**
+ * Word timings stored for the transcription's CURRENT revision, or null. Alignment rows exist only
+ * for the untouched ASR revision; any edit/restore creates a new revision without them.
+ * Returns null (not an error) while the AI-executions migration is not applied.
+ */
+export async function getCurrentAlignment(transcription) {
+  const db = getAdminSupabase();
+  const { data: version, error } = await db
+    .from('transcription_versions')
+    .select('id,revision')
+    .eq('transcription_id', transcription.id)
+    .eq('revision', transcription.current_revision)
+    .maybeSingle();
+  if (error) throw error;
+  if (!version) return null;
+  const { data, error: alignmentError } = await db
+    .from('transcription_word_alignments')
+    .select('words')
+    .eq('transcription_version_id', version.id)
+    .maybeSingle();
+  if (MISSING_SCHEMA.includes(alignmentError?.code)) return null;
+  if (alignmentError) throw alignmentError;
+  return data?.words || null;
+}

@@ -14,7 +14,8 @@ import { initTranscriptionReview } from '../utils/transcription-review.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
 import { MediaPlayer } from '../utils/media-player.js';
 import { initTranscriptPlayer } from '../utils/transcript-player.js';
-import { getPlayback, removeOriginalVideo } from '../api/playback.api.js';
+import { getPlayback, getCaptions, removeOriginalVideo } from '../api/playback.api.js';
+import { PlayerCaptions } from '../utils/captions.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
@@ -46,6 +47,62 @@ const player = new MediaPlayer($('[data-audio-player]'), {
     void renewPlayback({ automatic: true });
   },
 });
+const captions = new PlayerCaptions(player, { storage: window.VozAppearance?.storage });
+const captionWords = new Map(); // revision -> validated real word timings ([] = segment only)
+// Compact audio/video switcher and fullscreen live inside the player's own control bar.
+const playbackChoice = $('[data-playback-choice]');
+player.root
+  .querySelector('.player-controls')
+  .insertBefore(playbackChoice, player.root.querySelector('.caption-control'));
+const fullscreenButton = document.createElement('button');
+fullscreenButton.type = 'button';
+fullscreenButton.className = 'player-icon player-fullscreen';
+fullscreenButton.innerHTML =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+player.root.querySelector('.player-controls').append(fullscreenButton);
+function syncFullscreen() {
+  const active = document.fullscreenElement === player.root;
+  fullscreenButton.setAttribute('aria-label', active ? 'Sair da tela cheia' : 'Tela cheia');
+  fullscreenButton.title = fullscreenButton.getAttribute('aria-label');
+  fullscreenButton.hidden = player.media !== player.video || !document.fullscreenEnabled;
+}
+fullscreenButton.addEventListener('click', async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    // The whole player goes fullscreen so captions and controls stay with the video.
+    else await player.root.requestFullscreen();
+  } catch {
+    /* Fullscreen can be refused by the browser; the inline player keeps working. */
+  }
+});
+document.addEventListener('fullscreenchange', syncFullscreen);
+const kindValue = () => $('[name="playback-kind"]:checked')?.value || 'audio';
+const setKind = (value) => {
+  const input = $(`[name="playback-kind"][value="${value}"]`);
+  if (input) input.checked = true;
+};
+async function loadCaptions(material) {
+  const transcription = material.transcription;
+  if (!transcription) return captions.setTranscript([], []);
+  const revision = transcription.current_revision;
+  captions.setTranscript(
+    transcription.transcription_segments || [],
+    captionWords.get(revision) || [],
+  );
+  if (captionWords.has(revision)) return;
+  captionWords.set(revision, []);
+  try {
+    const result = await getCaptions(materialId);
+    if (result.revision !== currentMaterial?.transcription?.current_revision) return;
+    captionWords.set(revision, result.words || []);
+    captions.setTranscript(
+      currentMaterial.transcription.transcription_segments || [],
+      captionWords.get(revision),
+    );
+  } catch {
+    /* Without the endpoint or data, segment captions remain available. */
+  }
+}
 const segmentsContainer = $('[data-transcription-segments]');
 const transcriptMessage = $('[data-transcription-message]');
 const transcriptPlayer = initTranscriptPlayer({
@@ -316,37 +373,16 @@ function hasUsefulTiming() {
     segments.every((s) => s.end_ms > s.start_ms && s.end_ms - s.start_ms < 45000)
   );
 }
-function installCaptions() {
-  player.video.querySelectorAll('track').forEach((n) => n.remove());
-  if (player.captionUrl) URL.revokeObjectURL(player.captionUrl);
-  if (!hasUsefulTiming()) return;
-  const stamp = (ms) => new Date(Math.max(0, ms)).toISOString().slice(11, 23);
-  const offset = player.media === player.video ? player.timelineStart * 1000 : 0;
-  const cues = currentMaterial.transcription.transcription_segments
-    .map(
-      (s) =>
-        `${stamp(s.start_ms + offset)} --> ${stamp(s.end_ms + offset)}\n${s.current_text.replaceAll('-->', '→').replaceAll('<', '‹')}\n`,
-    )
-    .join('\n');
-  player.captionUrl = URL.createObjectURL(new Blob(['WEBVTT\n\n' + cues], { type: 'text/vtt' }));
-  const track = document.createElement('track');
-  track.kind = 'captions';
-  track.srclang = 'pt';
-  track.label = 'Português';
-  track.src = player.captionUrl;
-  track.default = true;
-  player.video.append(track);
-}
 function renderPlayback(material, force = false) {
   const section = document.querySelector('[data-audio-section]');
-  const kind = document.querySelector('[data-playback-kind]');
   const audioAvailable = Boolean(material.signedAudioUrl);
   const videoAvailable = Boolean(material.signedVideoUrl && material.video);
-  document.querySelector('[data-playback-choice]').hidden = !(audioAvailable && videoAvailable);
-  kind.querySelector('[value="audio"]').disabled = !audioAvailable;
-  kind.querySelector('[value="video"]').disabled = !videoAvailable;
-  if (kind.value === 'video' && !videoAvailable) kind.value = 'audio';
-  if (!audioAvailable && videoAvailable) kind.value = 'video';
+  // Only offer a switch when both formats really exist.
+  playbackChoice.hidden = !(audioAvailable && videoAvailable);
+  $('[name="playback-kind"][value="audio"]').disabled = !audioAvailable;
+  $('[name="playback-kind"][value="video"]').disabled = !videoAvailable;
+  if (kindValue() === 'video' && !videoAvailable) setKind('audio');
+  if (!audioAvailable && videoAvailable) setKind('video');
   document.querySelector('[data-remove-video]').hidden = !videoAvailable;
   const originalLink = document.querySelector('[data-open-original-video]');
   originalLink.hidden = !videoAvailable;
@@ -363,8 +399,8 @@ function renderPlayback(material, force = false) {
     playbackIdentity = '';
     return;
   }
-  const video = kind.value === 'video';
-  const identity = `${materialId}:${kind.value}`;
+  const video = kindValue() === 'video';
+  const identity = `${materialId}:${kindValue()}`;
   if (!force && identity === playbackIdentity && player.source) return;
   stopTracking?.();
   stopTracking = null;
@@ -383,7 +419,8 @@ function renderPlayback(material, force = false) {
     preservePosition: Boolean(playbackIdentity),
   });
   playbackIdentity = identity;
-  installCaptions();
+  syncFullscreen();
+  captions.render();
   stopTracking = trackPlayback(player, materialId);
   if (!video) loadWaveform(material.signedAudioUrl, waveformController.signal).catch(() => {});
 }
@@ -413,9 +450,7 @@ async function renewPlayback({ automatic = false } = {}) {
     renewBusy = false;
   }
 }
-document
-  .querySelector('[data-playback-kind]')
-  .addEventListener('change', () => renderPlayback(currentMaterial));
+playbackChoice.addEventListener('change', () => renderPlayback(currentMaterial));
 document.querySelector('[data-remove-video]').addEventListener('click', async (event) => {
   if (!confirm('Remover o vídeo guardado desta aula?')) return;
   const button = event.currentTarget;
@@ -516,7 +551,7 @@ function render(material) {
       created_at: material.created_at,
     });
   else renderSegments(material.transcription);
-  installCaptions();
+  void loadCaptions(material);
   scientificReview.render(material);
   if (!materialToolsInitialized) {
     materialToolsInitialized = true;
@@ -772,8 +807,9 @@ window.addEventListener('pagehide', () => {
   stopTracking?.();
   transcriptPlayer.destroy();
   waveformController?.abort();
+  captions.destroy();
+  document.removeEventListener('fullscreenchange', syncFullscreen);
   player.destroy();
-  if (player.captionUrl) URL.revokeObjectURL(player.captionUrl);
 });
 await reload().catch((e) => {
   $('[data-material-title]').textContent = 'Não foi possível abrir a aula';

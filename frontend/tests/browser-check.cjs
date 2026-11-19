@@ -276,6 +276,27 @@ async function main() {
       m.signedVideoUrl = base + '/__fixture.mp4';
       return reply(m.video);
     }
+    if (p.endsWith('/captions')) {
+      // Mirrors the server rule: real word timings only while the current text is the ASR text.
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const segment = m.transcription.transcription_segments[0];
+      const asr = 'Um carro elétrico usa energia armazenada em baterias.';
+      const tokens = asr.split(' ');
+      return reply({
+        revision: m.transcription.current_revision,
+        granularity: segment.current_text === asr ? 'word' : 'segment',
+        words:
+          segment.current_text === asr
+            ? tokens.map((text, i) => ({
+                text,
+                startMs: Math.round((i * 1500) / tokens.length),
+                endMs: Math.round(((i + 1) * 1500) / tokens.length),
+                speaker: null,
+                segment: 0,
+              }))
+            : [],
+      });
+    }
     if (p.endsWith('/playback')) {
       const m = materials.find((item) => item.id === p.split('/')[3]);
       return reply({
@@ -844,6 +865,30 @@ async function main() {
       () => document.querySelector('[data-audio-player] audio')?.currentTime > 2.2,
     );
     assert.equal(await page.locator('[data-audio-player] audio').evaluate((a) => a.paused), true);
+    // Captions inside the audio player: word highlight from real timings, persisted preference.
+    const player = page.locator('[data-audio-player]');
+    await player.getByRole('button', { name: /^Legendas/ }).click();
+    await player.getByRole('radio', { name: 'Palavra a palavra' }).check();
+    const seekAudio = (t) =>
+      page.locator('[data-audio-player] audio').evaluate((a, time) => {
+        a.currentTime = time;
+        a.dispatchEvent(new Event('timeupdate'));
+      }, t);
+    await seekAudio(0.5);
+    await page.locator('.caption-band .caption-word.is-spoken').waitFor();
+    assert.equal(await page.locator('.caption-band .is-spoken').textContent(), 'elétrico');
+    assert.equal(await page.locator('.caption-band .caption-word').count(), 8);
+    await page.keyboard.press('Escape');
+    await screenshot(page, output, 'material-captions-audio.png');
+    await page.reload();
+    await page.locator('.caption-toggle[aria-pressed="true"]').waitFor();
+    await seekAudio(1.2);
+    await page.locator('.caption-band .is-spoken').waitFor();
+    assert.equal(await page.locator('.caption-band .is-spoken').textContent(), 'em');
+    await page.locator('.caption-toggle').click();
+    await player.getByRole('radio', { name: 'Desligadas' }).check();
+    assert.equal(await page.locator('.caption-band').isVisible(), false);
+    record('Legendas no player: destaque por palavra com tempos reais; preferência persiste');
     await page.goto(base + '/painel.html');
     await page.locator('[data-continue-list] .dashboard-lesson-card').first().waitFor();
     const storedState = await page.evaluate(async () => {
@@ -1500,7 +1545,22 @@ async function main() {
       1,
       'Playback speed remains inside the player; E07 format selector is outside',
     );
+    await page.locator('.caption-toggle').click();
+    await page.getByRole('radio', { name: 'Palavra a palavra' }).check();
+    await page.keyboard.press('Escape');
+    await page.locator('[data-audio-player] video').evaluate((v) => {
+      v.currentTime = v.currentTime + 0.4;
+      v.dispatchEvent(new Event('timeupdate'));
+    });
+    await page.locator('.video-preview .caption-line .caption-word').first().waitFor();
+    assert.equal(
+      await page.locator('.caption-band').isVisible(),
+      false,
+      'Video captions overlay the image',
+    );
     await screenshot(page, output, 'material-video-redesign.png');
+    await page.locator('.caption-toggle').click();
+    await page.getByRole('radio', { name: 'Desligadas' }).check();
     record('Escolha explícita de vídeo conserva MP4 e abre o player de vídeo');
     const videoMaterial = materials[0];
     jobPending = true;

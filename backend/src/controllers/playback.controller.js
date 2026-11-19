@@ -2,6 +2,7 @@ import { isFeatureEnabled } from '../config/feature-flags.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import { createAudioSignedUrl } from '../services/audio.service.js';
 import { videoService } from '../services/video.service.js';
+import { captionService } from '../services/caption.service.js';
 
 export async function playback(req, res, next) {
   try {
@@ -23,4 +24,10 @@ export async function attachVideo(req, res, next) {
 export async function removeVideo(req, res, next) {
   try { await videoService.remove(req.user.id, req.params.materialId); res.status(204).end(); }
   catch (error) { next(error); }
+}
+export async function captions(req, res, next) {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await captionService.captions(req.user.id, req.params.materialId));
+  } catch (error) { next(error); }
 }

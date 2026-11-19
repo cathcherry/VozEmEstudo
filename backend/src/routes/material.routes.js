@@ -15,6 +15,7 @@ materialRouter.patch('/:materialId', material.patch);
 materialRouter.delete('/:materialId', material.remove);
 materialRouter.post('/:materialId/process', material.processInitial);
 materialRouter.get('/:materialId/playback', playback.playback);
+materialRouter.get('/:materialId/captions', playback.captions);
 if (isFeatureEnabled('mp4_retention')) {
   materialRouter.post('/:materialId/video', playback.attachVideo);
   materialRouter.delete('/:materialId/video', playback.removeVideo);

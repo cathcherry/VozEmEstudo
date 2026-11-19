@@ -32,7 +32,7 @@
     "test:quiz-v2-ui": "node --test frontend/tests/quiz-v2-ui.test.mjs",
     "test:quiz-diagnostic-ui": "node --test frontend/tests/quiz-diagnostic-ui.test.mjs",
     "test:flashcards-ui": "node --test frontend/tests/flashcard-ui.test.mjs",
-    "test:player-v2": "node --test frontend/tests/player-v2.test.mjs",
+    "test:player-v2": "node --test frontend/tests/player-v2.test.mjs frontend/tests/captions.test.mjs",
     "test:study-tracking": "node --test frontend/tests/study-tracking.test.mjs frontend/tests/study-panel.test.mjs",
     "test:learning-tools": "node --test frontend/tests/learning-tools.test.mjs frontend/tests/learning-panels.test.mjs"
   },

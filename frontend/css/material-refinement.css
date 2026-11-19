@@ -620,3 +620,317 @@ body.app-page[data-page='material'] .material-study-tools .secondary-action {
   box-shadow: var(--ue-raised);
   font-size: 0.86rem;
 }
+
+/* ---------- Player da aula: áudio e vídeo com a mesma linguagem ---------- */
+body.app-page[data-page='material'] .material-recording .media-player {
+  --caption-size: 1.15rem;
+  padding: 16px 18px 14px;
+}
+body.app-page[data-page='material'] .media-player[data-caption-size='small'] {
+  --caption-size: 0.95rem;
+}
+body.app-page[data-page='material'] .media-player[data-caption-size='large'] {
+  --caption-size: 1.45rem;
+}
+body.app-page[data-page='material'] .material-recording .video-preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: min(62vh, 560px);
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  background: #0b0f16;
+}
+body.app-page[data-page='material'] .material-recording .video-preview video {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain; /* nunca esticar a imagem */
+}
+body.app-page[data-page='material'] .material-recording .waveform-shell {
+  border-radius: 10px;
+  box-shadow: var(--ue-recessed);
+}
+body.app-page[data-page='material'] .material-recording .player-controls {
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+body.app-page[data-page='material'] .material-recording .player-play {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--button-background) 85%, white),
+    var(--button-background)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 2px 6px -2px color-mix(in srgb, var(--button-background) 80%, transparent);
+}
+body.app-page[data-page='material'] .material-recording .player-time {
+  font-family: var(--ue-serif);
+  font-size: 0.84rem;
+}
+body.app-page[data-page='material'] .material-recording .player-speed {
+  margin-left: auto;
+}
+body.app-page[data-page='material'] .playback-kind {
+  display: inline-flex;
+  gap: 2px;
+  margin: 0;
+  padding: 2px;
+  border: 1px solid var(--border-light);
+  border-radius: 9px;
+  background: var(--surface-alt);
+  box-shadow: var(--ue-recessed);
+}
+body.app-page[data-page='material'] .playback-kind[hidden] {
+  display: none;
+}
+body.app-page[data-page='material'] .playback-kind label {
+  position: relative;
+  font-size: 0.8rem;
+}
+body.app-page[data-page='material'] .playback-kind input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+body.app-page[data-page='material'] .playback-kind span {
+  display: block;
+  padding: 4px 10px;
+  border-radius: 7px;
+  color: var(--muted);
+}
+body.app-page[data-page='material'] .playback-kind input:checked + span {
+  background: var(--surface);
+  box-shadow: var(--ue-raised);
+  color: var(--text);
+  font-weight: 600;
+}
+body.app-page[data-page='material'] .playback-kind input:focus-visible + span {
+  outline: 2px solid var(--accent);
+}
+body.app-page[data-page='material'] .player-fullscreen[hidden] {
+  display: none;
+}
+
+/* ---------- Legendas ---------- */
+.caption-control {
+  position: relative;
+}
+.player-controls .caption-toggle {
+  width: auto;
+  min-width: 34px;
+  padding: 0 6px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.player-controls .caption-toggle[aria-pressed='true'] {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+.caption-toggle:disabled {
+  opacity: 0.4;
+}
+.caption-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  gap: 10px;
+  width: max-content;
+  min-width: 13rem;
+  max-width: min(18rem, 80vw);
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--ue-raised);
+  font-size: 0.84rem;
+}
+.caption-menu[hidden] {
+  display: none;
+}
+.caption-menu fieldset {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.caption-menu legend {
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.caption-menu label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.caption-menu label:has(input:disabled) {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.caption-note {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+.caption-sizes {
+  display: inline-flex;
+  gap: 4px;
+}
+.caption-sizes button {
+  min-width: 34px;
+  min-height: 28px;
+  border: 1px solid var(--border-light);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--ue-serif);
+  cursor: pointer;
+}
+.caption-sizes button[aria-pressed='true'] {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+/* Vídeo: faixa sobre a imagem, perto da base. */
+.caption-layer {
+  position: absolute;
+  inset: auto 0 7% 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 6%;
+  pointer-events: none;
+}
+.caption-line {
+  max-width: 42ch;
+  margin: 0;
+  padding: 0.2em 0.6em;
+  border-radius: 6px;
+  background: rgb(8 12 20 / 0.74);
+  color: #fff;
+  font-size: var(--caption-size, 1.15rem);
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+}
+.caption-line:empty,
+.media-player[data-captions='off'] .caption-layer {
+  display: none;
+}
+/* Áudio: banda própria entre a onda e os controles. */
+.caption-band {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--caption-size, 1.15rem) * 2.9);
+  margin: 10px 0 0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: var(--surface-alt);
+  box-shadow: var(--ue-recessed);
+  color: var(--text);
+  font-family: var(--ue-serif);
+  font-size: var(--caption-size, 1.15rem);
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+}
+.media-player[data-captions='off'] .caption-band,
+.media-player:has(.video-preview:not([hidden])) .caption-band {
+  display: none;
+}
+.caption-speaker {
+  margin-right: 0.3em;
+  font-size: 0.8em;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.caption-word {
+  border-radius: 4px;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+.caption-word.is-spoken {
+  background: var(--accent-strong);
+  color: var(--accent-contrast, #fff);
+  box-shadow: 0 0 0 2px var(--accent-strong);
+}
+.caption-line .caption-word.is-spoken {
+  background: #ffd76a;
+  color: #10141c;
+  box-shadow: 0 0 0 2px #ffd76a;
+}
+.caption-band .caption-word.is-past {
+  color: var(--text);
+}
+.caption-band .caption-word:not(.is-past):not(.is-spoken) {
+  color: var(--muted);
+}
+[data-reduced-motion='true'] .caption-word,
+[data-low-stimulation='true'] .caption-word {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .caption-word {
+    transition: none;
+  }
+}
+
+/* Tela cheia: o player inteiro, com legendas e controles. */
+.media-player:fullscreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px 28px;
+  border: 0;
+  border-radius: 0;
+  background: #05070b;
+  color: #f2f4f8;
+  --caption-size: clamp(1.4rem, 2.6vw, 2.4rem);
+}
+.media-player:fullscreen .video-preview {
+  flex: 1 1 auto;
+  max-height: none;
+  aspect-ratio: auto;
+  margin-bottom: 12px;
+}
+.media-player:fullscreen :is(.player-time, .player-icon, .player-speed select) {
+  color: #f2f4f8;
+}
+body.app-page[data-page='material']
+  .transcription-segment.is-playing
+  .segment-timestamp:not(:disabled) {
+  color: var(--text);
+  font-weight: 600;
+}
+body.app-page[data-page='material'] .material-recording .media-player {
+  overflow: visible;
+}
+body.app-page[data-page='material'] .material-recording .video-preview {
+  overflow: hidden;
+}
+@media (max-width: 640px) {
+  /* Em telas estreitas o menu de legendas vira uma folha inferior, sempre dentro da tela. */
+  .caption-menu {
+    position: fixed;
+    inset: auto 12px calc(12px + env(safe-area-inset-bottom)) 12px;
+    width: auto;
+    max-width: none;
+  }
+}
+.caption-band-text {
+  max-width: 46ch;
+  margin: 0;
+}
