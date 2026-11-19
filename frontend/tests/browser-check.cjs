@@ -831,6 +831,8 @@ async function main() {
     await screenshot(page, output, 'material-summary-redesign.png');
     assert.equal(await page.locator('[data-summary-text] strong').textContent(), 'Conceito');
     assert.equal(await page.locator('[data-summary-text] li').count(), 2);
+    assert(await page.getByRole('button', { name: 'Ouvir resumo', exact: true }).isVisible());
+    assert(await page.getByRole('button', { name: 'Parar', exact: true }).isHidden());
     await page.locator('[data-regenerate-summary]').click();
     await page.locator('[data-summary-form] [name=format]').selectOption('bullets');
     await page.locator('[data-summary-form] [name=length]').selectOption('brief');

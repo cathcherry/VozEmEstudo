@@ -796,3 +796,13 @@ html[data-reading-ruler='focus'] :is(.markdown-content, .reading-preview-text):i
 }
 html[data-reading-ruler='focus'] :is(.transcription-segment, .markdown-content > *, .reading-preview-text > *) { transition: opacity 0.15s ease; }
 [data-reduced-motion='true'] :is(.transcription-segment, .markdown-content > *, .reading-preview-text > *) { transition: none; }
+
+/* Leitura em voz alta (js/utils/speech.js): bloco sendo lido. */
+.speak-controls { display: inline-flex; align-items: center; gap: 8px; }
+.speak-controls[hidden] { display: none; }
+.speak-stop[hidden] { display: none; }
+.is-speaking {
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-soft) 85%, transparent);
+}

@@ -1,3 +1,4 @@
+import { speakControls, speechLang } from '../utils/speech.js';
 import {
   createQuizSession, getQuizSession, submitQuizAnswer, finishQuizSession,
   listQuizSessions,
@@ -14,6 +15,7 @@ function el(tag, text, className) {
 }
 
 export async function runQuizV2({ main, material, materialId, batch, sessionId: resumedSessionId }) {
+  let currentListen = null;
   main.dataset.quizV2 = 'true';
   const returnLink = `./material.html?id=${encodeURIComponent(materialId)}#questoes`;
   if (!batch?.questions?.length && !resumedSessionId) {
@@ -142,6 +144,18 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     const label = el('span', 'Questão de múltipla escolha', 'eyebrow');
     const heading = el('h1', question.statement);
     heading.tabIndex = -1;
+    currentListen?.speaker.stop();
+    currentListen = speakControls({
+      blocks: () => [
+        { element: heading, text: question.statement },
+        ...[...card.querySelectorAll('.quiz-answer-card')].map((option, n) => ({
+          element: option,
+          text: `Alternativa ${String.fromCharCode(65 + n)}. ${question.options[n]}`,
+        })),
+      ],
+      lang: () => speechLang(material.transcription?.language),
+      label: 'Ouvir questão',
+    });
     const form = el('form');
     const fieldset = el('fieldset', null, 'quiz-alternatives');
     fieldset.setAttribute('aria-label', 'Alternativas da questão');
@@ -187,7 +201,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     action.type = 'submit';
     nav.append(previous, action);
     form.append(fieldset, feedback, nav);
-    card.append(label, heading, form);
+    card.append(label, heading, ...(currentListen ? [currentListen.element] : []), form);
     main.replaceChildren(progressSection);
     main.append(card);
     if (finished) {

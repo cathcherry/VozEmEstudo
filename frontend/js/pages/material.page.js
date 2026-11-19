@@ -16,6 +16,7 @@ import { MediaPlayer } from '../utils/media-player.js';
 import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, getCaptions, removeOriginalVideo } from '../api/playback.api.js';
 import { PlayerCaptions } from '../utils/captions.js';
+import { speakControls, speechLang } from '../utils/speech.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
@@ -103,6 +104,21 @@ async function loadCaptions(material) {
     /* Without the endpoint or data, segment captions remain available. */
   }
 }
+// Read-aloud with the browser's own voices, in the language recognized for this recording.
+const lessonLang = () => speechLang(currentMaterial?.transcription?.language);
+const readBlocks = (container) =>
+  [...container.children].flatMap((el) =>
+    el.matches('ul, ol')
+      ? [...el.children].map((li) => ({ element: li, text: li.textContent }))
+      : [{ element: el, text: el.textContent }],
+  );
+const summarySpeech = speakControls({
+  blocks: () => readBlocks($('[data-summary-text]')),
+  lang: lessonLang,
+  label: 'Ouvir resumo',
+});
+if (summarySpeech)
+  $('[data-summary-section] .panel-toolbar-actions').prepend(summarySpeech.element);
 const segmentsContainer = $('[data-transcription-segments]');
 const transcriptMessage = $('[data-transcription-message]');
 const transcriptPlayer = initTranscriptPlayer({
@@ -509,8 +525,10 @@ $('[data-retry-media]').addEventListener('click', () => {
   void renewPlayback();
 });
 function renderSummary(summary) {
+  summarySpeech?.speaker.stop();
   renderMarkdown($('[data-summary-text]'), summary?.text || '');
   $('[data-summary-text]').hidden = !summary;
+  if (summarySpeech) summarySpeech.element.hidden = !summary;
   $('[data-summary-meta]').textContent = summary
     ? [
         `Versão ${summary.version}`,
@@ -639,6 +657,18 @@ function renderQuestionBatches(batches) {
         : 'Responder de novo';
     link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
     head.append(title, meta, link);
+    const listen = questions.length
+      ? speakControls({
+          blocks: () =>
+            [...card.querySelectorAll('.question-list li')].map((li, n) => ({
+              element: li,
+              text: `Questão ${n + 1}. ${li.querySelector('span').textContent}`,
+            })),
+          lang: lessonLang,
+          label: 'Ouvir questões',
+        })
+      : null;
+    if (listen) head.append(listen.element);
     const progress = document.createElement('div');
     progress.className = 'question-batch-progress';
     progress.setAttribute('aria-hidden', 'true');

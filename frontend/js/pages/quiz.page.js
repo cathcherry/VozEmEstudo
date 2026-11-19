@@ -5,6 +5,7 @@ import { recordAnswer, visitMaterial } from '../utils/study-store.js';
 import { emptyState } from '../utils/material-ui.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { runQuizV2 } from './quiz-v2.page.js';
+import { speakControls, speechLang } from '../utils/speech.js';
 
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search);
@@ -36,8 +37,21 @@ if (await isFeatureEnabled('quiz_v2')) {
   const previousButton = document.querySelector('[data-previous-question]');
   const message = document.querySelector('[data-quiz-message]');
   title.textContent = material.title;
+  const listen = speakControls({
+    blocks: () => [
+      { element: statement, text: statement.textContent },
+      ...[...alternatives.querySelectorAll('label')].map((label) => ({
+        element: label,
+        text: `Alternativa ${label.querySelector('.quiz-answer-letter').textContent}. ${label.querySelector('.quiz-answer-text').textContent}`,
+      })),
+    ],
+    lang: () => speechLang(material.transcription?.language),
+    label: 'Ouvir questão',
+  });
+  if (listen) statement.after(listen.element);
 
   function render() {
+    listen?.speaker.stop();
     const question = questions[current];
     progressText.textContent = `Questão ${current + 1} de ${questions.length}`;
     progressBar.style.width = `${((current + 1) / questions.length) * 100}%`;
