@@ -245,3 +245,10 @@ test('flashcard CSV: documented header, RFC 4180 quoting, UTF-8 BOM and formula 
   assert.equal(csvCell('-2'), `"'-2"`);
   assert(csv.endsWith('\r\n'));
 });
+
+test('an unconfirmed revision is never exported as the transcription', () => {
+  const pending = { ...material, review: { state: 'awaiting_review' } };
+  const md = toMarkdown(buildStudyDocument(pending, { transcript: true, summary }));
+  assert.doesNotMatch(md, /## Transcrição|Primeiro <b>trecho/);
+  assert.match(md, /## Resumo/);
+});

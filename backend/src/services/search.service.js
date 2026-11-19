@@ -39,6 +39,20 @@ export const validateSearch = (query) =>
     .strict()
     .parse(query);
 
+/**
+ * Runs `build(chunk)` for groups of ids and merges the rows. PostgREST puts `.in()` lists in the
+ * URL, so a large library must not send hundreds of UUIDs in one request.
+ */
+export async function inChunks(ids, build, size = 100) {
+  const rows = [];
+  for (let start = 0; start < ids.length; start += size) {
+    const { data, error } = await build(ids.slice(start, start + size));
+    if (error) throw error;
+    rows.push(...(data || []));
+  }
+  return rows;
+}
+
 const LIMITS = { lessons: 50, questions: 50, transcripts: 60, perLesson: 5, scan: 600 };
 
 export function buildSearchService(db = getAdminSupabase) {
@@ -69,23 +83,25 @@ export function buildSearchService(db = getAdminSupabase) {
         }));
 
     if (scope === 'all' || scope === 'questions') {
-      const { data: batches, error: batchError } = await client
-        .from('question_batches')
-        .select('id,material_id,created_at')
-        .in('material_id', ids);
-      if (batchError) throw batchError;
+      const batches = await inChunks(ids, (chunk) =>
+        client
+          .from('question_batches')
+          .select('id,material_id,created_at')
+          .in('material_id', chunk),
+      );
       const ownedBatches = new Map(
         (batches || []).filter((b) => owned.has(b.material_id)).map((b) => [b.id, b]),
       );
       if (ownedBatches.size) {
         // Only statements are selected: the answer key never leaves the database here.
-        const { data: questions, error: questionError } = await client
-          .from('questions')
-          .select('id,batch_id,position,statement')
-          .in('batch_id', [...ownedBatches.keys()])
-          .ilike('statement', likePattern(q))
-          .limit(LIMITS.scan);
-        if (questionError) throw questionError;
+        const questions = await inChunks([...ownedBatches.keys()], (chunk) =>
+          client
+            .from('questions')
+            .select('id,batch_id,position,statement')
+            .in('batch_id', chunk)
+            .ilike('statement', likePattern(q))
+            .limit(LIMITS.scan),
+        );
         result.questions = (questions || [])
           .filter((question) => ownedBatches.has(question.batch_id) && includes(question.statement))
           .slice(0, LIMITS.questions)
@@ -105,24 +121,23 @@ export function buildSearchService(db = getAdminSupabase) {
     }
 
     if (scope === 'all' || scope === 'transcripts') {
-      const { data: transcriptions, error: transcriptionError } = await client
-        .from('transcriptions')
-        .select('id,material_id')
-        .in('material_id', ids);
-      if (transcriptionError) throw transcriptionError;
+      const transcriptions = await inChunks(ids, (chunk) =>
+        client.from('transcriptions').select('id,material_id').in('material_id', chunk),
+      );
       const ownedTranscriptions = new Map(
         (transcriptions || [])
           .filter((t) => owned.has(t.material_id))
           .map((t) => [t.id, t.material_id]),
       );
       if (ownedTranscriptions.size) {
-        const { data: segments, error: segmentError } = await client
-          .from('transcription_segments')
-          .select('transcription_id,position,start_ms,end_ms,current_text')
-          .in('transcription_id', [...ownedTranscriptions.keys()])
-          .ilike('current_text', likePattern(q))
-          .limit(LIMITS.scan);
-        if (segmentError) throw segmentError;
+        const segments = await inChunks([...ownedTranscriptions.keys()], (chunk) =>
+          client
+            .from('transcription_segments')
+            .select('transcription_id,position,start_ms,end_ms,current_text')
+            .in('transcription_id', chunk)
+            .ilike('current_text', likePattern(q))
+            .limit(LIMITS.scan),
+        );
         const byLesson = new Map();
         for (const segment of segments || []) {
           const materialId = ownedTranscriptions.get(segment.transcription_id);

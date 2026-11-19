@@ -102,8 +102,11 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
     const current = material();
     message.textContent = '';
     title.textContent = listId ? `Exportar lista — ${listLabel}` : 'Exportar';
-    form.elements.transcript.checked = !listId && Boolean(current.transcription);
-    form.elements.transcript.disabled = !current.transcription;
+    // Only a confirmed revision is exported; a revision awaiting review is never in the file.
+    const confirmed = Boolean(current.transcription) && current.review?.state === 'ready_to_generate';
+    form.elements.transcript.checked = !listId && confirmed;
+    form.elements.transcript.disabled = !confirmed;
+    dialog.querySelector('[data-export-unconfirmed]').hidden = confirmed || !current.transcription;
     form.elements.summary.checked = !listId && Boolean(current.summaries?.length);
     form.elements.notes.checked = false;
     form.elements.notes.disabled = !notesAvailable();

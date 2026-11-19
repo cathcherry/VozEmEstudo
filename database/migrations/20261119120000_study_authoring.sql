@@ -1,7 +1,9 @@
 -- Study authoring: named summary versions, named question lists with custom counts and
--- read-only question-list shares. MIGRATION CANDIDATE, NOT APPLIED.
--- Apply only with backup, database/checks/authoring-preflight.sql, explicit approval and the
--- correct environment. Then enable FEATURE_STUDY_AUTHORING. Requires E02 only (not E05).
+-- read-only question-list shares.
+-- APPLIED to the Supabase project "audioestudo" on 2026-11-19 (history name: study_authoring).
+-- Re-running is refused by the guard below. For another environment: backup, run
+-- database/checks/authoring-preflight.sql, get explicit approval, then enable
+-- FEATURE_STUDY_AUTHORING. Requires E02 only (not E05).
 --
 -- Additive: nullable/defaulted columns, new functions and one new table. Existing functions are
 -- not replaced. The single constraint change WIDENS question_batches.requested_count from

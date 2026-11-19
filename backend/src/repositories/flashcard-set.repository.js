@@ -64,21 +64,26 @@ export async function listSets(userId, materialId) {
   if (materialId) query = query.eq('material_id', materialId);
   const { data: sets, error } = await query;
   assertDb(error);
-  const { data: cards, error: cardsError } = await db()
-    .from('study_flashcards')
-    .select('id,set_id,status,due_at')
-    .eq('user_id', userId);
-  assertDb(cardsError);
+  // Counted per set: one query over all of the user's cards would be cut at PostgREST's row
+  // limit (1000). A set holds at most 500 cards (database rule), so each query is complete.
   const now = Date.now();
-  return (sets || []).map((set) => {
-    const own = (cards || []).filter((card) => card.set_id === set.id);
-    return {
-      ...set,
-      card_count: own.length,
-      due_count: own.filter((card) => card.status === 'active' && Date.parse(card.due_at) <= now)
-        .length,
-    };
-  });
+  return Promise.all(
+    (sets || []).map(async (set) => {
+      const { data: cards, error: cardsError } = await db()
+        .from('study_flashcards')
+        .select('id,status,due_at')
+        .eq('user_id', userId)
+        .eq('set_id', set.id);
+      assertDb(cardsError);
+      const own = cards || [];
+      return {
+        ...set,
+        card_count: own.length,
+        due_count: own.filter((card) => card.status === 'active' && Date.parse(card.due_at) <= now)
+          .length,
+      };
+    }),
+  );
 }
 
 export async function getSet(userId, setId) {

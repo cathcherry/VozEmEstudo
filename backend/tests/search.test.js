@@ -11,7 +11,7 @@ Object.assign(process.env, {
   SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_search_fixture',
   SUPABASE_SECRET_KEY: 'search-fixture-server-key',
 });
-const { likePattern, snippet, validateSearch, fold } =
+const { likePattern, snippet, validateSearch, fold, inChunks } =
   await import('../src/services/search.service.js');
 
 test('search helpers: accent-insensitive pattern, escaped wildcards, bounded snippets', () => {
@@ -100,4 +100,20 @@ test('GET /api/search finds own lessons, questions and transcripts only', async 
     await fixture.close();
     globalThis.fetch = nativeFetch;
   }
+});
+
+test('large libraries query ids in chunks of 100 and stop on errors', async () => {
+  const ids = Array.from({ length: 250 }, (_, i) => `id-${i}`);
+  const seen = [];
+  const rows = await inChunks(ids, async (chunk) => {
+    seen.push(chunk.length);
+    return { data: chunk.map((id) => ({ id })) };
+  });
+  assert.deepEqual(seen, [100, 100, 50]);
+  assert.equal(rows.length, 250);
+  assert.deepEqual(await inChunks([], async () => assert.fail('no request for an empty list')), []);
+  await assert.rejects(
+    inChunks(ids, async () => ({ error: new Error('boom') })),
+    /boom/,
+  );
 });

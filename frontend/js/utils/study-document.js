@@ -23,7 +23,8 @@ export function buildStudyDocument(material, options = {}) {
   } = options;
   const sections = [];
   const transcription = material.transcription;
-  if (transcript && transcription) {
+  // Only the confirmed revision is exported as "Transcrição".
+  if (transcript && transcription && material.review?.state === 'ready_to_generate') {
     const confirmed = material.review?.state === 'ready_to_generate';
     const segments = [...(transcription.transcription_segments || [])].sort(
       (a, b) => (a.position ?? 0) - (b.position ?? 0),

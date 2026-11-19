@@ -7,6 +7,7 @@ import { getAnswerKey, listBatches, renameQuestionList } from '../repositories/q
 import { hasOpenDeferredAttempt } from '../repositories/quiz-session.repository.js';
 import { enqueueQuestions } from '../services/material.service.js';
 import { answerQuestion } from '../services/question.service.js';
+import { QUESTION_COUNTS } from '../config/constants.js';
 import {
   assertListQuestionCount,
   validateListTitle,
@@ -29,8 +30,10 @@ export async function createBatch(req, res, next) {
     const count = assertListQuestionCount(req.body?.count, { custom, max: env.maxQuestionListCount });
     // List configs need the authoring migration (partial lists, names, metadata). Without the flag
     // the request keeps the original E02 behaviour and shape, whatever the client sent.
-    const config =
+    let config =
       custom && req.body?.config !== undefined ? validateQuestionConfig(req.body.config) : undefined;
+    // Only presets can use the original batch path; a custom count always needs the list pipeline.
+    if (custom && !config && !QUESTION_COUNTS.includes(count)) config = validateQuestionConfig({});
     const job = await enqueueQuestions(
       req.user.id,
       req.params.materialId,

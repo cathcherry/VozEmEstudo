@@ -165,6 +165,21 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
           .status,
         404,
       );
+      // A custom count sent without a config (e.g. an older client) gets the list pipeline.
+      const bare = await post({ count: 7 });
+      assert.equal(bare.status, 202);
+      const bareJob = fixture.state.tables.processing_jobs.find(
+        (row) => row.id === bare.body.jobId,
+      );
+      assert.equal(bareJob.params.count, 7);
+      assert.deepEqual(bareJob.params.config.difficulties, ['basic', 'intermediate']);
+      // The two-sentence lesson is already covered by the list above, so the planned pipeline
+      // may refuse to repeat it; what matters is that it is not the legacy preset failure.
+      await runJob(bare.body.jobId).catch((error) =>
+        assert.notEqual(error.code, 'INVALID_QUESTION_COUNT'),
+      );
+      const after = fixture.state.tables.processing_jobs.find((row) => row.id === bare.body.jobId);
+      assert.notEqual(after.error_code, 'INVALID_QUESTION_COUNT');
       // Presets without a config still use the original batch path.
       const legacy = await post({ count: 3 });
       await runJob(legacy.body.jobId);

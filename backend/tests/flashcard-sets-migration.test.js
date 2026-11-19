@@ -126,6 +126,9 @@ test('sets: atomic creation, dedupe, ownership, archive, delete and preserved hi
 
     const reviewed = rows[0].id;
     await call('study_review_flashcard_admin', [a, reviewed, 3, randomUUID()]);
+    // A card archived on its own must stay archived when the set is archived and restored.
+    const alone = rows[1].id;
+    await db.query("update public.study_flashcards set status = 'archived' where id = $1", [alone]);
     const archived = await call('study_update_flashcard_set_admin', [a, setId, null, 'archived']);
     assert.equal(archived.status, 'archived');
     assert.deepEqual(
@@ -141,6 +144,16 @@ test('sets: atomic creation, dedupe, ownership, archive, delete and preserved hi
       /FLASHCARD_ARCHIVED/,
     );
     await call('study_update_flashcard_set_admin', [a, setId, ' Física — revisão ', 'active']);
+    assert.equal(
+      (await db.query('select status from public.study_flashcards where id = $1', [reviewed]))
+        .rows[0].status,
+      'active',
+    );
+    assert.equal(
+      (await db.query('select status from public.study_flashcards where id = $1', [alone])).rows[0]
+        .status,
+      'archived',
+    );
     assert.equal(
       (await db.query('select name from public.study_flashcard_sets where id=$1', [setId])).rows[0]
         .name,

@@ -45,6 +45,8 @@ alter table public.study_flashcards
   add column source_segments jsonb not null default '[]'::jsonb check (jsonb_typeof(source_segments) = 'array'),
   add column card_style text check (card_style is null or card_style in ('question_answer', 'term_definition', 'concise_explanation')),
   add column difficulty text check (difficulty is null or difficulty in ('basic', 'intermediate', 'advanced')),
+  -- Marks cards archived together with their set, so restoring the set restores only those.
+  add column archived_by_set boolean not null default false,
   add column focus text check (focus is null or focus in ('definitions', 'facts', 'concepts', 'processes', 'comparisons', 'application', 'cause_effect')),
   -- Deleting a set (explicit, confirmed in the interface) removes its cards and their history.
   add constraint study_flashcards_set_owner_fk foreign key (set_id, user_id)
@@ -116,8 +118,9 @@ begin
   return to_jsonb(v_set) || jsonb_build_object('added', v_added, 'replayed', false);
 end $$;
 
--- Rename and archive/restore. Archiving a set takes its cards out of the review queue; restoring
--- brings them back. Schedules and review history are kept.
+-- Rename and archive/restore. Archiving a set takes its active cards out of the review queue;
+-- restoring brings back only those cards (a card archived on its own stays archived). Schedules and
+-- review history are kept.
 create function public.study_update_flashcard_set_admin(p_user_id uuid, p_set_id uuid, p_name text, p_status text)
 returns jsonb language plpgsql security invoker set search_path = '' as $$
 declare v_set public.study_flashcard_sets;
@@ -127,8 +130,12 @@ begin
   update public.study_flashcard_sets set name = coalesce(btrim(p_name), name), status = coalesce(p_status, status)
     where id = p_set_id and user_id = p_user_id returning * into v_set;
   if not found then raise exception 'FLASHCARD_NOT_FOUND'; end if;
-  if p_status is not null then
-    update public.study_flashcards set status = p_status where set_id = p_set_id and user_id = p_user_id;
+  if p_status = 'archived' then
+    update public.study_flashcards set status = 'archived', archived_by_set = true
+      where set_id = p_set_id and user_id = p_user_id and status = 'active';
+  elsif p_status = 'active' then
+    update public.study_flashcards set status = 'active', archived_by_set = false
+      where set_id = p_set_id and user_id = p_user_id and archived_by_set;
   end if;
   return to_jsonb(v_set);
 end $$;
