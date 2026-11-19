@@ -1,5 +1,7 @@
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { AppError, errors } from '../domain/errors.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
+import { SET_CARD_FIELDS } from './flashcard-set.repository.js';
 
 const cardFields = 'id,material_id,front_text,back_text,status,due_at,interval_days,repetitions,ease_factor,last_reviewed_at,created_at,updated_at';
 const historyFields = 'id,card_id,rating,interval_days,repetitions,ease_factor,due_at,reviewed_at';
@@ -25,12 +27,13 @@ function assertDb(error) {
 }
 
 export function buildFlashcardListQuery(db, userId, filter, options = {}, now = new Date()) {
-  const { offset = 0, materialId, status = 'all' } = options;
+  const { offset = 0, materialId, status = 'all', setId, fields = cardFields } = options;
   let query = db.from('study_flashcards')
-    .select(cardFields, { count: 'exact' })
+    .select(fields, { count: 'exact' })
     .eq('user_id', userId)
     .range(offset, offset + PAGE_LIMIT - 1);
   if (materialId) query = query.eq('material_id', materialId);
+  if (setId) query = query.eq('set_id', setId);
   if (filter === 'due') {
     query = query.eq('status', 'active').lte('due_at', now.toISOString())
       .order('due_at', { ascending: true }).order('id', { ascending: true });
@@ -43,7 +46,13 @@ export function buildFlashcardListQuery(db, userId, filter, options = {}, now = 
 }
 
 export async function listOwnedFlashcards(userId, filter, options = {}) {
-  const query = buildFlashcardListQuery(getAdminSupabase(), userId, filter, options);
+  // Set fields exist only after the flashcard-sets migration (FEATURE_FLASHCARD_SETS).
+  const sets = isFeatureEnabled('flashcard_sets');
+  const query = buildFlashcardListQuery(getAdminSupabase(), userId, filter, {
+    ...options,
+    setId: sets ? options.setId : undefined,
+    fields: sets ? SET_CARD_FIELDS : cardFields,
+  });
   const { data, count, error } = await query;
   assertDb(error);
   return { cards: data || [], total: count || 0, limit: PAGE_LIMIT, offset: options.offset || 0 };

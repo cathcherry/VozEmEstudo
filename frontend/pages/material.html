@@ -21,7 +21,8 @@
     <link rel="stylesheet" href="/css/learning-tools.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
     <script defer src="/js/utils/card-motion.js"></script>
-  <link rel="stylesheet" href="/css/material-refinement.css"></head>
+  <link rel="stylesheet" href="/css/material-refinement.css">
+  <link rel="stylesheet" href="/css/study-authoring.css"></head>
   <body class="app-page" data-page="material">
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
     <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo">
@@ -264,13 +265,18 @@
       >
         <h2 class="sr-only">Resumo</h2>
         <div class="panel-toolbar">
-          <p class="panel-meta" data-summary-meta></p>
+          <div class="panel-heading">
+            <h3 class="panel-title" data-summary-name hidden></h3>
+            <p class="panel-meta" data-summary-meta></p>
+          </div>
           <div class="panel-toolbar-actions">
             <details class="version-menu" data-summary-history hidden>
               <summary>Versões</summary>
               <div data-summary-version-list></div>
             </details>
-            <button class="secondary-action" data-regenerate-summary type="button">
+            <button class="text-action" type="button" data-rename-summary hidden>Renomear</button
+            ><button class="text-action" type="button" data-open-flashcards hidden>Criar flashcards</button
+            ><button class="secondary-action" data-regenerate-summary type="button">
               Gerar resumo
             </button>
           </div>
@@ -290,7 +296,7 @@
         <div class="panel-toolbar">
           <p class="panel-meta" data-questions-meta></p>
           <div class="panel-toolbar-actions">
-            <button class="secondary-action" type="button" data-open-questions>Gerar questões</button>
+            <button class="secondary-action" type="button" data-open-questions>Gerar lista</button>
           </div>
         </div>
         <p data-more-questions-message role="status" aria-live="polite"></p>
@@ -302,51 +308,305 @@
         </button>
         <p data-review-message role="status"></p>
       </div>
-      <dialog class="workflow-dialog" data-summary-dialog aria-labelledby="summary-dialog-title">
+      <dialog
+        class="workflow-dialog authoring-dialog"
+        data-summary-dialog
+        aria-labelledby="summary-dialog-title"
+      >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="summary-dialog-title">Personalizar resumo</h2>
+        <h2 id="summary-dialog-title">Gerar resumo</h2>
+        <p class="dialog-lead">
+          Usa somente a revisão confirmada da transcrição. Versões anteriores continuam salvas.
+        </p>
         <form data-summary-form>
           <label
-            >Formato<select name="format">
-              <option value="paragraphs">Parágrafos</option>
-              <option value="bullets">Tópicos</option>
-            </select></label
-          ><label
-            >Extensão<select name="length">
-              <option value="brief">Breve</option>
-              <option value="intermediate" selected>Intermediário</option>
-              <option value="detailed">Detalhado</option>
-            </select></label
-          ><label
+            >Nome da versão <span class="optional-hint">(opcional)</span
+            ><input name="label" maxlength="120" placeholder="Ex.: Revisão para a prova"
+          /></label>
+          <div class="authoring-grid">
+            <label
+              >Formato<select name="format">
+                <option value="paragraphs">Narrativo</option>
+                <option value="structured">Anotações com títulos</option>
+                <option value="bullets">Tópicos</option>
+                <option value="definitions">Definições e conceitos-chave</option>
+                <option value="comparative">Comparativo</option>
+                <option value="chronological">Cronológico, quando houver datas</option>
+                <option value="cause_effect">Causa e efeito, quando houver</option>
+              </select></label
+            ><label
+              >Extensão<select name="length">
+                <option value="brief">Breve</option>
+                <option value="intermediate" selected>Padrão</option>
+                <option value="detailed">Detalhado</option>
+              </select></label
+            >
+          </div>
+          <label
             >Linguagem<select name="readingLevel">
               <option value="">Padrão</option>
               <option value="simple">Simples, com glossário</option>
             </select></label
-          ><button class="primary-action" type="submit">Gerar resumo</button>
+          >
+          <details class="advanced-options" data-summary-advanced>
+            <summary>Opções avançadas</summary>
+            <fieldset class="choice-grid">
+              <legend>Dar prioridade a</legend>
+              <label><input type="checkbox" name="focus" value="concepts" /> Conceitos essenciais</label>
+              <label><input type="checkbox" name="focus" value="terminology" /> Definições e terminologia</label>
+              <label><input type="checkbox" name="focus" value="processes" /> Processos e mecanismos</label>
+              <label><input type="checkbox" name="focus" value="causes" /> Causas e consequências</label>
+              <label><input type="checkbox" name="focus" value="comparisons" /> Comparações</label>
+              <label><input type="checkbox" name="focus" value="dates" /> Datas e eventos, quando houver</label>
+              <label><input type="checkbox" name="focus" value="examples" /> Exemplos da aula</label>
+              <label><input type="checkbox" name="focus" value="arguments" /> Argumentos e conclusões</label>
+              <label><input type="checkbox" name="focus" value="exam" /> Preparação para prova</label>
+            </fieldset>
+            <p class="field-note">
+              Focos sem conteúdo na aula são omitidos; nada é completado com informação externa.
+            </p>
+          </details>
+          <button class="primary-action" type="submit">Gerar resumo</button>
+        </form>
+      </dialog>
+      <dialog class="workflow-dialog compact-dialog" data-rename-dialog aria-labelledby="rename-dialog-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="rename-dialog-title">Renomear</h2>
+        <form data-rename-form>
+          <label for="rename-field" data-rename-label>Nome<input id="rename-field" name="name" maxlength="160" /></label>
+          <p data-rename-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Salvar nome</button>
         </form>
       </dialog>
       <dialog
-        class="workflow-dialog"
+        class="workflow-dialog authoring-dialog"
         data-questions-dialog
         aria-labelledby="questions-dialog-title"
       >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="questions-dialog-title">Gerar questões</h2>
-        <form data-more-questions-form>
-          <label for="more-question-count"
-            >Quantidade<select id="more-question-count">
-              <option value="3">3 questões</option>
-              <option selected value="5">5 questões</option>
-              <option value="10">10 questões</option>
-              <option value="20">20 questões</option>
-            </select></label
-          ><button class="primary-action" type="submit">Gerar questões</button>
+        <h2 id="questions-dialog-title">Gerar lista de questões</h2>
+        <p class="dialog-lead">
+          Múltipla escolha com uma alternativa correta, baseada na revisão confirmada. Listas
+          anteriores e suas tentativas continuam salvas.
+        </p>
+        <form data-more-questions-form novalidate>
+          <label data-authoring-only
+            >Nome da lista
+            <input
+              name="title"
+              maxlength="160"
+              placeholder="Ex.: História do Brasil — Conceitos básicos"
+          /></label>
+          <div class="count-label">
+            <span id="question-count-label">Quantidade</span
+            ><button
+              type="button"
+              class="info-toggle"
+              data-count-info
+              aria-expanded="false"
+              aria-controls="count-recommendation"
+              aria-label="Ver recomendação de quantidade"
+              title="Recomendação de quantidade"
+            >
+              i
+            </button>
+          </div>
+          <div class="count-recommendation" id="count-recommendation" data-count-recommendation hidden></div>
+          <div class="count-fields">
+            <label for="more-question-count"
+              ><span class="sr-only">Quantidade de questões</span
+              ><select id="more-question-count" aria-describedby="question-count-label">
+                <option value="3">3 questões</option>
+                <option selected value="5">5 questões</option>
+                <option value="10">10 questões</option>
+                <option value="20">20 questões</option>
+                <option value="custom" data-authoring-only>Outra quantidade…</option>
+              </select></label
+            ><label for="custom-question-count" data-custom-count hidden
+              ><span class="sr-only">Quantidade personalizada</span
+              ><input id="custom-question-count" name="customCount" type="number" min="1" max="40" step="1" inputmode="numeric"
+            /></label>
+          </div>
+          <fieldset class="choice-row" data-authoring-only>
+            <legend>Dificuldade</legend>
+            <label><input type="checkbox" name="difficulty" value="basic" checked /> Básico</label>
+            <label><input type="checkbox" name="difficulty" value="intermediate" checked /> Intermediário</label>
+            <label><input type="checkbox" name="difficulty" value="advanced" /> Avançado</label>
+          </fieldset>
+          <fieldset class="choice-grid" data-authoring-only>
+            <legend>Habilidades cognitivas</legend>
+            <label><input type="checkbox" name="skill" value="recall" checked /> Recordação</label>
+            <label><input type="checkbox" name="skill" value="understanding" checked /> Compreensão conceitual</label>
+            <label><input type="checkbox" name="skill" value="interpretation" /> Interpretação</label>
+            <label><input type="checkbox" name="skill" value="application" /> Aplicação</label>
+            <label><input type="checkbox" name="skill" value="analysis" /> Análise e comparação</label>
+            <label><input type="checkbox" name="skill" value="cause_effect" /> Causa e efeito</label>
+            <label><input type="checkbox" name="skill" value="evaluation" /> Avaliação crítica, quando a aula sustentar</label>
+            <label><input type="checkbox" name="skill" value="synthesis" /> Síntese, quando a aula sustentar</label>
+          </fieldset>
+          <p class="field-note" data-authoring-only>
+            Cada questão continua com uma única alternativa correta; as habilidades definem o tipo
+            de raciocínio pedido.
+          </p>
+          <details class="advanced-options" data-questions-advanced data-authoring-only>
+            <summary>Opções avançadas</summary>
+            <label
+              >Foco temático <span class="optional-hint">(opcional)</span
+              ><input name="topicFocus" maxlength="300" placeholder="Ex.: causas da Independência"
+            /></label>
+            <p class="field-note">
+              <strong>Formato:</strong> múltipla escolha com uma alternativa correta. Seleção
+              múltipla, verdadeiro ou falso, resposta curta e resposta aberta ainda não estão
+              disponíveis.
+            </p>
+            <fieldset class="choice-row">
+              <legend>Distribuição</legend>
+              <label><input type="radio" name="distribution" value="balanced" checked /> Níveis intercalados</label>
+              <label><input type="radio" name="distribution" value="progressive" /> Do mais fácil ao mais difícil</label>
+            </fieldset>
+            <fieldset class="choice-grid">
+              <legend>Questões de listas anteriores</legend>
+              <label><input type="radio" name="previousQuestions" value="avoid" checked /> Evitar repetir questões já geradas</label>
+              <label><input type="radio" name="previousQuestions" value="prioritize_new" /> Priorizar conceitos ainda não avaliados</label>
+              <label><input type="radio" name="previousQuestions" value="review" /> Permitir repetição para revisão</label>
+            </fieldset>
+            <fieldset class="choice-row" data-feedback-choice hidden>
+              <legend>Feedback ao responder</legend>
+              <label><input type="radio" name="feedbackMode" value="deferred" checked /> Ao finalizar a lista</label>
+              <label><input type="radio" name="feedbackMode" value="immediate" /> Após cada questão</label>
+            </fieldset>
+          </details>
+          <p class="form-status" data-questions-form-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Gerar lista</button>
         </form>
       </dialog>
-      <dialog class="workflow-dialog" data-export-dialog aria-labelledby="export-dialog-title">
+      <dialog
+        class="workflow-dialog authoring-dialog"
+        data-export-dialog
+        aria-labelledby="export-dialog-title"
+      >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="export-dialog-title">Exportar textos salvos</h2>
-        <section class="learning-tools-panel" data-material-tools aria-label="Exportar textos" hidden></section>
+        <h2 id="export-dialog-title">Exportar</h2>
+        <p class="dialog-lead">
+          Usa somente as versões salvas. Alterações ainda não salvas na edição não entram no arquivo.
+        </p>
+        <form data-export-form>
+          <fieldset class="export-section" data-export-content>
+            <legend>Conteúdo</legend>
+            <div class="choice-grid">
+              <label><input type="checkbox" name="transcript" checked /> Transcrição</label>
+              <label><input type="checkbox" name="timestamps" checked /> Com marcações de tempo</label>
+              <label><input type="checkbox" name="summary" checked /> Resumo</label>
+              <label><input type="checkbox" name="notes" /> Minhas anotações</label>
+            </div>
+            <label data-export-summary-choice
+              >Versão do resumo<select name="summaryVersion"></select
+            ></label>
+            <div class="export-lists" data-export-lists></div>
+            <div class="export-lists" data-export-flashcards></div>
+          </fieldset>
+          <fieldset class="export-section" data-export-variant>
+            <legend>Questões</legend>
+            <div class="choice-grid">
+              <label><input type="radio" name="variant" value="student" checked /> Folha do aluno, sem respostas</label>
+              <label><input type="radio" name="variant" value="teacher" /> Gabarito do professor, com explicações</label>
+              <label data-export-attempt hidden
+                ><input type="radio" name="variant" value="attempt" /> Relatório da última tentativa concluída</label
+              >
+            </div>
+          </fieldset>
+          <fieldset class="export-section">
+            <legend>Formato</legend>
+            <div class="choice-row">
+              <label><input type="radio" name="format" value="pdf" checked /> PDF (pela impressão do navegador)</label>
+              <label><input type="radio" name="format" value="md" /> Markdown</label>
+              <label><input type="radio" name="format" value="txt" /> Texto (TXT)</label>
+              <label data-export-csv hidden><input type="radio" name="format" value="csv" /> CSV de flashcards</label>
+            </div>
+          </fieldset>
+          <p class="form-status" data-export-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Exportar</button>
+        </form>
+        <section class="learning-tools-panel" data-material-tools aria-label="Ferramentas" hidden></section>
+      </dialog>
+      <dialog class="workflow-dialog compact-dialog" data-list-share-dialog aria-labelledby="list-share-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="list-share-title">Compartilhar lista</h2>
+        <p class="dialog-lead">
+          Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas,
+          explicações, transcrição, gravação e anotações não fazem parte do link.
+        </p>
+        <form data-list-share-form>
+          <label for="list-share-days"
+            >Validade<select id="list-share-days" name="days">
+              <option value="1">1 dia</option>
+              <option value="7" selected>7 dias</option>
+              <option value="30">30 dias</option>
+            </select></label
+          >
+          <button class="primary-action" type="submit">Criar link de leitura</button>
+        </form>
+        <p class="form-status" data-list-share-message role="status" aria-live="polite"></p>
+        <div class="share-result" data-list-share-result></div>
+        <div class="share-list" data-list-share-list></div>
+      </dialog>
+      <dialog class="workflow-dialog authoring-dialog" data-flashcard-dialog aria-labelledby="flashcard-dialog-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="flashcard-dialog-title">Criar flashcards</h2>
+        <p class="dialog-lead">
+          Usa a revisão confirmada. Revise, edite ou rejeite cada sugestão; nada é salvo antes de
+          você confirmar. A revisão dos cartões acontece no Painel.
+        </p>
+        <form data-flashcard-config novalidate>
+          <label for="flashcard-target"
+            >Conjunto<select id="flashcard-target" name="target"></select
+          ></label>
+          <label data-flashcard-name
+            >Nome do conjunto<input name="name" maxlength="160" placeholder="Ex.: Biologia — divisão celular"
+          /></label>
+          <div class="authoring-grid">
+            <label for="flashcard-count"
+              >Quantidade<select id="flashcard-count" name="count">
+                <option value="5">5 cartões</option>
+                <option value="10" selected>10 cartões</option>
+                <option value="20">20 cartões</option>
+                <option value="custom">Outra quantidade…</option>
+              </select></label
+            ><label for="flashcard-custom-count" data-flashcard-custom hidden
+              >Quantidade personalizada<input id="flashcard-custom-count" name="customCount" type="number" min="1" max="50" step="1"
+            /></label>
+            <label for="flashcard-style"
+              >Estilo<select id="flashcard-style" name="style">
+                <option value="question_answer">Pergunta e resposta</option>
+                <option value="term_definition">Termo e definição</option>
+                <option value="concise_explanation">Explicação concisa</option>
+              </select></label
+            >
+          </div>
+          <details class="advanced-options" data-flashcard-advanced>
+            <summary>Opções avançadas</summary>
+            <fieldset class="choice-row">
+              <legend>Dificuldade</legend>
+              <label><input type="checkbox" name="difficulty" value="basic" checked /> Básico</label>
+              <label><input type="checkbox" name="difficulty" value="intermediate" checked /> Intermediário</label>
+              <label><input type="checkbox" name="difficulty" value="advanced" /> Avançado</label>
+            </fieldset>
+            <fieldset class="choice-grid">
+              <legend>Foco</legend>
+              <label><input type="checkbox" name="focus" value="definitions" checked /> Definições</label>
+              <label><input type="checkbox" name="focus" value="facts" /> Fatos</label>
+              <label><input type="checkbox" name="focus" value="concepts" checked /> Conceitos</label>
+              <label><input type="checkbox" name="focus" value="processes" /> Processos</label>
+              <label><input type="checkbox" name="focus" value="comparisons" /> Comparações</label>
+              <label><input type="checkbox" name="focus" value="application" /> Aplicação</label>
+              <label><input type="checkbox" name="focus" value="cause_effect" /> Causa e efeito</label>
+            </fieldset>
+          </details>
+          <button class="primary-action" type="submit" data-flashcard-generate>Gerar prévia</button>
+        </form>
+        <p class="form-status" data-flashcard-message role="status" aria-live="polite"></p>
+        <div class="flashcard-preview" data-flashcard-preview></div>
+        <button class="primary-action" type="button" data-flashcard-save hidden>Salvar cartões</button>
       </dialog>
       <dialog class="workflow-dialog" data-version-panel aria-labelledby="version-dialog-title">
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>

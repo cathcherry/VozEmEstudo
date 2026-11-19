@@ -8,7 +8,20 @@ import {
   restoreTranscriptionVersion,
   regenerateSummary,
   generateQuestions,
+  renameSummary,
+  renameQuestionList,
 } from '../api/material.api.js';
+import { getPublicConfig } from '../api/config.js';
+import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
+import { initExportPanel } from './export-panel.js';
+import { initListShare } from './list-share.js';
+import { initFlashcardAuthoring } from './flashcard-authoring.js';
+import {
+  normalizeSummaryOptions,
+  summaryName,
+  summaryDetails,
+} from '../utils/authoring.js';
+import { getFeatureFlags } from '../utils/feature-flags.js';
 import { pollJob } from '../api/job.api.js';
 import { initTranscriptionReview } from '../utils/transcription-review.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
@@ -40,7 +53,15 @@ let activeTab =
     location.hash
   ] || 'transcription';
 let waitingSince,
-  initialRender = true;
+  initialRender = true,
+  displayedSummary = null;
+const flags = await getFeatureFlags().catch(() => ({}));
+const publicConfig = await getPublicConfig().catch(() => ({}));
+// Custom list sizes only exist with the authoring migration; presets otherwise.
+const maxQuestionCount = flags.study_authoring ? publicConfig.maxQuestionListCount || 40 : 20;
+// Names need the study-authoring migration; without it the field is not offered.
+if (!flags.study_authoring)
+  document.querySelector('[data-summary-form] [name=label]').closest('label').hidden = true;
 const pending = new Map();
 const player = new MediaPlayer($('[data-audio-player]'), {
   onError: () => {
@@ -130,7 +151,8 @@ let playbackIdentity = '',
   renewBusy = false,
   lastRenewedAt = 0,
   playbackRequest = 0;
-let materialToolsInitialized = false;
+let materialToolsInitialized = false,
+  notesEnabled = false;
 if (materialId)
   void initStudyTrackingPanel({ materialId }).catch((error) => {
     const panel = $('[data-study-tracking-panel]');
@@ -524,20 +546,30 @@ async function loadWaveform(url, signal) {
 $('[data-retry-media]').addEventListener('click', () => {
   void renewPlayback();
 });
+const summaryKey = (summary) => summary.id || `version-${summary.version}`;
 function renderSummary(summary) {
   summarySpeech?.speaker.stop();
+  displayedSummary = summary || null;
   renderMarkdown($('[data-summary-text]'), summary?.text || '');
   $('[data-summary-text]').hidden = !summary;
   if (summarySpeech) summarySpeech.element.hidden = !summary;
+  const name = $('[data-summary-name]');
+  name.textContent = summary ? summaryName(summary) : '';
+  name.hidden = !summary;
+  $('[data-rename-summary]').hidden = !summary || !flags.study_authoring;
+  $('[data-open-flashcards]').hidden = !(flags.flashcards && flags.flashcard_sets && ready());
   $('[data-summary-meta]').textContent = summary
     ? [
-        `Versão ${summary.version}`,
+        ...summaryDetails(summary),
         summary.created_at ? formatDate(summary.created_at) : '',
+        summary.is_current ? '' : 'versão anterior',
         summary.stale ? 'baseado em uma revisão anterior da transcrição' : '',
       ]
         .filter(Boolean)
         .join(' · ')
     : 'Ainda não há resumo desta aula.';
+  for (const button of document.querySelectorAll('[data-summary-version-list] button'))
+    button.setAttribute('aria-current', String(Boolean(summary) && button.dataset.summaryKey === summaryKey(summary)));
 }
 function render(material) {
   currentMaterial = material;
@@ -545,6 +577,13 @@ function render(material) {
     visitMaterial(materialId);
     initialRender = false;
     if (params.has('from') && !ready()) activeTab = 'transcription';
+    // Library "Editar transcrição": Transcrição tab in edit mode (pending revisions already edit).
+    if (params.get('edit') === 'transcricao' && material.transcription) {
+      activeTab = 'transcription';
+      if (ready()) editing = true;
+      else reviewOpened = true;
+      queueMicrotask(() => $('.transcription-segment textarea')?.focus({ preventScroll: true }));
+    }
   }
   $('[data-material-title]').textContent = material.title;
   $('[data-material-title]').removeAttribute('aria-busy');
@@ -577,29 +616,43 @@ function render(material) {
       materialId,
       context: () => currentMaterial,
       segments: segmentsContainer,
-    }).catch((error) => {
+    })
+      .then((tools) => {
+        notesEnabled = tools.notesEnabled;
+      })
+      .catch((error) => {
       const panel = $('[data-material-tools]');
       panel.hidden = false;
       panel.textContent = error.message || 'Ferramentas indisponíveis.';
     });
   }
-  const summaries = material.summaries || [],
-    summary = summaries.find((s) => s.is_current) || summaries[0];
-  renderSummary(summary);
-  $('[data-regenerate-summary]').textContent = summary ? 'Gerar novamente' : 'Gerar resumo';
+  const summaries = material.summaries || [];
+  const summary =
+    (displayedSummary && summaries.find((s) => summaryKey(s) === summaryKey(displayedSummary))) ||
+    summaries.find((s) => s.is_current) ||
+    summaries[0];
+  $('[data-regenerate-summary]').textContent = summaries.length ? 'Gerar novo resumo' : 'Gerar resumo';
   $('[data-summary-history]').hidden = summaries.length < 2;
   $('[data-summary-version-list]').replaceChildren();
   summaries.forEach((s) => {
     const b = document.createElement('button');
-    b.className = 'text-action';
+    b.className = 'text-action version-choice';
     b.type = 'button';
-    b.textContent = `Versão ${s.version}`;
+    b.dataset.summaryKey = summaryKey(s);
+    const title = document.createElement('span');
+    title.textContent = summaryName(s);
+    const meta = document.createElement('small');
+    meta.textContent = [s.label ? `Versão ${s.version}` : '', s.created_at ? formatDate(s.created_at) : '', s.is_current ? 'mais recente' : '']
+      .filter(Boolean)
+      .join(' · ');
+    b.append(title, meta);
     b.addEventListener('click', () => {
       renderSummary(s);
       $('[data-summary-history]').open = false;
     });
     $('[data-summary-version-list]').append(b);
   });
+  renderSummary(summary);
   renderQuestionBatches(material.questionBatches || []);
   $('[data-complete-review]').setAttribute('aria-pressed', String(studyFor(materialId).completed));
   $('[data-complete-review]').textContent = studyFor(materialId).completed
@@ -617,48 +670,32 @@ function render(material) {
   }
 }
 /**
- * Each batch shows its real questions and the locally recorded result of each one, so an
+ * Each list shows its real questions and the locally recorded result of each one, so an
  * "answered" count is always backed by something the student can review.
  */
 function renderQuestionBatches(batches) {
-  const answers = studyFor(materialId).answers;
-  const container = $('[data-question-batches]');
-  container.replaceChildren();
-  const total = batches.reduce(
-    (sum, b) => sum + (b.questions?.length || b.generated_count || 0),
-    0,
-  );
-  $('[data-questions-meta]').textContent = batches.length
-    ? `${batches.length} ${batches.length === 1 ? 'conjunto' : 'conjuntos'} · ${total} questões`
-    : 'Ainda não há questões desta aula.';
-  batches.forEach((batch, i) => {
-    const questions = batch.questions || [];
-    const results = questions.map((q) => answers[q.id]);
-    const answered = results.filter(Boolean).length;
-    const correct = results.filter((r) => r?.correct).length;
-    const count = questions.length || batch.generated_count || 0;
-    const card = document.createElement('article');
-    card.className = 'question-batch-card question-batch-row';
-    const head = document.createElement('div');
-    head.className = 'question-batch-head';
-    const title = document.createElement('h3');
-    title.textContent = `Conjunto ${batches.length - i}`;
-    const meta = document.createElement('p');
-    meta.textContent = answered
-      ? `${answered} de ${count} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}`
-      : `${count} questões · ainda não respondidas`;
-    if (batch.stale) meta.textContent += ' · revisão anterior';
-    const link = document.createElement('a');
-    link.className = answered && answered < count ? 'primary-action' : 'secondary-action';
-    link.textContent = !answered
-      ? 'Responder'
-      : answered < count
-        ? 'Continuar'
-        : 'Responder de novo';
-    link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
-    head.append(title, meta, link);
-    const listen = questions.length
-      ? speakControls({
+  renderQuestionLists({
+    container: $('[data-question-batches]'),
+    meta: $('[data-questions-meta]'),
+    batches,
+    answers: studyFor(materialId).answers,
+    materialId,
+    flags,
+    actions: {
+      export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
+      ...(flags.study_authoring && flags.sharing ? { share: (batch, name) => listShare.open(batch, name) } : {}),
+      rename: (batch, name) =>
+        openRename({
+          title: 'Renomear lista',
+          label: 'Nome da lista',
+          value: batch.title || name,
+          save: (title) => {
+            if (!title) throw new Error('Informe um nome para a lista.');
+            return renameQuestionList(materialId, batch.id, title);
+          },
+        }),
+      listen: (card) =>
+        speakControls({
           blocks: () =>
             [...card.querySelectorAll('.question-list li')].map((li, n) => ({
               element: li,
@@ -666,37 +703,8 @@ function renderQuestionBatches(batches) {
             })),
           lang: lessonLang,
           label: 'Ouvir questões',
-        })
-      : null;
-    if (listen) head.append(listen.element);
-    const progress = document.createElement('div');
-    progress.className = 'question-batch-progress';
-    progress.setAttribute('aria-hidden', 'true');
-    progress.style.setProperty('--answered', String(count ? answered / count : 0));
-    progress.style.setProperty('--correct', String(count ? correct / count : 0));
-    card.append(head, progress);
-    if (questions.length) {
-      const list = document.createElement('ol');
-      list.className = 'question-list';
-      questions.forEach((q, index) => {
-        const item = document.createElement('li');
-        const result = results[index];
-        item.dataset.result = result ? (result.correct ? 'correct' : 'wrong') : 'pending';
-        const text = document.createElement('span');
-        text.textContent = q.statement;
-        const badge = document.createElement('span');
-        badge.className = 'question-result';
-        badge.textContent = result
-          ? result.correct
-            ? '✓ Acertou'
-            : '✗ Errou'
-          : '– Não respondida';
-        item.append(text, badge);
-        list.append(item);
-      });
-      card.append(list);
-    }
-    container.append(card);
+        }),
+    },
   });
 }
 async function reload() {
@@ -758,17 +766,10 @@ $('[data-regenerate-summary]').addEventListener('click', () => {
 $('[data-open-questions]').addEventListener('click', () => {
   if (!busy) $('[data-questions-dialog]').showModal();
 });
-function normalizeSummaryOptions(options) {
-  return {
-    format: { bullets: 'topics' }[options.format] || options.format,
-    length: { brief: 'short', intermediate: 'standard' }[options.length] || options.length,
-    // Plain language is opt-in; omitted otherwise so the request keeps its legacy shape.
-    ...(options.readingLevel === 'simple' ? { readingLevel: 'simple' } : {}),
-  };
-}
 async function generate(kind, options) {
-  if (busy) return;
+  if (busy) return false;
   if (kind === 'summary') options = normalizeSummaryOptions(options);
+  let completed = false;
   const source = scientificReview.sourceRevisionId(),
     operation = JSON.stringify([kind, source, options]);
   if (!pending.has(operation)) pending.set(operation, crypto.randomUUID());
@@ -776,7 +777,7 @@ async function generate(kind, options) {
   scientificReview.setBusy(true);
   const generationFields = [
     ...document.querySelectorAll(
-      '[data-summary-form] select, [data-summary-form] button, [data-more-questions-form] select, [data-more-questions-form] button',
+      '[data-summary-form] :is(select, input, button), [data-more-questions-form] :is(select, input, button)',
     ),
   ];
   const previousDisabled = generationFields.map((field) => field.disabled);
@@ -790,12 +791,8 @@ async function generate(kind, options) {
   try {
     const job =
       kind === 'summary'
-        ? await regenerateSummary(materialId, source, pending.get(operation), {
-            format: options.format,
-            length: options.length,
-            ...(options.readingLevel ? { readingLevel: options.readingLevel } : {}),
-          })
-        : await generateQuestions(materialId, options.count, source, pending.get(operation));
+        ? await regenerateSummary(materialId, source, pending.get(operation), options)
+        : await generateQuestions(materialId, options.count, source, pending.get(operation), options.config);
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => setStatus(message, jobLabel(state)),
     });
@@ -804,8 +801,10 @@ async function generate(kind, options) {
       throw Error(result.error_message || 'Não foi possível concluir. Tente novamente.');
     }
     pending.delete(operation);
+    if (kind === 'summary') displayedSummary = null;
     await reload();
     setStatus(message, '');
+    completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');
   } finally {
@@ -817,25 +816,87 @@ async function generate(kind, options) {
     $('[data-save-transcription]').disabled = !currentMaterial?.transcription;
     $('[data-open-questions]').disabled = false;
   }
+  return completed;
 }
 $('[data-summary-form]').addEventListener('submit', (e) => {
   e.preventDefault();
-  const data = new FormData(e.currentTarget);
+  const form = e.currentTarget;
+  const data = new FormData(form);
   $('[data-summary-dialog]').close();
-  generate('summary', {
+  void generate('summary', {
     format: data.get('format'),
     length: data.get('length'),
     readingLevel: data.get('readingLevel'),
+    focus: data.getAll('focus'),
+    label: flags.study_authoring ? data.get('label') : '',
+  }).then((ok) => {
+    // A finished generation shows the new version; the next one starts with an empty name.
+    if (ok) form.elements.label.value = '';
   });
+});
+/** One small dialog renames a summary version or a question list. */
+function openRename({ title, label, value, save }) {
+  const dialog = $('[data-rename-dialog]'),
+    form = $('[data-rename-form]'),
+    field = form.elements.name;
+  $('#rename-dialog-title').textContent = title;
+  $('[data-rename-label]').firstChild.textContent = label;
+  field.value = value || '';
+  $('[data-rename-message]').textContent = '';
+  form.onsubmit = async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('[type=submit]');
+    button.disabled = true;
+    try {
+      await save(field.value.trim());
+      dialog.close();
+      await reload();
+    } catch (error) {
+      setStatus($('[data-rename-message]'), error.message, 'error');
+    } finally {
+      button.disabled = false;
+    }
+  };
+  dialog.showModal();
+  field.focus();
+  field.select();
+}
+$('[data-rename-summary]').addEventListener('click', () => {
+  if (!displayedSummary) return;
+  const summary = displayedSummary;
+  openRename({
+    title: 'Renomear versão do resumo',
+    label: 'Nome da versão',
+    value: summary.label,
+    save: (name) => renameSummary(materialId, summary.id, name || null),
+  });
+});
+const questionDialog = initQuestionDialog({
+  flags,
+  maxCount: maxQuestionCount,
+  material: () => currentMaterial,
 });
 $('[data-more-questions-form]').addEventListener('submit', (e) => {
   e.preventDefault();
+  const request = questionDialog.read();
+  if (!request) return;
   $('[data-questions-dialog]').close();
-  generate('questions', { count: Number($('#more-question-count').value) });
+  void generate('questions', request).then((ok) => {
+    if (ok) questionDialog.reset();
+  });
 });
-$('[data-open-export]').addEventListener('click', () => {
-  $('[data-export-dialog]').showModal();
+// Flashcards 2.0 needs the flashcards feature and the sets migration.
+const flashcardSets = flags.flashcards && flags.flashcard_sets;
+const flashcardAuthoring = flashcardSets ? initFlashcardAuthoring({ material: () => currentMaterial }) : null;
+$('[data-open-flashcards]').addEventListener('click', () => void flashcardAuthoring?.open());
+const exportPanel = initExportPanel({
+  material: () => currentMaterial,
+  flags,
+  notesEnabled: () => notesEnabled,
+  flashcards: flashcardAuthoring?.exporter || null,
 });
+$('[data-open-export]').addEventListener('click', () => exportPanel.open());
+const listShare = initListShare({ materialId });
 window.addEventListener('beforeunload', (e) => {
   if (hasUnsavedEdits()) {
     e.preventDefault();

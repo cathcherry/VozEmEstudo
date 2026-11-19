@@ -11,7 +11,7 @@ import * as materials from '../repositories/material.repository.js';
 import { getByMaterial as getTranscription } from '../repositories/transcription.repository.js';
 import { listSummaries } from '../repositories/summary.repository.js';
 import { listBatches } from '../repositories/question.repository.js';
-import { createJob } from '../repositories/job.repository.js';
+import { createJob, createQuestionListJob } from '../repositories/job.repository.js';
 import { createAudioSignedUrl } from './audio.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { videoService } from './video.service.js';
@@ -110,8 +110,12 @@ export async function enqueueSummary(userId, materialId, input) {
   const params = input.options === undefined ? {} : { summaryOptions: options };
   return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, params, selection);
 }
-export async function enqueueQuestions(userId, materialId, count, input) {
+export async function enqueueQuestions(userId, materialId, count, input, config) {
   await materials.getOwnedMaterial(userId, materialId);
   const selection = validateGeneration(input);
-  return createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, { count }, selection);
+  // Without a config the request keeps its legacy params shape (and idempotency comparison).
+  const params = config === undefined ? { count } : { count, config };
+  if (isFeatureEnabled('study_authoring'))
+    return createQuestionListJob(userId, materialId, params, selection);
+  return createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, params, selection);
 }

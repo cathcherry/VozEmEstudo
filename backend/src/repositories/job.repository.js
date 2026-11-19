@@ -50,6 +50,26 @@ export async function createJob(
   return job;
 }
 
+/** Question list with a custom count (1-100); same ownership/confirmation rules as createJob. */
+export async function createQuestionListJob(
+  userId,
+  materialId,
+  params,
+  { sourceRevisionId, idempotencyKey = randomUUID() },
+) {
+  const job = await rpc('enqueue_question_list_admin', {
+    p_user_id: userId,
+    p_material_id: materialId,
+    p_params: params,
+    p_source_version_id: sourceRevisionId,
+    p_idempotency_key: idempotencyKey,
+    p_permission_version: PERMISSION_DECLARATION.version,
+    p_max_attempts: env.jobMaxAttempts,
+  });
+  await snapshotProviders(job);
+  return job;
+}
+
 export async function getOwnedJob(userId, jobId) {
   const db = getAdminSupabase();
   const { data, error } = await db

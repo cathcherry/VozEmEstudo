@@ -57,7 +57,12 @@ const sampleCard = (id) => ({
 async function harness(overrides = {}) {
   const dom = new JSDOM(html);
   const dependencies = {
-    isFeatureEnabled: async () => true,
+    // Existing scenarios run without the sets migration flag; set scenarios enable it explicitly.
+    isFeatureEnabled: async (name) => name !== 'flashcard_sets',
+    addFlashcardSetCards: async () => ({ added: 1 }),
+    deleteFlashcard: async () => ({}),
+    initFlashcardSetsPanel: () => ({ load: async () => [] }),
+    confirm: () => true,
     setStatus: (element, message) => { element.textContent = message; },
     listFlashcards: async () => ({ cards: [], total: 0, limit: 100, offset: 0 }),
     createFlashcard: async () => ({}),
@@ -273,3 +278,42 @@ test('an uncertain review locks filters and retries the same request ID and rati
   } finally { ui.close(); }
 });
 
+
+test('Flashcards 2.0: set filter, manual card into a set and confirmed card deletion', async () => {
+  const listed = [], added = [], deleted = [];
+  let confirmations = 0;
+  const ui = await harness({
+    isFeatureEnabled: async () => true,
+    initFlashcardSetsPanel: () => ({ load: async () => [{ id: 'set-1', name: 'Conjunto A' }] }),
+    listFlashcards: async (filter, options) => {
+      listed.push({ filter, ...options });
+      return { cards: [sampleCard('c1')], total: 1, limit: 100, offset: 0 };
+    },
+    addFlashcardSetCards: async (setId, cards) => { added.push({ setId, cards }); return { added: 1 }; },
+    deleteFlashcard: async (id) => { deleted.push(id); },
+    confirm: () => { confirmations++; return confirmations > 1; },
+  });
+  try {
+    const setFilter = [...ui.document.querySelectorAll('.flashcard-filters select')].at(-1);
+    assert.deepEqual([...setFilter.options].map((o) => o.textContent), ['Todos os conjuntos', 'Conjunto A']);
+    ui.change(setFilter, 'set-1');
+    await until(() => listed.some((call) => call.setId === 'set-1'));
+    const create = ui.document.querySelector('[data-flashcard-create-form]');
+    await until(() => !create.querySelector('[type="submit"]').disabled);
+    create.querySelector('[name="front"]').value = 'Frente manual';
+    create.querySelector('[name="back"]').value = 'Verso manual';
+    create.querySelector('[name="setId"]').value = 'set-1';
+    create.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    await until(() => added.length === 1);
+    assert.deepEqual(added[0], { setId: 'set-1', cards: [{ front: 'Frente manual', back: 'Verso manual' }] });
+    const manager = ui.document.querySelector('[data-flashcard-manage-form]');
+    await until(() => !manager.querySelector('[name="cardId"]').disabled && manager.querySelector('[name="cardId"] option[value="c1"]'));
+    ui.change(manager.querySelector('[name="cardId"]'), 'c1');
+    const remove = [...manager.querySelectorAll('button')].find((b) => b.textContent === 'Excluir cartão');
+    remove.click();
+    assert.equal(deleted.length, 0, 'cancelled confirmation deletes nothing');
+    remove.click();
+    await until(() => deleted.length === 1);
+    assert.deepEqual(deleted, ['c1']);
+  } finally { ui.close(); }
+});

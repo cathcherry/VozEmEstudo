@@ -9,6 +9,11 @@ const root = path.resolve(__dirname, '..'),
   backend = path.resolve(root, '../backend');
 const express = require(path.join(backend, 'node_modules/express'));
 const summaryCalls = [];
+const listCalls = [];
+const authoringFlags = {};
+const listShares = new Map();
+const flashcardSets = [];
+const flashcardPreviews = [];
 const reports = [],
   errors = [],
   requests = [],
@@ -210,7 +215,8 @@ async function main() {
         supabaseUrl: 'https://mock.supabase.co',
         supabasePublishableKey: 'mock-publishable-key',
         audioBucket: 'audios',
-        featureFlags: { mp4_retention: mp4Retention },
+        featureFlags: { mp4_retention: mp4Retention, ...authoringFlags },
+        maxQuestionListCount: 30,
         recordingLanguages: { options: ['auto', 'pt', 'en', 'es', 'zh'], default: 'pt' },
         processingDisclosure: {
           recognitionProvider: 'Provedor ASR de teste',
@@ -311,17 +317,97 @@ async function main() {
     if (p.endsWith('/summaries')) {
       summaryCalls.push(request.postDataJSON());
       const m = materials.find((item) => item.id === p.split('/')[3]);
+      const body = request.postDataJSON();
+      for (const summary of m.summaries) summary.is_current = false;
       m.summaries.unshift({
         ...m.summaries[0],
+        id: 'summary-' + (m.summaries[0].version + 1),
         version: m.summaries[0].version + 1,
         is_current: true,
+        label: body.options?.label || null,
+        options: body.options || {},
       });
       return reply({ jobId: 'job-1' });
+    }
+    if (/\/question-batches\/[^/]+\/shares/.test(p)) {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/')[5]);
+      if (request.method() === 'POST') {
+        const body = request.postDataJSON();
+        listShares.set(body.id, {
+          ...body,
+          batchId: batch.id,
+          snapshot: {
+            kind: 'question_list',
+            title: batch.title,
+            materialTitle: m.title,
+            subject: m.subject,
+            revision: 1,
+            questions: batch.questions.map((q, i) => ({ number: i + 1, statement: q.statement, options: q.options })),
+          },
+        });
+        return reply({ id: body.id, expiresAt: new Date(Date.now() + body.days * 86400000).toISOString() });
+      }
+      if (request.method() === 'DELETE') {
+        listShares.get(p.split('/').pop()).revoked = true;
+        return reply({ id: p.split('/').pop() });
+      }
+      return reply({
+        shares: [...listShares.values()]
+          .filter((item) => item.batchId === batch.id)
+          .map((item) => ({
+            id: item.id,
+            expires_at: new Date(Date.now() + item.days * 86400000).toISOString(),
+            revoked_at: item.revoked ? new Date().toISOString() : null,
+          })),
+      });
+    }
+    if (p.endsWith('/answer-key')) {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/')[5]);
+      return reply({
+        id: batch.id,
+        title: batch.title,
+        questions: batch.questions.map((q, i) => ({
+          ...q,
+          correctIndex: 1,
+          explanation: `Explicação da aula ${i + 1}.`,
+        })),
+      });
+    }
+    if (/\/question-batches\/[^/]+$/.test(p) && request.method() === 'PATCH') {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/').pop());
+      listCalls.push({ rename: request.postDataJSON() });
+      batch.title = request.postDataJSON().title;
+      return reply(batch);
     }
     if (p.endsWith('/question-batches')) {
       generationCount++;
       const m = materials.find((item) => item.id === p.split('/')[3]),
-        count = request.postDataJSON().count;
+        body = request.postDataJSON(),
+        count = body.count;
+      listCalls.push(body);
+      if (!questionFail && body.config) {
+        // Mirrors the server: a thin lesson yields fewer distinct questions than requested.
+        const generated = Math.max(1, count - 2);
+        m.questionBatches.unshift({
+          id: 'list-' + generationCount,
+          title: body.config.title || null,
+          config: body.config,
+          requested_count: count,
+          generated_count: generated,
+          coverage: { shortfall: 'insufficient_content' },
+          source_transcription_revision: m.transcription.current_revision,
+          created_at: new Date().toISOString(),
+          questions: Array.from({ length: generated }, (_, i) => ({
+            id: `list-${generationCount}-q${i}`,
+            statement: `Questão planejada ${i + 1} sobre energia?`,
+            options: ['A', 'B', 'C', 'D'],
+          })),
+        });
+        return reply({ jobId: 'job-1' });
+      }
       if (!questionFail)
         m.questionBatches.unshift({
           ...m.questionBatches[0],
@@ -419,6 +505,61 @@ async function main() {
     return found
       ? reply(found)
       : reply({ error: { code: 'NOT_FOUND', message: 'Material não encontrado.' } }, 404);
+  });
+  await context.route(base + '/api/flashcards/**', async (route) => {
+    const request = route.request(),
+      url = new URL(request.url()),
+      p = url.pathname;
+    if (p.endsWith('/preview')) {
+      const body = request.postDataJSON();
+      flashcardPreviews.push(body);
+      const cards =
+        body.count === 1
+          ? [{ front: 'Cartão substituto', back: 'Verso substituto.', evidence: 'Um carro elétrico usa energia armazenada em baterias.' }]
+          : [1, 2, 3].slice(0, body.count).map((i) => ({
+              front: `Cartão ${i}`,
+              back: `Verso ${i}.`,
+              evidence: 'Um carro elétrico usa energia armazenada em baterias.',
+              sourceSegments: [{ position: 0, startMs: 0, endMs: 1500 }],
+              difficulty: 'basic',
+              focus: 'concepts',
+              style: body.config.style,
+            }));
+      return route.fulfill({
+        json: { cards, requested: body.count, revision: 2, shortfall: cards.length < body.count ? 'Somente estes cartões distintos têm apoio na transcrição.' : null },
+      });
+    }
+    if (p === '/api/flashcards/sets' && request.method() === 'POST') {
+      const body = request.postDataJSON();
+      const set = {
+        id: body.id,
+        name: body.name,
+        material_id: body.materialId,
+        source_revision_id: body.sourceRevisionId,
+        status: 'active',
+        card_count: body.cards.length,
+        due_count: body.cards.length,
+        body,
+        cards: body.cards.map((c, i) => ({ id: `${body.id}-${i}`, front_text: c.front, back_text: c.back, difficulty: c.difficulty, focus: c.focus, card_style: c.style, evidence: c.evidence })),
+      };
+      flashcardSets.push(set);
+      return route.fulfill({ status: 201, json: { ...set, added: body.cards.length } });
+    }
+    if (p === '/api/flashcards/sets') return route.fulfill({ json: flashcardSets });
+    if (p.startsWith('/api/flashcards/sets/'))
+      return route.fulfill({ json: flashcardSets.find((set) => set.id === p.split('/').pop()) });
+    return route.fulfill({ json: { cards: [], total: 0, limit: 100, offset: 0 } });
+  });
+  // Material-level shares are outside this scenario: an empty list keeps that panel quiet.
+  await context.route(base + '/api/sharing/**', (route) =>
+    route.fulfill({ json: { shares: [], total: 0, offset: 0, limit: 50 } }),
+  );
+  await context.route(base + '/api/shared-question-list', (route) => {
+    const { token } = route.request().postDataJSON();
+    const share = [...listShares.values()].find((item) => item.token === token && !item.revoked);
+    return share
+      ? route.fulfill({ json: share.snapshot })
+      : route.fulfill({ status: 404, json: { error: { message: 'Link indisponível.' } } });
   });
   await context.route(base + '/api/jobs/**', (route) =>
     route.fulfill({
@@ -671,7 +812,29 @@ async function main() {
       .click();
     const row = page.locator('[data-material-id="aula-real"]');
     await row.locator('.row-menu > summary').click();
-    await row.getByRole('button', { name: 'Editar', exact: true }).click();
+    // Open, correct the transcript and organize metadata are distinct actions.
+    assert.equal(await row.getByRole('button', { name: 'Editar', exact: true }).count(), 0);
+    assert.equal(
+      await row.getByRole('link', { name: 'Editar transcrição', exact: true }).getAttribute('href'),
+      './material.html?id=aula-real&edit=transcricao#transcricao',
+    );
+    assert.equal(
+      await row.getByRole('link', { name: 'Abrir material', exact: true }).getAttribute('href'),
+      './material.html?id=aula-real',
+    );
+    await row.getByRole('button', { name: 'Organizar', exact: true }).click();
+    await page.locator('#metadata-dialog[open]').waitFor();
+    {
+      await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+      const organizeViolations = await page.evaluate(async () =>
+        (await axe.run(document.querySelector('#metadata-dialog'), { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } })).violations.map((v) => v.id),
+      );
+      assert.deepEqual(organizeViolations, [], 'organize dialog accessibility');
+    }
+    assert(
+      (await page.locator('#metadata-dialog').evaluate((d) => d.getBoundingClientRect().width)) <= 420,
+      'organize dialog is compact',
+    );
     await page.locator('#metadata-name').fill('Carros elétricos — energia');
     await page.locator('#metadata-subject').fill('Física');
     await page.locator('#metadata-tags').fill('energia, revisão, energia');
@@ -843,13 +1006,42 @@ async function main() {
       () => document.querySelector('[data-regenerate-summary]').disabled === false,
     );
     assert.equal(summaryCalls.at(-1).options.readingLevel, 'simple');
+    assert.equal(await page.locator('[data-regenerate-summary]').textContent(), 'Gerar novo resumo');
+    await page.locator('[data-regenerate-summary]').click();
+    // Advanced settings stay collapsed; names need the authoring migration flag.
+    assert.equal(await page.locator('[data-summary-advanced]').evaluate((n) => n.open), false);
+    assert(await page.locator('[data-summary-form] [name=label]').isHidden());
+    await page.locator('[data-summary-advanced] > summary').click();
+    await page.locator('[data-summary-form] [name=format]').selectOption('chronological');
+    await page.locator('[data-summary-form] [value=dates]').check();
+    await page.locator('[data-summary-form] [value=exam]').check();
+    await page.locator('[data-summary-form] [type=submit]').click();
+    await page.waitForFunction(
+      () => document.querySelector('[data-regenerate-summary]').disabled === false,
+    );
+    assert.equal(summaryCalls.at(-1).options.format, 'chronological');
+    assert.deepEqual(summaryCalls.at(-1).options.focus, ['dates', 'exam']);
+    assert.equal(summaryCalls.at(-1).options.label, undefined);
+    assert.match(await page.locator('[data-summary-meta]').textContent(), /Cronológico/);
+    // Older versions stay available in the version menu.
+    await page.locator('[data-summary-history] > summary').click();
+    assert(
+      (await page.locator('[data-summary-version-list] button').count()) >= 3,
+      'older summary versions stay listed',
+    );
+    await page.locator('[data-summary-history] > summary').click();
     await page.locator('[data-open-export]').click();
+    // One compact dialog: content, format and a single primary action.
+    assert.equal(await page.locator('[data-export-dialog] .primary-action').count(), 1);
+    await page.locator('[data-export-form] [name=format][value=md]').check();
     const exportPromise = page.waitForEvent('download');
-    await page
-      .locator('[data-material-tools]')
-      .getByRole('button', { name: 'Baixar Markdown' })
-      .click();
-    assert((await exportPromise).suggestedFilename().endsWith('.md'));
+    await page.locator('[data-export-form] [type=submit]').click();
+    const exported = await exportPromise;
+    assert(exported.suggestedFilename().endsWith('.md'));
+    const exportedText = fs.readFileSync(await exported.path(), 'utf8');
+    assert.match(exportedText, /^# .+\n\n\*.+\*\n\n## Transcrição/);
+    assert.match(exportedText, /\*\*\[00:00–00:01\]\*\*/);
+    assert.match(exportedText, /## Resumo/);
     await page
       .locator('[data-export-dialog]')
       .getByRole('button', { name: 'Fechar', exact: true })
@@ -1768,6 +1960,221 @@ async function main() {
     jobPending = false;
     await page.waitForURL('**/material.html?**');
     record('Espera separada mostra etapa e tempo decorrido e abre material ao concluir');
+    // Library "Editar transcrição" opens the Transcrição tab directly in edit mode.
+    await page.goto(base + '/material.html?id=aula-real&edit=transcricao#transcricao');
+    await page.locator('[data-transcription-section][data-mode="editing"]').waitFor();
+    assert(await page.locator('[data-edit-bar]').isVisible());
+    assert(await page.locator('.transcription-segment textarea').first().isVisible());
+    await page.locator('[data-cancel-edit]').click();
+    await page.locator('[data-transcription-section][data-mode="reading"]').waitFor();
+    record('Biblioteca separa Abrir, Editar transcrição (modo edição direto) e Organizar compacto');
+    /** axe-core on one open dialog (WCAG A/AA); any automatic violation fails the run. */
+    async function auditDialog(selector, label) {
+      await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+      const violations = await page.evaluate(
+        async (target) =>
+          (
+            await axe.run(document.querySelector(target), {
+              runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] },
+            })
+          ).violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`),
+        selector,
+      );
+      assert.deepEqual(violations, [], `${label} has automatic accessibility violations`);
+    }
+    // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
+    authoringFlags.study_authoring = true;
+    authoringFlags.sharing = true;
+    authoringFlags.flashcards = true;
+    authoringFlags.flashcard_sets = true;
+    await page.goto(base + '/material.html?id=aula-real#questoes');
+    await page.locator('[data-questions-section]').waitFor();
+    assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
+    await page.locator('[data-open-questions]').click();
+    await page.locator('[data-questions-dialog][open]').waitFor();
+    assert.equal(await page.locator('[data-questions-advanced]').evaluate((n) => n.open), false);
+    assert(await page.locator('[data-count-recommendation]').isHidden());
+    await page.locator('[data-count-info]').click();
+    assert.equal(await page.locator('[data-count-info]').getAttribute('aria-expanded'), 'true');
+    assert.match(
+      await page.locator('[data-count-recommendation]').textContent(),
+      /Menos de 5 minutos: em geral 3 a 5 questões\..*São referências, não limites \(máximo 30\)/,
+    );
+    await page.locator('[data-more-questions-form] [name=title]').fill('Carros elétricos — Análise');
+    await page.locator('#more-question-count').selectOption('custom');
+    await page.locator('#custom-question-count').fill('35');
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.getByText('Informe uma quantidade inteira de 1 a 30.', { exact: true }).waitFor();
+    assert(await page.locator('[data-questions-dialog][open]').isVisible());
+    await page.locator('#custom-question-count').fill('7');
+    await page.locator('[data-more-questions-form] [name=difficulty][value=basic]').uncheck();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').uncheck();
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.getByText('Escolha pelo menos uma dificuldade e uma habilidade.', { exact: true }).waitFor();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=advanced]').check();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').check();
+    await page.locator('[data-more-questions-form] [name=skill][value=application]').check();
+    await page.locator('[data-questions-advanced] > summary').click();
+    await page.locator('[data-more-questions-form] [name=previousQuestions][value=prioritize_new]').check();
+    await screenshot(page, output, 'question-list-dialog-desktop.png');
+    await auditDialog('[data-questions-dialog]', 'question list dialog');
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Análise' }).waitFor();
+    const listRequest = listCalls.at(-1);
+    assert.equal(listRequest.count, 7);
+    assert.deepEqual(listRequest.config, {
+      title: 'Carros elétricos — Análise',
+      difficulties: ['intermediate', 'advanced'],
+      skills: ['recall', 'understanding', 'application'],
+      format: 'single_choice',
+      distribution: 'balanced',
+      previousQuestions: 'prioritize_new',
+    });
+    const newRow = page.locator('.question-batch-row').first();
+    assert.match(await newRow.textContent(), /5 de 7 questões pedidas/);
+    assert.match(await newRow.textContent(), /a aula não sustenta mais questões distintas/);
+    assert.deepEqual(await newRow.locator('.list-tags li').allTextContents(), [
+      'Intermediário', 'Avançado', 'Recordação', 'Compreensão conceitual', 'Aplicação',
+    ]);
+    // Earlier lists stay, each with its own actions.
+    assert(await page.locator('.question-batch-row').count() >= 3);
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Renomear', exact: true }).click();
+    await page.locator('[data-rename-dialog][open]').waitFor();
+    await auditDialog('[data-rename-dialog]', 'rename dialog');
+    await page.locator('#rename-field').fill('Carros elétricos — Avaliação avançada');
+    await page.locator('[data-rename-form] [type=submit]').click();
+    await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Avaliação avançada' }).waitFor();
+    assert.deepEqual(listCalls.at(-1), { rename: { title: 'Carros elétricos — Avaliação avançada' } });
+    await screenshot(page, output, 'question-lists-desktop.png');
+    // List-specific export: worksheet without answers, teacher key only when chosen.
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Exportar', exact: true }).click();
+    await page.locator('[data-export-dialog][open]').waitFor();
+    assert.match(await page.locator('#export-dialog-title').textContent(), /^Exportar lista — Carros elétricos/);
+    assert.equal(await page.locator('[data-export-form] [name=transcript]').isChecked(), false);
+    assert.equal(await page.locator('[data-export-form] [name=list]:checked').count(), 1);
+    await auditDialog('[data-export-dialog]', 'export dialog');
+    await page.locator('[data-export-form] [name=format][value=md]').check();
+    let listDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const worksheet = fs.readFileSync(await (await listDownload).path(), 'utf8');
+    assert.match(worksheet, /folha do aluno, sem respostas/);
+    assert.match(worksheet, /1\. Questão planejada 1 sobre energia\?\n {3}a\) A/);
+    assert.doesNotMatch(worksheet, /Resposta correta|Explicação da aula/);
+    await page.locator('[data-export-form] [name=variant][value=teacher]').check();
+    listDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const teacherFile = await listDownload;
+    assert.match(teacherFile.suggestedFilename(), /-gabarito\.md$/);
+    const teacherKey = fs.readFileSync(await teacherFile.path(), 'utf8');
+    assert.match(teacherKey, /\*\*Resposta correta:\*\* b\) B\n {3}\*Explicação:\* Explicação da aula 1\./);
+    await page.keyboard.press('Escape');
+    // Read-only worksheet link: frozen questions, no answers, revocable.
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Compartilhar', exact: true }).click();
+    await page.locator('[data-list-share-dialog][open]').waitFor();
+    await page.locator('#list-share-days').selectOption('1');
+    await page.locator('[data-list-share-form] [type=submit]').click();
+    await page.locator('[data-list-share-result] input').waitFor();
+    const shareUrl = await page.locator('[data-list-share-result] input').inputValue();
+    assert.match(shareUrl, /\/compartilhado\.html#tipo=lista&token=[0-9a-f]{64}$/);
+    const shareRequest = [...listShares.values()].at(-1);
+    assert.deepEqual(Object.keys(shareRequest).filter((k) => !['batchId', 'snapshot'].includes(k)).sort(), [
+      'days', 'id', 'requestId', 'token',
+    ]);
+    assert.equal(shareRequest.days, 1);
+    await page.locator('[data-list-share-list]').getByText(/^Disponível/).waitFor();
+    await auditDialog('[data-list-share-dialog]', 'share dialog');
+    const publicPage = await context.newPage();
+    await publicPage.goto(shareUrl);
+    await publicPage.locator('.shared-questions > li').first().waitFor();
+    assert.equal(await publicPage.locator('[data-shared-title]').textContent(), 'Carros elétricos — Avaliação avançada');
+    assert.equal(await publicPage.locator('.shared-questions > li').count(), 5);
+    assert.equal(await publicPage.locator('.shared-questions > li').first().locator('.shared-options li').count(), 4);
+    assert.doesNotMatch(await publicPage.locator('main').textContent(), /Resposta correta|Explicação/);
+    await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
+    await page.locator('[data-list-share-list]').getByText(/^Revogado/).waitFor();
+    await publicPage.reload();
+    await publicPage.getByText('Link indisponível, expirado ou revogado.', { exact: true }).waitFor();
+    await publicPage.close();
+    await page.keyboard.press('Escape');
+    record('Lista compartilhada por link de leitura: cópia sem respostas, validade e revogação');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('[data-open-questions]').click();
+    await page.locator('[data-questions-dialog][open]').waitFor();
+    assert(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      'question dialog fits a phone width',
+    );
+    await page.locator('[data-questions-advanced] > summary').click();
+    assert(
+      await page.locator('[data-questions-dialog]').evaluate((d) => d.scrollWidth <= d.clientWidth + 1),
+      'no control overflows the dialog horizontally',
+    );
+    await screenshot(page, output, 'question-list-dialog-mobile.png');
+    await page.keyboard.press('Escape');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+    await page.setViewportSize({ width: 1280, height: 900 });
+    // Flashcards 2.0 from the Resumo tab: preview, reject, regenerate one, edit, save as a named set.
+    // Only the hash differs from the current URL, so reload to pick up the new feature flags.
+    await page.goto(base + '/material.html?id=aula-real#resumo');
+    await page.reload();
+    await page.locator('[data-open-flashcards]').waitFor();
+    await page.locator('[data-open-flashcards]').click();
+    await page.locator('[data-flashcard-dialog][open]').waitFor();
+    assert.equal(await page.locator('[data-flashcard-advanced]').evaluate((n) => n.open), false);
+    await page.locator('[data-flashcard-config] [name=name]').fill('Carros elétricos — termos');
+    await page.locator('#flashcard-count').selectOption('custom');
+    await page.locator('#flashcard-custom-count').fill('7');
+    await page.locator('#flashcard-style').selectOption('term_definition');
+    await page.locator('[data-flashcard-generate]').click();
+    await page.locator('.flashcard-proposal').nth(2).waitFor();
+    assert.deepEqual(flashcardPreviews.at(-1).config, {
+      difficulties: ['basic', 'intermediate'],
+      focus: ['definitions', 'concepts'],
+      style: 'term_definition',
+    });
+    assert.equal(flashcardPreviews.at(-1).count, 7);
+    assert.match(await page.locator('[data-flashcard-message]').textContent(), /3 de 7 sugestões\. Somente estes cartões distintos/);
+    const proposals = page.locator('.flashcard-proposal');
+    await proposals.nth(1).getByRole('button', { name: 'Rejeitar', exact: true }).click();
+    await proposals.nth(2).getByRole('button', { name: 'Gerar outro', exact: true }).click();
+    await page.getByText('Sugestão substituída.', { exact: true }).waitFor();
+    assert.deepEqual(flashcardPreviews.at(-1).avoid, ['Cartão 1', 'Cartão 2', 'Cartão 3']);
+    assert.equal(await proposals.nth(2).locator('textarea').first().inputValue(), 'Cartão substituto');
+    await proposals.nth(0).locator('textarea').nth(1).fill('Verso 1 editado.');
+    assert.equal(await page.locator('[data-flashcard-save]').textContent(), 'Salvar 2 cartões');
+    await screenshot(page, output, 'flashcard-preview-desktop.png');
+    await page.locator('[data-flashcard-advanced] > summary').click();
+    await auditDialog('[data-flashcard-dialog]', 'flashcard dialog');
+    await page.locator('[data-flashcard-save]').click();
+    await page.getByText(/2 cartões salvos\. Eles entram na revisão do Painel\./).waitFor();
+    const savedSet = flashcardSets.at(-1).body;
+    assert.equal(savedSet.name, 'Carros elétricos — termos');
+    assert.equal(savedSet.materialId, 'aula-real');
+    assert.deepEqual(savedSet.cards.map((c) => [c.front, c.back]), [['Cartão 1', 'Verso 1 editado.'], ['Cartão substituto', 'Verso substituto.']]);
+    assert.deepEqual(savedSet.cards[0].sourceSegments, [{ position: 0, startMs: 0, endMs: 1500 }]);
+    await page.keyboard.press('Escape');
+    // The set is exportable as CSV from the material export dialog.
+    await page.locator('[data-open-export]').click();
+    await page.locator('[data-export-form] [name=flashcardSet]').first().waitFor();
+    await page.locator('[data-export-form] [name=transcript]').uncheck();
+    await page.locator('[data-export-form] [name=summary]').uncheck();
+    assert(await page.locator('[data-export-csv]').isHidden());
+    await page.locator('[data-export-form] [name=flashcardSet]').first().check();
+    await page.locator('[data-export-form] [name=format][value=csv]').check();
+    const csvDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const csvText = fs.readFileSync(await (await csvDownload).path(), 'utf8');
+    assert.match(csvText, /^\uFEFFfront,back,set,lesson,difficulty,focus,style,source_revision_id,evidence\r\n"Cartão 1","Verso 1 editado\.","Carros elétricos — termos"/);
+    await page.keyboard.press('Escape');
+    record('Flashcards 2.0: prévia editável, rejeitar e gerar outro cartão, conjunto nomeado e exportação CSV');
+    authoringFlags.flashcards = false;
+    authoringFlags.flashcard_sets = false;
+    authoringFlags.study_authoring = false;
+    authoringFlags.sharing = false;
+    record('Listas nomeadas: quantidade personalizada limitada, recomendação sob demanda, níveis e habilidades, renomear');
     const safe = await page.evaluate(async () => {
       const { renderMarkdown } = await import('/js/utils/markdown.js');
       const target = document.createElement('div');

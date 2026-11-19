@@ -29,6 +29,10 @@ const failures = {
   INVALID_JOB_TYPE: [400, 'Tipo de tarefa inválido.'],
   INVALID_GENERATION: [502, 'A geração não atende ao contrato esperado.'],
   IMMUTABLE_REVISION: [409, 'Uma revisão histórica não pode ser alterada.'],
+  AUTHORING_NOT_FOUND: [404, 'Registro não encontrado.'],
+  AUTHORING_INVALID_INPUT: [400, 'Confira os dados enviados.'],
+  AUTHORING_REQUEST_CONFLICT: [409, 'Este envio já foi usado com outros dados. Atualize a lista.'],
+  AUTHORING_SHARE_LIMIT: [409, 'Revogue links antigos antes de criar novos.'],
 };
 export async function rpc(name, parameters) {
   const { data, error, status } = await getAdminSupabase().rpc(name, parameters);

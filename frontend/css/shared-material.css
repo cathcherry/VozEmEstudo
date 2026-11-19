@@ -1,1 +1,6 @@
 body{font:1rem/1.65 system-ui,sans-serif;color:#222;background:#fff;margin:0}main{max-width:50rem;margin:3rem auto;padding:0 1.25rem}h1{font-size:1.8rem}section p{white-space:pre-wrap;overflow-wrap:anywhere}button{padding:.65rem 1rem;margin:.5rem;cursor:pointer}button:focus-visible{outline:3px solid #315d86} [hidden]{display:none}@page{size:A4;margin:20mm}@media print{button{display:none}main{margin:0;max-width:none}h2{break-after:avoid}}
+.shared-note{color:var(--muted,#4a5568);font-size:.9rem}
+.shared-questions{padding-left:1.4em}
+.shared-questions>li{margin:0 0 1.2em;break-inside:avoid}
+.shared-options{list-style:lower-alpha;margin:.4em 0 0;padding-left:1.6em}
+@media print{[data-shared-retry],[data-shared-print]{display:none}}

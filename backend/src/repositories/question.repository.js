@@ -15,8 +15,43 @@ export const createQuestionBatch = (
     p_prompt_version: promptVersion,
   });
 
+/** Named list with coverage metadata; may hold fewer questions than requested. */
+export const createQuestionList = (
+  materialId,
+  { jobId, requestedCount, questions, model, promptVersion, title, config, coverage, provider },
+) =>
+  rpc('commit_question_list_admin', {
+    p_material_id: materialId,
+    p_job_id: jobId,
+    p_requested: requestedCount,
+    p_questions: questions,
+    p_model: model,
+    p_prompt_version: promptVersion,
+    p_title: title || null,
+    p_config: config || {},
+    p_coverage: coverage || {},
+    p_provider: provider || null,
+  });
+
+export const renameQuestionList = (userId, materialId, batchId, title) =>
+  rpc('rename_question_list_admin', {
+    p_user_id: userId,
+    p_material_id: materialId,
+    p_batch_id: batchId,
+    p_title: title,
+  });
+
+/** Owner answer key for exports: answers, explanations and evidence of one list. */
+export async function getAnswerKey(materialId, batchId) {
+  const batches = await listBatches(materialId, { includeAnswers: true });
+  const batch = batches.find((item) => item.id === batchId);
+  if (!batch) throw errors.notFound('Lista');
+  return batch;
+}
+
 export async function listBatches(materialId, { includeAnswers = false } = {}) {
   const db = getAdminSupabase();
+  // Without answers the DTO never carries the key, the explanation or the evidence quote.
   const questionColumns = includeAnswers ? '*' : 'id,position,statement,options,created_at';
   const { data, error } = await db
     .from('question_batches')

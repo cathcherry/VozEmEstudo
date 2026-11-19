@@ -5,6 +5,11 @@ function bool(value, fallback = false) {
   return String(value).toLowerCase() === 'true';
 }
 
+/** Invalid, empty or out-of-range values fall back to 40; the database accepts at most 100. */
+function listLimit(value) {
+  const parsed = Math.floor(Number(value));
+  return value && parsed >= 1 ? Math.min(100, parsed) : 40;
+}
 function number(value, fallback) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -43,6 +48,8 @@ export const env = Object.freeze({
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),
 
   mockExternalServices: bool(process.env.MOCK_EXTERNAL_SERVICES, false),
+  // Server-side ceiling for one question list; the database accepts at most 100.
+  maxQuestionListCount: listLimit(process.env.MAX_QUESTION_LIST_COUNT),
 });
 
 export function missingRuntimeSecrets() {

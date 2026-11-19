@@ -11,10 +11,14 @@ export async function generateSummary(job, source) {
     maxTokens: { short: 900, standard: 1800, detailed: 3500 }[options.length],
   });
   if (!text) throw new Error('Resumo vazio retornado pelo modelo.');
+  const { label, ...generationOptions } = options;
   return createSummaryVersion(job.material_id, {
     text,
     jobId: job.id,
     model,
     promptVersion: SUMMARY_PROMPT_VERSION,
+    label,
+    options: generationOptions,
+    provider: llm.provider,
   });
 }

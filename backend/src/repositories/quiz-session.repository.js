@@ -147,3 +147,14 @@ export async function createOwnedReviewSession(userId, sourceSessionId, feedback
   dbError(error);
   return { id: data };
 }
+
+/** True while the owner has an unfinished attempt with feedback only at the end on this list. */
+export async function hasOpenDeferredAttempt(userId, batchId) {
+  const { data, error } = await getAdminSupabase()
+    .from('quiz_sessions').select('id')
+    .eq('user_id', userId).eq('batch_id', batchId)
+    .eq('feedback_mode', 'deferred').eq('status', 'active')
+    .limit(1);
+  dbError(error);
+  return Boolean(data?.length);
+}
