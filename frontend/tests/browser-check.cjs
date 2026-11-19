@@ -326,6 +326,19 @@ async function main() {
       });
       return reply({ jobId: 'job-1' });
     }
+    if (p.endsWith('/answer-key')) {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/')[5]);
+      return reply({
+        id: batch.id,
+        title: batch.title,
+        questions: batch.questions.map((q, i) => ({
+          ...q,
+          correctIndex: 1,
+          explanation: `Explicação da aula ${i + 1}.`,
+        })),
+      });
+    }
     if (/\/question-batches\/[^/]+$/.test(p) && request.method() === 'PATCH') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
       const batch = m.questionBatches.find((item) => item.id === p.split('/').pop());
@@ -708,7 +721,22 @@ async function main() {
       .click();
     const row = page.locator('[data-material-id="aula-real"]');
     await row.locator('.row-menu > summary').click();
-    await row.getByRole('button', { name: 'Editar', exact: true }).click();
+    // Open, correct the transcript and organize metadata are distinct actions.
+    assert.equal(await row.getByRole('button', { name: 'Editar', exact: true }).count(), 0);
+    assert.equal(
+      await row.getByRole('link', { name: 'Editar transcrição', exact: true }).getAttribute('href'),
+      './material.html?id=aula-real&edit=transcricao#transcricao',
+    );
+    assert.equal(
+      await row.getByRole('link', { name: 'Abrir material', exact: true }).getAttribute('href'),
+      './material.html?id=aula-real',
+    );
+    await row.getByRole('button', { name: 'Organizar', exact: true }).click();
+    await page.locator('#metadata-dialog[open]').waitFor();
+    assert(
+      (await page.locator('#metadata-dialog').evaluate((d) => d.getBoundingClientRect().width)) <= 420,
+      'organize dialog is compact',
+    );
     await page.locator('#metadata-name').fill('Carros elétricos — energia');
     await page.locator('#metadata-subject').fill('Física');
     await page.locator('#metadata-tags').fill('energia, revisão, energia');
@@ -905,12 +933,17 @@ async function main() {
     );
     await page.locator('[data-summary-history] > summary').click();
     await page.locator('[data-open-export]').click();
+    // One compact dialog: content, format and a single primary action.
+    assert.equal(await page.locator('[data-export-dialog] .primary-action').count(), 1);
+    await page.locator('[data-export-form] [name=format][value=md]').check();
     const exportPromise = page.waitForEvent('download');
-    await page
-      .locator('[data-material-tools]')
-      .getByRole('button', { name: 'Baixar Markdown' })
-      .click();
-    assert((await exportPromise).suggestedFilename().endsWith('.md'));
+    await page.locator('[data-export-form] [type=submit]').click();
+    const exported = await exportPromise;
+    assert(exported.suggestedFilename().endsWith('.md'));
+    const exportedText = fs.readFileSync(await exported.path(), 'utf8');
+    assert.match(exportedText, /^# .+\n\n\*.+\*\n\n## Transcrição/);
+    assert.match(exportedText, /\*\*\[00:00–00:01\]\*\*/);
+    assert.match(exportedText, /## Resumo/);
     await page
       .locator('[data-export-dialog]')
       .getByRole('button', { name: 'Fechar', exact: true })
@@ -1829,6 +1862,14 @@ async function main() {
     jobPending = false;
     await page.waitForURL('**/material.html?**');
     record('Espera separada mostra etapa e tempo decorrido e abre material ao concluir');
+    // Library "Editar transcrição" opens the Transcrição tab directly in edit mode.
+    await page.goto(base + '/material.html?id=aula-real&edit=transcricao#transcricao');
+    await page.locator('[data-transcription-section][data-mode="editing"]').waitFor();
+    assert(await page.locator('[data-edit-bar]').isVisible());
+    assert(await page.locator('.transcription-segment textarea').first().isVisible());
+    await page.locator('[data-cancel-edit]').click();
+    await page.locator('[data-transcription-section][data-mode="reading"]').waitFor();
+    record('Biblioteca separa Abrir, Editar transcrição (modo edição direto) e Organizar compacto');
     // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
     authoringFlags.study_authoring = true;
     await page.goto(base + '/material.html?id=aula-real#questoes');
@@ -1889,6 +1930,28 @@ async function main() {
     await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Avaliação avançada' }).waitFor();
     assert.deepEqual(listCalls.at(-1), { rename: { title: 'Carros elétricos — Avaliação avançada' } });
     await screenshot(page, output, 'question-lists-desktop.png');
+    // List-specific export: worksheet without answers, teacher key only when chosen.
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Exportar', exact: true }).click();
+    await page.locator('[data-export-dialog][open]').waitFor();
+    assert.match(await page.locator('#export-dialog-title').textContent(), /^Exportar lista — Carros elétricos/);
+    assert.equal(await page.locator('[data-export-form] [name=transcript]').isChecked(), false);
+    assert.equal(await page.locator('[data-export-form] [name=list]:checked').count(), 1);
+    await page.locator('[data-export-form] [name=format][value=md]').check();
+    let listDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const worksheet = fs.readFileSync(await (await listDownload).path(), 'utf8');
+    assert.match(worksheet, /folha do aluno, sem respostas/);
+    assert.match(worksheet, /1\. Questão planejada 1 sobre energia\?\n {3}a\) A/);
+    assert.doesNotMatch(worksheet, /Resposta correta|Explicação da aula/);
+    await page.locator('[data-export-form] [name=variant][value=teacher]').check();
+    listDownload = page.waitForEvent('download');
+    await page.locator('[data-export-form] [type=submit]').click();
+    const teacherFile = await listDownload;
+    assert.match(teacherFile.suggestedFilename(), /-gabarito\.md$/);
+    const teacherKey = fs.readFileSync(await teacherFile.path(), 'utf8');
+    assert.match(teacherKey, /\*\*Resposta correta:\*\* b\) B\n {3}\*Explicação:\* Explicação da aula 1\./);
+    await page.keyboard.press('Escape');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('[data-open-questions]').click();
     await page.locator('[data-questions-dialog][open]').waitFor();

@@ -305,3 +305,41 @@ body.app-page[data-page='material'] .question-batch-row {
     grid-row: 1;
   }
 }
+
+/* Library "Organizar": a compact metadata editor, not a full-page form. */
+#metadata-dialog.organize-dialog {
+  width: min(26rem, calc(100vw - 2rem));
+  padding: 18px 20px;
+}
+#metadata-dialog.organize-dialog label {
+  margin-top: 12px;
+}
+#metadata-dialog.organize-dialog :is(input, select) {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 4px;
+}
+.organize-folder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
+  gap: 0 12px;
+}
+.organize-note {
+  margin: 10px 0 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.export-group-title {
+  margin: 0.7rem 0 0.15rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+.workflow-dialog .export-lists label {
+  display: flex;
+  gap: 0.45rem;
+  margin: 0.2rem 0;
+  overflow-wrap: anywhere;
+}
+.workflow-dialog fieldset:disabled {
+  opacity: 0.55;
+}

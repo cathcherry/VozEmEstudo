@@ -479,10 +479,54 @@
           <button class="primary-action" type="submit">Gerar lista</button>
         </form>
       </dialog>
-      <dialog class="workflow-dialog" data-export-dialog aria-labelledby="export-dialog-title">
+      <dialog
+        class="workflow-dialog authoring-dialog"
+        data-export-dialog
+        aria-labelledby="export-dialog-title"
+      >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="export-dialog-title">Exportar textos salvos</h2>
-        <section class="learning-tools-panel" data-material-tools aria-label="Exportar textos" hidden></section>
+        <h2 id="export-dialog-title">Exportar</h2>
+        <p class="dialog-lead">
+          Usa somente as versões salvas. Alterações ainda não salvas na edição não entram no arquivo.
+        </p>
+        <form data-export-form>
+          <fieldset class="export-section" data-export-content>
+            <legend>Conteúdo</legend>
+            <div class="choice-grid">
+              <label><input type="checkbox" name="transcript" checked /> Transcrição</label>
+              <label><input type="checkbox" name="timestamps" checked /> Com marcações de tempo</label>
+              <label><input type="checkbox" name="summary" checked /> Resumo</label>
+              <label><input type="checkbox" name="notes" /> Minhas anotações</label>
+            </div>
+            <label data-export-summary-choice
+              >Versão do resumo<select name="summaryVersion"></select
+            ></label>
+            <div class="export-lists" data-export-lists></div>
+            <div class="export-lists" data-export-flashcards></div>
+          </fieldset>
+          <fieldset class="export-section" data-export-variant>
+            <legend>Questões</legend>
+            <div class="choice-grid">
+              <label><input type="radio" name="variant" value="student" checked /> Folha do aluno, sem respostas</label>
+              <label><input type="radio" name="variant" value="teacher" /> Gabarito do professor, com explicações</label>
+              <label data-export-attempt hidden
+                ><input type="radio" name="variant" value="attempt" /> Relatório da última tentativa concluída</label
+              >
+            </div>
+          </fieldset>
+          <fieldset class="export-section">
+            <legend>Formato</legend>
+            <div class="choice-row">
+              <label><input type="radio" name="format" value="pdf" checked /> PDF (pela impressão do navegador)</label>
+              <label><input type="radio" name="format" value="md" /> Markdown</label>
+              <label><input type="radio" name="format" value="txt" /> Texto (TXT)</label>
+              <label data-export-csv hidden><input type="radio" name="format" value="csv" /> CSV de flashcards</label>
+            </div>
+          </fieldset>
+          <p class="form-status" data-export-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Exportar</button>
+        </form>
+        <section class="learning-tools-panel" data-material-tools aria-label="Ferramentas" hidden></section>
       </dialog>
       <dialog class="workflow-dialog" data-version-panel aria-labelledby="version-dialog-title">
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>

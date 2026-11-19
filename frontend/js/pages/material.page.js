@@ -13,6 +13,7 @@ import {
 } from '../api/material.api.js';
 import { getPublicConfig } from '../api/config.js';
 import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
+import { initExportPanel } from './export-panel.js';
 import {
   normalizeSummaryOptions,
   summaryName,
@@ -148,7 +149,8 @@ let playbackIdentity = '',
   renewBusy = false,
   lastRenewedAt = 0,
   playbackRequest = 0;
-let materialToolsInitialized = false;
+let materialToolsInitialized = false,
+  notesEnabled = false;
 if (materialId)
   void initStudyTrackingPanel({ materialId }).catch((error) => {
     const panel = $('[data-study-tracking-panel]');
@@ -572,6 +574,13 @@ function render(material) {
     visitMaterial(materialId);
     initialRender = false;
     if (params.has('from') && !ready()) activeTab = 'transcription';
+    // Library "Editar transcrição": Transcrição tab in edit mode (pending revisions already edit).
+    if (params.get('edit') === 'transcricao' && material.transcription) {
+      activeTab = 'transcription';
+      if (ready()) editing = true;
+      else reviewOpened = true;
+      queueMicrotask(() => $('.transcription-segment textarea')?.focus({ preventScroll: true }));
+    }
   }
   $('[data-material-title]').textContent = material.title;
   $('[data-material-title]').removeAttribute('aria-busy');
@@ -604,7 +613,11 @@ function render(material) {
       materialId,
       context: () => currentMaterial,
       segments: segmentsContainer,
-    }).catch((error) => {
+    })
+      .then((tools) => {
+        notesEnabled = tools.notesEnabled;
+      })
+      .catch((error) => {
       const panel = $('[data-material-tools]');
       panel.hidden = false;
       panel.textContent = error.message || 'Ferramentas indisponíveis.';
@@ -666,6 +679,7 @@ function renderQuestionBatches(batches) {
     materialId,
     flags,
     actions: {
+      export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
       rename: (batch, name) =>
         openRename({
           title: 'Renomear lista',
@@ -867,9 +881,13 @@ $('[data-more-questions-form]').addEventListener('submit', (e) => {
     if (ok) questionDialog.reset();
   });
 });
-$('[data-open-export]').addEventListener('click', () => {
-  $('[data-export-dialog]').showModal();
+const exportPanel = initExportPanel({
+  material: () => currentMaterial,
+  flags,
+  notesEnabled: () => notesEnabled,
+  flashcards: null,
 });
+$('[data-open-export]').addEventListener('click', () => exportPanel.open());
 window.addEventListener('beforeunload', (e) => {
   if (hasUnsavedEdits()) {
     e.preventDefault();

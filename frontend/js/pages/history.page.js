@@ -52,6 +52,19 @@ const nameField = document.querySelector('#metadata-name');
 const subjectField = document.querySelector('#metadata-subject');
 const subjectEditLabel = subjectField.closest('label');
 const tagsField = document.querySelector('#metadata-tags');
+const folderGroup = document.querySelector('[data-metadata-folder]');
+const folderField = document.querySelector('#metadata-folder');
+const unitField = document.querySelector('#metadata-unit');
+function populateOrganizeUnits() {
+  const subject = catalog.subjects.find((item) => item.id === folderField.value);
+  unitField.disabled = !subject;
+  fillOptions(
+    unitField,
+    catalog.units.filter((unit) => unit.subject_id === subject?.id).map((unit) => ({ value: unit.id, label: unit.title })),
+    'Sem unidade',
+  );
+}
+folderField.addEventListener('change', populateOrganizeUnits);
 const subjectDialog = document.querySelector('[data-subject-dialog]');
 const subjectForm = document.querySelector('[data-subject-form]');
 const subjectMessage = document.querySelector('[data-subject-message]');
@@ -115,6 +128,15 @@ function edit(material) {
   subjectField.value = material.subject || '';
   subjectEditLabel.hidden = catalogEnabled;
   tagsField.value = studyFor(material.id).tags.join(', ');
+  // With folders enabled, discipline and unit are chosen from the catalog in the same dialog.
+  folderGroup.hidden = !catalogEnabled || !catalog.subjects.length;
+  if (!folderGroup.hidden) {
+    fillOptions(folderField, catalog.subjects.map((subject) => ({ value: subject.id, label: subject.name })), 'Sem disciplina');
+    const subject = catalog.subjects.find((entry) => entry.id === material.subject_id || entry.name === material.subject);
+    folderField.value = subject?.id || '';
+    populateOrganizeUnits();
+    unitField.value = material.unit_id || '';
+  }
   setStatus(editMessage, '');
   editDialog.showModal();
   nameField.focus();
@@ -236,9 +258,19 @@ function row(material, { folderName = null, standalone = false } = {}) {
   summary.setAttribute('aria-label', `Ações para ${material.title}`);
   const options = document.createElement('div');
   options.className = 'row-menu-content';
+  // Three distinct intents: open, correct the transcript text, organize metadata.
+  const open = document.createElement('a');
+  open.href = materialHref(material.id);
+  open.textContent = 'Abrir material';
+  open.dataset.icon = 'open';
+  const editTranscript = document.createElement('a');
+  editTranscript.href = materialHref(material.id) + '&edit=transcricao#transcricao';
+  editTranscript.textContent = 'Editar transcrição';
+  editTranscript.dataset.icon = 'edit';
   const organize = document.createElement('button');
   organize.type = 'button';
-  organize.textContent = 'Editar';
+  organize.textContent = 'Organizar';
+  organize.dataset.icon = 'organize';
   organize.addEventListener('click', () => { menu.open = false; edit(material); });
   const questions = document.createElement('a');
   questions.href = materialHref(material.id) + '#questoes';
@@ -260,22 +292,34 @@ function row(material, { folderName = null, standalone = false } = {}) {
       remove.disabled = false;
     }
   });
+  options.append(open);
+  if (materialState(material) !== 'processing') options.append(editTranscript);
   options.append(organize);
   if (catalogEnabled && catalog.subjects.length) {
     const move = document.createElement('button');
     move.type = 'button';
+    move.dataset.icon = 'folder';
     move.textContent = 'Mover para pasta';
     move.addEventListener('click', () => { menu.open = false; openAssignDialog(material); });
     options.append(move);
   }
+  questions.dataset.icon = 'list';
   if (materialState(material) === 'ready') options.append(questions);
   const generate = actions.querySelector('a[aria-label^="Gerar novas questões"]');
-  if (generate) options.append(generate);
+  if (generate) { generate.dataset.icon = 'add'; options.append(generate); }
+  remove.dataset.icon = 'remove';
   options.append(remove);
-  const menuIcons = ['M4 20h4L20 8l-4-4L4 16v4M14 6l4 4','M3 7h7l2 2h9v11H3zM3 7V4h7l2 3','M5 4h14v16H5zM8 8h8M8 12h8','M12 5v14M5 12h14'];
-  for(const [index,option] of [...options.children].entries()) {
+  const menuIcons = {
+    open: 'M5 12h12M13 7l5 5-5 5',
+    edit: 'M4 20h4L20 8l-4-4L4 16v4M14 6l4 4',
+    organize: 'M4 6h16M4 12h10M4 18h7M17 15l3 3-3 3',
+    folder: 'M3 7h7l2 2h9v11H3zM3 7V4h7l2 3',
+    list: 'M5 4h14v16H5zM8 8h8M8 12h8',
+    add: 'M12 5v14M5 12h14',
+  };
+  for(const option of options.children) {
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.6');svg.setAttribute('aria-hidden','true');
-    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',option===remove?'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7':menuIcons[index]||menuIcons[2]);svg.append(path);option.append(svg);
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',option===remove?'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7':menuIcons[option.dataset.icon]||menuIcons.list);svg.append(path);option.append(svg);
   }
   menu.append(summary, options);
   menu.addEventListener('toggle',()=>{if(menu.open)for(const other of groups.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
@@ -554,7 +598,12 @@ editForm.addEventListener('submit', async (event) => {
     const changes = { title: nameField.value.trim() };
     if (!catalogEnabled && (editing.subject || '') !== subjectField.value.trim())
       changes.subject = subjectField.value.trim() || null;
-    const updated = await updateMaterial(editing.id, changes);
+    let updated = await updateMaterial(editing.id, changes);
+    if (!folderGroup.hidden) {
+      const current = catalog.subjects.find((entry) => entry.id === editing.subject_id || entry.name === editing.subject);
+      if ((current?.id || '') !== folderField.value || (editing.unit_id || '') !== unitField.value)
+        updated = { ...updated, ...(await assignMaterial(editing.id, folderField.value || null, unitField.value || null)) };
+    }
     const persisted = saveTags(editing.id, tagsField.value);
     materials = materials.map((material) => material.id === editing.id
       ? { ...material, ...updated, title: nameField.value.trim(), ...(changes.subject !== undefined ? { subject: changes.subject } : {}) }
