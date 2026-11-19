@@ -83,3 +83,11 @@ O agendamento é o da E13 (regras fixas no estilo SM-2: "De novo" 10 min; "Difí
 - **Leitura em voz alta em três níveis** (Aparência → Leitura e foco): *Ícones discretos* (padrão), *Em todo o site* (acrescenta no topo de cada página um alto-falante que lê a seleção ou o conteúdo principal, também por Alt+L) e *Desligada*. Preferências antigas "on" viram "Ícones discretos".
 - **Modo para leitores de tela**: preferência da conta, ligada em Aparência ou pelo segundo Tab de qualquer página ("Ativar modo para leitores de tela", logo após "Pular para o conteúdo"). Remove animações, transições, sombras, imagens decorativas (inclusive o Nino) e os botões de leitura do próprio site; usa layout em uma coluna, links sublinhados e foco reforçado. Não altera texto, ordem nem rótulos. Auditado com axe; o teste com NVDA/VoiceOver/TalkBack reais continua pendente.
 - **Migration de autoria**: passou a exigir apenas a E02 (a E05 era usada só por uma chave estrangeira composta, substituída por uma chave simples com verificação de dono nas funções) e a guarda lista pelo nome cada pré-requisito ausente.
+
+## Aplicação em produção (19/11/2026)
+
+Com autorização explícita, `20261119120000_study_authoring.sql` foi aplicada no projeto Supabase **audioestudo** (nome `study_authoring` no histórico de migrations do Supabase), depois de: diagnóstico somente leitura (E02 presente; E05, E10, E13 e E19 ausentes), preflight (restrição `question_batches_requested_count_check` com o nome esperado; 18 aulas, 14 resumos, 15 lotes, 90 questões) e um ensaio do DDL principal dentro de uma transação encerrada com `rollback`, conferido em seguida.
+
+Postflight: tabela, funções e regra 1..100 presentes; RLS ligado em `question_list_shares`, sem leitura para `anon`/`authenticated`; funções só para `service_role`; contagens idênticas; nenhuma questão com formato inesperado. Advisor de segurança: apenas o aviso informativo "RLS sem política" na tabela nova, intencional (acesso só pelo servidor, como `ai_job_executions`).
+
+Ainda não aplicada: `20261119121000_flashcard_sets.sql` (exige E03/E05/E13, ausentes nesse projeto). As funcionalidades só aparecem com `FEATURE_STUDY_AUTHORING=true` e o código desta branch publicado.
