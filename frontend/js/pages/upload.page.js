@@ -133,12 +133,38 @@ document.querySelector('[data-edit-upload]').addEventListener('click', () => {
   document.querySelector('[data-identification-fields]').hidden = false;
   document.querySelector('[data-identification-actions]').hidden = false;
 });
+const LANGUAGE_NAMES = {
+  auto: 'Detectar automaticamente',
+  pt: 'Português',
+  en: 'Inglês',
+  es: 'Espanhol',
+  zh: 'Chinês',
+};
+function languageName(code) {
+  if (LANGUAGE_NAMES[code]) return LANGUAGE_NAMES[code];
+  try {
+    const name = new Intl.DisplayNames(['pt-BR'], { type: 'language' }).of(code.replace('_', '-'));
+    return name ? name[0].toLocaleUpperCase('pt-BR') + name.slice(1) : code;
+  } catch {
+    return code;
+  }
+}
+/** Spoken language of the recording (not the interface language); only when the ASR can take it. */
+function setupRecordingLanguage(choice) {
+  const field = document.querySelector('[data-recording-language-field]'),
+    select = document.querySelector('#recording-language');
+  const options = Array.isArray(choice?.options) ? choice.options : [];
+  field.hidden = !options.length;
+  select.replaceChildren(...options.map((code) => new Option(languageName(code), code)));
+  if (options.includes(choice.default)) select.value = choice.default;
+}
 let declaration, reviewedChoices;
 let videoRetentionEnabled = false;
 try {
   const config = await getPublicConfig();
   declaration = config.permissionDeclaration;
   videoRetentionEnabled = config.featureFlags?.mp4_retention === true;
+  setupRecordingLanguage(config.recordingLanguages);
   if (config.processingDisclosure)
     document.querySelector('[data-provider-disclosure]').textContent = describeProcessing(
       config.processingDisclosure,
@@ -425,7 +451,9 @@ async function startProcessing() {
     });
   }
   progress('Iniciando a transcrição…', 'start');
-  const job = await processMaterial(createdMaterial.id);
+  const job = await processMaterial(createdMaterial.id, {
+    recordingLanguage: reviewedChoices?.recordingLanguage || null,
+  });
   progress('Envio concluído. Abrindo o acompanhamento…');
   document.querySelectorAll('[data-upload-step]').forEach((item) => {
     if (!item.hidden) setStepState(item, 'done');
@@ -448,6 +476,9 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     retainVideo:
       videoRetentionAvailability() === 'available' &&
       document.querySelector('#keep-original-video').checked,
+    recordingLanguage: document.querySelector('[data-recording-language-field]').hidden
+      ? null
+      : document.querySelector('#recording-language').value,
     sourceDurationMs: info.durationMs,
     permissionAccepted: permissionInput.checked,
     permissionVersion: declaration.version,
@@ -470,6 +501,9 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     ['Trecho', timeLabel(range.start) + ' → ' + timeLabel(range.end)],
     ['Duração', durationLabel(range.end - range.start)],
     ['Questões', reviewedChoices.questionCount + ' questões'],
+    ...(reviewedChoices.recordingLanguage
+      ? [['Idioma', languageName(reviewedChoices.recordingLanguage)]]
+      : []),
     ['Armazenamento', storage.join('; ')],
   ];
   const list = document.querySelector('[data-upload-choice-list]');
@@ -481,7 +515,10 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     term.textContent = label;
     detail.textContent = value;
     if (label === 'Arquivo') detail.title = sourceFile.name;
-    if (['Título', 'Armazenamento'].includes(label)) group.className = 'wide';
+    // Keep the two-column grid even: storage spans the row only when it would sit alone.
+    const wide =
+      label === 'Título' || (label === 'Armazenamento' && !reviewedChoices.recordingLanguage);
+    if (wide) group.className = 'wide';
     group.append(term, detail);
     list.append(group);
   }

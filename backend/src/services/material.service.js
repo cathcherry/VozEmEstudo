@@ -1,3 +1,5 @@
+import { validateRecordingLanguage } from '../validators/recording-language.validator.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
 import { JOB_TYPE } from '../config/constants.js';
 import { getReviewState, listWarnings } from '../repositories/review.repository.js';
 import { validateGeneration } from '../validators/review.validator.js';
@@ -89,10 +91,15 @@ export async function remove(userId, materialId) {
   return materials.deleteOwnedMaterial(userId, materialId);
 }
 
-export async function enqueueInitial(userId, materialId) {
+export async function enqueueInitial(userId, materialId, input = {}) {
   const material = await materials.getOwnedMaterial(userId, materialId);
+  const recordingLanguage = validateRecordingLanguage(
+    input.recordingLanguage,
+    getAiRegistry().config,
+  );
   return createJob(userId, materialId, JOB_TYPE.INITIAL, {
     questionCount: material.initial_question_count,
+    ...(recordingLanguage ? { recordingLanguage } : {}),
   });
 }
 

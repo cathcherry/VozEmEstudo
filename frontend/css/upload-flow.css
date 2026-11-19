@@ -867,3 +867,22 @@ body.app-page .processing-status [data-wait-error-actions] :is(.primary-action, 
     border-top: 1px solid var(--border-light);
   }
 }
+
+/* Idioma da gravação: ao lado das tags quando o provedor aceita a escolha. */
+body.app-page[data-page='transcription']
+  .form-grid:has([data-recording-language-field]:not([hidden]))
+  > .wide-field[for='upload-tags'] {
+  grid-column: auto;
+}
+body.app-page[data-page='transcription'] .recording-language-field[hidden] {
+  display: none;
+}
+body.app-page[data-page='transcription'] .form-section .recording-language-field select {
+  min-width: 13rem;
+  min-height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--ue-recessed);
+  font-size: 0.92rem;
+}

@@ -22,7 +22,7 @@ import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
-import { disclosureLabels } from './ai/provider-config.js';
+import { disclosureLabels, recordingLanguageOptions } from './ai/provider-config.js';
 
 const processingDisclosure = () => disclosureLabels(getAiRegistry().config);
 
@@ -52,6 +52,7 @@ app.get('/api/config', (_req, res) => {
       ...processingDisclosure(),
       audioOnly: true,
     },
+    recordingLanguages: recordingLanguageOptions(getAiRegistry().config),
   });
 });
 

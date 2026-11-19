@@ -5,6 +5,7 @@ import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { env } from '../config/env.js';
 import { errors } from '../domain/errors.js';
 import { getAiRegistry } from '../ai/provider-registry.js';
+import { applyRecordingLanguage } from '../ai/provider-config.js';
 import { recordExecutionSnapshot } from './ai-execution.repository.js';
 import { logger } from '../utils/logger.js';
 
@@ -19,7 +20,10 @@ async function snapshotProviders(job) {
   const task = JOB_TASK[job?.type];
   if (!task) return;
   try {
-    await recordExecutionSnapshot(job, getAiRegistry().snapshot(task));
+    await recordExecutionSnapshot(
+      job,
+      applyRecordingLanguage(getAiRegistry().snapshot(task), job.params?.recordingLanguage),
+    );
   } catch (error) {
     logger.info('AI_SNAPSHOT_DEFERRED', { jobId: job.id, code: error?.code || 'UNKNOWN' });
   }

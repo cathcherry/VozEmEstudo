@@ -115,6 +115,7 @@ async function main() {
   );
   let permissionDeclaration = PERMISSION_DECLARATION;
   let mp4Retention = true;
+  const processCalls = [];
   const output = path.join(root, 'tests/artifacts');
   fs.mkdirSync(output, { recursive: true });
   const ffmpegStatic = require(path.join(backend, 'node_modules/ffmpeg-static'));
@@ -210,6 +211,7 @@ async function main() {
         supabasePublishableKey: 'mock-publishable-key',
         audioBucket: 'audios',
         featureFlags: { mp4_retention: mp4Retention },
+        recordingLanguages: { options: ['auto', 'pt', 'en', 'es', 'zh'], default: 'pt' },
         processingDisclosure: {
           recognitionProvider: 'Provedor ASR de teste',
           textProvider: 'Provedor de texto de teste',
@@ -259,6 +261,7 @@ async function main() {
       return reply(material, 201);
     }
     if (p.endsWith('/process')) {
+      processCalls.push(request.postDataJSON() || {});
       if (processFail) {
         processFail = false;
         return reply({ error: { message: 'Worker indisponível.' } }, 503);
@@ -605,7 +608,15 @@ async function main() {
     assert.equal(await page.locator('[data-upload-review]').isVisible(), false);
     await page.locator('#permission-declaration').check();
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
-    assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 8);
+    assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 9);
+    assert.match(await page.locator('[data-upload-choice-list]').textContent(), /IdiomaPortuguês/);
+    // Spoken language of the recording: separate from the interface language, default from server.
+    await page.getByRole('button', { name: 'Editar', exact: true }).last().click();
+    assert.equal(await page.getByLabel('Idioma da gravação').inputValue(), 'pt');
+    await page.getByLabel('Idioma da gravação').selectOption('es');
+    await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
+    assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 9);
+    assert.match(await page.locator('[data-upload-choice-list]').textContent(), /IdiomaEspanhol/);
     await screenshot(page, output, 'upload-review-desktop.png');
     assert(
       (await page.locator('[data-upload-choice-list]').textContent()).includes('00:00 → 00:01'),
@@ -637,6 +648,7 @@ async function main() {
     });
     await page.getByRole('button', { name: 'Tentar processamento', exact: true }).waitFor();
     assert.equal(requests[0].permissionAccepted, true);
+    assert.deepEqual(processCalls.at(-1), { recordingLanguage: 'es' });
     assert.equal(requests[0].permissionVersion, permissionDeclaration.version);
     assert.equal(requests[0].durationMs, 750);
     assert.equal(requests[0].extension, 'wav');
@@ -647,7 +659,13 @@ async function main() {
     await page.waitForURL('**/material.html?**');
     assert.equal(uploadCount, 1);
     assert.equal(createCount, 1);
-    record('Só o áudio do recorte é enviado; retry não repete upload');
+    assert.deepEqual(processCalls.slice(-2), [
+      { recordingLanguage: 'es' },
+      { recordingLanguage: 'es' },
+    ]);
+    record(
+      'Só o áudio do recorte é enviado; retry não repete upload nem perde o idioma da gravação',
+    );
     await page.goto(base + '/historico.html');
     await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('inexistente');

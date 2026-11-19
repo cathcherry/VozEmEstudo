@@ -16,5 +16,5 @@ export async function remove(req, res, next) {
   try { await service.remove(req.user.id, req.params.materialId); res.status(204).end(); } catch (e) { next(e); }
 }
 export async function processInitial(req, res, next) {
-  try { const job = await service.enqueueInitial(req.user.id, req.params.materialId); res.status(202).json({ jobId: job.id, materialId: job.material_id }); } catch (e) { next(e); }
+  try { const job = await service.enqueueInitial(req.user.id, req.params.materialId, { recordingLanguage: req.body?.recordingLanguage }); res.status(202).json({ jobId: job.id, materialId: job.material_id }); } catch (e) { next(e); }
 }

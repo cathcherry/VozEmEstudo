@@ -20,11 +20,38 @@ ela fica visível e desabilitada com o motivo: arquivo MOV/WebM (somente MP4) ou
 silêncio. Com a flag ligada, o envio só segue para a transcrição depois que o MP4 é
 guardado e registrado; uma falha mostra a etapa e oferece nova tentativa.
 
-Para ativar: (1) rodar `database/checks/e07-preflight.sql`; (2) aplicar a migration
-E07 no projeto de destino, com autorização; (3) rodar `database/checks/e07-postflight.sql`;
-(4) reiniciar o backend com `FEATURE_MP4_RETENTION=true` e conferir
-`node backend/src/diagnostics/check-runtime.js` (valida a tabela e o bucket privado
-`study-videos`, MP4, 100 MiB).
+### Ativar a conservação do MP4 (feito por quem administra o Supabase)
+
+Nenhuma migration nova é necessária: a E07 já contém tabela, bucket e políticas.
+
+1. **Backup** do projeto de destino e confirmação de que é o projeto certo.
+2. `database/checks/e07-preflight.sql` (somente leitura). Esperado: a constraint
+   `materials_id_user_planning_unique` existe; `material_videos` e o bucket
+   `study-videos` **não** existem. Se existirem, parar e inspecionar.
+3. Aplicar `database/migrations/20261105003500_player_video.sql` uma única vez.
+4. `notify pgrst, 'reload schema';` para a API enxergar a tabela nova.
+5. `database/checks/e07-postflight.sql`: RLS ligada, sem acesso `anon`/`authenticated`
+   à tabela, bucket privado (`video/mp4`, 100 MiB) e nenhum objeto órfão.
+6. Reiniciar o backend com `FEATURE_MP4_RETENTION=true` e rodar
+   `node backend/src/diagnostics/check-runtime.js` (valida tabela e bucket).
+7. Teste manual com duas contas: enviar MP4 com "Vídeo MP4 original" ligado, reproduzir
+   na aula, conferir que a outra conta recebe 404, remover o vídeo.
+
+Até lá a opção aparece desabilitada com o motivo, e o vídeo nunca é descartado em
+silêncio.
+
+### Legendas por palavra e idioma da gravação
+
+- As legendas por trecho funcionam com qualquer transcrição cujos trechos tenham tempos
+  úteis. O destaque palavra a palavra exige a migration
+  `20261119030000_ai_executions.sql` (tabela `transcription_word_alignments`) e uma
+  transcrição AssemblyAI ainda não editada; sem isso, `/captions` devolve
+  `granularity: "segment"` e o player usa trechos.
+- "Idioma da gravação" aparece só quando o provedor de ASR aceita idioma (AssemblyAI).
+  A lista vem de `ASR_SELECTABLE_LANGUAGES` (padrão `pt,en,es,zh`); confira a cobertura
+  do modelo configurado e remova códigos não suportados. A escolha vai no snapshot do job
+  como `language_code` fixo ou `language_detection` e o idioma reconhecido fica em
+  `transcriptions.language`. Nada é traduzido.
 
 O schema E07 está em `database/migrations/20261105003500_player_video.sql`.
 Antes de qualquer aplicação, verificar se já existe no banco e conferir o destino;

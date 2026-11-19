@@ -15,6 +15,14 @@ export const TEXT_PROVIDERS = Object.freeze(['groq', 'assemblyai-gateway']);
 export const VISION_PROVIDERS = Object.freeze(['disabled']);
 
 export const ASSEMBLYAI_STT_MODEL = 'assemblyai-stt-3-7';
+/**
+ * Spoken-language choices offered at upload. Only providers that accept a language parameter
+ * offer them (the Hugging Face Space call has none). The list is configurable because model
+ * coverage changes: ASR_SELECTABLE_LANGUAGES overrides the default. "auto" = provider detection.
+ * The recording language is never translated and is independent of the interface language.
+ */
+export const LANGUAGE_CHOICE_PROVIDERS = Object.freeze(['assemblyai']);
+const DEFAULT_SELECTABLE_LANGUAGES = Object.freeze(['pt', 'en', 'es', 'zh']);
 const GROQ_DEFAULT_MODEL = 'llama-3.3-70b-versatile';
 
 const text = (value) => String(value ?? '').trim();
@@ -62,6 +70,16 @@ export function createAiConfig(source = process.env) {
     languageDetection: bool(source.ASR_LANGUAGE_DETECTION),
     expectedLanguages: list(source.ASR_EXPECTED_LANGUAGES),
     speakerLabels: bool(source.ASR_SPEAKER_LABELS),
+    selectableLanguages: LANGUAGE_CHOICE_PROVIDERS.includes(asrProvider)
+      ? Object.freeze(
+          (list(source.ASR_SELECTABLE_LANGUAGES).length
+            ? list(source.ASR_SELECTABLE_LANGUAGES)
+            : DEFAULT_SELECTABLE_LANGUAGES
+          )
+            .map((code) => code.toLowerCase())
+            .filter((code) => /^[a-z]{2,3}(_[a-z]{2})?$/.test(code)),
+        )
+      : Object.freeze([]),
     pollIntervalMs: positive(source.ASR_POLL_INTERVAL_MS, 15000),
     maxWaitMs: positive(source.ASR_MAX_WAIT_MS, 3 * 60 * 60 * 1000),
   });
@@ -159,4 +177,32 @@ export function disclosureLabels(config) {
     ...(fallback ? { fallbackRecognitionProvider: fallback } : {}),
     textProvider: vendors.join(', '),
   };
+}
+
+/** Choices for the upload form; empty `options` means the provider cannot take a language. */
+export function recordingLanguageOptions(config) {
+  const codes = config.asr.selectableLanguages || [];
+  if (!codes.length) return { options: [], default: null };
+  return {
+    options: ['auto', ...codes],
+    default: config.asr.languageDetection
+      ? 'auto'
+      : codes.includes(config.asr.languageCode)
+        ? config.asr.languageCode
+        : 'auto',
+  };
+}
+
+/** Applies the user's per-recording choice to a transcription snapshot (pure). */
+export function applyRecordingLanguage(snapshot, recordingLanguage) {
+  if (snapshot?.task !== 'transcription' || !recordingLanguage) return snapshot;
+  const settings = { ...(snapshot.settings || {}) };
+  if (recordingLanguage === 'auto') {
+    settings.languageDetection = true;
+  } else {
+    settings.languageDetection = false;
+    settings.languageCode = recordingLanguage;
+    settings.expectedLanguages = [];
+  }
+  return { ...snapshot, settings: { ...settings, recordingLanguage } };
 }

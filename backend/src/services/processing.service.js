@@ -25,6 +25,7 @@ import {
   schemaRequired,
 } from '../repositories/ai-execution.repository.js';
 import { getAiRegistry } from '../ai/provider-registry.js';
+import { applyRecordingLanguage } from '../ai/provider-config.js';
 import { AppError } from '../domain/errors.js';
 import { generateSummary } from './summary.service.js';
 import { generateQuestions } from './question.service.js';
@@ -35,7 +36,10 @@ async function executionFor(job, task) {
   try {
     return (
       (await executionStore.get(job.id)) ||
-      (await executionStore.record(job, getAiRegistry().snapshot(task)))
+      (await executionStore.record(
+        job,
+        applyRecordingLanguage(getAiRegistry().snapshot(task), job.params?.recordingLanguage),
+      ))
     );
   } catch (error) {
     // Before the AI migration only synchronous providers with live configuration can run.
@@ -120,7 +124,10 @@ async function transcribeWithFallback(job, material, audio) {
     const fallback = getAiRegistry().config.asr.fallbackProvider;
     if (!fallback || !(error instanceof AppError) || error.retryable) throw error;
     const { provider, snapshot } = getAiRegistry().transcription({
-      ...getAiRegistry().snapshot('transcription'),
+      ...applyRecordingLanguage(
+        getAiRegistry().snapshot('transcription'),
+        job.params?.recordingLanguage,
+      ),
       provider: fallback,
       model: null,
     });
