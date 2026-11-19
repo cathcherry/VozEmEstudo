@@ -1,7 +1,7 @@
 -- Study authoring: named summary versions, named question lists with custom counts and
 -- read-only question-list shares. MIGRATION CANDIDATE, NOT APPLIED.
 -- Apply only with backup, database/checks/authoring-preflight.sql, explicit approval and the
--- correct environment. Then enable FEATURE_STUDY_AUTHORING.
+-- correct environment. Then enable FEATURE_STUDY_AUTHORING. Requires E02 only (not E05).
 --
 -- Additive: nullable/defaulted columns, new functions and one new table. Existing functions are
 -- not replaced. The single constraint change WIDENS question_batches.requested_count from
@@ -11,16 +11,27 @@ set local lock_timeout = '5s';
 set local statement_timeout = '120s';
 
 do $guard$
+declare v_missing text[] := '{}';
 begin
-  if to_regclass('public.summary_versions') is null
-    or to_regclass('public.question_batches') is null
-    or to_regprocedure('public.commit_summary_admin(uuid,uuid,text,text,text)') is null
-    or to_regprocedure('public.require_material_permission_admin(uuid,uuid,text)') is null
-    or not exists (
-      select 1 from pg_constraint
-      where conrelid = 'public.materials'::regclass and conname = 'materials_id_user_planning_unique'
-    ) then
-    raise exception 'AUTHORING_ABORT: aplicar e verificar E02 e E05 antes desta migration';
+  -- Each prerequisite is reported by name, so a failed run says exactly what to apply first.
+  if to_regclass('public.materials') is null then v_missing := array_append(v_missing, 'tabela materials (001_initial)'); end if;
+  if to_regclass('public.summary_versions') is null then v_missing := array_append(v_missing, 'tabela summary_versions (001_initial)'); end if;
+  if to_regclass('public.question_batches') is null then v_missing := array_append(v_missing, 'tabela question_batches (001_initial)'); end if;
+  if to_regprocedure('public.commit_summary_admin(uuid,uuid,text,text,text)') is null then
+    v_missing := array_append(v_missing, 'função commit_summary_admin (E02 20261009101846_academic_review.sql)');
+  end if;
+  if to_regprocedure('public.get_generation_source_admin(uuid,uuid)') is null then
+    v_missing := array_append(v_missing, 'função get_generation_source_admin (E02)');
+  end if;
+  if to_regprocedure('public.require_material_permission_admin(uuid,uuid,text)') is null then
+    v_missing := array_append(v_missing, 'função require_material_permission_admin (E02)');
+  end if;
+  if not exists (select 1 from information_schema.columns where table_schema = 'public'
+      and table_name = 'question_batches' and column_name = 'processing_job_id') then
+    v_missing := array_append(v_missing, 'coluna question_batches.processing_job_id (E02)');
+  end if;
+  if cardinality(v_missing) > 0 then
+    raise exception 'AUTHORING_ABORT: faltam pré-requisitos: %', array_to_string(v_missing, '; ');
   end if;
   if to_regclass('public.question_list_shares') is not null
     or to_regprocedure('public.commit_question_list_admin(uuid,uuid,integer,jsonb,text,text,text,jsonb,jsonb,text)') is not null then
@@ -214,7 +225,8 @@ create table public.question_list_shares (
   expires_at timestamptz not null,
   revoked_at timestamptz,
   unique (user_id, request_id),
-  foreign key (material_id, user_id) references public.materials(id, user_id) on delete cascade
+  -- Ownership is checked by the functions below; a plain FK keeps this migration independent of E05.
+  foreign key (material_id) references public.materials(id) on delete cascade
 );
 create index question_list_shares_owner_idx on public.question_list_shares(user_id, batch_id, created_at desc);
 alter table public.question_list_shares enable row level security;

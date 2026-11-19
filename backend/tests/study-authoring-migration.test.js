@@ -14,7 +14,7 @@ const migration = readFileSync(
 test('authoring migration is guarded, transactional and additive', () => {
   assert.match(migration, /^begin;/m);
   assert.match(migration, /^commit;/m);
-  assert.match(migration, /AUTHORING_ABORT: aplicar e verificar E02 e E05/);
+  assert.match(migration, /AUTHORING_ABORT: faltam pré-requisitos: %/);
   assert.match(migration, /AUTHORING_ABORT: estruturas de autoria ja existem/);
   assert.doesNotMatch(
     migration,
@@ -506,5 +506,32 @@ test('authoring pre/postflight checks are read-only and run around the migration
     await assert.rejects(f.db.exec(migration), /AUTHORING_ABORT: estruturas de autoria ja existem/);
   } finally {
     await f.db.close();
+  }
+});
+
+test('the migration needs only E02 and names each missing prerequisite', async () => {
+  // E02 only (no catalog/planning migrations): it must apply.
+  const f = await createAcademicDatabase();
+  try {
+    await f.db.exec(migration);
+    assert(await f.call('resolve_question_list_share_admin', ['00'.repeat(32)]) === null);
+  } finally {
+    await f.db.close();
+  }
+  // Without E02, the abort lists exactly what is missing.
+  const { PGlite } = await import('@electric-sql/pglite');
+  const bare = new PGlite();
+  try {
+    await bare.exec('create table public.materials(id uuid primary key)');
+    await assert.rejects(
+      bare.exec(migration),
+      (error) =>
+        /faltam pré-requisitos/.test(error.message) &&
+        /tabela summary_versions/.test(error.message) &&
+        /função commit_summary_admin \(E02/.test(error.message) &&
+        !/tabela materials/.test(error.message),
+    );
+  } finally {
+    await bare.close();
   }
 });
