@@ -686,7 +686,7 @@ function renderQuestionBatches(batches) {
         text.textContent = q.statement;
         const badge = document.createElement('span');
         badge.className = 'question-result';
-        badge.textContent = result ? (result.correct ? 'Acertou' : 'Errou') : 'Não respondida';
+        badge.textContent = result ? (result.correct ? '✓ Acertou' : '✗ Errou') : '– Não respondida';
         item.append(text, badge);
         list.append(item);
       });

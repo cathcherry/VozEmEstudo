@@ -1355,6 +1355,56 @@ async function main() {
       'Auditoria automática das nove telas',
     );
     record('Nove telas auditadas por axe-core sem violações automáticas WCAG A/AA');
+    // Text contrast in every theme (light, dark and high-contrast) on the main study screens.
+    const themeContrast = [];
+    for (const theme of [
+      'paper',
+      'gabriela',
+      'forest',
+      'ocean',
+      'wine',
+      'soft',
+      'night',
+      'contrast-light',
+      'contrast-dark',
+    ]) {
+      for (const target of [
+        'painel.html',
+        'material.html?id=aula-real',
+        'material.html?id=aula-real#resumo',
+        'aparencia.html',
+      ]) {
+        await page.evaluate((t) => {
+          localStorage.setItem('audioestudo-theme', t);
+          localStorage.setItem(
+            'audioestudo-ui-preferences',
+            JSON.stringify(window.VozAppearance.defaults),
+          );
+        }, theme);
+        await page.goto(base + '/' + target);
+        await page.waitForTimeout(350);
+        // Audit the settled screen, not a card halfway through its entrance fade.
+        await page.evaluate(() =>
+          Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))),
+        );
+        await page.addScriptTag({ path: axePath });
+        const found = await page.evaluate(async () =>
+          (
+            await axe.run(document, { runOnly: { type: 'rule', values: ['color-contrast'] } })
+          ).violations.flatMap((v) =>
+            v.nodes.map((n) => `${n.target.join(' ')} :: ${n.any[0]?.message || ''}`.slice(0, 220)),
+          ),
+        );
+        for (const item of found) themeContrast.push(`${theme} ${target} ${item}`);
+      }
+    }
+    fs.writeFileSync(
+      path.join(output, 'theme-contrast.json'),
+      JSON.stringify(themeContrast, null, 1),
+    );
+    await page.evaluate(() => localStorage.setItem('audioestudo-theme', 'paper'));
+    assert.deepEqual(themeContrast, [], 'Text contrast passes in all nine themes');
+    record('Contraste de texto aprovado nos nove temas (claros, escuros e alto contraste)');
     await page.goto(base + '/nova-transcricao.html');
     await page.locator('#audio-file').setInputFiles(wavInput);
     await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);

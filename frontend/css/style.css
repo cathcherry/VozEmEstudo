@@ -334,7 +334,7 @@ audio { width: 100%; }
 @media (max-width: 680px) { .register-layout { grid-template-columns: 1fr; } .register-brand-mascot { display: none; } .quiz-question-card { padding: 24px 18px; } }
 
 /* Layout compartilhado: páginas distintas, três destinos principais. */
-:root { --topbar-height: 88px; --content-max: 1100px; --brand-font: 'Trebuchet MS', 'Segoe UI', Arial, sans-serif; --button-background: var(--accent-strong); --button-text: #fff; }
+:root { --topbar-height: 88px; --content-max: 1100px; --brand-font: 'Trebuchet MS', 'Segoe UI', Arial, sans-serif; --button-background: var(--accent-strong); --button-text: var(--accent-contrast, #fff); }
 [data-theme="paper"] { --accent-strong: #2948b8; }
 [data-theme="gabriela"] { --accent-strong: #6548b6; }
 [data-theme="forest"] { --accent-strong: #1d603b; }
@@ -843,3 +843,18 @@ kbd {
   .shortcuts-dialog dl { grid-template-columns: minmax(0, 1fr); }
   .shortcuts-dialog dt { white-space: normal; }
 }
+
+/* Respostas: além da cor, um símbolo e uma palavra (seguro para daltonismo). */
+.quiz-answer-card.answer-correct,
+.quiz-answer-card.answer-incorrect { grid-template-columns: auto auto minmax(0,1fr) auto; }
+.quiz-answer-card.answer-correct::after,
+.quiz-answer-card.answer-incorrect::after {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.quiz-answer-card.answer-correct::after { content: '✓ Correta'; background: var(--accent-soft); color: var(--text); }
+.quiz-answer-card.answer-incorrect::after { content: '✗ Sua resposta'; background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--text); }
