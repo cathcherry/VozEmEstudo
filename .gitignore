@@ -54,3 +54,4 @@ build/
 .tmp/
 .cache/
 Thumbs.db
+frontend/tests/artifacts/
