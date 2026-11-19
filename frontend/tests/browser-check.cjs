@@ -407,8 +407,8 @@ async function main() {
     await page.goto(base + '/index.html');
     await page.getByRole('heading', { level: 1 }).waitFor();
     await screenshot(page, output, 'landing-desktop.png');
-    assert.equal(await page.locator('.feature-card').count(), 3);
-    assert.equal(await page.locator('.team-placeholder').count(), 1);
+    assert.equal(await page.locator('#recursos .ve-features > article').count(), 3);
+    assert.equal(await page.locator('#sobre .ve-team').count(), 1);
     record('Landing com recursos, jornada, personalização, equipe e FAQ');
     await page.evaluate(() => localStorage.setItem('audioestudo-theme', 'night'));
     await page.goto(base + '/painel.html');
