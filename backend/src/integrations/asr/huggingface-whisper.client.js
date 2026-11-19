@@ -108,3 +108,35 @@ export async function transcribeAudio(buffer, { durationMs = 0 } = {}) {
       502, { retryable, cause: error });
   }
 }
+
+/** Legacy Hugging Face/Whisper adapter for the TranscriptionProvider contract (synchronous). */
+export function createHuggingFaceProvider({ transcribe = transcribeAudio } = {}) {
+  const capabilities = Object.freeze({ wordTimestamps: false, speakerLabels: false, async: false });
+  return {
+    name: 'huggingface',
+    mode: 'sync',
+    capabilities,
+    async transcribe(buffer, { durationMs = 0, model = env.hfAsrSpaceId } = {}) {
+      const result = await transcribe(buffer, { durationMs });
+      return {
+        text: result.text,
+        language: result.language || null,
+        segments: result.segments.map(({ startMs, endMs, text }) => ({
+          startMs,
+          endMs,
+          text,
+          speaker: null,
+        })),
+        // Whisper via Gradio supplies no word timings; none are invented.
+        words: [],
+        metadata: {
+          provider: 'huggingface',
+          requestedModel: model,
+          actualModel: env.hfAsrSpaceId,
+          externalJobId: null,
+          capabilities,
+        },
+      };
+    },
+  };
+}

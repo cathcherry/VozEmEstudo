@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { AppError } from '../domain/errors.js';
 import { env } from '../config/env.js';
-import { createJsonCompletion } from '../integrations/llm/groq.client.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import { getVersion } from '../repositories/transcription.repository.js';
 import {
@@ -32,9 +32,11 @@ export async function evaluateWarnings(userId, material, source, analysisId = ra
     }
     return existing;
   }
+  const llm = getAiRegistry().text('warnings');
   const warnings = await Promise.all(
     WARNING_TYPES.map(async (type) => {
-      let result;
+      let result,
+        model = llm.model;
       try {
         if (type === 'topic_alignment' && !material.subject?.trim()) {
           result = {
@@ -51,10 +53,10 @@ export async function evaluateWarnings(userId, material, source, analysisId = ra
             segments: [],
           };
         } else {
-          result = await createJsonCompletion({
+          ({ data: result, model } = await llm.completeJson({
             messages: buildWarningMessages(type, source, material.subject),
             maxTokens: 1200,
-          });
+          }));
         }
         result = validateWarningPayload(result, source);
       } catch {
@@ -71,7 +73,7 @@ export async function evaluateWarnings(userId, material, source, analysisId = ra
         explanation: result.reason,
         guidance: result.guidance,
         segmentRefs: result.segmentRefs || [],
-        model: env.mockExternalServices ? 'mock' : env.groqModel,
+        model: env.mockExternalServices ? 'mock' : model,
         promptVersion: WARNING_PROMPT_VERSION,
         subject: material.subject || null,
       };

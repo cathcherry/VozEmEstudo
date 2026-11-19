@@ -3,13 +3,20 @@ import { env, missingRuntimeSecrets } from '../config/env.js';
 import { PERMISSION_DECLARATION } from '../config/permission-declaration.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { featureFlags } from '../config/feature-flags.js';
+import { createAiConfig, missingAiCredentials } from '../ai/provider-config.js';
 import { createReadinessChecks, readinessFlagErrors, runReadinessChecks } from './readiness.js';
 
 const errors = readinessFlagErrors(featureFlags);
 const missing = missingRuntimeSecrets();
 if (missing.length) errors.push(`Faltam configurações Supabase: ${missing.join(', ')}`);
-if (!env.groqApiKey) errors.push('GROQ_API_KEY ausente.');
-if (!env.hfAsrSpaceId) errors.push('HF_ASR_SPACE_ID ausente.');
+let aiConfig;
+try {
+  aiConfig = createAiConfig();
+  for (const name of missingAiCredentials(aiConfig)) errors.push(`${name} ausente.`);
+  if (aiConfig.asr.provider === 'huggingface' && !env.hfAsrSpaceId) errors.push('HF_ASR_SPACE_ID ausente.');
+} catch (error) {
+  errors.push(error.message);
+}
 if (env.mockExternalServices) errors.push('MOCK_EXTERNAL_SERVICES=true: os resultados seriam simulados.');
 if (!/^https:\/\/[\w-]+\.supabase\.co\/?$/.test(env.supabaseUrl)) {
   errors.push('SUPABASE_URL inválida. Confira backend/.env.');
@@ -26,7 +33,7 @@ for (const result of results) {
   console.log(`[${result.ok ? 'OK' : 'ERRO'}] ${result.label}${result.ok ? '' : ': ' + result.reason}`);
   if (!result.ok) errors.push(result.label);
 }
-console.log('Hugging Face e Groq: configurações presentes (conectividade/quotas não testadas).');
+console.log(`IA: ASR ${aiConfig.asr.provider}/${aiConfig.asr.model}; texto ${[...new Set(Object.values(aiConfig.llm).map((t) => t.provider))].join(', ')} (conectividade/quotas não testadas).`);
 if (errors.length) {
   console.error('Inicialização bloqueada. Consulte docs/first-integrated-test.md e os preflights; não reaplique migrations existentes.');
   process.exit(1);

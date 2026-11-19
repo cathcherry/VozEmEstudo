@@ -1,67 +1,89 @@
 import Groq from 'groq-sdk';
-import { env } from '../../config/env.js';
 import { AppError, errors } from '../../domain/errors.js';
 
-let client;
-
-function getClient() {
-  if (!env.groqApiKey) throw errors.configuration(['GROQ_API_KEY']);
-  if (!client) client = new Groq({ apiKey: env.groqApiKey });
-  return client;
-}
-
 function mapGroqError(error) {
+  if (error instanceof AppError) return error;
   const status = Number(error?.status || error?.statusCode || 0);
   const retryable = status === 429 || status >= 500 || status === 408 || status === 0;
   return new AppError(
     retryable ? 'LLM_TEMPORARY_ERROR' : 'LLM_FAILED',
-    retryable ? 'O serviço de geração textual está temporariamente indisponível.' : 'Não foi possível gerar o material textual.',
+    retryable
+      ? 'O serviço de geração textual está temporariamente indisponível.'
+      : 'Não foi possível gerar o material textual.',
     502,
     { retryable, cause: error },
   );
 }
 
-export async function createTextCompletion({ messages, temperature = 0.2, maxTokens = 1800 }) {
-  if (env.mockExternalServices) {
-    return 'Resumo de demonstração. Ative as credenciais reais para gerar conteúdo com o modelo.';
+/** Groq adapter for the TextGenerationProvider contract (see ai/contracts/text-generation.js). */
+export function createGroqProvider({
+  apiKey,
+  mock = false,
+  createClient = (key) => new Groq({ apiKey: key }),
+}) {
+  let client;
+  function getClient() {
+    if (!apiKey) throw errors.configuration(['GROQ_API_KEY']);
+    if (!client) client = createClient(apiKey);
+    return client;
   }
-  try {
-    const completion = await getClient().chat.completions.create({
-      model: env.groqModel,
-      messages,
-      temperature,
-      max_completion_tokens: maxTokens,
-      stream: false,
-    });
-    return completion.choices?.[0]?.message?.content?.trim() || '';
-  } catch (error) {
-    throw mapGroqError(error);
+  async function complete({ model, messages, temperature, maxTokens, json }) {
+    try {
+      const completion = await getClient().chat.completions.create({
+        model,
+        messages,
+        temperature,
+        max_completion_tokens: maxTokens,
+        ...(json ? { response_format: { type: 'json_object' } } : {}),
+        stream: false,
+      });
+      return {
+        content: completion.choices?.[0]?.message?.content,
+        model: completion.model || model,
+      };
+    } catch (error) {
+      throw mapGroqError(error);
+    }
   }
+  return {
+    name: 'groq',
+    async completeText({ model, messages, temperature = 0.2, maxTokens = 1800 }) {
+      if (mock)
+        return {
+          text: 'Resumo de demonstração. Ative as credenciais reais para gerar conteúdo com o modelo.',
+          model,
+        };
+      const result = await complete({ model, messages, temperature, maxTokens });
+      return { text: result.content?.trim() || '', model: result.model };
+    },
+    async completeJson({ model, messages, temperature = 0.15, maxTokens = 5000 }) {
+      if (mock)
+        return {
+          data: {
+            questions: [
+              {
+                statement: 'Questão de demonstração?',
+                options: ['A', 'B', 'C', 'D'],
+                correctIndex: 0,
+                explanation: 'Demonstração.',
+              },
+            ],
+          },
+          model,
+        };
+      const result = await complete({ model, messages, temperature, maxTokens, json: true });
+      return { data: parseJsonContent(result.content), model: result.model };
+    },
+  };
 }
 
-export async function createJsonCompletion({ messages, temperature = 0.15, maxTokens = 5000 }) {
-  if (env.mockExternalServices) {
-    return {
-      questions: [
-        { statement: 'Questão de demonstração?', options: ['A', 'B', 'C', 'D'], correctIndex: 0, explanation: 'Demonstração.' },
-      ],
-    };
-  }
+export function parseJsonContent(content) {
   try {
-    const completion = await getClient().chat.completions.create({
-      model: env.groqModel,
-      messages,
-      temperature,
-      max_completion_tokens: maxTokens,
-      response_format: { type: 'json_object' },
-      stream: false,
-    });
-    const content = completion.choices?.[0]?.message?.content || '{}';
-    return JSON.parse(content);
+    return JSON.parse(content || '{}');
   } catch (error) {
-    if (error instanceof SyntaxError) {
-      throw new AppError('LLM_INVALID_OUTPUT', 'O modelo retornou uma estrutura inválida.', 502, { retryable: true, cause: error });
-    }
-    throw mapGroqError(error);
+    throw new AppError('LLM_INVALID_OUTPUT', 'O modelo retornou uma estrutura inválida.', 502, {
+      retryable: true,
+      cause: error,
+    });
   }
 }

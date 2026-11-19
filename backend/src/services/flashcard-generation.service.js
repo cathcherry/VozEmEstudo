@@ -24,7 +24,7 @@ export function buildFlashcardGenerationService({ getOwnedMaterial, getReviewSta
       const raw = await complete({ messages: buildFlashcardMessages(source.full_text, count),
         maxTokens: Math.min(12000, count * 550 + 500) });
       return { materialId, sourceRevisionId, revision: source.revision,
-        model, promptVersion: FLASHCARD_PROMPT_VERSION,
+        model: typeof model === 'function' ? model() : model, promptVersion: FLASHCARD_PROMPT_VERSION,
         cards: validateGeneratedFlashcards(raw, count, source.full_text) };
     } finally { active.delete(userId); }
   };

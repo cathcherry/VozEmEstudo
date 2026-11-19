@@ -1,19 +1,22 @@
 import { env } from '../config/env.js';
 import { assertQuestionCount } from '../domain/rules.js';
-import { createJsonCompletion } from '../integrations/llm/groq.client.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
 import { buildQuestionMessages, QUESTIONS_PROMPT_VERSION } from '../prompts/questions.v1.js';
 import { validateQuestionsPayload } from '../validators/llm-output.validator.js';
 import { createQuestionBatch, getQuestionForAnswer } from '../repositories/question.repository.js';
 
 export async function generateQuestions(job, source, requestedCount) {
   const count = assertQuestionCount(requestedCount);
+  const llm = getAiRegistry().text('questions', job.aiSnapshot || undefined);
   let lastError;
   for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
-      let raw = await createJsonCompletion({
+      const completion = await llm.completeJson({
         messages: buildQuestionMessages(source.full_text, count),
         maxTokens: Math.max(2500, count * 550),
       });
+      let raw = completion.data;
+      const model = completion.model;
       if (env.mockExternalServices) {
         raw = {
           questions: Array.from({ length: count }, (_, i) => ({
@@ -29,7 +32,7 @@ export async function generateQuestions(job, source, requestedCount) {
         jobId: job.id,
         requestedCount: count,
         questions,
-        model: env.groqModel,
+        model,
         promptVersion: QUESTIONS_PROMPT_VERSION,
       });
     } catch (error) {

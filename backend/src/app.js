@@ -21,6 +21,10 @@ import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
+import { getAiRegistry } from './ai/provider-registry.js';
+import { disclosureLabels } from './ai/provider-config.js';
+
+const processingDisclosure = () => disclosureLabels(getAiRegistry().config);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const app = express();
@@ -45,8 +49,7 @@ app.get('/api/config', (_req, res) => {
     featureFlags,
     permissionDeclaration: PERMISSION_DECLARATION,
     processingDisclosure: {
-      recognitionProvider: 'Hugging Face (ASR)',
-      textProvider: 'Groq',
+      ...processingDisclosure(),
       audioOnly: true,
     },
   });

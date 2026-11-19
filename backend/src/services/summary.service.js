@@ -1,12 +1,12 @@
-import { env } from '../config/env.js';
-import { createTextCompletion } from '../integrations/llm/groq.client.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
 import { buildSummaryMessages, SUMMARY_PROMPT_VERSION } from '../prompts/summary.v1.js';
 import { createSummaryVersion } from '../repositories/summary.repository.js';
 import { validateSummaryOptions } from '../validators/summary-options.validator.js';
 
 export async function generateSummary(job, source) {
   const options = validateSummaryOptions(job.params?.summaryOptions);
-  const text = await createTextCompletion({
+  const llm = getAiRegistry().text('summary', job.aiSnapshot || undefined);
+  const { text, model } = await llm.completeText({
     messages: buildSummaryMessages(source.full_text, options),
     maxTokens: { short: 900, standard: 1800, detailed: 3500 }[options.length],
   });
@@ -14,7 +14,7 @@ export async function generateSummary(job, source) {
   return createSummaryVersion(job.material_id, {
     text,
     jobId: job.id,
-    model: env.groqModel,
+    model,
     promptVersion: SUMMARY_PROMPT_VERSION,
   });
 }
