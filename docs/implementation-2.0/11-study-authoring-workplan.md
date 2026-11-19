@@ -91,3 +91,11 @@ Com autorização explícita, `20261119120000_study_authoring.sql` foi aplicada 
 Postflight: tabela, funções e regra 1..100 presentes; RLS ligado em `question_list_shares`, sem leitura para `anon`/`authenticated`; funções só para `service_role`; contagens idênticas; nenhuma questão com formato inesperado. Advisor de segurança: apenas o aviso informativo "RLS sem política" na tabela nova, intencional (acesso só pelo servidor, como `ai_job_executions`).
 
 Ainda não aplicada: `20261119121000_flashcard_sets.sql` (exige E03/E05/E13, ausentes nesse projeto). As funcionalidades só aparecem com `FEATURE_STUDY_AUTHORING=true` e o código desta branch publicado.
+
+## Revisão antes do merge (19/11/2026)
+
+- Revisão de código do diff completo: 6 achados, todos corrigidos (quantidade personalizada sem `config`, busca em lotes de 100 ids, contagem por conjunto, reativação de conjunto sem reviver cartões arquivados individualmente, cabeçalho da migration, exportação só da revisão confirmada).
+- `20261119130000_security_hardening.sql` aplicada no **audioestudo** (nome `security_hardening`): `rls_auto_enable()` (função de event trigger da plataforma) sem EXECUTE para `anon`/`authenticated`; `set_updated_at()` com `search_path` fixo. Ensaiada antes com `rollback`.
+- Avisos que permanecem de propósito: "RLS sem política" em tabelas só do servidor (`ai_job_executions`, `transcription_word_alignments`, `question_list_shares`) e `storage_owns_material` executável por `authenticated` (exigido pelas políticas de vídeo; só responde se o material é do próprio usuário).
+- Pendente fora do código: ativar a proteção contra senhas vazadas em Authentication → Policies/Password security no painel do Supabase.
+- Avisos de performance (todos anteriores a esta branch, nível INFO/WARN): índices em chaves estrangeiras e `auth.uid()` reavaliado por linha nas políticas da 001; não bloqueiam o merge com o volume atual.

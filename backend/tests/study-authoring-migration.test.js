@@ -514,7 +514,7 @@ test('the migration needs only E02 and names each missing prerequisite', async (
   const f = await createAcademicDatabase();
   try {
     await f.db.exec(migration);
-    assert(await f.call('resolve_question_list_share_admin', ['00'.repeat(32)]) === null);
+    assert((await f.call('resolve_question_list_share_admin', ['00'.repeat(32)])) === null);
   } finally {
     await f.db.close();
   }
@@ -533,5 +533,28 @@ test('the migration needs only E02 and names each missing prerequisite', async (
     );
   } finally {
     await bare.close();
+  }
+});
+
+test('security hardening migration only changes privileges and settings, and is repeatable', async () => {
+  const sql = readFileSync(
+    new URL('../../database/migrations/20261119130000_security_hardening.sql', import.meta.url),
+    'utf8',
+  );
+  assert.doesNotMatch(sql, /\b(drop|truncate|delete|insert|update)\b/i);
+  const f = await createAcademicDatabase();
+  try {
+    await f.db.exec(sql);
+    await f.db.exec(sql);
+    const config = (
+      await f.db.query("select proconfig from pg_proc where proname = 'set_updated_at'")
+    ).rows[0].proconfig;
+    assert.deepEqual(config, ['search_path=""']);
+    // Triggers that use it keep working.
+    await f.db.query("update public.materials set title = 'Título atualizado' where id = $1", [
+      resourceIds.materialA,
+    ]);
+  } finally {
+    await f.db.close();
   }
 });
