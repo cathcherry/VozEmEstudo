@@ -5,6 +5,7 @@ import { assertTextGenerationProvider } from './contracts/text-generation.js';
 import { assertTranscriptionProvider } from './contracts/transcription.js';
 import { createGroqProvider } from '../integrations/llm/groq.client.js';
 import { createHuggingFaceProvider } from '../integrations/asr/huggingface-whisper.client.js';
+import { createAssemblyAiProvider } from '../integrations/asr/assemblyai.client.js';
 
 /** Vendor factories. Each receives the resolved config and returns a contract-conforming adapter. */
 export const defaultFactories = Object.freeze({
@@ -13,6 +14,12 @@ export const defaultFactories = Object.freeze({
   },
   transcription: {
     huggingface: () => createHuggingFaceProvider(),
+    assemblyai: (config, { mock }) =>
+      createAssemblyAiProvider({
+        apiKey: config.credentials.assemblyai,
+        baseUrl: config.endpoints.assemblyai,
+        mock,
+      }),
   },
 });
 
