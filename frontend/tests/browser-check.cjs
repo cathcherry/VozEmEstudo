@@ -1061,7 +1061,28 @@ async function main() {
       'Toggling focus mode keeps the saved theme active',
     );
     await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
+    // Every reading choice is visible in the live preview on the same page.
+    const preview = page.locator('.reading-preview-text p').first();
+    const previewStyle = () =>
+      preview.evaluate((p) => {
+        const c = getComputedStyle(p);
+        return {
+          lineHeight: parseFloat(c.lineHeight) / parseFloat(c.fontSize),
+          wordSpacing: c.wordSpacing,
+          maxWidth: Math.round(p.parentElement.getBoundingClientRect().width),
+        };
+      });
+    const comfortable = await previewStyle();
+    await page.locator('#setting-reading-spacing').selectOption('wide');
+    const wide = await previewStyle();
+    assert(wide.lineHeight > comfortable.lineHeight + 0.2, 'spacing changes the preview');
+    assert.notEqual(wide.wordSpacing, comfortable.wordSpacing);
+    await page.locator('#setting-reading-spacing').selectOption('comfortable');
     await page.locator('#setting-reading-width').selectOption('narrow');
+    assert(
+      (await previewStyle()).maxWidth < comfortable.maxWidth,
+      'line length changes the preview',
+    );
     assert.equal(await page.locator('html').getAttribute('data-reading-width'), 'narrow');
     await page.reload();
     assert.equal(await page.locator('#setting-reading-width').inputValue(), 'narrow');
@@ -1415,6 +1436,37 @@ async function main() {
         true,
         '200% com sidebar completa: ' + name,
       );
+      // The sidebar grows with the text and wraps only between words.
+      const sidebar = await page.evaluate(() => {
+        const nav = document.querySelector('.side-navigation');
+        const brand = nav.querySelector('.sidebar-brand');
+        const words = [...nav.querySelectorAll('nav a > span')].flatMap((label) => {
+          const link = label.closest('a');
+          const room = link.clientWidth - 70; // icon, gap and padding
+          return label.textContent
+            .trim()
+            .split(/\s+/)
+            .map((word) => {
+              const probe = document.createElement('span');
+              probe.textContent = word;
+              probe.style.whiteSpace = 'nowrap';
+              label.append(probe);
+              const fits = probe.getBoundingClientRect().width <= room;
+              probe.remove();
+              return { word, fits };
+            });
+        });
+        return {
+          width: Math.round(nav.getBoundingClientRect().width),
+          brandClipped: brand.scrollWidth > brand.clientWidth + 1,
+          broken: words.filter((w) => !w.fits).map((w) => w.word),
+        };
+      });
+      if (name === 'painel') {
+        assert.equal(sidebar.width, 320, 'sidebar widens at 200%');
+        assert.equal(sidebar.brandClipped, false, 'brand fits the sidebar');
+        assert.deepEqual(sidebar.broken, [], 'no navigation word is split');
+      }
     }
     for (const name of ['index', 'login', 'cadastro', 'auth-callback']) {
       await page.setViewportSize({ width: 320, height: 900 });

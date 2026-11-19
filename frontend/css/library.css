@@ -5,7 +5,8 @@
   --accent:#3156d8; --accent-strong:#2948b8; --accent-soft:#e4ebff;
   --button-background:#3156d8; --button-text:#fff; --shadow:none;
 }
-:root,[data-text-size='maximum'] { --sidebar-width:216px; --content-max:1260px; }
+/* Única definição da largura da barra lateral: em rem, cresce com o tamanho do texto (até 320px). */
+:root { --sidebar-width:clamp(216px,13.5rem,320px); --content-max:1260px; }
 [data-sidebar-collapsed='true'] { --sidebar-width:76px; }
 .app-page { grid-template-rows:auto 1fr auto; }
 .app-page .article-content { padding:32px clamp(16px,3vw,38px) 48px; overflow-wrap:anywhere; }
@@ -19,7 +20,7 @@
 .sidebar-inner { padding:22px 12px; }
 .side-navigation .sidebar-brand { margin-bottom:30px; padding-inline:6px; }
 .side-navigation .brand-name { font-size:.88rem; }
-.side-navigation nav a { border-radius:8px; font-size:.84rem; min-height:48px; padding:11px; overflow-wrap:anywhere; }
+.side-navigation nav a { border-radius:8px; font-size:.84rem; min-height:48px; padding:11px; overflow-wrap:break-word; hyphens:auto; }
 .side-navigation .sidebar-settings a[href="./configuracoes.html"] > span:last-child { white-space:nowrap; font-size:.78rem; }
 .side-navigation nav a.active { font-weight:700; border-left:3px solid var(--accent-strong); padding-left:9px; }
 .side-navigation .sidebar-settings { padding-top:24px; }

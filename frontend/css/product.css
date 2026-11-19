@@ -6,7 +6,7 @@
   --button-background: #3156d8; --button-text: #fff; --accent-contrast: #fff;
   --shadow: 0 14px 38px #17243d0a;
 }
-:root { --sidebar-width: 224px; --content-max: 1560px; --topbar-height: 84px;
+:root { --content-max: 1560px; --topbar-height: 84px;
   --tone-blue: color-mix(in srgb,var(--accent-soft) 80%,var(--surface));
   --tone-peach: color-mix(in srgb,#ffe7cc 72%,var(--surface));
   --tone-lilac: color-mix(in srgb,#e5dffa 75%,var(--surface));

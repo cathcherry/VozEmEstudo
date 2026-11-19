@@ -257,12 +257,14 @@ audio { width: 100%; }
   --ue-serif: Georgia, 'Times New Roman', serif;
 }
 [data-theme='night'], [data-theme='contrast-dark'], [data-theme='custom'] { --ue-highlight: rgb(255 255 255 / 0.06); }
-:root { --reading-line-height: 1.65; --reading-word-spacing: normal; --reading-measure: 72ch; }
-[data-reading-spacing="compact"] { --reading-line-height: 1.45; }
-[data-reading-spacing="wide"] { --reading-line-height: 1.9; --reading-word-spacing: .08em; }
+/* Amplo segue a WCAG 1.4.12 (espaço entre linhas, palavras, letras e parágrafos). */
+:root { --reading-line-height: 1.65; --reading-word-spacing: normal; --reading-letter-spacing: normal; --reading-paragraph-gap: .9em; --reading-measure: 72ch; }
+[data-reading-spacing="compact"] { --reading-line-height: 1.45; --reading-paragraph-gap: .6em; }
+[data-reading-spacing="wide"] { --reading-line-height: 1.9; --reading-word-spacing: .16em; --reading-letter-spacing: .03em; --reading-paragraph-gap: 1.6em; }
 [data-reading-width="narrow"] { --reading-measure: 60ch; }
 [data-reading-width="wide"] { --reading-measure: 92ch; }
-.article-content p, .generated-content, .markdown-content, .reading-measure, .transcription-segment textarea { line-height: var(--reading-line-height); word-spacing: var(--reading-word-spacing); }
+.article-content p, .generated-content, .markdown-content, .reading-measure, .transcription-segment textarea { line-height: var(--reading-line-height); word-spacing: var(--reading-word-spacing); letter-spacing: var(--reading-letter-spacing); }
+.markdown-content p, .reading-measure p { margin-block: 0 var(--reading-paragraph-gap); }
 .reading-measure { max-width: var(--reading-measure); }
 [data-high-contrast="true"] { --border: var(--text); --border-light: var(--text); --muted: var(--text); }
 
@@ -332,7 +334,7 @@ audio { width: 100%; }
 @media (max-width: 680px) { .register-layout { grid-template-columns: 1fr; } .register-brand-mascot { display: none; } .quiz-question-card { padding: 24px 18px; } }
 
 /* Layout compartilhado: páginas distintas, três destinos principais. */
-:root { --sidebar-width: 236px; --topbar-height: 88px; --content-max: 1100px; --brand-font: 'Trebuchet MS', 'Segoe UI', Arial, sans-serif; --button-background: var(--accent-strong); --button-text: #fff; }
+:root { --topbar-height: 88px; --content-max: 1100px; --brand-font: 'Trebuchet MS', 'Segoe UI', Arial, sans-serif; --button-background: var(--accent-strong); --button-text: #fff; }
 [data-theme="paper"] { --accent-strong: #2948b8; }
 [data-theme="gabriela"] { --accent-strong: #6548b6; }
 [data-theme="forest"] { --accent-strong: #1d603b; }
@@ -400,7 +402,7 @@ textarea { line-height: 1.6; }
 .article-section.first-section { border: 1px solid var(--border-light); }
 .article-section h2, .dashboard-start h2, .landing-features h2 { font-family: var(--brand-font); font-size: 1.25rem; line-height: 1.35; margin: 0 0 8px; letter-spacing: -.02em; }
 .article-section h3 { font-size: 1.05rem; }
-.article-section p, .section-description { font-size: .925rem; color: var(--muted); line-height: 1.65; }
+.article-section p, .section-description { font-size: .925rem; color: var(--muted); line-height: var(--reading-line-height); }
 .section-title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
 .section-title-row h2, .section-title-row p { margin: 0; }
 .section-title-row > a { font-size: .85rem; }
@@ -565,7 +567,7 @@ input[type="file"]::file-selector-button { background: var(--surface); color: va
 [data-text-size="medium"] { font-size: 115%; }
 [data-text-size="large"] { font-size: 130%; }
 [data-text-size="extra-large"] { font-size: 150%; }
-[data-text-size="maximum"] { font-size: 200%; --sidebar-width: 300px; --topbar-height: 120px; }
+[data-text-size="maximum"] { font-size: 200%; --topbar-height: 120px; }
 [data-readable-font="true"] body, [data-readable-font="true"] .article-content h1, [data-readable-font="true"] .article-content h2 { font-family: Verdana, Arial, sans-serif; }
 [data-low-stimulation="true"] .loading-indicator { animation: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
@@ -592,7 +594,6 @@ body[data-page="landing"] { display: block; background: var(--background); }
 .quiz-session-main { max-width: 850px; }
 .quiz-session-header { min-height: 80px; }
 @media (max-width: 1100px) {
-  :root { --sidebar-width: 216px; }
   .sidebar-inner { padding-inline: 12px; }
   .brand-name { font-size: 1rem; }
   .app-page .article-content { padding-inline: 28px; }

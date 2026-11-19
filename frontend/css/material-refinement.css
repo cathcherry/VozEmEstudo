@@ -336,6 +336,7 @@ body.app-page[data-page='material'] .segment-text {
   font-size: 1rem;
   line-height: var(--reading-line-height);
   word-spacing: var(--reading-word-spacing);
+  letter-spacing: var(--reading-letter-spacing);
 }
 body.app-page[data-page='material'] [data-mode='reading'] .transcription-segment textarea,
 body.app-page[data-page='material'] [data-mode='editing'] .segment-text {
@@ -442,7 +443,7 @@ body.app-page[data-page='material'] .markdown-content h3 {
   font-size: 1.08rem;
 }
 body.app-page[data-page='material'] .markdown-content p {
-  margin: 0 0 0.9em;
+  margin: 0 0 var(--reading-paragraph-gap);
 }
 body.app-page[data-page='material'] .markdown-content :is(ul, ol) {
   margin: 0 0 1em;

@@ -135,3 +135,23 @@
 
 .appearance-plus > .appearance-plus-label { font-family:inherit; font-size:.92rem; font-weight:650; line-height:1.2; white-space:nowrap; }
 .appearance-plus > span:first-child { font:500 1.65rem/1 Arial,sans-serif; }
+
+/* Prévia ao vivo: mostra tamanho, fonte, contraste, espaçamento e comprimento das linhas. */
+.reading-preview {
+  margin: 14px 0 0;
+  padding: 14px 18px 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--ue-recessed);
+}
+.reading-preview figcaption {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 600;
+}
+.reading-preview-text p {
+  color: var(--text);
+  font-size: 1rem;
+}
