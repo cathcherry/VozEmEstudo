@@ -528,6 +528,27 @@
         </form>
         <section class="learning-tools-panel" data-material-tools aria-label="Ferramentas" hidden></section>
       </dialog>
+      <dialog class="workflow-dialog compact-dialog" data-list-share-dialog aria-labelledby="list-share-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="list-share-title">Compartilhar lista</h2>
+        <p class="dialog-lead">
+          Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas,
+          explicações, transcrição, gravação e anotações não fazem parte do link.
+        </p>
+        <form data-list-share-form>
+          <label for="list-share-days"
+            >Validade<select id="list-share-days" name="days">
+              <option value="1">1 dia</option>
+              <option value="7" selected>7 dias</option>
+              <option value="30">30 dias</option>
+            </select></label
+          >
+          <button class="primary-action" type="submit">Criar link de leitura</button>
+        </form>
+        <p class="form-status" data-list-share-message role="status" aria-live="polite"></p>
+        <div class="share-result" data-list-share-result></div>
+        <div class="share-list" data-list-share-list></div>
+      </dialog>
       <dialog class="workflow-dialog" data-version-panel aria-labelledby="version-dialog-title">
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
         <h2 id="version-dialog-title">Versões da transcrição</h2>

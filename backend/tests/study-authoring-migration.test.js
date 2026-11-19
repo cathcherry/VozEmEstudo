@@ -186,3 +186,47 @@ test('custom-count lists: enqueue limits, partial commits, names and untouched l
     await f.db.close();
   }
 });
+
+test('list shares: frozen answer-free snapshot, idempotent, isolated, expiring and revocable', async () => {
+  const f = await setup();
+  try {
+    const { call, a, materialId, db } = f;
+    const { PERMISSION_DECLARATION } = await import('../src/config/permission-declaration.js');
+    const job = await call('enqueue_question_list_admin', [a.id, materialId, JSON.stringify({ count: 2, config: {} }),
+      revisionIds.a, randomUUID(), PERMISSION_DECLARATION.version, 3]);
+    const list = await call('commit_question_list_admin', [materialId, job.id, 2,
+      JSON.stringify([listQuestion(1, { explanation: 'SEGREDO-EXPLICACAO' }), listQuestion(2)]), 'm', 'questions-v2', 'Lista pública', '{}', '{}', null]);
+    const hash = 'ab'.repeat(32), id = randomUUID(), requestId = randomUUID();
+    const share = (overrides = {}) => {
+      const v = { user: a.id, id, material: materialId, batch: list.id, request: requestId, hash, days: 7, ...overrides };
+      return call('create_question_list_share_admin', [v.user, v.id, v.material, v.batch, v.request, v.hash, v.days, PERMISSION_DECLARATION.version]);
+    };
+    const created = await share();
+    assert.equal(created.id, id);
+    assert.equal((await share()).id, id, 'retry returns the same link');
+    await assert.rejects(share({ days: 30 }), /AUTHORING_REQUEST_CONFLICT/);
+    await assert.rejects(share({ id: randomUUID(), request: randomUUID(), hash: 'cd'.repeat(32), days: 3 }), /AUTHORING_INVALID_INPUT/);
+    await assert.rejects(share({ user: identities.b.id, id: randomUUID(), request: randomUUID(), hash: 'ef'.repeat(32) }), /AUTHORING_NOT_FOUND/);
+    await assert.rejects(share({ id: randomUUID(), request: randomUUID(), hash: 'ef'.repeat(32), batch: resourceIds.batchB }), /AUTHORING_NOT_FOUND/);
+
+    const snapshot = await call('resolve_question_list_share_admin', [hash]);
+    assert.deepEqual(Object.keys(snapshot).sort(), ['expiresAt', 'kind', 'materialTitle', 'questions', 'revision', 'subject', 'title']);
+    assert.deepEqual(Object.keys(snapshot.questions[0]).sort(), ['number', 'options', 'statement']);
+    const text = JSON.stringify(snapshot);
+    for (const leaked of ['correct', 'SEGREDO-EXPLICACAO', 'explanation', 'evidence', 'Energia é conservada', 'metadata', 'storage', 'transcript'])
+      assert(!text.includes(leaked), `snapshot leaks ${leaked}`);
+    // Frozen: later renames do not change an existing link.
+    await call('rename_question_list_admin', [a.id, materialId, list.id, 'Outro nome']);
+    assert.equal((await call('resolve_question_list_share_admin', [hash])).title, 'Lista pública');
+    // Expiration and revocation are enforced by the database query, not the client.
+    await db.query("update public.question_list_shares set expires_at = now() - interval '1 second' where id=$1", [id]);
+    assert.equal(await call('resolve_question_list_share_admin', [hash]), null);
+    await db.query("update public.question_list_shares set expires_at = now() + interval '1 day' where id=$1", [id]);
+    assert(await call('resolve_question_list_share_admin', [hash]));
+    await db.query('update public.question_list_shares set revoked_at = now() where id=$1', [id]);
+    assert.equal(await call('resolve_question_list_share_admin', [hash]), null);
+    assert.equal(await call('resolve_question_list_share_admin', ['00'.repeat(32)]), null);
+  } finally {
+    await f.db.close();
+  }
+});

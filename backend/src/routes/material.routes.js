@@ -6,6 +6,7 @@ import * as summary from '../controllers/summary.controller.js';
 import * as question from '../controllers/question.controller.js';
 import * as playback from '../controllers/playback.controller.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
+import { questionShareRouter } from './question-share.routes.js';
 
 export const materialRouter = Router();
 materialRouter.get('/', material.list);
@@ -35,6 +36,8 @@ materialRouter.post('/:materialId/question-batches', question.createBatch);
 materialRouter.get('/:materialId/question-batches/:batchId/answer-key', question.answerKey);
 if (isFeatureEnabled('study_authoring'))
   materialRouter.patch('/:materialId/question-batches/:batchId', question.rename);
+if (isFeatureEnabled('study_authoring') && isFeatureEnabled('sharing'))
+  materialRouter.use('/:materialId/question-batches/:batchId/shares', questionShareRouter);
 
 materialRouter.post('/:materialId/permission', review.permission);
 materialRouter.get('/:materialId/transcription/review', review.state);

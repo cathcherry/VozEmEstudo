@@ -14,6 +14,7 @@ import {
 import { getPublicConfig } from '../api/config.js';
 import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
 import { initExportPanel } from './export-panel.js';
+import { initListShare } from './list-share.js';
 import {
   normalizeSummaryOptions,
   summaryName,
@@ -680,6 +681,7 @@ function renderQuestionBatches(batches) {
     flags,
     actions: {
       export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
+      ...(flags.study_authoring && flags.sharing ? { share: (batch, name) => listShare.open(batch, name) } : {}),
       rename: (batch, name) =>
         openRename({
           title: 'Renomear lista',
@@ -888,6 +890,7 @@ const exportPanel = initExportPanel({
   flashcards: null,
 });
 $('[data-open-export]').addEventListener('click', () => exportPanel.open());
+const listShare = initListShare({ materialId });
 window.addEventListener('beforeunload', (e) => {
   if (hasUnsavedEdits()) {
     e.preventDefault();

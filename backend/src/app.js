@@ -20,6 +20,7 @@ import { jobRouter } from './routes/job.routes.js';
 import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
+import { publicQuestionList } from './routes/question-share.routes.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
 import { disclosureLabels, recordingLanguageOptions } from './ai/provider-config.js';
@@ -65,6 +66,7 @@ if(isFeatureEnabled('calendar'))app.use('/api/calendar',requireAuth,calendarRout
 if(isFeatureEnabled('sharing')){
   app.use('/api/sharing',requireAuth,sharingRouter);
   app.post('/api/shared-material',publicShare);
+  if (isFeatureEnabled('study_authoring')) app.post('/api/shared-question-list', publicQuestionList);
 }
 if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);

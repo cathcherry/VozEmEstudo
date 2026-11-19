@@ -11,6 +11,7 @@ const express = require(path.join(backend, 'node_modules/express'));
 const summaryCalls = [];
 const listCalls = [];
 const authoringFlags = {};
+const listShares = new Map();
 const reports = [],
   errors = [],
   requests = [],
@@ -326,6 +327,39 @@ async function main() {
       });
       return reply({ jobId: 'job-1' });
     }
+    if (/\/question-batches\/[^/]+\/shares/.test(p)) {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/')[5]);
+      if (request.method() === 'POST') {
+        const body = request.postDataJSON();
+        listShares.set(body.id, {
+          ...body,
+          batchId: batch.id,
+          snapshot: {
+            kind: 'question_list',
+            title: batch.title,
+            materialTitle: m.title,
+            subject: m.subject,
+            revision: 1,
+            questions: batch.questions.map((q, i) => ({ number: i + 1, statement: q.statement, options: q.options })),
+          },
+        });
+        return reply({ id: body.id, expiresAt: new Date(Date.now() + body.days * 86400000).toISOString() });
+      }
+      if (request.method() === 'DELETE') {
+        listShares.get(p.split('/').pop()).revoked = true;
+        return reply({ id: p.split('/').pop() });
+      }
+      return reply({
+        shares: [...listShares.values()]
+          .filter((item) => item.batchId === batch.id)
+          .map((item) => ({
+            id: item.id,
+            expires_at: new Date(Date.now() + item.days * 86400000).toISOString(),
+            revoked_at: item.revoked ? new Date().toISOString() : null,
+          })),
+      });
+    }
     if (p.endsWith('/answer-key')) {
       const m = materials.find((item) => item.id === p.split('/')[3]);
       const batch = m.questionBatches.find((item) => item.id === p.split('/')[5]);
@@ -469,6 +503,17 @@ async function main() {
     return found
       ? reply(found)
       : reply({ error: { code: 'NOT_FOUND', message: 'Material não encontrado.' } }, 404);
+  });
+  // Material-level shares are outside this scenario: an empty list keeps that panel quiet.
+  await context.route(base + '/api/sharing/**', (route) =>
+    route.fulfill({ json: { shares: [], total: 0, offset: 0, limit: 50 } }),
+  );
+  await context.route(base + '/api/shared-question-list', (route) => {
+    const { token } = route.request().postDataJSON();
+    const share = [...listShares.values()].find((item) => item.token === token && !item.revoked);
+    return share
+      ? route.fulfill({ json: share.snapshot })
+      : route.fulfill({ status: 404, json: { error: { message: 'Link indisponível.' } } });
   });
   await context.route(base + '/api/jobs/**', (route) =>
     route.fulfill({
@@ -1872,6 +1917,7 @@ async function main() {
     record('Biblioteca separa Abrir, Editar transcrição (modo edição direto) e Organizar compacto');
     // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
     authoringFlags.study_authoring = true;
+    authoringFlags.sharing = true;
     await page.goto(base + '/material.html?id=aula-real#questoes');
     await page.locator('[data-questions-section]').waitFor();
     assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
@@ -1952,6 +1998,35 @@ async function main() {
     const teacherKey = fs.readFileSync(await teacherFile.path(), 'utf8');
     assert.match(teacherKey, /\*\*Resposta correta:\*\* b\) B\n {3}\*Explicação:\* Explicação da aula 1\./);
     await page.keyboard.press('Escape');
+    // Read-only worksheet link: frozen questions, no answers, revocable.
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Compartilhar', exact: true }).click();
+    await page.locator('[data-list-share-dialog][open]').waitFor();
+    await page.locator('#list-share-days').selectOption('1');
+    await page.locator('[data-list-share-form] [type=submit]').click();
+    await page.locator('[data-list-share-result] input').waitFor();
+    const shareUrl = await page.locator('[data-list-share-result] input').inputValue();
+    assert.match(shareUrl, /\/compartilhado\.html#tipo=lista&token=[0-9a-f]{64}$/);
+    const shareRequest = [...listShares.values()].at(-1);
+    assert.deepEqual(Object.keys(shareRequest).filter((k) => !['batchId', 'snapshot'].includes(k)).sort(), [
+      'days', 'id', 'requestId', 'token',
+    ]);
+    assert.equal(shareRequest.days, 1);
+    await page.locator('[data-list-share-list]').getByText(/^Disponível/).waitFor();
+    const publicPage = await context.newPage();
+    await publicPage.goto(shareUrl);
+    await publicPage.locator('.shared-questions > li').first().waitFor();
+    assert.equal(await publicPage.locator('[data-shared-title]').textContent(), 'Carros elétricos — Avaliação avançada');
+    assert.equal(await publicPage.locator('.shared-questions > li').count(), 5);
+    assert.equal(await publicPage.locator('.shared-questions > li').first().locator('.shared-options li').count(), 4);
+    assert.doesNotMatch(await publicPage.locator('main').textContent(), /Resposta correta|Explicação/);
+    await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
+    await page.locator('[data-list-share-list]').getByText(/^Revogado/).waitFor();
+    await publicPage.reload();
+    await publicPage.getByText('Link indisponível, expirado ou revogado.', { exact: true }).waitFor();
+    await publicPage.close();
+    await page.keyboard.press('Escape');
+    record('Lista compartilhada por link de leitura: cópia sem respostas, validade e revogação');
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('[data-open-questions]').click();
     await page.locator('[data-questions-dialog][open]').waitFor();
@@ -1969,6 +2044,7 @@ async function main() {
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
     await page.setViewportSize({ width: 1280, height: 900 });
     authoringFlags.study_authoring = false;
+    authoringFlags.sharing = false;
     record('Listas nomeadas: quantidade personalizada limitada, recomendação sob demanda, níveis e habilidades, renomear');
     const safe = await page.evaluate(async () => {
       const { renderMarkdown } = await import('/js/utils/markdown.js');

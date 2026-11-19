@@ -132,6 +132,43 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
       );
       assert.equal((await request(`${materialPath}/question-batches/${listId}/answer-key`, 'GET', null, null)).status, 401);
     });
+
+    await t.test('read-only worksheet links expose no answers and can be revoked', async () => {
+      const token = '9f'.repeat(32);
+      const body = { id: randomUUID(), requestId: randomUUID(), token, days: 1 };
+      const path = `${materialPath}/question-batches/${listId}/shares`;
+      assert.equal((await request(path, 'POST', body, 'b')).status, 404);
+      assert.equal((await request(path, 'POST', { ...body, days: 2 })).status, 400);
+      assert.equal((await request(path, 'POST', { ...body, token: 'short' })).status, 400);
+      assert.equal((await request(path, 'POST', body, null)).status, 401);
+      const created = await request(path, 'POST', body);
+      assert.equal(created.status, 200);
+      assert.equal(created.headers.get('cache-control'), 'no-store');
+      assert(!JSON.stringify(created.body).includes(token), 'the raw token is never echoed');
+      const stored = fixture.state.tables.question_list_shares.find((row) => row.id === body.id);
+      assert.notEqual(stored.token_hash, token);
+      const shared = await request('/api/shared-question-list', 'POST', { token }, null);
+      assert.equal(shared.status, 200);
+      assert.equal(shared.headers.get('cache-control'), 'no-store');
+      assert.equal(shared.headers.get('referrer-policy'), 'no-referrer');
+      assert.deepEqual(Object.keys(shared.body).sort(), ['expiresAt', 'kind', 'materialTitle', 'questions', 'revision', 'subject', 'title']);
+      assert.equal(shared.body.title, 'Física — Revisão');
+      const key = (await request(`${materialPath}/question-batches/${listId}/answer-key`)).body;
+      const text = JSON.stringify(shared.body);
+      for (const leaked of ['correctIndex', 'correct_index', 'explanation', 'metadata', 'evidence', 'sourceRefs', key.questions[0].explanation])
+        assert(!text.includes(leaked), `public worksheet leaks ${leaked}`);
+      // Evidence quotes stay private unless the quote is itself an option shown on the worksheet.
+      for (const q of key.questions)
+        if (!q.options.includes(q.metadata.evidence)) assert(!text.includes(q.metadata.evidence));
+      // Options are shown in their stored order, so the correct position is not marked.
+      assert.deepEqual(shared.body.questions.map((q) => q.options), key.questions.map((q) => q.options));
+      assert.equal((await request(path, 'GET', null, 'b')).status, 404);
+      assert.equal((await request(path)).body.shares.length, 1);
+      assert.equal((await request(`${path}/${body.id}`, 'DELETE', null, 'b')).status, 404);
+      assert.equal((await request(`${path}/${body.id}`, 'DELETE')).status, 200);
+      assert.equal((await request('/api/shared-question-list', 'POST', { token }, null)).status, 404);
+      assert.equal((await request('/api/shared-question-list', 'POST', { token: 'x' }, null)).status, 400);
+    });
   } finally {
     await new Promise((resolve) => server.close(resolve));
     await fixture.close();
