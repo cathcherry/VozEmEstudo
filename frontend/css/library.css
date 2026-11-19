@@ -290,7 +290,7 @@
 .oauth-button { min-width:0; white-space:normal; overflow-wrap:anywhere; }
 @media (max-width:900px) { .login-layout,.register-layout { grid-template-columns:minmax(0,1fr); } }
 [data-theme='custom'] { --font-body:var(--custom-font-family); --font-display:var(--custom-font-family); --brand-font:var(--custom-font-family); }
-[data-readable-font='true'] { --font-body:Verdana,Arial,sans-serif; --font-display:Verdana,Arial,sans-serif; --brand-font:Verdana,Arial,sans-serif; }
+html:not([data-reading-font='default'])[data-reading-font] { --font-body:var(--reading-font-family); --font-display:var(--reading-font-family); --brand-font:var(--reading-font-family); }
 .app-page[data-page='material'] [id] { scroll-margin-top:calc(var(--topbar-height) + var(--material-tabs-height,80px) + 24px); }
 
 /* Search field and folder hover motion, adapted to the app palette. */

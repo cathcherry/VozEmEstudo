@@ -10,7 +10,11 @@
     textSize: 'default',
     readingSpacing: 'comfortable',
     readingWidth: 'comfortable',
+    readingFont: 'default',
   });
+  // Reading fonts: bundled OFL fonts plus a plain system option. "readableFont" is kept only as
+  // a derived flag for older saved preferences and themes.
+  const READING_FONTS = ['default', 'readable', 'atkinson', 'lexend', 'opendyslexic'];
   const TEXT_SIZES = ['small', 'default', 'medium', 'large', 'extra-large', 'maximum'];
   const SPACINGS = ['compact', 'comfortable', 'wide'];
   const WIDTHS = ['narrow', 'comfortable', 'wide'];
@@ -199,6 +203,9 @@
     if (TEXT_SIZES.includes(value?.textSize)) result.textSize = value.textSize;
     if (SPACINGS.includes(value?.readingSpacing)) result.readingSpacing = value.readingSpacing;
     if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
+    if (READING_FONTS.includes(value?.readingFont)) result.readingFont = value.readingFont;
+    else if (value?.readableFont === true) result.readingFont = 'readable';
+    result.readableFont = result.readingFont !== 'default';
     return result;
   }
   function normalizeAppearance(value = {}) {

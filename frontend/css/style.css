@@ -568,7 +568,18 @@ input[type="file"]::file-selector-button { background: var(--surface); color: va
 [data-text-size="large"] { font-size: 130%; }
 [data-text-size="extra-large"] { font-size: 150%; }
 [data-text-size="maximum"] { font-size: 200%; --topbar-height: 120px; }
-[data-readable-font="true"] body, [data-readable-font="true"] .article-content h1, [data-readable-font="true"] .article-content h2 { font-family: Verdana, Arial, sans-serif; }
+/* Fonte de leitura escolhida em Aparência (fontes OFL locais, sem CDN). */
+@font-face { font-family: 'Atkinson Hyperlegible'; src: url('/assets/fonts/atkinson-hyperlegible-latin-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Atkinson Hyperlegible'; src: url('/assets/fonts/atkinson-hyperlegible-latin-700.woff2') format('woff2'); font-weight: 600 800; font-display: swap; }
+@font-face { font-family: 'Lexend'; src: url('/assets/fonts/lexend-latin-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Lexend'; src: url('/assets/fonts/lexend-latin-700.woff2') format('woff2'); font-weight: 600 800; font-display: swap; }
+@font-face { font-family: 'OpenDyslexic'; src: url('/assets/fonts/opendyslexic-latin-400.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'OpenDyslexic'; src: url('/assets/fonts/opendyslexic-latin-700.woff2') format('woff2'); font-weight: 600 800; font-display: swap; }
+[data-reading-font="readable"] { --reading-font-family: Verdana, Arial, sans-serif; }
+[data-reading-font="atkinson"] { --reading-font-family: 'Atkinson Hyperlegible', Verdana, Arial, sans-serif; }
+[data-reading-font="lexend"] { --reading-font-family: 'Lexend', Verdana, Arial, sans-serif; }
+[data-reading-font="opendyslexic"] { --reading-font-family: 'OpenDyslexic', Verdana, Arial, sans-serif; }
+html:not([data-reading-font='default'])[data-reading-font] body { font-family: var(--reading-font-family); }
 [data-low-stimulation="true"] .loading-indicator { animation: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 /* Apresentação pública e acesso. */

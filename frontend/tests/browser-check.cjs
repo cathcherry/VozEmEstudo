@@ -1078,6 +1078,23 @@ async function main() {
     assert(wide.lineHeight > comfortable.lineHeight + 0.2, 'spacing changes the preview');
     assert.notEqual(wide.wordSpacing, comfortable.wordSpacing);
     await page.locator('#setting-reading-spacing').selectOption('comfortable');
+    for (const [value, family] of [
+      ['opendyslexic', 'OpenDyslexic'],
+      ['atkinson', 'Atkinson Hyperlegible'],
+      ['lexend', 'Lexend'],
+    ]) {
+      await page.locator('#setting-reading-font').selectOption(value);
+      assert.match(
+        await preview.evaluate((p) => getComputedStyle(p).fontFamily),
+        new RegExp(`^"?${family}`),
+      );
+      const loaded = await page.evaluate(
+        (f) => document.fonts.load(`16px "${f}"`).then((list) => list.length),
+        family,
+      );
+      assert(loaded > 0, `${family} loads from the bundled file`);
+    }
+    await page.locator('#setting-reading-font').selectOption('default');
     await page.locator('#setting-reading-width').selectOption('narrow');
     assert(
       (await previewStyle()).maxWidth < comfortable.maxWidth,
