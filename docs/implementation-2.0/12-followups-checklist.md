@@ -30,3 +30,11 @@ O formulário antigo (anterior a esta atualização), que aparecia como um bloco
 ## Como juntar esta branch
 
 Depois do merge de `feat/study-authoring` em `main`, esta branch pode ser comparada com `main` e mesclada separadamente; ela contém apenas os itens acima.
+
+## 4. Aplicado em 19/11/2026: tabela de vídeos (MP4 original)
+
+Sintoma: com `FEATURE_MP4_RETENTION=true`, o app mostrava "A conservação de vídeos ainda não foi habilitada no banco". Causa: no **audioestudo** existiam o bucket `study-videos` e as políticas de upload/leitura, mas não a tabela `material_videos`, que depende da chave `materials (id, user_id)` criada pela E05 (planejamento, não aplicada).
+
+Com autorização, `20261119150000_material_videos_table.sql` foi ensaiada com `rollback` e aplicada (nome `material_videos_table`): cria a chave (sem alterar linhas; `id` já é a chave primária) e a tabela com RLS, sem acesso do navegador. Conferido: 19 aulas intactas; 1 arquivo de vídeo já existia no bucket de uma tentativa anterior — reenviar o mesmo MP4 para a mesma aula reaproveita esse arquivo.
+
+A E05 foi ajustada para pular a chave quando ela já existe, então continua aplicável depois (testado: E03 → E05 sobre a tabela de vídeos).

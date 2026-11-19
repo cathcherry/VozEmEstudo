@@ -23,8 +23,16 @@ $guard$;
 
 -- Enables a composite FK that prevents cross-account task/material links
 -- even if a future caller accidentally bypasses the service ownership check.
-alter table public.materials
-  add constraint materials_id_user_planning_unique unique (id, user_id);
+-- Skipped when already present (20261119150000_material_videos_table.sql may have added it first).
+do $key$
+begin
+  if not exists (select 1 from pg_constraint where conrelid = 'public.materials'::regclass
+      and conname = 'materials_id_user_planning_unique') then
+    alter table public.materials
+      add constraint materials_id_user_planning_unique unique (id, user_id);
+  end if;
+end
+$key$;
 
 create table public.study_goals (
   id uuid primary key default gen_random_uuid(),
