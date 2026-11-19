@@ -58,6 +58,7 @@ connect_timeout=10
             "E02_STAGING_WRITES_APPROVED": "true",
             "E02_SYNTHETIC_ONLY": "true",
             "E02_WORKERS_PAUSED": "true",
+            "E02_PRIVATE_FILES_CONFIRMED": "true",
             "E02_STAGING_PROJECT_REF": self.ref,
             "E02_PGSERVICE": "e02_staging",
             "PGSERVICEFILE": str(self.service),
@@ -109,10 +110,15 @@ connect_timeout=10
             module.validate_settings(self.source)
 
     def test_world_readable_credentials_and_wrong_fixture_target_are_blocked(self):
-        self.service.chmod(0o644)
-        with self.assertRaises(ValueError):
-            module.validate_settings(self.source)
-        self.service.chmod(0o600)
+        if module.os.name == "nt":
+            # Windows checks explicit private-file confirmation rather than POSIX mode bits.
+            with self.assertRaises(ValueError):
+                module.validate_settings({**self.source, "E02_PRIVATE_FILES_CONFIRMED": "false"})
+        else:
+            self.service.chmod(0o644)
+            with self.assertRaises(ValueError):
+                module.validate_settings(self.source)
+            self.service.chmod(0o600)
         payload = json.loads(self.fixture.read_text())
         payload["projectRef"] = module.EXISTING_PROJECT_REF
         self.fixture.write_text(json.dumps(payload))
