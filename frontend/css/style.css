@@ -778,3 +778,21 @@ html[data-focus-mode='true'] .app-toast {
     animation: none;
   }
 }
+
+/* Guia de leitura (js/utils/reading-ruler.js). */
+.reading-ruler {
+  position: fixed;
+  z-index: 90;
+  border-block: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 0 0 100vmax rgb(10 14 22 / 0.32);
+  pointer-events: none;
+}
+.reading-ruler[hidden] { display: none; }
+[data-low-stimulation='true'] .reading-ruler { box-shadow: 0 0 0 100vmax rgb(10 14 22 / 0.2); }
+html[data-reading-ruler='focus'] [data-transcription-segments]:is(:hover, :focus-within, :has(.is-playing)) .transcription-segment:not(.is-playing, :hover, :focus-within),
+html[data-reading-ruler='focus'] :is(.markdown-content, .reading-preview-text):is(:hover, :focus-within) > :not(:hover, :focus-within) {
+  opacity: 0.38;
+}
+html[data-reading-ruler='focus'] :is(.transcription-segment, .markdown-content > *, .reading-preview-text > *) { transition: opacity 0.15s ease; }
+[data-reduced-motion='true'] :is(.transcription-segment, .markdown-content > *, .reading-preview-text > *) { transition: none; }

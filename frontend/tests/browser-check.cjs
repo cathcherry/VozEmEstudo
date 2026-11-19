@@ -1095,6 +1095,28 @@ async function main() {
       assert(loaded > 0, `${family} loads from the bundled file`);
     }
     await page.locator('#setting-reading-font').selectOption('default');
+    // Reading guide: a ruler following the pointer, or dimming of the lines not being read.
+    await page.locator('#setting-reading-ruler').selectOption('ruler');
+    const firstLine = page.locator('.reading-preview-text p').first();
+    await firstLine.hover({ position: { x: 40, y: 8 } });
+    await page.locator('.reading-ruler:not([hidden])').waitFor();
+    const [ruler, line] = await Promise.all([
+      page.locator('.reading-ruler').boundingBox(),
+      firstLine.boundingBox(),
+    ]);
+    assert(
+      ruler.y + ruler.height / 2 >= line.y && ruler.y <= line.y + line.height,
+      'ruler sits on the hovered line',
+    );
+    await page.locator('#setting-reading-ruler').selectOption('focus');
+    assert.equal(await page.locator('.reading-ruler').isHidden(), true);
+    await page.locator('.reading-preview-text p').nth(1).hover();
+    await page.waitForTimeout(250);
+    assert(
+      Number(await firstLine.evaluate((p) => getComputedStyle(p).opacity)) < 0.5,
+      'other lines dim',
+    );
+    await page.locator('#setting-reading-ruler').selectOption('off');
     await page.locator('#setting-reading-width').selectOption('narrow');
     assert(
       (await previewStyle()).maxWidth < comfortable.maxWidth,
