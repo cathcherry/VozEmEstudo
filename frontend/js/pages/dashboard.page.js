@@ -2,7 +2,7 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { listMaterials } from '../api/material.api.js';
 import { studyFor, listeningPercent } from '../utils/study-store.js';
-import { materialHref } from '../utils/library-ui.js';
+import { materialHref, playbackAtEnd } from '../utils/library-ui.js';
 import { formatDate, formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
@@ -28,6 +28,9 @@ function dashboardLesson(material) {
   card.className = 'dashboard-lesson-card';
   card.href = materialHref(material.id);
   card.dataset.materialId = material.id;
+  const atEnd = playbackAtEnd(material);
+  const action = study.completed || atEnd ? 'Revisar' : study.openedAt ? 'Continuar' : 'Abrir';
+  card.setAttribute('aria-label', `${action} ${material.title}`);
 
   const copy = document.createElement('span');
   copy.className = 'dashboard-lesson-copy';
@@ -38,6 +41,12 @@ function dashboardLesson(material) {
   subject.className = 'dashboard-lesson-subject';
   subject.textContent = material.subject || 'Sem disciplina';
   copy.append(title, subject);
+  if (atEnd) {
+    const playbackState = document.createElement('span');
+    playbackState.className = 'dashboard-lesson-subject';
+    playbackState.textContent = 'No fim do áudio';
+    copy.append(playbackState);
+  }
   card.append(copy);
 
   const created = document.createElement('time');
@@ -65,7 +74,7 @@ function dashboardLesson(material) {
   const cue = document.createElement('span');
   cue.className = 'dashboard-lesson-cue';
   cue.setAttribute('aria-hidden', 'true');
-  cue.textContent = 'Abrir aula →';
+  cue.textContent = `${action} aula →`;
   card.append(cue);
 
   if (durationMs > 0) {

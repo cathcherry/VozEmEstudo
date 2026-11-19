@@ -731,7 +731,7 @@ async function main() {
     );
     assert.equal(await page.locator('[data-audio-player] audio').evaluate((a) => a.paused), true);
     await page.goto(base + '/painel.html');
-    await page.locator('[data-continue-list] .library-material').first().waitFor();
+    await page.locator('[data-continue-list] .dashboard-lesson-card').first().waitFor();
     const storedState = await page.evaluate(async () => {
       const store = await import('/js/utils/study-store.js');
       const old = store.studyFor('aula-real');
@@ -744,7 +744,7 @@ async function main() {
       return old;
     });
     await page.reload();
-    await page.locator('[data-continue-list] .library-material').first().waitFor();
+    await page.locator('[data-continue-list] .dashboard-lesson-card').first().waitFor();
     assert(
       await page
         .getByRole('link', { name: 'Revisar Carros elétricos — energia', exact: true })
@@ -780,7 +780,7 @@ async function main() {
     );
     assert.match(await page.locator('[data-overview]').textContent(), /1 revisão concluída/);
     assert(await page.getByText('energia', { exact: true }).first().isVisible());
-    assert.equal(await page.locator('[data-continue-list] .library-material').count(), 1);
+    assert.equal(await page.locator('[data-continue-list] .dashboard-lesson-card').count(), 1);
     assert.equal(
       await page.locator('[data-recent-list] [data-material-id="aula-real"]').count(),
       0,
@@ -892,7 +892,7 @@ async function main() {
     await page.getByText('Biblioteca indisponível no momento.', { exact: true }).waitFor();
     mode = 'success';
     await page.getByRole('button', { name: 'Tentar novamente', exact: true }).click();
-    await page.locator('[data-recent-list] .library-material').first().waitFor();
+    await page.locator('[data-recent-list] .dashboard-lesson-card').first().waitFor();
     record('Falha de carregamento oferece recuperação sem recarregar o aplicativo');
     await page.evaluate(() => localStorage.setItem('test-logged-out', '1'));
     await page.goto(base + '/login.html?next=/material.html?id=aula-real');
