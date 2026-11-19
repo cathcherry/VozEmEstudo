@@ -803,6 +803,9 @@ html[data-reading-ruler='focus'] :is(.transcription-segment, .markdown-content >
 .speak-stop[hidden] { display: none; }
 /* Preferência "Botões de ouvir: Ocultar" (Aparência → Leitura e foco). */
 html[data-read-aloud='off'] .speak-controls { display: none !important; }
+/* The page reader in the header exists only for "Em todo o site". */
+html:not([data-read-aloud='everywhere']) .page-reader { display: none !important; }
+.page-reader { margin-inline-end: 4px; }
 .speak-compact { gap: 2px; }
 .speak-compact .icon-action {
   display: inline-grid;
@@ -895,4 +898,46 @@ kbd {
 [data-low-stimulation='true'] .nino-note .nino-art { opacity: 0.7; }
 @media (max-width: 420px) {
   .empty-state-card { flex-direction: column; text-align: center; }
+}
+
+
+/* ==== Modo para leitores de tela ====
+   Apresentação mínima: o conteúdo e a ordem do DOM ficam iguais; somem decoração, movimento,
+   imagens decorativas e a leitura em voz alta do próprio site (o leitor de tela já faz isso). */
+html[data-screen-reader-mode='true'] { scroll-behavior: auto !important; }
+html[data-screen-reader-mode='true'] *,
+html[data-screen-reader-mode='true'] *::before,
+html[data-screen-reader-mode='true'] *::after {
+  animation: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  background-image: none !important;
+}
+html[data-screen-reader-mode='true']
+  :is(.nino-art, img[alt=''], .ve-hero-art, .shared-nino, .speak-controls, .page-reader,
+      .question-batch-progress, .reading-ruler, .card-motion-layer, .welcome-card img,
+      .library-file-icon, .subject-folder-icon, .setting-icon, [data-tooltip]::after) {
+  display: none !important;
+}
+html[data-screen-reader-mode='true'] body {
+  background: var(--surface) !important;
+}
+html[data-screen-reader-mode='true']
+  :is(.article-section, .empty-state-card, .question-batch-card, .global-search-results,
+      .search-result, .dashboard-lesson-card, .flashcard-set-row, .flashcard-proposal,
+      .material-header, .material-recording, .media-player, .settings-hub-card) {
+  border-color: var(--border) !important;
+  border-radius: 4px !important;
+  background: var(--surface) !important;
+}
+html[data-screen-reader-mode='true'] a:not(.primary-action):not(.secondary-action) {
+  text-decoration: underline !important;
+}
+html[data-screen-reader-mode='true'] :focus-visible {
+  outline: 3px solid var(--text) !important;
+  outline-offset: 3px !important;
+}
+html[data-screen-reader-mode='true'] :is(.library-dashboard, .dashboard-library-side, .flashcard-columns, .authoring-grid, .choice-grid) {
+  display: block !important;
 }

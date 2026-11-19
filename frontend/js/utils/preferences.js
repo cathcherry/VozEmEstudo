@@ -1,6 +1,7 @@
 import { toast } from './toast.js';
 import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
+import { initPageReader } from './page-reader.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
@@ -47,11 +48,12 @@ function updateControls() {
     );
   syncNavigation();
   syncFocusDock();
+  syncScreenReaderToggle();
 }
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
   // Focus mode and read-aloud choices are not part of a theme, so they never deselect one.
-  const notTheme = ['focusMode', 'readAloud', 'speechRate'];
+  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode'];
   const changesTheme = Object.keys(appearance.defaults).some(
     (key) => !notTheme.includes(key) && next[key] !== uiPreferences[key],
   );
@@ -325,6 +327,36 @@ function initializeFocusDock() {
   });
   syncFocusDock();
 }
+/**
+ * Screen-reader mode is offered as the second skip link of every page (first Tab), so people who
+ * need it do not have to find it inside the settings. The page reader exists only for "Em todo o
+ * site"; CSS hides it otherwise.
+ */
+function initializeAccessibilityEntryPoints() {
+  initPageReader();
+  const skip = document.querySelector('.skip-link');
+  if (!skip || document.querySelector('[data-screen-reader-toggle]')) return;
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'skip-link screen-reader-toggle';
+  toggle.dataset.screenReaderToggle = '';
+  skip.after(toggle);
+  toggle.addEventListener('click', () => {
+    const next = !uiPreferences.screenReaderMode;
+    updateUiPreference('screenReaderMode', next);
+    showToast(next ? 'Modo para leitores de tela ativado.' : 'Modo para leitores de tela desativado.');
+    toggle.focus();
+  });
+  syncScreenReaderToggle();
+}
+function syncScreenReaderToggle() {
+  const toggle = document.querySelector('[data-screen-reader-toggle]');
+  if (!toggle) return;
+  toggle.textContent = uiPreferences.screenReaderMode
+    ? 'Desativar modo para leitores de tela'
+    : 'Ativar modo para leitores de tela';
+  toggle.setAttribute('aria-pressed', String(uiPreferences.screenReaderMode));
+}
 function initialize() {
   initializeNavigation();
   if (document.body.classList.contains('app-page')) {
@@ -332,6 +364,7 @@ function initialize() {
     initShortcutsHelp();
   }
   initializeFocusDock();
+  initializeAccessibilityEntryPoints();
   document.querySelectorAll('[data-open-dialog]').forEach((button) =>
     button.addEventListener('click', () => {
       const dialog = document.getElementById(button.dataset.openDialog);

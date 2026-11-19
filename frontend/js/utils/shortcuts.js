@@ -8,6 +8,7 @@ const GROUPS = [
     items: [
       ['?', 'Mostrar esta lista de atalhos'],
       ['Alt + F', 'Ligar ou desligar o modo foco'],
+      ['Alt + L', 'Ouvir a página ou o texto selecionado (com leitura em voz alta em todo o site)'],
       ['Esc', 'Fechar menus, diálogos e a navegação reaberta no modo foco'],
       ['Tab / Shift + Tab', 'Avançar ou voltar entre os controles'],
     ],

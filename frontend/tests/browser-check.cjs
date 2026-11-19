@@ -2219,9 +2219,51 @@ async function main() {
     assert(await page.locator('.panel-title-row .speak-controls').isHidden(), 'hidden by the preference');
     assert.equal(await page.evaluate(() => document.documentElement.dataset.speechRate), 'slow');
     await page.goto(base + '/aparencia.html');
-    await page.locator('#setting-read-aloud').selectOption('on');
+    await page.locator('#setting-read-aloud').selectOption('icons');
     await page.locator('#setting-speech-rate').selectOption('normal');
     record('Leitura em voz alta: ícone discreto junto ao título; ocultar e velocidade em Aparência');
+    // "Em todo o site": a discreet page reader in every header (Alt+L); hidden otherwise.
+    await page.goto(base + '/aparencia.html');
+    await page.locator('#setting-read-aloud').selectOption('everywhere');
+    await page.goto(base + '/painel.html');
+    const pageReader = page.locator('.page-reader').getByRole('button', { name: 'Ouvir esta página', exact: true });
+    assert(await pageReader.isVisible());
+    assert.equal(await pageReader.getAttribute('aria-keyshortcuts'), 'Alt+L');
+    await page.goto(base + '/historico.html');
+    assert(await page.locator('.page-reader').isVisible(), 'available on every app page');
+    await page.goto(base + '/aparencia.html');
+    await page.locator('#setting-read-aloud').selectOption('icons');
+    await page.goto(base + '/painel.html');
+    assert(await page.locator('.page-reader').isHidden());
+    record('Leitura em voz alta em todo o site é opcional: leitor discreto no topo e Alt+L');
+    // Screen-reader mode: reachable from the second Tab stop of any page.
+    await page.goto(base + '/historico.html');
+    await page.locator('[data-library-data][aria-busy="false"]').waitFor();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.textContent), 'Ativar modo para leitores de tela');
+    assert(await page.locator('[data-screen-reader-toggle]').isVisible(), 'visible while focused');
+    await page.keyboard.press('Enter');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'true');
+    assert.equal(await page.locator('[data-screen-reader-toggle]').getAttribute('aria-pressed'), 'true');
+    assert.equal(await page.locator('[data-screen-reader-toggle]').textContent(), 'Desativar modo para leitores de tela');
+    await page.goto(base + '/painel.html?busca=xyzinexistente');
+    await page.getByText('Nada encontrado para “xyzinexistente”', { exact: true }).waitFor();
+    assert(await page.locator('[data-search-results] img[data-nino]').isHidden(), 'decorative images removed');
+    assert.equal(await page.locator('.global-search-results').evaluate((n) => getComputedStyle(n).boxShadow), 'none');
+    await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
+    const minimalViolations = await page.evaluate(async () =>
+      (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } })).violations.map((v) => v.id),
+    );
+    assert.deepEqual(minimalViolations, [], 'screen-reader mode has no automatic violations');
+    await screenshot(page, output, 'screen-reader-mode.png');
+    await page.reload();
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'true', 'persists');
+    await page.goto(base + '/aparencia.html');
+    assert(await page.locator('#setting-screen-reader').isChecked());
+    await page.locator('#setting-screen-reader').uncheck();
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'false');
+    record('Modo para leitores de tela: no segundo Tab de cada página, sem decoração nem animação, axe sem violações');
     // Transcript search shows the searched words in bold, ignoring accents and case.
     await page.goto(base + '/material.html?id=aula-real#transcricao');
     await page.locator('.segment-text').first().waitFor();

@@ -14,11 +14,15 @@
     readingRuler: 'off',
     navigation: 'sidebar',
     // Read-aloud buttons (browser voices) and their speed.
-    readAloud: 'on',
+    // 'icons': discreet speakers where reading helps; 'everywhere': also a page reader in the
+    // header of every page; 'off': no read-aloud buttons.
+    readAloud: 'icons',
     speechRate: 'normal',
+    // Minimal presentation for screen-reader users: no decoration, animation or own TTS.
+    screenReaderMode: false,
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
-  const READ_ALOUD = ['on', 'off'];
+  const READ_ALOUD = ['off', 'icons', 'everywhere'];
   const SPEECH_RATES = ['slow', 'normal', 'fast', 'faster'];
   const RULERS = ['off', 'ruler', 'focus'];
   // Reading fonts: bundled OFL fonts plus a plain system option. "readableFont" is kept only as
@@ -217,6 +221,7 @@
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
     if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
+    else if (value?.readAloud === 'on') result.readAloud = 'icons';
     if (SPEECH_RATES.includes(value?.speechRate)) result.speechRate = value.speechRate;
     if (READING_FONTS.includes(value?.readingFont)) result.readingFont = value.readingFont;
     else if (value?.readableFont === true) result.readingFont = 'readable';
@@ -287,7 +292,12 @@
     saveAppearance(profile.appearance);
     // Read-aloud choices belong to the person, not to the theme: keep the current ones.
     const current = loadUi();
-    const ui = normalizeUi({ ...profile.ui, readAloud: current.readAloud, speechRate: current.speechRate });
+    const ui = normalizeUi({
+      ...profile.ui,
+      readAloud: current.readAloud,
+      speechRate: current.speechRate,
+      screenReaderMode: current.screenReaderMode,
+    });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);
     storage.set('voz-active-theme-profile', profile.id);

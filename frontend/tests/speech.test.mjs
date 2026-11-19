@@ -124,3 +124,18 @@ test('compact icon controls keep accessible names and follow the speed preferenc
   play.click();
   assert.equal(spoken.at(-1).rate, 1);
 });
+
+test('page reader reads visible main-content blocks, or only the selection', async () => {
+  const { readableBlocks, selectedBlocks } = await import('../js/utils/page-reader.js');
+  const dom = new JSDOM(`<main>
+    <h1>Título</h1><p>Parágrafo um.</p>
+    <nav><p>Menu</p></nav><p hidden>Oculto</p><div aria-hidden="true"><p>Decorativo</p></div>
+    <ul><li><p>Item com parágrafo</p></li><li>Item simples</li></ul>
+    <button><p>Botão</p></button><span class="sr-only"><p>Só leitor</p></span>
+    <dialog><p>Diálogo fechado</p></dialog><p>   </p>
+  </main>`);
+  const texts = readableBlocks(dom.window.document.querySelector('main')).map((b) => b.text);
+  assert.deepEqual(texts, ['Título', 'Parágrafo um.', 'Item com parágrafo', 'Item simples']);
+  assert.equal(selectedBlocks({ getSelection: () => '' }), null);
+  assert.deepEqual(selectedBlocks({ getSelection: () => '  trecho   escolhido ' }), [{ text: 'trecho escolhido' }]);
+});
