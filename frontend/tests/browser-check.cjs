@@ -262,13 +262,21 @@ async function main() {
     if (p.endsWith('/video') && request.method() === 'POST') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
       const data = request.postDataJSON();
-      m.video = { durationMs: data.durationMs, clipStartMs: data.clipStartMs, clipEndMs: data.clipEndMs };
+      m.video = {
+        durationMs: data.durationMs,
+        clipStartMs: data.clipStartMs,
+        clipEndMs: data.clipEndMs,
+      };
       m.signedVideoUrl = base + '/__fixture.mp4';
       return reply(m.video);
     }
     if (p.endsWith('/playback')) {
       const m = materials.find((item) => item.id === p.split('/')[3]);
-      return reply({ video: m.video, signedVideoUrl: m.signedVideoUrl, signedAudioUrl: m.signedAudioUrl });
+      return reply({
+        video: m.video,
+        signedVideoUrl: m.signedVideoUrl,
+        signedAudioUrl: m.signedAudioUrl,
+      });
     }
     if (p.endsWith('/summaries')) {
       summaryCalls.push(request.postDataJSON());
@@ -446,8 +454,14 @@ async function main() {
     await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
     assert.equal(await page.locator('.focus-secondary').first().isVisible(), false);
-    assert.equal(await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).count(), 0);
-    const focusDockTrigger = page.getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true });
+    assert.equal(
+      await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).count(),
+      0,
+    );
+    const focusDockTrigger = page.getByRole('button', {
+      name: 'Mostrar navegação do modo foco',
+      exact: true,
+    });
     assert.equal(await focusDockTrigger.isVisible(), true);
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
@@ -457,7 +471,12 @@ async function main() {
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
     );
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
-    assert.equal(await page.getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true }).isVisible(), true);
+    assert.equal(
+      await page
+        .getByRole('button', { name: 'Mostrar navegação do modo foco', exact: true })
+        .isVisible(),
+      true,
+    );
     await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'false');
     await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
@@ -556,7 +575,10 @@ async function main() {
     await page.locator('#library-search').fill('inexistente');
     await page.getByText('Nenhuma aula encontrada.', { exact: true }).waitFor();
     await page.locator('#library-search').fill('carro');
-    await page.locator('.library-subject-folder > summary').filter({ hasText: 'Tecnologia' }).click();
+    await page
+      .locator('.library-subject-folder > summary')
+      .filter({ hasText: 'Tecnologia' })
+      .click();
     const row = page.locator('[data-material-id="aula-real"]');
     await row.locator('.row-menu > summary').click();
     await row.getByRole('button', { name: 'Editar', exact: true }).click();
@@ -567,14 +589,22 @@ async function main() {
     await page.locator('#metadata-dialog').waitFor({ state: 'hidden' });
     await page.goBack();
     await page.locator('#library-search').fill('revisão');
-    await page.locator('[data-library-count]').filter({ hasText: '1 aula' }).waitFor({ state: 'attached' });
+    await page
+      .locator('[data-library-count]')
+      .filter({ hasText: '1 aula' })
+      .waitFor({ state: 'attached' });
     assert.equal(await page.locator('.library-material').count(), 1);
     assert.equal(materials.find((m) => m.id === 'aula-real').subject, 'Física');
     await page.getByRole('button', { name: 'Filtros', exact: true }).click();
     await page.locator('#library-tag').selectOption('revisão');
     assert.equal(await page.locator('.library-material').count(), 1);
     await page.locator('#library-subject').selectOption('Física');
-    assert(await page.locator('.library-subject-folder > summary strong').filter({ hasText: 'Física' }).isVisible());
+    assert(
+      await page
+        .locator('.library-subject-folder > summary strong')
+        .filter({ hasText: 'Física' })
+        .isVisible(),
+    );
     await page.reload();
     await page.locator('[data-library-data][aria-busy="false"]').waitFor();
     await page.locator('#library-search').fill('revisão');
@@ -695,9 +725,15 @@ async function main() {
     assert.equal(summaryCalls.at(-1).format, undefined);
     await page.locator('[data-open-export]').click();
     const exportPromise = page.waitForEvent('download');
-    await page.locator('[data-material-tools]').getByRole('button', { name: 'Baixar Markdown' }).click();
+    await page
+      .locator('[data-material-tools]')
+      .getByRole('button', { name: 'Baixar Markdown' })
+      .click();
     assert((await exportPromise).suggestedFilename().endsWith('.md'));
-    await page.locator('[data-export-dialog]').getByRole('button', { name: 'Fechar', exact: true }).click();
+    await page
+      .locator('[data-export-dialog]')
+      .getByRole('button', { name: 'Fechar', exact: true })
+      .click();
     await page.locator('[data-export-dialog]').waitFor({ state: 'hidden' });
     await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
     record('Markdown formatado, personalização contextual, exportação oculta e avisos em diálogo');
@@ -809,42 +845,65 @@ async function main() {
     );
     record('Questões respondidas alimentam o histórico local do perfil');
     await page.goto(base + '/conta.html');
-    await page.locator('[data-avatar-options] input').first().waitFor({ state: 'attached' });
-    assert.equal(await page.locator('[data-avatar-options] input').count(), 8);
-    assert((await page.locator('.account-link img').getAttribute('src')).endsWith('reading.png'));
+    const avatarButtons = page.locator('[data-earned-avatars] button');
+    await avatarButtons.nth(7).waitFor({ state: 'attached' });
+    assert.equal(await page.locator('[data-earned-avatars]').count(), 1);
+    assert.equal(await avatarButtons.count(), 8);
+    assert((await page.locator('.account-link img').getAttribute('src')).includes('reading.png'));
+    await page.getByRole('button', { name: 'Editar perfil', exact: true }).click();
+    const profileDialog = page.getByRole('dialog', { name: 'Personalizar perfil' });
+    await profileDialog.waitFor();
+    assert(
+      await profileDialog
+        .getByRole('button', { name: 'Nino com notebook · bloqueado', exact: true })
+        .isDisabled(),
+    );
+    await profileDialog.getByRole('button', { name: 'Nino curioso', exact: true }).click();
+    await page.waitForFunction(() =>
+      document.querySelector('.account-link img')?.getAttribute('src').includes('curious.png'),
+    );
+    assert.equal(profileCalls.at(-1).data.mascot_avatar, 'curious');
     await page.locator('#display-name').fill('Catharine');
     await page.locator('#institution').fill('Escola de teste');
     await page.locator('#course').fill('Desenvolvimento de Sistemas');
     await page.locator('#study-goal').fill('Revisar Física');
     await page.locator('#profile-bio').fill('Aprendo com aulas e exercícios.');
-    await page.getByRole('radio', { name: 'Nino com notebook', exact: true }).focus();
-    await page.keyboard.press('Space');
-    await page.getByRole('button', { name: 'Salvar perfil', exact: true }).click();
-    await page.getByText('Perfil salvo.', { exact: true }).waitFor();
-    assert.equal(profileCalls.at(-1).data.mascot_avatar, 'laptop');
+    await profileDialog.getByRole('button', { name: 'Salvar perfil', exact: true }).click();
+    await profileDialog.waitFor({ state: 'hidden' });
+    assert.equal(await page.locator('[data-account-message]').textContent(), 'Perfil atualizado.');
+    assert.equal(profileCalls.at(-1).data.mascot_avatar, 'curious');
     assert.equal(profileCalls.at(-1).data.institution, 'Escola de teste');
     await page.reload();
-    await page.waitForFunction(() => !document.querySelector('#display-name').disabled);
+    await page.getByRole('heading', { name: 'Catharine', level: 2 }).waitFor();
     assert.equal(await page.locator('#course').inputValue(), 'Desenvolvimento de Sistemas');
-    assert((await page.locator('.account-link img').getAttribute('src')).endsWith('laptop.png'));
+    assert((await page.locator('.account-link img').getAttribute('src')).includes('curious.png'));
     await screenshot(page, output, 'profile-desktop.png');
     record('Perfil detalhado salva metadados no Supabase e oferece oito avatares com padrão Nino');
+    const savedThemes = page.getByRole('dialog', { name: 'Meus temas' });
+    const openSavedThemes = async () => {
+      await page.getByRole('button', { name: 'Temas salvos', exact: true }).click();
+      await savedThemes.waitFor();
+    };
+    const saveTheme = async (template, name) => {
+      await openSavedThemes();
+      if (template) await savedThemes.getByRole('button', { name: template, exact: true }).click();
+      await page.locator('#theme-profile-name').fill(name);
+      await savedThemes.getByRole('button', { name: 'Salvar tema', exact: true }).click();
+      await savedThemes.waitFor({ state: 'hidden' });
+    };
     await page.goto(base + '/aparencia.html');
-    await page.getByRole('button', { name: 'Claro', exact: true }).click();
-    await page.locator('#theme-profile-name').fill('Meu claro');
-    await page.getByRole('button', { name: 'Salvar tema atual', exact: true }).click();
-    await page.getByRole('button', { name: 'Escuro', exact: true }).click();
-    await page.locator('#theme-profile-name').fill('Meu escuro');
-    await page.getByRole('button', { name: 'Salvar tema atual', exact: true }).click();
-    await page.getByRole('button', { name: 'Foco', exact: true }).click();
-    await page.locator('#theme-profile-name').fill('Meu foco');
-    await page.getByRole('button', { name: 'Salvar tema atual', exact: true }).click();
+    await saveTheme('Claro', 'Meu claro');
+    await saveTheme('Escuro', 'Meu escuro');
+    await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
+    assert.equal(await page.locator('html').getAttribute('data-focus-mode'), 'true');
+    await saveTheme(null, 'Meu foco');
     assert.equal(await page.locator('[data-theme-profile]').count(), 3);
     assert.equal(await page.locator('html').getAttribute('data-focus-mode'), 'true');
-    await page.getByRole('button', { name: 'Aplicar tema Meu escuro', exact: true }).click();
+    await openSavedThemes();
+    await savedThemes.getByRole('button', { name: 'Aplicar tema Meu escuro', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-focus-mode'), 'false');
     await page.reload();
-    await page.locator('[data-theme-profile]').first().waitFor();
+    await page.locator('[data-theme-profile]').first().waitFor({ state: 'attached' });
     assert((await page.evaluate(() => window.__paints)).every((p) => p.theme === 'custom'));
     assert.equal(
       await page
@@ -852,21 +911,28 @@ async function main() {
         .evaluate((n) => getComputedStyle(n).getPropertyValue('--custom-background').trim()),
       '#151a21',
     );
-    await page.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
+    await openSavedThemes();
+    await savedThemes.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
     await page.goto(base + '/leitura.html');
     await page.locator('#setting-text-size').selectOption('medium');
     await page.goto(base + '/aparencia.html');
-    await page
+    await openSavedThemes();
+    await savedThemes
       .getByRole('button', {
         name: 'Atualizar tema Meu claro com as preferências atuais',
         exact: true,
       })
       .click();
-    await page.getByRole('button', { name: 'Aplicar tema Meu foco', exact: true }).click();
-    await page.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
+    await savedThemes.getByRole('button', { name: 'Aplicar tema Meu foco', exact: true }).click();
+    // Temas salvos não fixam o modo foco: aplicar qualquer tema mantém a navegação completa.
+    assert.equal(await page.locator('html').getAttribute('data-focus-mode'), 'false');
+    await savedThemes.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-text-size'), 'medium');
-    await page.getByRole('button', { name: 'Excluir tema Meu escuro', exact: true }).click();
+    assert.equal(await page.locator('html').getAttribute('data-focus-mode'), 'false');
+    await savedThemes.getByRole('button', { name: 'Excluir tema Meu escuro', exact: true }).click();
     assert.equal(await page.locator('[data-theme-profile]').count(), 2);
+    await page.keyboard.press('Escape');
+    await savedThemes.waitFor({ state: 'hidden' });
     await page.evaluate(async () => {
       const store = await import('/js/utils/study-store.js');
       store.setStudyUser('another-user');
@@ -877,14 +943,18 @@ async function main() {
       window.VozAppearance.setUser('test-user');
     });
     record(
-      'Temas claro/escuro/foco podem ser salvos, aplicados, atualizados e excluídos por conta',
+      'Temas claro/escuro podem ser salvos, aplicados, atualizados e excluídos por conta sem fixar o modo foco',
     );
     await page.goto(base + '/leitura.html');
     await page.locator('#setting-text-size').selectOption('default');
     await page.getByRole('button', { name: 'Restaurar preferências', exact: true }).click();
     mode = 'empty';
     await page.goto(base + '/painel.html');
-    await page.getByText('Sua Biblioteca está pronta para começar.', { exact: true }).waitFor();
+    await page.getByText('Sua Biblioteca está vazia.', { exact: true }).waitFor();
+    await page
+      .locator('[data-dashboard-data] .empty-state-card')
+      .getByRole('link', { name: 'Nova transcrição', exact: true })
+      .waitFor();
     assert.match(await page.locator('[data-overview]').textContent(), /^0 aulas/);
     record('Painel vazio não inventa aulas ou métricas');
     mode = 'error';
@@ -1015,7 +1085,9 @@ async function main() {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(base + '/ajuda.html#seus-dados');
     await page.locator('.storage-notice').waitFor();
-    assert.match(await page.getByRole('note').textContent(), /não sincronizam entre aparelhos/);
+    const storageNote = (await page.getByRole('note').textContent()).replace(/\s+/g, ' ');
+    assert.match(storageNote, /sincronizados com sua conta/);
+    assert.match(storageNote, /Sem conexão, as mudanças ficam neste dispositivo/);
     await screenshot(page, output, 'help-storage-desktop.png');
     await audit('aviso de dados na Ajuda');
     assert.deepEqual(accessibility.at(-1).violations, [], 'Acessibilidade da Ajuda e aviso');
@@ -1214,7 +1286,17 @@ async function main() {
     );
     await page.keyboard.press('Shift+Tab');
     assert.equal(
-      await page.locator('.sidebar-about').evaluate((n) => document.activeElement === n),
+      await page.locator('#navigation').evaluate((nav) => {
+        const controls = [...nav.querySelectorAll('a[href],button:not(:disabled)')].filter(
+          (n) => n.getClientRects().length,
+        );
+        const last = controls.at(-1);
+        return (
+          controls.length > 1 &&
+          !last.matches('[data-sidebar-close]') &&
+          document.activeElement === last
+        );
+      }),
       true,
     );
     await page.keyboard.press('Tab');
@@ -1287,7 +1369,9 @@ async function main() {
     await page.locator('#permission-declaration').check();
     await page.locator('[data-review-upload]').click();
     assert(
-      (await page.locator('[data-upload-choice-list]').textContent()).includes('MP4 original inteiro'),
+      (await page.locator('[data-upload-choice-list]').textContent()).includes(
+        'MP4 original inteiro',
+      ),
     );
     await page.locator('[data-transcribe]').click();
     await page.waitForURL('**/material.html?**');
