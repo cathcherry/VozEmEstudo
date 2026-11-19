@@ -311,10 +311,15 @@ async function main() {
     if (p.endsWith('/summaries')) {
       summaryCalls.push(request.postDataJSON());
       const m = materials.find((item) => item.id === p.split('/')[3]);
+      const body = request.postDataJSON();
+      for (const summary of m.summaries) summary.is_current = false;
       m.summaries.unshift({
         ...m.summaries[0],
+        id: 'summary-' + (m.summaries[0].version + 1),
         version: m.summaries[0].version + 1,
         is_current: true,
+        label: body.options?.label || null,
+        options: body.options || {},
       });
       return reply({ jobId: 'job-1' });
     }
@@ -843,6 +848,30 @@ async function main() {
       () => document.querySelector('[data-regenerate-summary]').disabled === false,
     );
     assert.equal(summaryCalls.at(-1).options.readingLevel, 'simple');
+    assert.equal(await page.locator('[data-regenerate-summary]').textContent(), 'Gerar novo resumo');
+    await page.locator('[data-regenerate-summary]').click();
+    // Advanced settings stay collapsed; names need the authoring migration flag.
+    assert.equal(await page.locator('[data-summary-advanced]').evaluate((n) => n.open), false);
+    assert(await page.locator('[data-summary-form] [name=label]').isHidden());
+    await page.locator('[data-summary-advanced] > summary').click();
+    await page.locator('[data-summary-form] [name=format]').selectOption('chronological');
+    await page.locator('[data-summary-form] [value=dates]').check();
+    await page.locator('[data-summary-form] [value=exam]').check();
+    await page.locator('[data-summary-form] [type=submit]').click();
+    await page.waitForFunction(
+      () => document.querySelector('[data-regenerate-summary]').disabled === false,
+    );
+    assert.equal(summaryCalls.at(-1).options.format, 'chronological');
+    assert.deepEqual(summaryCalls.at(-1).options.focus, ['dates', 'exam']);
+    assert.equal(summaryCalls.at(-1).options.label, undefined);
+    assert.match(await page.locator('[data-summary-meta]').textContent(), /Cronológico/);
+    // Older versions stay available in the version menu.
+    await page.locator('[data-summary-history] > summary').click();
+    assert(
+      (await page.locator('[data-summary-version-list] button').count()) >= 3,
+      'older summary versions stay listed',
+    );
+    await page.locator('[data-summary-history] > summary').click();
     await page.locator('[data-open-export]').click();
     const exportPromise = page.waitForEvent('download');
     await page

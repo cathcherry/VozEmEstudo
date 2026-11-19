@@ -19,10 +19,34 @@ export const regenerateSummary = (id, sourceRevisionId, idempotencyKey, options)
     method: 'POST',
     body: JSON.stringify({ sourceRevisionId, idempotencyKey, ...(options ? { options } : {}) }),
   });
-export const generateQuestions = (id, count, sourceRevisionId, idempotencyKey) =>
+export const generateQuestions = (id, count, sourceRevisionId, idempotencyKey, config) =>
   apiFetch(`/api/materials/${id}/question-batches`, {
     method: 'POST',
-    body: JSON.stringify({ count, sourceRevisionId, idempotencyKey }),
+    body: JSON.stringify({ count, sourceRevisionId, idempotencyKey, ...(config ? { config } : {}) }),
+  });
+export const renameSummary = (id, summaryId, label) =>
+  apiFetch(`/api/materials/${id}/summaries/${summaryId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ label }),
+  });
+export const renameQuestionList = (id, batchId, title) =>
+  apiFetch(`/api/materials/${id}/question-batches/${batchId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ title }),
+  });
+/** Owner-only answer key; refused while one of the owner's deferred attempts is still open. */
+export const getAnswerKey = (id, batchId) =>
+  apiFetch(`/api/materials/${id}/question-batches/${batchId}/answer-key`);
+export const createQuestionListShare = (id, batchId, body) =>
+  apiFetch(`/api/materials/${id}/question-batches/${batchId}/shares`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+export const listQuestionListShares = (id, batchId) =>
+  apiFetch(`/api/materials/${id}/question-batches/${batchId}/shares`);
+export const revokeQuestionListShare = (id, batchId, shareId) =>
+  apiFetch(`/api/materials/${id}/question-batches/${batchId}/shares/${shareId}`, {
+    method: 'DELETE',
   });
 export const saveTranscriptionEdits = (id, expectedRevision, segments) =>
   apiFetch(`/api/materials/${id}/transcription`, {

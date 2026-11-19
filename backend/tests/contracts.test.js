@@ -81,7 +81,9 @@ test('the current app HTTP contract uses fake providers and stable responses', a
       });
       const config = (await request('/api/config', { token: null })).body;
       assert.deepEqual(config.allowedQuestionCounts, [3, 5, 10, 20]);
-      assert.equal(Object.keys(config.featureFlags).length, 11);
+      assert.equal(Object.keys(config.featureFlags).length, 13);
+      assert.equal(config.featureFlags.study_authoring, false);
+      assert.equal(config.featureFlags.flashcard_sets, false);
       assert(Object.values(config.featureFlags).every((flag) => flag === false));
     });
     await t.test('every protected route group requires a verified session', async () => {

@@ -21,7 +21,8 @@
     <link rel="stylesheet" href="/css/learning-tools.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
     <script defer src="/js/utils/card-motion.js"></script>
-  <link rel="stylesheet" href="/css/material-refinement.css"></head>
+  <link rel="stylesheet" href="/css/material-refinement.css">
+  <link rel="stylesheet" href="/css/study-authoring.css"></head>
   <body class="app-page" data-page="material">
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
     <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo">
@@ -264,13 +265,17 @@
       >
         <h2 class="sr-only">Resumo</h2>
         <div class="panel-toolbar">
-          <p class="panel-meta" data-summary-meta></p>
+          <div class="panel-heading">
+            <h3 class="panel-title" data-summary-name hidden></h3>
+            <p class="panel-meta" data-summary-meta></p>
+          </div>
           <div class="panel-toolbar-actions">
             <details class="version-menu" data-summary-history hidden>
               <summary>Versões</summary>
               <div data-summary-version-list></div>
             </details>
-            <button class="secondary-action" data-regenerate-summary type="button">
+            <button class="text-action" type="button" data-rename-summary hidden>Renomear</button
+            ><button class="secondary-action" data-regenerate-summary type="button">
               Gerar resumo
             </button>
           </div>
@@ -302,27 +307,74 @@
         </button>
         <p data-review-message role="status"></p>
       </div>
-      <dialog class="workflow-dialog" data-summary-dialog aria-labelledby="summary-dialog-title">
+      <dialog
+        class="workflow-dialog authoring-dialog"
+        data-summary-dialog
+        aria-labelledby="summary-dialog-title"
+      >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="summary-dialog-title">Personalizar resumo</h2>
+        <h2 id="summary-dialog-title">Gerar resumo</h2>
+        <p class="dialog-lead">
+          Usa somente a revisão confirmada da transcrição. Versões anteriores continuam salvas.
+        </p>
         <form data-summary-form>
           <label
-            >Formato<select name="format">
-              <option value="paragraphs">Parágrafos</option>
-              <option value="bullets">Tópicos</option>
-            </select></label
-          ><label
-            >Extensão<select name="length">
-              <option value="brief">Breve</option>
-              <option value="intermediate" selected>Intermediário</option>
-              <option value="detailed">Detalhado</option>
-            </select></label
-          ><label
+            >Nome da versão <span class="optional-hint">(opcional)</span
+            ><input name="label" maxlength="120" placeholder="Ex.: Revisão para a prova"
+          /></label>
+          <div class="authoring-grid">
+            <label
+              >Formato<select name="format">
+                <option value="paragraphs">Narrativo</option>
+                <option value="structured">Anotações com títulos</option>
+                <option value="bullets">Tópicos</option>
+                <option value="definitions">Definições e conceitos-chave</option>
+                <option value="comparative">Comparativo</option>
+                <option value="chronological">Cronológico, quando houver datas</option>
+                <option value="cause_effect">Causa e efeito, quando houver</option>
+              </select></label
+            ><label
+              >Extensão<select name="length">
+                <option value="brief">Breve</option>
+                <option value="intermediate" selected>Padrão</option>
+                <option value="detailed">Detalhado</option>
+              </select></label
+            >
+          </div>
+          <label
             >Linguagem<select name="readingLevel">
               <option value="">Padrão</option>
               <option value="simple">Simples, com glossário</option>
             </select></label
-          ><button class="primary-action" type="submit">Gerar resumo</button>
+          >
+          <details class="advanced-options" data-summary-advanced>
+            <summary>Opções avançadas</summary>
+            <fieldset class="choice-grid">
+              <legend>Dar prioridade a</legend>
+              <label><input type="checkbox" name="focus" value="concepts" /> Conceitos essenciais</label>
+              <label><input type="checkbox" name="focus" value="terminology" /> Definições e terminologia</label>
+              <label><input type="checkbox" name="focus" value="processes" /> Processos e mecanismos</label>
+              <label><input type="checkbox" name="focus" value="causes" /> Causas e consequências</label>
+              <label><input type="checkbox" name="focus" value="comparisons" /> Comparações</label>
+              <label><input type="checkbox" name="focus" value="dates" /> Datas e eventos, quando houver</label>
+              <label><input type="checkbox" name="focus" value="examples" /> Exemplos da aula</label>
+              <label><input type="checkbox" name="focus" value="arguments" /> Argumentos e conclusões</label>
+              <label><input type="checkbox" name="focus" value="exam" /> Preparação para prova</label>
+            </fieldset>
+            <p class="field-note">
+              Focos sem conteúdo na aula são omitidos; nada é completado com informação externa.
+            </p>
+          </details>
+          <button class="primary-action" type="submit">Gerar resumo</button>
+        </form>
+      </dialog>
+      <dialog class="workflow-dialog compact-dialog" data-rename-dialog aria-labelledby="rename-dialog-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
+        <h2 id="rename-dialog-title">Renomear</h2>
+        <form data-rename-form>
+          <label for="rename-field" data-rename-label>Nome<input id="rename-field" name="name" maxlength="160" /></label>
+          <p data-rename-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Salvar nome</button>
         </form>
       </dialog>
       <dialog

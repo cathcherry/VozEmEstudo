@@ -28,6 +28,8 @@ materialRouter.post('/:materialId/transcription/versions/:revision/restore', tra
 
 materialRouter.get('/:materialId/summaries', summary.list);
 materialRouter.post('/:materialId/summaries', summary.regenerate);
+if (isFeatureEnabled('study_authoring'))
+  materialRouter.patch('/:materialId/summaries/:summaryId', summary.rename);
 materialRouter.get('/:materialId/question-batches', question.listBatchesController);
 materialRouter.post('/:materialId/question-batches', question.createBatch);
 

@@ -8,7 +8,14 @@ import {
   restoreTranscriptionVersion,
   regenerateSummary,
   generateQuestions,
+  renameSummary,
 } from '../api/material.api.js';
+import {
+  normalizeSummaryOptions,
+  summaryName,
+  summaryDetails,
+} from '../utils/authoring.js';
+import { getFeatureFlags } from '../utils/feature-flags.js';
 import { pollJob } from '../api/job.api.js';
 import { initTranscriptionReview } from '../utils/transcription-review.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
@@ -40,7 +47,12 @@ let activeTab =
     location.hash
   ] || 'transcription';
 let waitingSince,
-  initialRender = true;
+  initialRender = true,
+  displayedSummary = null;
+const flags = await getFeatureFlags().catch(() => ({}));
+// Names need the study-authoring migration; without it the field is not offered.
+if (!flags.study_authoring)
+  document.querySelector('[data-summary-form] [name=label]').closest('label').hidden = true;
 const pending = new Map();
 const player = new MediaPlayer($('[data-audio-player]'), {
   onError: () => {
@@ -524,20 +536,29 @@ async function loadWaveform(url, signal) {
 $('[data-retry-media]').addEventListener('click', () => {
   void renewPlayback();
 });
+const summaryKey = (summary) => summary.id || `version-${summary.version}`;
 function renderSummary(summary) {
   summarySpeech?.speaker.stop();
+  displayedSummary = summary || null;
   renderMarkdown($('[data-summary-text]'), summary?.text || '');
   $('[data-summary-text]').hidden = !summary;
   if (summarySpeech) summarySpeech.element.hidden = !summary;
+  const name = $('[data-summary-name]');
+  name.textContent = summary ? summaryName(summary) : '';
+  name.hidden = !summary;
+  $('[data-rename-summary]').hidden = !summary || !flags.study_authoring;
   $('[data-summary-meta]').textContent = summary
     ? [
-        `Versão ${summary.version}`,
+        ...summaryDetails(summary),
         summary.created_at ? formatDate(summary.created_at) : '',
+        summary.is_current ? '' : 'versão anterior',
         summary.stale ? 'baseado em uma revisão anterior da transcrição' : '',
       ]
         .filter(Boolean)
         .join(' · ')
     : 'Ainda não há resumo desta aula.';
+  for (const button of document.querySelectorAll('[data-summary-version-list] button'))
+    button.setAttribute('aria-current', String(Boolean(summary) && button.dataset.summaryKey === summaryKey(summary)));
 }
 function render(material) {
   currentMaterial = material;
@@ -583,23 +604,33 @@ function render(material) {
       panel.textContent = error.message || 'Ferramentas indisponíveis.';
     });
   }
-  const summaries = material.summaries || [],
-    summary = summaries.find((s) => s.is_current) || summaries[0];
-  renderSummary(summary);
-  $('[data-regenerate-summary]').textContent = summary ? 'Gerar novamente' : 'Gerar resumo';
+  const summaries = material.summaries || [];
+  const summary =
+    (displayedSummary && summaries.find((s) => summaryKey(s) === summaryKey(displayedSummary))) ||
+    summaries.find((s) => s.is_current) ||
+    summaries[0];
+  $('[data-regenerate-summary]').textContent = summaries.length ? 'Gerar novo resumo' : 'Gerar resumo';
   $('[data-summary-history]').hidden = summaries.length < 2;
   $('[data-summary-version-list]').replaceChildren();
   summaries.forEach((s) => {
     const b = document.createElement('button');
-    b.className = 'text-action';
+    b.className = 'text-action version-choice';
     b.type = 'button';
-    b.textContent = `Versão ${s.version}`;
+    b.dataset.summaryKey = summaryKey(s);
+    const title = document.createElement('span');
+    title.textContent = summaryName(s);
+    const meta = document.createElement('small');
+    meta.textContent = [s.label ? `Versão ${s.version}` : '', s.created_at ? formatDate(s.created_at) : '', s.is_current ? 'mais recente' : '']
+      .filter(Boolean)
+      .join(' · ');
+    b.append(title, meta);
     b.addEventListener('click', () => {
       renderSummary(s);
       $('[data-summary-history]').open = false;
     });
     $('[data-summary-version-list]').append(b);
   });
+  renderSummary(summary);
   renderQuestionBatches(material.questionBatches || []);
   $('[data-complete-review]').setAttribute('aria-pressed', String(studyFor(materialId).completed));
   $('[data-complete-review]').textContent = studyFor(materialId).completed
@@ -758,17 +789,10 @@ $('[data-regenerate-summary]').addEventListener('click', () => {
 $('[data-open-questions]').addEventListener('click', () => {
   if (!busy) $('[data-questions-dialog]').showModal();
 });
-function normalizeSummaryOptions(options) {
-  return {
-    format: { bullets: 'topics' }[options.format] || options.format,
-    length: { brief: 'short', intermediate: 'standard' }[options.length] || options.length,
-    // Plain language is opt-in; omitted otherwise so the request keeps its legacy shape.
-    ...(options.readingLevel === 'simple' ? { readingLevel: 'simple' } : {}),
-  };
-}
 async function generate(kind, options) {
-  if (busy) return;
+  if (busy) return false;
   if (kind === 'summary') options = normalizeSummaryOptions(options);
+  let completed = false;
   const source = scientificReview.sourceRevisionId(),
     operation = JSON.stringify([kind, source, options]);
   if (!pending.has(operation)) pending.set(operation, crypto.randomUUID());
@@ -776,7 +800,7 @@ async function generate(kind, options) {
   scientificReview.setBusy(true);
   const generationFields = [
     ...document.querySelectorAll(
-      '[data-summary-form] select, [data-summary-form] button, [data-more-questions-form] select, [data-more-questions-form] button',
+      '[data-summary-form] :is(select, input, button), [data-more-questions-form] :is(select, input, button)',
     ),
   ];
   const previousDisabled = generationFields.map((field) => field.disabled);
@@ -790,11 +814,7 @@ async function generate(kind, options) {
   try {
     const job =
       kind === 'summary'
-        ? await regenerateSummary(materialId, source, pending.get(operation), {
-            format: options.format,
-            length: options.length,
-            ...(options.readingLevel ? { readingLevel: options.readingLevel } : {}),
-          })
+        ? await regenerateSummary(materialId, source, pending.get(operation), options)
         : await generateQuestions(materialId, options.count, source, pending.get(operation));
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => setStatus(message, jobLabel(state)),
@@ -804,8 +824,10 @@ async function generate(kind, options) {
       throw Error(result.error_message || 'Não foi possível concluir. Tente novamente.');
     }
     pending.delete(operation);
+    if (kind === 'summary') displayedSummary = null;
     await reload();
     setStatus(message, '');
+    completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');
   } finally {
@@ -817,15 +839,59 @@ async function generate(kind, options) {
     $('[data-save-transcription]').disabled = !currentMaterial?.transcription;
     $('[data-open-questions]').disabled = false;
   }
+  return completed;
 }
 $('[data-summary-form]').addEventListener('submit', (e) => {
   e.preventDefault();
-  const data = new FormData(e.currentTarget);
+  const form = e.currentTarget;
+  const data = new FormData(form);
   $('[data-summary-dialog]').close();
-  generate('summary', {
+  void generate('summary', {
     format: data.get('format'),
     length: data.get('length'),
     readingLevel: data.get('readingLevel'),
+    focus: data.getAll('focus'),
+    label: flags.study_authoring ? data.get('label') : '',
+  }).then((ok) => {
+    // A finished generation shows the new version; the next one starts with an empty name.
+    if (ok) form.elements.label.value = '';
+  });
+});
+/** One small dialog renames a summary version or a question list. */
+function openRename({ title, label, value, save }) {
+  const dialog = $('[data-rename-dialog]'),
+    form = $('[data-rename-form]'),
+    field = form.elements.name;
+  $('#rename-dialog-title').textContent = title;
+  $('[data-rename-label]').firstChild.textContent = label;
+  field.value = value || '';
+  $('[data-rename-message]').textContent = '';
+  form.onsubmit = async (event) => {
+    event.preventDefault();
+    const button = form.querySelector('[type=submit]');
+    button.disabled = true;
+    try {
+      await save(field.value.trim());
+      dialog.close();
+      await reload();
+    } catch (error) {
+      setStatus($('[data-rename-message]'), error.message, 'error');
+    } finally {
+      button.disabled = false;
+    }
+  };
+  dialog.showModal();
+  field.focus();
+  field.select();
+}
+$('[data-rename-summary]').addEventListener('click', () => {
+  if (!displayedSummary) return;
+  const summary = displayedSummary;
+  openRename({
+    title: 'Renomear versão do resumo',
+    label: 'Nome da versão',
+    value: summary.label,
+    save: (name) => renameSummary(materialId, summary.id, name || null),
   });
 });
 $('[data-more-questions-form]').addEventListener('submit', (e) => {
