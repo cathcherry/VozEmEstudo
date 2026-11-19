@@ -9,8 +9,33 @@
     readableFont: false,
     textSize: 'default',
     readingSpacing: 'comfortable',
+    readingWidth: 'comfortable',
   });
-  const allowedThemes = ['paper', 'gabriela', 'forest', 'wine', 'night', 'custom', 'contrast-light', 'contrast-dark', 'soft', 'ocean'];
+  const TEXT_SIZES = ['small', 'default', 'medium', 'large', 'extra-large', 'maximum'];
+  const SPACINGS = ['compact', 'comfortable', 'wide'];
+  const WIDTHS = ['narrow', 'comfortable', 'wide'];
+  // Keys mirrored to the account. A local write marks them dirty so a later cloud pull
+  // never overwrites a change the server has not received yet.
+  const SYNCED_KEYS = [
+    'audioestudo-theme',
+    'audioestudo-custom-color',
+    'audioestudo-custom-background',
+    'audioestudo-custom-text',
+    'audioestudo-custom-font',
+    'audioestudo-ui-preferences',
+  ];
+  const allowedThemes = [
+    'paper',
+    'gabriela',
+    'forest',
+    'wine',
+    'night',
+    'custom',
+    'contrast-light',
+    'contrast-dark',
+    'soft',
+    'ocean',
+  ];
   const fonts = [
     "Inter, 'Segoe UI', Arial, sans-serif",
     "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -34,6 +59,8 @@
     set(key, value) {
       try {
         localStorage.setItem(key, value);
+        if (SYNCED_KEYS.includes(key) || key.startsWith('voz-theme-profiles-v1:'))
+          localStorage.setItem('voz-preferences-dirty', 'true');
         return true;
       } catch {
         return false;
@@ -47,27 +74,17 @@
     } catch {
       /* Missing or invalid local preferences retain the safe initial defaults. */
     }
-    const prefs = { ...defaults };
-    for (const key of Object.keys(defaults))
-      if (typeof defaults[key] === 'boolean') prefs[key] = saved[key] === true;
-    if (['small', 'default', 'medium', 'large', 'extra-large', 'maximum'].includes(saved.textSize))
-      prefs.textSize = saved.textSize;
-    if (['compact', 'comfortable', 'wide'].includes(saved.readingSpacing))
-      prefs.readingSpacing = saved.readingSpacing;
-    return prefs;
+    return normalizeUi(saved);
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
-    let focusExpanded = false;
-    try {
-      focusExpanded = sessionStorage.getItem('voz-focus-sidebar-expanded') === 'true';
-    } catch {
-      /* Missing or invalid local preferences retain the safe initial defaults. */
-    }
+    // In focus mode the sidebar always starts hidden; reopening it is temporary (per page).
     root.dataset.sidebarCollapsed = String(
-      prefs.focusMode ? !focusExpanded : storage.get('voz-sidebar-collapsed', 'false') === 'true',
+      prefs.focusMode || storage.get('voz-sidebar-collapsed', 'false') === 'true',
     );
   }
+  // One set of custom-theme defaults (the "Claro" palette) for first use and saved profiles.
+  const CUSTOM = Object.freeze({ accent: '#3156d8', background: '#f5f8ff', text: '#17243d' });
   const validHex = (value, fallback) => (/^#[\da-f]{6}$/i.test(value) ? value : fallback);
   function mix(first, second, amount) {
     const channel = (i) =>
@@ -106,12 +123,13 @@
     const saved = storage.get('audioestudo-theme', 'paper');
     const font = storage.get('audioestudo-custom-font', fonts[0]);
     return {
-      theme: allowedThemes.includes(saved)
-        ? saved
-        : 'paper',
-      accent: validHex(storage.get('audioestudo-custom-color', '#4f8ef7'), '#4f8ef7'),
-      background: validHex(storage.get('audioestudo-custom-background', '#fffbf6'), '#fffbf6'),
-      text: validHex(storage.get('audioestudo-custom-text', '#5a3b2e'), '#5a3b2e'),
+      theme: allowedThemes.includes(saved) ? saved : 'paper',
+      accent: validHex(storage.get('audioestudo-custom-color', CUSTOM.accent), CUSTOM.accent),
+      background: validHex(
+        storage.get('audioestudo-custom-background', CUSTOM.background),
+        CUSTOM.background,
+      ),
+      text: validHex(storage.get('audioestudo-custom-text', CUSTOM.text), CUSTOM.text),
       font: fonts.includes(font) ? font : fonts[0],
     };
   }
@@ -176,21 +194,18 @@
   function normalizeUi(value = {}) {
     const result = { ...defaults };
     for (const key of Object.keys(defaults))
-      if (typeof defaults[key] === 'boolean') result[key] = value[key] === true;
-    if (['small', 'default', 'medium', 'large', 'extra-large', 'maximum'].includes(value.textSize))
-      result.textSize = value.textSize;
-    if (['compact', 'comfortable', 'wide'].includes(value.readingSpacing))
-      result.readingSpacing = value.readingSpacing;
+      if (typeof defaults[key] === 'boolean') result[key] = value?.[key] === true;
+    if (TEXT_SIZES.includes(value?.textSize)) result.textSize = value.textSize;
+    if (SPACINGS.includes(value?.readingSpacing)) result.readingSpacing = value.readingSpacing;
+    if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
     return result;
   }
   function normalizeAppearance(value = {}) {
     return {
-      theme: allowedThemes.includes(value.theme)
-        ? value.theme
-        : 'paper',
-      accent: validHex(value.accent, '#3265bd'),
-      background: validHex(value.background, '#f8f9fb'),
-      text: validHex(value.text, '#273142'),
+      theme: allowedThemes.includes(value.theme) ? value.theme : 'paper',
+      accent: validHex(value.accent, CUSTOM.accent),
+      background: validHex(value.background, CUSTOM.background),
+      text: validHex(value.text, CUSTOM.text),
       font: fonts.includes(value.font) ? value.font : fonts[0],
     };
   }
@@ -246,11 +261,6 @@
   function applyProfile(id) {
     const profile = loadProfiles().find((p) => p.id === id);
     if (!profile) return;
-    try {
-      sessionStorage.removeItem('voz-focus-sidebar-expanded');
-    } catch {
-      /* Missing or invalid local preferences retain the safe initial defaults. */
-    }
     saveAppearance(profile.appearance);
     storage.set('audioestudo-ui-preferences', JSON.stringify(profile.ui));
     applyUi(profile.ui);
@@ -268,6 +278,9 @@
   }
   window.VozAppearance = {
     defaults,
+    syncedKeys: SYNCED_KEYS,
+    normalizeUi,
+    textSizes: TEXT_SIZES,
     fonts,
     storage,
     loadUi,
@@ -296,7 +309,10 @@
       const prefs = JSON.parse(storage.get('audioestudo-ui-preferences', '{}')) || {};
       if (legacy.large === true && (!prefs.textSize || prefs.textSize === 'default'))
         prefs.textSize = 'large';
-      if (legacy.spaced === true && (!prefs.readingSpacing || prefs.readingSpacing === 'comfortable'))
+      if (
+        legacy.spaced === true &&
+        (!prefs.readingSpacing || prefs.readingSpacing === 'comfortable')
+      )
         prefs.readingSpacing = 'wide';
       if (legacy.motion === true) prefs.reducedMotion = true;
       storage.set('audioestudo-ui-preferences', JSON.stringify(prefs));

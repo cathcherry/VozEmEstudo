@@ -208,6 +208,7 @@ body[data-page='dashboard'] .dashboard-lesson-duration { color: var(--muted); fo
 body[data-page='dashboard'] .dashboard-lesson-percent,
 body[data-page='dashboard'] .dashboard-lesson-last-played { display: block; color: var(--text); font-size: .68rem; white-space: nowrap; }
 body[data-page='dashboard'] .dashboard-lesson-tooltip {
+  max-width: min(18rem, calc(100vw - 24px));
   position: absolute;
   left: var(--dashboard-tooltip-x, 50%);
   right: auto;
@@ -250,3 +251,4 @@ html[data-low-stimulation='true'] body[data-page='dashboard'] * { animation: non
   body[data-page='dashboard'] .dashboard-lesson-copy { padding-right: 100px; }
   body[data-page='dashboard'] .dashboard-lesson-cue { right: 12px; font-size: .65rem; }
 }
+body[data-page='dashboard'] .dashboard-lesson-tooltip .dashboard-lesson-last-played { white-space: normal; }

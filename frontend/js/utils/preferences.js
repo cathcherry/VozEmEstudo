@@ -1,3 +1,5 @@
+import { toast } from './toast.js';
+
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
 let syncNavigation = () => {};
@@ -9,13 +11,6 @@ let focusDockWasOpenBeforePointer = false;
 function clearActiveProfile() {
   appearance.storage.set('voz-active-theme-profile', '');
   document.documentElement.dataset.profile = '';
-}
-function resetFocusNavigation() {
-  try {
-    sessionStorage.removeItem('voz-focus-sidebar-expanded');
-  } catch {
-    /* Unavailable session storage leaves navigation usable with in-memory preferences. */
-  }
 }
 function updateControls() {
   document.querySelectorAll('[data-ui-setting]').forEach((c) => {
@@ -29,6 +24,7 @@ function updateControls() {
     const name = uiPreferences.focusMode ? 'Sair do modo foco' : 'Modo foco';
     b.setAttribute('aria-pressed', String(uiPreferences.focusMode));
     b.setAttribute('aria-label', name);
+    b.setAttribute('aria-keyshortcuts', 'Alt+F');
     b.dataset.tooltip = name;
     b.removeAttribute('title');
     const label = b.querySelector('[data-focus-toggle-label]');
@@ -51,38 +47,25 @@ function updateControls() {
   syncFocusDock();
 }
 function saveUi(next) {
-  if (uiPreferences.focusMode !== next.focusMode) resetFocusNavigation();
-  uiPreferences = next;
-  clearActiveProfile();
+  // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
+  const changesTheme = Object.keys(appearance.defaults).some(
+    (key) => key !== 'focusMode' && next[key] !== uiPreferences[key],
+  );
+  uiPreferences = appearance.normalizeUi(next);
+  if (changesTheme) clearActiveProfile();
   const saved = appearance.storage.set('audioestudo-ui-preferences', JSON.stringify(uiPreferences));
   appearance.applyUi(uiPreferences);
   updateControls();
   return saved;
 }
+/** The visible control already reflects the change; only a failed save needs a message. */
 function updateUiPreference(key, value) {
   if (!(key in appearance.defaults)) return;
-  const saved = saveUi({ ...uiPreferences, [key]: value });
-  showToast(
-    saved
-      ? 'Preferência atualizada.'
-      : 'Preferência aplicada, mas não foi possível salvá-la neste navegador.',
-  );
+  if (!saveUi({ ...uiPreferences, [key]: value }))
+    showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
 }
-let toastTimer;
-function showToast(message) {
-  let toast = document.querySelector('[data-app-toast]');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.className = 'app-toast';
-    toast.dataset.appToast = '';
-    toast.setAttribute('role', 'status');
-    toast.setAttribute('aria-live', 'polite');
-    document.body.append(toast);
-  }
-  toast.textContent = message;
-  toast.dataset.visible = 'true';
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (toast.dataset.visible = 'false'), 3200);
+function showToast(message, type = 'info') {
+  toast(message, { type });
 }
 function markTheme() {
   const current = appearance.loadAppearance().theme;
@@ -173,15 +156,25 @@ function initializeNavigation() {
     } else {
       const collapsed = root.dataset.sidebarCollapsed !== 'true';
       root.dataset.sidebarCollapsed = String(collapsed);
-      if (uiPreferences.focusMode) {
-        try {
-          sessionStorage.setItem('voz-focus-sidebar-expanded', String(!collapsed));
-        } catch {
-          /* Unavailable session storage leaves navigation usable with in-memory preferences. */
-        }
-      } else appearance.storage.set('voz-sidebar-collapsed', String(collapsed));
+      // In focus mode the sidebar opens temporarily as an overlay and is not persisted.
+      if (!uiPreferences.focusMode)
+        appearance.storage.set('voz-sidebar-collapsed', String(collapsed));
+      else if (!collapsed) nav.querySelector('nav a')?.focus();
       syncNavigation();
     }
+  });
+  const closeFocusOverlay = (restore) => {
+    if (!uiPreferences.focusMode || mobile.matches || root.dataset.sidebarCollapsed === 'true')
+      return;
+    root.dataset.sidebarCollapsed = 'true';
+    syncNavigation();
+    if (restore) toggle.focus();
+  };
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && nav.contains(document.activeElement)) closeFocusOverlay(true);
+  });
+  document.addEventListener('pointerdown', (event) => {
+    if (!nav.contains(event.target) && !toggle.contains(event.target)) closeFocusOverlay(false);
   });
   close?.addEventListener('click', () => closeMenu());
   backdrop?.addEventListener('click', () => closeMenu());
@@ -242,7 +235,8 @@ function syncFocusDock() {
 function initializeFocusDock() {
   if (!document.body.classList.contains('app-page')) return;
   const iconMarkup = {
-    dashboard: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    dashboard:
+      '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     transcription: '<path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/>',
     library: '<path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/>',
     appearance: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
@@ -271,7 +265,11 @@ function initializeFocusDock() {
     link.className = 'focus-dock-link';
     link.setAttribute('aria-label', label);
     const path = location.pathname.split('/').at(-1) || 'painel.html';
-    if (path === href.slice(2) || (href === './configuracoes.html' && ['aparencia.html', 'leitura.html', 'ajuda.html', 'privacidade.html'].includes(path))) {
+    if (
+      path === href.slice(2) ||
+      (href === './configuracoes.html' &&
+        ['aparencia.html', 'leitura.html', 'ajuda.html', 'privacidade.html'].includes(path))
+    ) {
       link.classList.add('active');
       link.setAttribute('aria-current', 'page');
     }
@@ -298,7 +296,9 @@ function initializeFocusDock() {
   focusDockTrigger.addEventListener('click', () => {
     if (focusDockPointerType === 'touch') setFocusDockOpen(!focusDockWasOpenBeforePointer);
     else setFocusDockOpen(true);
-    setTimeout(() => { focusDockPointerType = 'mouse'; }, 0);
+    setTimeout(() => {
+      focusDockPointerType = 'mouse';
+    }, 0);
   });
   focusDockTrigger.addEventListener('focus', () => {
     if (focusDockPointerType !== 'touch') setFocusDockOpen(true);
@@ -308,7 +308,7 @@ function initializeFocusDock() {
   });
   focusDock.addEventListener('pointerenter', () => setFocusDockOpen(true));
   focusDock.addEventListener('pointerleave', (event) => {
-    if (event.pointerType !== 'touch' && window.innerHeight - event.clientY > 96)
+    if (event.pointerType !== 'touch' && window.innerHeight - event.clientY > 28)
       setFocusDockOpen(false);
   });
   focusDock.addEventListener('focusout', (event) => {
@@ -317,7 +317,10 @@ function initializeFocusDock() {
   });
   document.addEventListener('pointermove', (event) => {
     if (!uiPreferences.focusMode || event.pointerType === 'touch') return;
-    const nearBottom = window.innerHeight - event.clientY <= 96;
+    // Only the centred handle area reveals the dock, so controls along the bottom stay usable.
+    const nearBottom =
+      window.innerHeight - event.clientY <= 28 &&
+      Math.abs(event.clientX - window.innerWidth / 2) <= 180;
     if (nearBottom || focusDock.matches(':hover')) setFocusDockOpen(true);
     else if (!focusDock.contains(document.activeElement)) setFocusDockOpen(false);
   });
@@ -338,9 +341,9 @@ function initialize() {
       if (dialog?.showModal) dialog.showModal();
     }),
   );
-  document.querySelectorAll('[data-close-dialog]').forEach((button) =>
-    button.addEventListener('click', () => button.closest('dialog')?.close()),
-  );
+  document
+    .querySelectorAll('[data-close-dialog]')
+    .forEach((button) => button.addEventListener('click', () => button.closest('dialog')?.close()));
   document.querySelectorAll('.settings-dialog').forEach((dialog) =>
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) dialog.close();

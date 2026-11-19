@@ -53,3 +53,12 @@ html[data-low-stimulation="true"] .ve-hero:before,html[data-low-stimulation="tru
 .ve-team-stamp{width:100px;height:100px;right:12px;top:-42px;font-size:.8125rem}.ve-team{padding-top:48px}
 .ve-sample{transform:none}.ve-landing h1,.ve-landing h2{letter-spacing:-.025em}
 }
+/* Texto ampliado (até 200%) em telas estreitas: colunas podem encolher e palavras longas quebram. */
+.ve-split{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.ve-features{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ve-header nav{flex-wrap:wrap;row-gap:8px}
+.ve-landing :is(h1,h2,h3,p,em,a,figcaption,li){overflow-wrap:anywhere}
+.ve-landing :is(.ve-split,.ve-features,.ve-sample)>*{min-width:0}
+@media(max-width:960px){.ve-features{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:720px){.ve-split{grid-template-columns:minmax(0,1fr)}.ve-sample{max-width:100%}}
+.ve-sample-labels{flex-wrap:wrap;column-gap:18px;row-gap:0}

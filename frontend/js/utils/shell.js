@@ -28,10 +28,13 @@ export async function initAuthenticatedShell() {
     if (label) label.textContent = 'Configurações';
   });
   setStudyUser(session.user.id);
+  // Preferences first: they affect what the user sees, and the sync must track local changes
+  // from the earliest point. Study syncs run meanwhile.
+  window.VozAppearance?.setUser(session.user.id);
+  const preferenceSync = initPreferenceCloud(session.user.id).catch(() => { /* Local preferences remain usable. */ });
   try { await initProfileStudySync(session.user.id); } catch { /* Keep local history available. */ }
   try { await initStudySync(session.user.id); } catch { /* Optional sync must never block access. */ }
-  window.VozAppearance?.setUser(session.user.id);
-  try { await initPreferenceCloud(session.user.id); } catch { /* Local preferences remain usable. */ }
+  await preferenceSync;
   document.querySelectorAll('[data-logout]').forEach((el) => {
     el.addEventListener('click', async (event) => {
       event.preventDefault();

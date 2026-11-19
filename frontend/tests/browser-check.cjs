@@ -460,15 +460,40 @@ async function main() {
     await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
     assert.equal(await page.locator('html').getAttribute('data-sidebar-collapsed'), 'true');
     assert.equal(await page.locator('.focus-secondary').first().isVisible(), false);
+    assert.equal(await page.locator('.side-navigation').isVisible(), false);
+    assert.equal(await page.locator('.app-toast:visible').count(), 0, 'Quick toggle is silent');
+    const contentLeft = await page
+      .locator('main')
+      .evaluate((n) => Math.round(n.getBoundingClientRect().left));
+    // Focus mode keeps a way back to the navigation: a temporary overlay, not a layout change.
+    await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).click();
+    assert.equal(await page.locator('.side-navigation').isVisible(), true);
     assert.equal(
-      await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).count(),
-      0,
+      await page.locator('main').evaluate((n) => Math.round(n.getBoundingClientRect().left)),
+      contentLeft,
+    );
+    assert(
+      await page
+        .locator('.side-navigation nav a')
+        .first()
+        .evaluate((n) => document.activeElement === n),
+    );
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.side-navigation').isVisible(), false);
+    assert(
+      await page.locator('[data-menu-toggle]').evaluate((n) => document.activeElement === n),
+      'Escape returns focus to the menu button',
     );
     const focusDockTrigger = page.getByRole('button', {
       name: 'Mostrar navegação do modo foco',
       exact: true,
     });
     assert.equal(await focusDockTrigger.isVisible(), true);
+    const handle = await focusDockTrigger.boundingBox();
+    assert(
+      handle.width <= 140 && handle.height <= 28,
+      'Dock handle must not cover the page bottom',
+    );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
     assert.equal(await page.locator('#focus-dock a').count(), 4);
@@ -943,6 +968,22 @@ async function main() {
         .evaluate((n) => getComputedStyle(n).getPropertyValue('--custom-background').trim()),
       '#151a21',
     );
+    const appliedProfile = await page.locator('html').getAttribute('data-profile');
+    assert(appliedProfile, 'Applied saved theme is marked active');
+    await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
+    assert.equal(
+      await page.locator('html').getAttribute('data-profile'),
+      appliedProfile,
+      'Toggling focus mode keeps the saved theme active',
+    );
+    await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
+    await page.locator('#setting-reading-width').selectOption('narrow');
+    assert.equal(await page.locator('html').getAttribute('data-reading-width'), 'narrow');
+    await page.reload();
+    assert.equal(await page.locator('#setting-reading-width').inputValue(), 'narrow');
+    assert.equal(await page.locator('html').getAttribute('data-reading-width'), 'narrow');
+    await page.locator('#setting-reading-width').selectOption('comfortable');
+    record('Modo foco preserva o tema salvo; largura de leitura persiste após recarregar');
     await openSavedThemes();
     await savedThemes.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
     await page.goto(base + '/leitura.html');
@@ -1236,6 +1277,11 @@ async function main() {
           await page.locator('#audio-file').setInputFiles(wavInput);
           await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
         }
+        assert.equal(
+          await page.locator('html').getAttribute('data-text-size'),
+          'maximum',
+          `200% preference must survive loading ${name}`,
+        );
         const overflow = await page.evaluate(() => ({
           width: innerWidth,
           scroll: document.documentElement.scrollWidth,
@@ -1249,7 +1295,11 @@ async function main() {
               );
             })
             .slice(0, 8)
-            .map((n) => ({ tag: n.tagName, class: n.className })),
+            .map((n) => ({
+              tag: n.tagName,
+              class: n.className,
+              right: Math.round(n.getBoundingClientRect().right),
+            })),
         }));
         assert(
           overflow.scroll <= overflow.width,

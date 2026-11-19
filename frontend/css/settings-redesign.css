@@ -96,23 +96,6 @@
 .personalization-group .check-row:focus-within small, .personalization-group .check-row:hover small,
 .personalization-group .setting-select-row:focus-within small, .personalization-group .setting-select-row:hover small { display: block; }
 .personalization-actions { margin-top: 14px; }
-.app-toast {
-  position: fixed;
-  z-index: 2000;
-  inset: auto 20px 20px auto;
-  max-width: min(420px, calc(100vw - 40px));
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  background: var(--surface);
-  box-shadow: 0 10px 32px rgb(18 27 42 / 18%);
-  opacity: 0;
-  transform: translateY(10px);
-  pointer-events: none;
-  transition: opacity .2s ease, transform .2s ease;
-}
-.app-toast[data-visible="true"] { opacity: 1; transform: translateY(0); }
 
 @media (max-width: 700px) {
   .personalization-settings { grid-template-columns: 1fr; }
@@ -120,7 +103,7 @@
   .article-section#aparencia .appearance-plus { top: 8px; right: 14px; width: 64px; height: 64px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .theme-option, .appearance-plus, .app-toast { transition: none; }
+  .theme-option, .appearance-plus { transition: none; }
 }
 
 /* Stable click-to-open help for reading and focus settings. */
