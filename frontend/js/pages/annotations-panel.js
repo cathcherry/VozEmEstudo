@@ -1,3 +1,4 @@
+import { ninoNote } from '../utils/material-ui.js';
 import { listAnnotations,saveAnnotation } from '../api/learning-tools.api.js';
 import { selectionAnchor,focusAnnotation } from '../utils/annotation-anchor.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
@@ -42,7 +43,7 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
     try{
       const result=await listAnnotations({materialId,q:search.value.trim(),offset:nextOffset});if(request!==version)return;
       offset=nextOffset;total=result.total;list.replaceChildren();
-      if(!result.notes.length)list.append(make('p','Nenhuma anotação encontrada.'));
+      if(!result.notes.length)list.append(ninoNote(search.value.trim()?'Nenhuma anotação encontrada.':'Nenhuma anotação ainda.',search.value.trim()?'curious':'rest'));
       for(const note of result.notes){
         const card=make('article');card.className=`annotation-card annotation-${note.color}`;
         card.append(make('h3',`Revisão ${note.source_revision}${materialId?'':' · '+(titles.get(note.material_id)||'Aula')}`));

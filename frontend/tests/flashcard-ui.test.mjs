@@ -63,6 +63,7 @@ async function harness(overrides = {}) {
     deleteFlashcard: async () => ({}),
     initFlashcardSetsPanel: () => ({ load: async () => [] }),
     confirm: () => true,
+    ninoNote: (text) => { const note = new JSDOM('').window.document.createElement('p'); note.textContent = text; return note; },
     setStatus: (element, message) => { element.textContent = message; },
     listFlashcards: async () => ({ cards: [], total: 0, limit: 100, offset: 0 }),
     createFlashcard: async () => ({}),

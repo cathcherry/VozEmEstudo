@@ -4,7 +4,7 @@ import {
   listQuizSessions,
 } from '../api/quiz-session.api.js';
 import { feedbackForQuestion, firstUnanswered } from '../utils/quiz-v2-view.js';
-import { emptyState } from '../utils/material-ui.js';
+import { emptyState, ninoImage } from '../utils/material-ui.js';
 import { renderQuizDiagnosticPanel } from './quiz-diagnostic-panel.js';
 
 function el(tag, text, className) {
@@ -21,7 +21,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
   if (!batch?.questions?.length && !resumedSessionId) {
     main.replaceChildren(emptyState(
       'Nenhuma questão disponível.', 'Gere um lote para começar uma tentativa.',
-      { href: returnLink, action: 'Voltar ao material' },
+      { href: returnLink, action: 'Voltar ao material', mascot: 'rest' },
     ));
     return;
   }
@@ -33,7 +33,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
   function showFailure(error) {
     main.replaceChildren();
     const box = el('section', null, 'quiz-question-card');
-    box.append(el('h1', 'Não foi possível abrir a tentativa.'));
+    box.append(ninoImage('curious', 96), el('h1', 'Não foi possível abrir a tentativa.'));
     box.append(el('p', error.message || 'Ocorreu um erro ao carregar as questões.'));
     const link = el('a', 'Voltar ao material', 'secondary-action button-link');
     link.href = returnLink;

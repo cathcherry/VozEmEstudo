@@ -21,6 +21,7 @@ import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { publicQuestionList } from './routes/question-share.routes.js';
+import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
 import { disclosureLabels, recordingLanguageOptions } from './ai/provider-config.js';
@@ -74,6 +75,15 @@ if (isFeatureEnabled('quiz_v2')) app.use('/api/quiz-sessions', requireAuth, quiz
 if (isFeatureEnabled('flashcards')) app.use('/api/flashcards', requireAuth, flashcardRouter);
 if (isFeatureEnabled('study_tracking')) app.use('/api/study', requireAuth, studyRouter);
 app.use('/api/questions', requireAuth, questionRouter);
+// Search in the person's own lessons, questions and transcripts (no answer keys).
+app.get('/api/search', requireAuth, async (req, res, next) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json(await searchOwnLibrary(req.user.id, req.query));
+  } catch (error) {
+    next(error);
+  }
+});
 app.use('/api/jobs', requireAuth, jobRouter);
 
 if (env.serveFrontend) {

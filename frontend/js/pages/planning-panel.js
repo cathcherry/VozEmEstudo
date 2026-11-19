@@ -1,3 +1,4 @@
+import { ninoNote } from '../utils/material-ui.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { setStatus } from '../utils/shell.js';
 import { progressForGoal, dateLabel, sortedPlanningTasks } from '../utils/planning-view.js';
@@ -310,10 +311,7 @@ export async function initPlanningPanel({ materials }) {
     list.replaceChildren();
 
     if (!goals.length) {
-      const empty = document.createElement('p');
-      empty.className = 'planning-empty';
-      empty.textContent = 'Nenhum objetivo criado ainda. Comece definindo o que deseja estudar.';
-      list.append(empty);
+      list.append(ninoNote('Nenhum objetivo criado ainda. Comece definindo o que deseja estudar.', 'reading', { className: 'planning-empty' }));
       return;
     }
 

@@ -266,16 +266,23 @@
         <h2 class="sr-only">Resumo</h2>
         <div class="panel-toolbar">
           <div class="panel-heading">
-            <h3 class="panel-title" data-summary-name hidden></h3>
+            <div class="panel-title-row">
+              <h3 class="panel-title" data-summary-name hidden></h3>
+              <span data-summary-speech></span>
+            </div>
             <p class="panel-meta" data-summary-meta></p>
           </div>
           <div class="panel-toolbar-actions">
             <details class="version-menu" data-summary-history hidden>
               <summary>Versões</summary>
-              <div data-summary-version-list></div>
+              <div>
+                <div class="version-choices" data-summary-version-list></div>
+                <button class="text-action version-rename" type="button" data-rename-summary hidden>
+                  Renomear esta versão
+                </button>
+              </div>
             </details>
-            <button class="text-action" type="button" data-rename-summary hidden>Renomear</button
-            ><button class="text-action" type="button" data-open-flashcards hidden>Criar flashcards</button
+            <button class="text-action" type="button" data-open-flashcards hidden>Criar flashcards</button
             ><button class="secondary-action" data-regenerate-summary type="button">
               Gerar resumo
             </button>
@@ -283,6 +290,7 @@
         </div>
         <p data-summary-message role="status" aria-live="polite"></p>
         <article class="generated-content markdown-content reading-measure" data-summary-text></article>
+        <div data-summary-empty hidden></div>
       </section>
       <section
         class="article-section"

@@ -7,6 +7,7 @@ import {
 import { toFlashcardCsv } from '../utils/flashcard-csv.js';
 import { downloadText } from '../utils/study-export.js';
 import { buildStudyDocument, toMarkdown, safeFilename } from '../utils/study-document.js';
+import { ninoNote } from '../utils/material-ui.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -64,7 +65,7 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
 
   function render() {
     list.replaceChildren();
-    if (!sets.length) list.append(make('p', 'Ainda não há conjuntos.', 'flashcard-muted'));
+    if (!sets.length) list.append(ninoNote('Ainda não há conjuntos. Crie um na aba Resumo de uma aula.', 'rest'));
     for (const set of sets) {
       const row = make('article', null, 'flashcard-set-row');
       row.dataset.setId = set.id;

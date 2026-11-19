@@ -14,6 +14,7 @@ const authoringFlags = {};
 const listShares = new Map();
 const flashcardSets = [];
 const flashcardPreviews = [];
+const searchCalls = [];
 const reports = [],
   errors = [],
   requests = [],
@@ -506,6 +507,9 @@ async function main() {
       ? reply(found)
       : reply({ error: { code: 'NOT_FOUND', message: 'Material não encontrado.' } }, 404);
   });
+  await context.route(base + '/api/flashcards?**', (route) =>
+    route.fulfill({ json: { cards: [], total: 0, limit: 100, offset: 0 } }),
+  );
   await context.route(base + '/api/flashcards/**', async (route) => {
     const request = route.request(),
       url = new URL(request.url()),
@@ -549,6 +553,31 @@ async function main() {
     if (p.startsWith('/api/flashcards/sets/'))
       return route.fulfill({ json: flashcardSets.find((set) => set.id === p.split('/').pop()) });
     return route.fulfill({ json: { cards: [], total: 0, limit: 100, offset: 0 } });
+  });
+  await context.route(base + '/api/search?**', (route) => {
+    const url = new URL(route.request().url());
+    const q = url.searchParams.get('q'),
+      scope = url.searchParams.get('scope');
+    searchCalls.push({ q, scope });
+    const hit = {
+      materialId: 'aula-real',
+      lessonTitle: 'Carros elétricos — energia',
+      subject: 'Física',
+      total: 1,
+      hits: [{ position: 0, startMs: 0, endMs: 1500, snippet: 'Um carro elétrico usa energia armazenada em baterias.' }],
+    };
+    const empty = { query: q, lessons: [], questions: [], transcripts: [] };
+    if (q === 'energia')
+      return route.fulfill({
+        json: {
+          ...empty,
+          lessons: [{ materialId: 'aula-real', title: 'Carros elétricos — energia', subject: 'Física' }],
+          questions: [{ questionId: 'q1', batchId: 'batch-1', materialId: 'aula-real', lessonTitle: 'Carros elétricos — energia', number: 1, statement: 'Onde a energia é armazenada?' }],
+          transcripts: [hit],
+        },
+      });
+    if (q === 'baterias') return route.fulfill({ json: { ...empty, transcripts: scope === 'all' || scope === 'transcripts' ? [hit] : [] } });
+    return route.fulfill({ json: empty });
   });
   // Material-level shares are outside this scenario: an empty list keeps that panel quiet.
   await context.route(base + '/api/sharing/**', (route) =>
@@ -2170,6 +2199,97 @@ async function main() {
     assert.match(csvText, /^\uFEFFfront,back,set,lesson,difficulty,focus,style,source_revision_id,evidence\r\n"Cartão 1","Verso 1 editado\.","Carros elétricos — termos"/);
     await page.keyboard.press('Escape');
     record('Flashcards 2.0: prévia editável, rejeitar e gerar outro cartão, conjunto nomeado e exportação CSV');
+    // Read-aloud: a discreet speaker icon next to the summary title, hidden from Aparência.
+    await page.getByRole('tab', { name: 'Resumo', exact: true }).click();
+    const speaker = page.locator('.panel-title-row').getByRole('button', { name: 'Ouvir resumo', exact: true });
+    assert(await speaker.isVisible());
+    assert.equal((await speaker.textContent()).trim(), '', 'icon only; the name is in aria-label');
+    assert((await speaker.boundingBox()).width <= 34);
+    assert.equal(await page.locator('[data-summary-section] .panel-toolbar-actions .speak-controls').count(), 0);
+    // Renaming lives inside the Versões menu now.
+    await page.locator('[data-summary-history] > summary').click();
+    assert(await page.locator('[data-summary-history]').getByRole('button', { name: 'Renomear esta versão' }).isVisible());
+    await page.locator('[data-summary-history] > summary').click();
+    await screenshot(page, output, 'summary-toolbar-desktop.png');
+    await page.goto(base + '/aparencia.html');
+    await page.locator('#setting-read-aloud').selectOption('off');
+    await page.locator('#setting-speech-rate').selectOption('slow');
+    await page.goto(base + '/material.html?id=aula-real#resumo');
+    await page.locator('[data-summary-section]').waitFor();
+    assert(await page.locator('.panel-title-row .speak-controls').isHidden(), 'hidden by the preference');
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.speechRate), 'slow');
+    await page.goto(base + '/aparencia.html');
+    await page.locator('#setting-read-aloud').selectOption('on');
+    await page.locator('#setting-speech-rate').selectOption('normal');
+    record('Leitura em voz alta: ícone discreto junto ao título; ocultar e velocidade em Aparência');
+    // Transcript search shows the searched words in bold, ignoring accents and case.
+    await page.goto(base + '/material.html?id=aula-real#transcricao');
+    await page.locator('.segment-text').first().waitFor();
+    // Earlier steps edited this transcript, so take a word from the saved text itself.
+    const word = (await page.locator('.segment-text').first().textContent()).match(/\p{L}{5,}/u)[0];
+    const query = word.normalize('NFD').replace(/\p{M}/gu, '').toUpperCase();
+    await page.locator('.transcript-search input').fill(query);
+    await page.locator('.segment-text mark.search-hit').first().waitFor();
+    assert.equal(await page.locator('.segment-text mark.search-hit').first().textContent(), word);
+    assert.equal(
+      await page.locator('.segment-text mark.search-hit').evaluate((n) => getComputedStyle(n).fontWeight),
+      '700',
+    );
+    await page.locator('.transcript-search input').fill('');
+    assert.equal(await page.locator('.segment-text mark').count(), 0);
+    record('Busca na transcrição destaca o termo em negrito');
+    // Dashboard search: suggestions, results in tabs only when present, Nino when empty.
+    await page.goto(base + '/painel.html');
+    const globalSearch = page.locator('.topbar-search input[type=search]');
+    await globalSearch.fill('energia');
+    await page.locator('#global-search-suggestions:not([hidden])').waitFor();
+    assert.equal(await globalSearch.getAttribute('aria-expanded'), 'true');
+    assert.deepEqual(
+      (await page.locator('#global-search-suggestions [role=option]').allTextContents()).slice(-4),
+      ['“energia” em tudo', '“energia” nos títulos das aulas', '“energia” nas questões', '“energia” nas transcrições'],
+    );
+    // The shared helper blurs the field (which closes the list), so capture directly.
+    await page.screenshot({ path: path.join(output, 'dashboard-search-suggestions.png') });
+    await globalSearch.press('Enter');
+    await page.locator('[data-search-results] [role=tab]').first().waitFor();
+    assert.deepEqual(searchCalls.at(-1), { q: 'energia', scope: 'all' });
+    assert.deepEqual(await page.locator('[data-search-results] [role=tab]').allTextContents(), [
+      'Aulas (1)', 'Questões (1)', 'Transcrições (1)',
+    ]);
+    assert(await page.locator('[data-recent-section]').isHidden(), 'dashboard steps aside while searching');
+    await page.getByRole('tab', { name: 'Questões (1)' }).click();
+    assert.equal(await page.locator('#search-panel-questions mark.search-hit').textContent(), 'energia');
+    await page.getByRole('tab', { name: 'Questões (1)' }).press('ArrowRight');
+    assert.equal(await page.locator('#search-tab-transcripts').getAttribute('aria-selected'), 'true');
+    await screenshot(page, output, 'dashboard-search-results.png');
+    await globalSearch.fill('baterias');
+    for (let i = 0; i < 4; i++) await globalSearch.press('ArrowDown');
+    await globalSearch.press('Enter');
+    await page.locator('.search-single-heading').waitFor();
+    assert.deepEqual(searchCalls.at(-1), { q: 'baterias', scope: 'transcripts' });
+    assert.equal(await page.locator('[data-search-results] [role=tablist]').count(), 0, 'one category: no tabs');
+    assert.equal(await page.locator('.search-single-heading').textContent(), 'Transcrições (1)');
+    assert.match(page.url(), /busca=baterias&em=transcripts/);
+    await page.locator('.search-hit-row').first().click();
+    await page.waitForURL('**/material.html?**busca=baterias**');
+    await page.locator('[data-transcription-section]:not([hidden])').waitFor();
+    await page.waitForFunction(() => document.querySelector('.transcript-search input')?.value === 'baterias');
+    assert.equal(await page.locator('#tab-transcription').getAttribute('aria-selected'), 'true');
+    await page.goto(base + '/painel.html?busca=xyzinexistente');
+    await page.getByText('Nada encontrado para “xyzinexistente”', { exact: true }).waitFor();
+    assert(await page.locator('[data-search-results] img[data-nino="curious"]').isVisible());
+    assert.equal(await page.locator('[data-search-results] img[data-nino="curious"]').getAttribute('alt'), '');
+    await screenshot(page, output, 'dashboard-search-empty.png');
+    await page.getByRole('button', { name: 'Voltar ao painel', exact: true }).click();
+    assert(await page.locator('[data-search-results]').isHidden());
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(base + '/painel.html?busca=energia');
+    await page.locator('[data-search-results] [role=tab]').first().waitFor();
+    assert(await page.locator('.topbar-search').isVisible(), 'search stays available on phones');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+    await screenshot(page, output, 'dashboard-search-mobile.png');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    record('Busca do painel: sugestões, abas só com resultados, transcrição destacada e Nino sem resultados');
     authoringFlags.flashcards = false;
     authoringFlags.flashcard_sets = false;
     authoringFlags.study_authoring = false;

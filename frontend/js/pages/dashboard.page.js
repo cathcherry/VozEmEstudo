@@ -9,8 +9,12 @@ import { initPlanningPanel } from './planning-panel.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { initDashboardTools } from './dashboard-tools.js';
+import { initGlobalSearch } from './global-search.js';
 
 const session=await initAuthenticatedShell();
+// Search bar: lessons, questions and transcripts, with results in tabs on this page.
+const searchForm=document.querySelector('.topbar-search');
+if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading')});
 let planningInitialized = false;
 let flashcardsInitialized = false;
 let trackingInitialized = false;
@@ -158,7 +162,7 @@ async function load() {
     const last=materials.filter(m=>studyFor(m.id).openedAt).sort((a,b)=>(studyFor(b.id).playedAt||studyFor(b.id).openedAt)-(studyFor(a.id).playedAt||studyFor(a.id).openedAt)).slice(0,1);
     if (last.length) for (const material of last) {
       continued.append(dashboardLesson(material));
-    } else continued.append(emptyState(materials.length?'Nenhuma aula em andamento.':'Sua Biblioteca está vazia.',materials.length?'Acesse a Biblioteca para escolher uma aula.':'Envie uma aula para começar.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:false}));
+    } else continued.append(emptyState(materials.length?'Nenhuma aula em andamento.':'Sua Biblioteca está vazia.',materials.length?'Acesse a Biblioteca para escolher uma aula.':'Envie uma aula para começar.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:materials.length?'reading':'laptop'}));
     const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,3);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
     for (const material of recentMaterials) recent.append(dashboardLesson(material));

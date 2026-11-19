@@ -73,3 +73,10 @@ O agendamento é o da E13 (regras fixas no estilo SM-2: "De novo" 10 min; "Difí
 - Formatos além da múltipla escolha com uma correta estão adiados.
 - Renomear conjunto no Painel usa o `prompt()` do navegador.
 - A falha AAC do teste FFmpeg real já existia neste contêiner (codec), não relacionada a esta entrega.
+
+## Ajustes pedidos depois da entrega
+
+- **Leitura em voz alta**: o botão grande "Ouvir resumo" virou um ícone de alto-falante (32 px, nome em `aria-label`/dica) ao lado do título da versão; nas listas, fica no canto do bloco "Ver questões". Em **Aparência → Leitura e foco → Leitura em voz alta** é possível ocultar os botões e escolher a velocidade (mais lenta, normal, mais rápida, rápida). As escolhas seguem a conta como as demais preferências e não mudam o tema ativo. "Renomear esta versão" passou para dentro do menu "Versões".
+- **Busca na transcrição**: os termos encontrados aparecem em negrito com fundo suave, ignorando acentos e maiúsculas, apenas no modo leitura (os campos de edição continuam com texto simples).
+- **Busca do painel** (`GET /api/search`, sem migration): procura nos títulos/disciplinas das aulas, nos enunciados das questões (nunca no gabarito) e nos trechos das transcrições, somente nas aulas da própria conta. A barra sugere aulas com o termo e onde procurar (tudo, títulos, questões, transcrições). Os resultados ficam no próprio painel, em abas que só aparecem quando têm resultado; com uma única categoria não há abas; sem nada, o Nino curioso explica. Um trecho encontrado abre a aula na aba Transcrição com o termo já buscado e destacado. No celular a barra passa para baixo do cabeçalho. O endereço guarda a busca (`?busca=…&em=…`).
+- **Nino** nos estados vazios e caminhos sem saída: busca sem resultado e Biblioteca sem resultado (curioso), Biblioteca e painel vazios (notebook), listas, resumos, conjuntos, agenda e anotações vazias (descansando), revisão de flashcards em dia (comemorando), objetivos (lendo), tentativa ou aula indisponível e link compartilhado expirado (curioso). As imagens são decorativas (`alt=""`); a mensagem continua no texto.

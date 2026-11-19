@@ -121,3 +121,15 @@ test('study history stores video-relative position and restores position and spe
     store.setStudyUser('b'); assert.equal(store.studyFor('lesson').position, 0);
   } finally { h.close(); }
 });
+
+test('transcript search marks every accent-insensitive match on the original text', async () => {
+  const { highlightRanges } = await import('../js/utils/transcript-player.js');
+  const text = 'A Ação e a ação; coração.';
+  assert.deepEqual(
+    highlightRanges(text, 'acao').map(([s, e]) => text.slice(s, e)),
+    ['Ação', 'ação', 'ação'],
+  );
+  assert.deepEqual(highlightRanges(text, '  '), []);
+  assert.deepEqual(highlightRanges('Energia 🔋 energia', 'ENERGIA').map(([s, e]) => 'Energia 🔋 energia'.slice(s, e)), ['Energia', 'energia']);
+  assert.deepEqual(highlightRanges('aaa', 'aa'), [[0, 2]]);
+});

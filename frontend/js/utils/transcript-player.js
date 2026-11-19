@@ -4,6 +4,61 @@ export function activeSegmentIndex(segments, seconds) {
   return segments.findIndex((item) => ms >= item.startMs && ms < item.endMs);
 }
 
+const fold = (value) => value.normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('pt-BR');
+
+/**
+ * Where `query` occurs in `text`, ignoring accents and case, as [start, end) ranges of the
+ * ORIGINAL text (so "acao" finds and marks "Ação" exactly).
+ */
+export function highlightRanges(text, query) {
+  const needle = fold(String(query || '').trim());
+  if (!needle) return [];
+  let folded = '';
+  const origin = [];
+  const chars = [...String(text)];
+  let offset = 0;
+  for (const char of chars) {
+    // One origin entry per UTF-16 unit of the folded text, so indices line up with indexOf.
+    const piece = fold(char);
+    for (let unit = 0; unit < piece.length; unit += 1) origin.push(offset);
+    folded += piece;
+    offset += char.length;
+  }
+  origin.push(offset);
+  const ranges = [];
+  for (let at = folded.indexOf(needle); at !== -1; at = folded.indexOf(needle, at + needle.length)) {
+    const endIndex = at + needle.length;
+    // The end maps to the start of the next original character (or the end of the text).
+    const end = endIndex < origin.length - 1 ? origin[endIndex] : offset;
+    ranges.push([origin[at], end]);
+  }
+  return ranges;
+}
+
+/** Rewrites a reading paragraph with <mark> around matches, always from its saved plain text. */
+function markMatches(paragraph, query) {
+  if (!paragraph) return;
+  if (paragraph.dataset.plain === undefined) paragraph.dataset.plain = paragraph.textContent;
+  const text = paragraph.dataset.plain;
+  const ranges = highlightRanges(text, query);
+  if (!ranges.length) {
+    if (paragraph.childElementCount) paragraph.textContent = text;
+    return;
+  }
+  const parts = [];
+  let cursor = 0;
+  for (const [start, end] of ranges) {
+    if (start > cursor) parts.push(document.createTextNode(text.slice(cursor, start)));
+    const mark = document.createElement('mark');
+    mark.className = 'search-hit';
+    mark.textContent = text.slice(start, end);
+    parts.push(mark);
+    cursor = end;
+  }
+  if (cursor < text.length) parts.push(document.createTextNode(text.slice(cursor)));
+  paragraph.replaceChildren(...parts);
+}
+
 export function initTranscriptPlayer({ container, toolbar, player, onActiveChange }) {
   // Compact search: one field with previous/next, a result count, and an optional follow switch.
   const label = document.createElement('label');
@@ -72,6 +127,8 @@ export function initTranscriptPlayer({ container, toolbar, player, onActiveChang
       const text = field ? field.value : segment.element.textContent;
       const match = Boolean(query) && normalize(text).includes(query);
       segment.element.classList.toggle('search-match', match);
+      // Reading mode shows the searched words in bold; edit fields keep plain text.
+      markMatches(segment.element.querySelector('.segment-text'), match ? search.value : '');
       if (match) matches.push(segment);
     });
     selected = -1;
@@ -99,6 +156,17 @@ export function initTranscriptPlayer({ container, toolbar, player, onActiveChang
     media.addEventListener('seeked', updateTime);
   }
   return {
+    /** Fills the search box (e.g. from the dashboard search) and optionally jumps to a passage. */
+    search(query, position) {
+      search.value = String(query || '').slice(0, 200);
+      find();
+      const target = matches.find((m) => m.element.dataset.segmentPosition === String(position));
+      if (target) {
+        selected = matches.indexOf(target);
+        scroll(target.element);
+        status.textContent = `Trecho ${selected + 1} de ${matches.length}`;
+      }
+    },
     refresh() {
       segments = [...container.querySelectorAll('.transcription-segment')]
         .map((element) => ({

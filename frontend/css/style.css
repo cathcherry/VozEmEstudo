@@ -801,6 +801,28 @@ html[data-reading-ruler='focus'] :is(.transcription-segment, .markdown-content >
 .speak-controls { display: inline-flex; align-items: center; gap: 8px; }
 .speak-controls[hidden] { display: none; }
 .speak-stop[hidden] { display: none; }
+/* Preferência "Botões de ouvir: Ocultar" (Aparência → Leitura e foco). */
+html[data-read-aloud='off'] .speak-controls { display: none !important; }
+.speak-compact { gap: 2px; }
+.speak-compact .icon-action {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.speak-compact .icon-action svg { width: 20px; height: 20px; }
+.speak-compact .icon-action:hover,
+.speak-compact .icon-action[aria-pressed='true'] {
+  color: var(--accent-strong, var(--accent));
+  background: var(--accent-soft, var(--surface-alt));
+}
+.speak-compact .icon-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .is-speaking {
   border-radius: 6px;
   background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
@@ -858,3 +880,19 @@ kbd {
 }
 .quiz-answer-card.answer-correct::after { content: '✓ Correta'; background: var(--accent-soft); color: var(--text); }
 .quiz-answer-card.answer-incorrect::after { content: '✗ Sua resposta'; background: color-mix(in srgb, var(--danger) 14%, var(--surface)); color: var(--text); }
+
+/* Nino nos estados vazios e caminhos sem saída (js/utils/material-ui.js). */
+.empty-state-card .nino-art { flex: none; object-fit: contain; }
+.nino-note {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  color: var(--muted);
+}
+.nino-note p { margin: 0; }
+.nino-note .nino-art { flex: none; width: 56px; height: 56px; object-fit: contain; }
+[data-low-stimulation='true'] .nino-note .nino-art { opacity: 0.7; }
+@media (max-width: 420px) {
+  .empty-state-card { flex-direction: column; text-align: center; }
+}

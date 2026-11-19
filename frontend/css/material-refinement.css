@@ -351,6 +351,14 @@ body.app-page[data-page='material'] .transcription-segment.search-match {
   outline: 0;
   box-shadow: inset 3px 0 0 var(--accent-strong);
 }
+/* Searched words: bold with a soft accent background, readable in every theme. */
+body.app-page[data-page='material'] .segment-text mark.search-hit {
+  padding: 0 1px;
+  border-radius: 3px;
+  color: inherit;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  font-weight: 700;
+}
 body.app-page[data-page='material'] [data-mode='editing'] .transcription-segment {
   padding-block: 6px;
 }

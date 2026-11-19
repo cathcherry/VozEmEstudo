@@ -1,0 +1,178 @@
+/* Painel: busca em aulas, questões e transcrições (js/pages/global-search.js). */
+body[data-page='dashboard'] .topbar-search {
+  position: relative;
+}
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  max-height: min(60vh, 26rem);
+  overflow: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--ue-raised, 0 10px 28px rgb(20 33 61 / 14%));
+}
+.search-suggestions .suggestion-group {
+  padding: 6px 10px 2px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.search-suggestions .suggestion {
+  display: grid;
+  gap: 1px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.search-suggestions .suggestion small {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.search-suggestions .suggestion[aria-selected='true'],
+.search-suggestions .suggestion:hover {
+  background: var(--accent-soft, var(--surface-alt));
+}
+.search-suggestions .suggestion-scope {
+  display: block;
+}
+mark.search-hit {
+  padding: 0 1px;
+  border-radius: 3px;
+  color: inherit;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  font-weight: 700;
+}
+
+/* While results are open, the rest of the dashboard steps aside. */
+main[data-searching='true'] > :not(.dashboard-heading):not([data-search-results]) {
+  display: none !important;
+}
+.global-search-results {
+  margin: 8px 0 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--ue-raised, none);
+}
+.search-results-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.search-results-head h2 {
+  margin: 0;
+  font-family: var(--ue-serif, Georgia, serif);
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+.search-results-head h2:focus {
+  outline: none;
+}
+.search-meta {
+  margin: 2px 0 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.search-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 14px 0 10px;
+  border-bottom: 1px solid var(--border);
+}
+.search-tabs [role='tab'] {
+  padding: 8px 2px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.search-tabs [role='tab'][aria-selected='true'] {
+  border-bottom-color: var(--accent-strong, var(--accent));
+  color: var(--text);
+}
+.search-single-heading {
+  margin: 14px 0 8px;
+  font-size: 1rem;
+}
+.search-list {
+  display: grid;
+  gap: 6px;
+}
+.search-result {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  color: var(--text);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.search-result:hover,
+.search-result:focus-visible {
+  border-color: var(--accent);
+}
+.search-result small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.search-transcript {
+  padding: 10px 0 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+.search-transcript h3 {
+  margin: 0;
+  font-family: var(--ue-serif, Georgia, serif);
+  font-size: 1.02rem;
+}
+.search-transcript ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.search-hit-row {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+.search-time {
+  color: var(--accent-strong, var(--accent));
+  font:
+    600 0.8rem/1 ui-monospace,
+    monospace;
+  font-variant-numeric: tabular-nums;
+}
+/* Phones: the bar moves under the header instead of disappearing. */
+@media (max-width: 900px) {
+  body[data-page='dashboard'] .site-header.app-topbar {
+    flex-wrap: wrap;
+  }
+  body[data-page='dashboard'] .topbar-search {
+    display: flex;
+    order: 3;
+    flex: 1 1 100%;
+  }
+  .global-search-results {
+    padding: 14px;
+  }
+}

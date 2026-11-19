@@ -22,6 +22,7 @@ import {
   summaryDetails,
 } from '../utils/authoring.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
+import { emptyState, ninoNote } from '../utils/material-ui.js';
 import { pollJob } from '../api/job.api.js';
 import { initTranscriptionReview } from '../utils/transcription-review.js';
 import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
@@ -133,13 +134,14 @@ const readBlocks = (container) =>
       ? [...el.children].map((li) => ({ element: li, text: li.textContent }))
       : [{ element: el, text: el.textContent }],
   );
+// A small speaker icon next to the version title; hidden or slowed down in Aparência.
 const summarySpeech = speakControls({
   blocks: () => readBlocks($('[data-summary-text]')),
   lang: lessonLang,
   label: 'Ouvir resumo',
+  icon: true,
 });
-if (summarySpeech)
-  $('[data-summary-section] .panel-toolbar-actions').prepend(summarySpeech.element);
+if (summarySpeech) $('[data-summary-speech]').append(summarySpeech.element);
 const segmentsContainer = $('[data-transcription-segments]');
 const transcriptMessage = $('[data-transcription-message]');
 const transcriptPlayer = initTranscriptPlayer({
@@ -552,6 +554,10 @@ function renderSummary(summary) {
   displayedSummary = summary || null;
   renderMarkdown($('[data-summary-text]'), summary?.text || '');
   $('[data-summary-text]').hidden = !summary;
+  const emptySummary = $('[data-summary-empty]');
+  emptySummary.hidden = Boolean(summary);
+  if (!summary && !emptySummary.childElementCount)
+    emptySummary.append(ninoNote('Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.', 'rest'));
   if (summarySpeech) summarySpeech.element.hidden = !summary;
   const name = $('[data-summary-name]');
   name.textContent = summary ? summaryName(summary) : '';
@@ -632,7 +638,8 @@ function render(material) {
     summaries.find((s) => s.is_current) ||
     summaries[0];
   $('[data-regenerate-summary]').textContent = summaries.length ? 'Gerar novo resumo' : 'Gerar resumo';
-  $('[data-summary-history]').hidden = summaries.length < 2;
+  // The menu also holds "Renomear esta versão", so with names enabled it shows for one version too.
+  $('[data-summary-history]').hidden = summaries.length < (flags.study_authoring ? 1 : 2);
   $('[data-summary-version-list]').replaceChildren();
   summaries.forEach((s) => {
     const b = document.createElement('button');
@@ -703,6 +710,7 @@ function renderQuestionBatches(batches) {
             })),
           lang: lessonLang,
           label: 'Ouvir questões',
+          icon: true,
         }),
     },
   });
@@ -863,6 +871,7 @@ function openRename({ title, label, value, save }) {
 }
 $('[data-rename-summary]').addEventListener('click', () => {
   if (!displayedSummary) return;
+  $('[data-summary-history]').open = false;
   const summary = displayedSummary;
   openRename({
     title: 'Renomear versão do resumo',
@@ -913,10 +922,24 @@ window.addEventListener('pagehide', () => {
   document.removeEventListener('fullscreenchange', syncFullscreen);
   player.destroy();
 });
+const searchParam = params.get('busca');
 await reload().catch((e) => {
   $('[data-material-title]').textContent = 'Não foi possível abrir a aula';
   $('[data-material-meta]').textContent = e.message;
+  // Dead end: explain and offer the way back instead of an empty page.
+  $('.material-header').after(
+    emptyState('Esta aula não está disponível.', 'Ela pode ter sido excluída ou pertencer a outra conta.', {
+      href: './historico.html',
+      action: 'Voltar à Biblioteca',
+      mascot: 'curious',
+    }),
+  );
 });
+// Arriving from the dashboard search: the term is searched, bolded and its passage scrolled to.
+if (searchParam && currentMaterial?.transcription) {
+  if (ready()) selectTab('transcription');
+  transcriptPlayer.search(searchParam, params.get('trecho'));
+}
 if (currentMaterial && !currentMaterial.transcription) {
   const jobId = params.get('job') || currentMaterial.activeJobId;
   if (jobId)

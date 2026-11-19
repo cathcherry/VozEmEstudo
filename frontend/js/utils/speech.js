@@ -14,6 +14,9 @@ const LANGS = {
   it: 'it-IT',
 };
 let active = null;
+// Voice speed from the reading preferences (Aparência → Leitura e foco).
+const RATES = { slow: 0.8, normal: 1, fast: 1.2, faster: 1.4 };
+const preferredRate = (win) => RATES[win.document?.documentElement?.dataset?.speechRate] || 1;
 
 export function speechSupported(win = window) {
   return Boolean(win.speechSynthesis && win.SpeechSynthesisUtterance);
@@ -70,6 +73,7 @@ export function createSpeaker({
     if (!current) return finish();
     const utterance = new win.SpeechSynthesisUtterance(current.text);
     utterance.lang = lang;
+    utterance.rate = preferredRate(win);
     const voice = pickVoice(synth, lang);
     if (voice) utterance.voice = voice;
     utterance.onstart = () => mark(current?.element, true);
@@ -121,31 +125,56 @@ export function createSpeaker({
 }
 
 const LABELS = { idle: 'Ouvir', speaking: 'Pausar leitura', paused: 'Continuar leitura' };
-/** Play/pause button plus a stop button that appears while reading. Null when unsupported. */
-export function speakControls({ blocks, lang, label = 'Ouvir', win = window }) {
+const ICONS = {
+  idle: '<path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+  speaking: '<path d="M8 5v14M16 5v14"/>',
+  paused: '<path d="M7 5l12 7-12 7V5Z"/>',
+  stop: '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
+};
+const icon = (doc, name) => {
+  const span = doc.createElement('span');
+  span.setAttribute('aria-hidden', 'true');
+  span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+  return span;
+};
+/**
+ * Play/pause button plus a stop button that appears while reading. Null when unsupported.
+ * `icon: true` renders compact icon buttons (name kept in aria-label and tooltip). Students can
+ * hide every reader in Aparência → Leitura e foco; the speed also comes from there.
+ */
+export function speakControls({ blocks, lang, label = 'Ouvir', win = window, icon: compact = false }) {
   if (!speechSupported(win)) return null;
   const doc = win.document;
   const wrap = doc.createElement('span');
-  wrap.className = 'speak-controls';
+  wrap.className = `speak-controls${compact ? ' speak-compact' : ''}`;
   const play = doc.createElement('button');
   play.type = 'button';
-  play.className = 'secondary-action speak-button';
+  play.className = compact ? 'icon-action speak-button' : 'secondary-action speak-button';
   const stop = doc.createElement('button');
   stop.type = 'button';
-  stop.className = 'text-action speak-stop';
-  stop.textContent = 'Parar';
+  stop.className = compact ? 'icon-action speak-stop' : 'text-action speak-stop';
   stop.hidden = true;
+  const show = (button, text, iconName) => {
+    if (!compact) {
+      button.textContent = text;
+      return;
+    }
+    button.replaceChildren(icon(doc, iconName));
+    button.setAttribute('aria-label', text);
+    button.title = text;
+  };
+  show(stop, 'Parar', 'stop');
   const speaker = createSpeaker({
     blocks,
     lang,
     win,
     onState: (state) => {
-      play.textContent = state === 'idle' ? label : LABELS[state];
+      show(play, state === 'idle' ? label : LABELS[state], state);
       play.setAttribute('aria-pressed', String(state !== 'idle'));
       stop.hidden = state === 'idle';
     },
   });
-  play.textContent = label;
+  show(play, label, 'idle');
   play.setAttribute('aria-pressed', 'false');
   play.addEventListener('click', () => speaker.toggle());
   stop.addEventListener('click', () => {

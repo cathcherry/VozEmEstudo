@@ -10,6 +10,7 @@ import {
 } from '../utils/flashcard-view.js';
 
 import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
+import { ninoNote } from '../utils/material-ui.js';
 
 function make(tag, value, className) {
   const element = document.createElement(tag);
@@ -199,7 +200,7 @@ export async function initFlashcardsPanel({ materials }) {
     }
     const card = dueCards[0];
     if (!card) {
-      dueArea.append(make('p', 'Nenhum cartão pendente. Suas próximas revisões aparecerão aqui.', 'flashcard-muted'));
+      dueArea.append(ninoNote('Nenhum cartão pendente. Suas próximas revisões aparecerão aqui.', 'celebrate', { className: 'flashcard-muted' }));
       return;
     }
     const article = make('article', null, 'flashcard-review-card');

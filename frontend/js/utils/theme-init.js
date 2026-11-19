@@ -13,8 +13,13 @@
     readingFont: 'default',
     readingRuler: 'off',
     navigation: 'sidebar',
+    // Read-aloud buttons (browser voices) and their speed.
+    readAloud: 'on',
+    speechRate: 'normal',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
+  const READ_ALOUD = ['on', 'off'];
+  const SPEECH_RATES = ['slow', 'normal', 'fast', 'faster'];
   const RULERS = ['off', 'ruler', 'focus'];
   // Reading fonts: bundled OFL fonts plus a plain system option. "readableFont" is kept only as
   // a derived flag for older saved preferences and themes.
@@ -211,6 +216,8 @@
     if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
+    if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
+    if (SPEECH_RATES.includes(value?.speechRate)) result.speechRate = value.speechRate;
     if (READING_FONTS.includes(value?.readingFont)) result.readingFont = value.readingFont;
     else if (value?.readableFont === true) result.readingFont = 'readable';
     result.readableFont = result.readingFont !== 'default';
@@ -278,8 +285,11 @@
     const profile = loadProfiles().find((p) => p.id === id);
     if (!profile) return;
     saveAppearance(profile.appearance);
-    storage.set('audioestudo-ui-preferences', JSON.stringify(profile.ui));
-    applyUi(profile.ui);
+    // Read-aloud choices belong to the person, not to the theme: keep the current ones.
+    const current = loadUi();
+    const ui = normalizeUi({ ...profile.ui, readAloud: current.readAloud, speechRate: current.speechRate });
+    storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
+    applyUi(ui);
     storage.set('voz-active-theme-profile', profile.id);
     root.dataset.profile = profile.id;
     window.dispatchEvent(new Event('voz-preferences-change'));

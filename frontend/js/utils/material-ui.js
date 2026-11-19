@@ -1,4 +1,4 @@
-import { mascotReading } from './brand.js';
+import { mascotReading, NINO } from './brand.js';
 
 export function materialState(material) {
   if (['PRONTO', 'PARCIAL', 'CONCLUIDA', 'CONCLUIDO'].includes(material.status)) return 'ready';
@@ -13,9 +13,22 @@ export function statusChip(material) {
   chip.className = 'status-chip'; chip.dataset.state = materialState(material); chip.textContent = statusLabel(material);
   return chip;
 }
-export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true } = {}) {
+/** Decorative Nino illustration (alt="" so screen readers only hear the message). */
+export function ninoImage(pose = 'reading', size = 90) {
+  const img = document.createElement('img');
+  img.src = pose === 'reading' ? mascotReading : NINO[pose] || mascotReading;
+  img.alt = '';
+  img.width = size;
+  img.height = size;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.className = 'nino-art';
+  img.dataset.nino = pose;
+  return img;
+}
+export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true, pose = 'reading', size = 90 } = {}) {
   const card = document.createElement('div'); card.className = 'empty-state-card';
-  if (mascot) { const img = document.createElement('img'); img.src = mascotReading; img.alt = ''; img.width = 90; img.height = 90; card.appendChild(img); }
+  if (mascot) card.appendChild(ninoImage(typeof mascot === 'string' ? mascot : pose, size));
   const content = document.createElement('div');
   const heading = document.createElement('strong'); heading.textContent = title;
   const paragraph = document.createElement('p'); paragraph.textContent = description;
@@ -23,8 +36,17 @@ export function emptyState(title, description, { href = './nova-transcricao.html
   if (href) { const link = document.createElement('a'); link.className = 'secondary-action button-link'; link.href = href; link.textContent = action; content.appendChild(link); }
   card.appendChild(content); return card;
 }
+/** Small inline variant for empty lists inside panels and tabs. */
+export function ninoNote(text, pose = 'rest', { className = '' } = {}) {
+  const note = document.createElement('div');
+  note.className = `nino-note ${className}`.trim();
+  const paragraph = document.createElement('p');
+  paragraph.textContent = text;
+  note.append(ninoImage(pose, 56), paragraph);
+  return note;
+}
 export function errorState(message, retry) {
-  const card = emptyState('Não foi possível carregar os materiais.', message, { href: null, mascot: false });
+  const card = emptyState('Não foi possível carregar os materiais.', message, { href: null, mascot: 'curious' });
   const button = document.createElement('button'); button.className = 'secondary-action'; button.type = 'button'; button.textContent = 'Tentar novamente'; button.addEventListener('click', retry);
   card.querySelector('div').appendChild(button); return card;
 }

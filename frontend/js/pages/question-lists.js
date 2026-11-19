@@ -1,5 +1,6 @@
 import { formatDate } from '../utils/format.js';
 import { listName, listDetails, recommendQuestionCount } from '../utils/authoring.js';
+import { ninoNote } from '../utils/material-ui.js';
 
 const el = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -152,6 +153,8 @@ export function renderQuestionLists({
   meta.textContent = batches.length
     ? `${batches.length} ${batches.length === 1 ? 'lista' : 'listas'} · ${total} questões`
     : 'Ainda não há questões desta aula.';
+  if (!batches.length)
+    container.append(ninoNote('Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.', 'rest'));
   batches.forEach((batch, index) => {
     const questions = batch.questions || [];
     const results = questions.map((q) => answers[q.id]);

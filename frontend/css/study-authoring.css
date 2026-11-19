@@ -379,3 +379,25 @@ body.app-page[data-page='material'] .question-batch-row {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Summary heading: title with a discreet speaker icon; actions stay on the right. */
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.version-menu .version-rename {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.version-choices {
+  display: grid;
+  gap: 2px;
+}
+.list-questions .speak-controls {
+  float: right;
+  margin: 2px 0 0 8px;
+}

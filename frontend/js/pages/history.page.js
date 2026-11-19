@@ -487,7 +487,7 @@ function renderFolderGroups(visible, _needle) {
       for (const material of standalone) list.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name, standalone: true }));
       content.append(list);
     } else if (!group.materials.length) {
-      content.append(emptyState('Nenhuma aula nesta disciplina.', '', { href: null, mascot: false }));
+      content.append(emptyState('Nenhuma aula nesta disciplina.', '', { href: null, mascot: 'rest' }));
     }
 
     if(createUnitButton)folderToolbar.append(createUnitButton);
@@ -503,7 +503,7 @@ function renderResources(visible) {
   const resourceCount = resourceGroups.reduce((total, group) => total + group.items.length, 0);
   if (!resourceCount) {
     state.hidden = false;
-    state.append(emptyState('Nenhum recurso encontrado.', 'Tente outra busca ou filtro.', { href: null, mascot: false }));
+    state.append(emptyState('Nenhum recurso encontrado.', 'Tente outra busca ou filtro.', { href: null, mascot: 'curious' }));
     return;
   }
   let groupIndex = 0;
@@ -570,7 +570,7 @@ function render() {
     const card = emptyState(
       materials.length ? 'Nenhuma aula encontrada.' : 'Nenhuma aula enviada.',
       materials.length ? 'Tente outra busca ou ajuste os filtros.' : 'Envie uma gravação para começar.',
-      { mascot: false, href: materials.length ? null : './nova-transcricao.html', action: 'Nova transcrição' },
+      { mascot: materials.length ? 'curious' : 'laptop', href: materials.length ? null : './nova-transcricao.html', action: 'Nova transcrição' },
     );
     if (materials.length) {
       const button = document.createElement('button');

@@ -1,3 +1,4 @@
+import { NINO } from '../utils/brand.js';
 const hash = new URLSearchParams(location.hash.slice(1));
 const token = hash.get('token');
 // "lista" links are question-list worksheets; anything else is the original material copy.
@@ -64,6 +65,13 @@ async function load() {
     print.hidden = false;
   } catch (error) {
     status.textContent = error.message;
+    // Dead end: a friendly Nino instead of an empty page (decorative, the message says it all).
+    const nino = make('img', null, 'shared-nino');
+    nino.src = NINO.curious;
+    nino.alt = '';
+    nino.width = 120;
+    nino.height = 120;
+    content.append(nino, make('p', 'Peça um novo link a quem compartilhou com você.', 'shared-note'));
   } finally {
     retry.disabled = false;
   }

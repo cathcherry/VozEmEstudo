@@ -103,3 +103,24 @@ test('controls toggle labels, stop clears highlight, and only one reader is acti
     'hidden without support',
   );
 });
+
+test('compact icon controls keep accessible names and follow the speed preference', () => {
+  const { win, spoken } = fakeWindow();
+  const doc = win.document;
+  doc.documentElement.dataset.speechRate = 'slow';
+  const controls = speakControls({ win, blocks: () => [{ text: 'Texto.' }], label: 'Ouvir resumo', icon: true });
+  const [play, stop] = controls.element.querySelectorAll('button');
+  assert(controls.element.classList.contains('speak-compact'));
+  assert.equal(play.getAttribute('aria-label'), 'Ouvir resumo');
+  assert.equal(play.title, 'Ouvir resumo');
+  assert.equal(play.textContent, '');
+  assert(play.querySelector('svg'));
+  assert.equal(stop.getAttribute('aria-label'), 'Parar');
+  play.click();
+  assert.equal(play.getAttribute('aria-label'), 'Pausar leitura');
+  assert.equal(spoken.at(-1).rate, 0.8);
+  doc.documentElement.dataset.speechRate = 'invalid';
+  controls.speaker.stop();
+  play.click();
+  assert.equal(spoken.at(-1).rate, 1);
+});

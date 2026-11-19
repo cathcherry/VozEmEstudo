@@ -1,3 +1,4 @@
+import { ninoNote } from '../utils/material-ui.js';
 import { listCalendar,saveCalendarEvent } from '../api/learning-tools.api.js';
 import { monthRange,localDay,itemOnDay,calendarIcs } from '../utils/calendar-export.js';
 import { downloadText } from '../utils/study-export.js';
@@ -36,7 +37,7 @@ export async function initCalendarPanel({panel,materials=[]}){
     }
     agenda.replaceChildren(make('h3',selectedDay?`Agenda de ${selectedDay}`:'Agenda do mês'));
     const visible=selectedDay?items.filter((item)=>itemOnDay(item,selectedDay)):items;
-    if(!visible.length)agenda.append(make('p','Nenhum registro carregado para este período.'));
+    if(!visible.length)agenda.append(ninoNote('Nenhum registro carregado para este período.','rest'));
     for(const item of visible){
       const card=make('article');card.className='calendar-entry';card.append(make('h4',item.title));
       if(item.kind==='task'){

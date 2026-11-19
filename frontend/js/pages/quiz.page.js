@@ -22,7 +22,7 @@ if (await isFeatureEnabled('quiz_v2')) {
     sessionId: params.get('session'),
   });
 } else if (!batch?.questions?.length) {
-  main.replaceChildren(emptyState('Nenhuma questão disponível.', 'Gere um lote na página da aula para iniciar a revisão.', { href: `./material.html?id=${encodeURIComponent(materialId)}#questoes`, action: 'Voltar ao material' }));
+  main.replaceChildren(emptyState('Nenhuma questão disponível.', 'Gere um lote na página da aula para iniciar a revisão.', { href: `./material.html?id=${encodeURIComponent(materialId)}#questoes`, action: 'Voltar ao material', mascot: 'rest' }));
 } else {
   const questions = batch.questions;
   const answered = new Map();
