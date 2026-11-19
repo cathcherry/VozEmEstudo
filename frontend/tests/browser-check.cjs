@@ -713,8 +713,29 @@ async function main() {
     assert.equal(await page.locator('[data-transcription-section]').isVisible(), false);
     record('Uma ação salva alterações, confirma a transcrição e abre a aba Resumo');
     await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
-    await page.locator('.quiet-menu summary').first().click();
-    await page.locator('[data-show-versions]').click();
+    // Reading mode after confirmation: plain text, no editor, explicit entry into editing.
+    assert.equal(
+      await page.locator('[data-transcription-section]').getAttribute('data-mode'),
+      'reading',
+    );
+    assert.equal(await page.locator('.transcription-segment textarea').first().isVisible(), false);
+    assert.equal(await page.locator('.confirmation-footer').isVisible(), false);
+    await page.getByRole('button', { name: 'Editar transcrição', exact: true }).click();
+    assert.equal(await page.locator('.transcription-segment textarea').first().isVisible(), true);
+    await page.locator('.transcription-segment textarea').first().fill('Rascunho temporário.');
+    assert.match(await page.locator('[data-edit-status]').textContent(), /1 trecho alterado/);
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.getByRole('button', { name: 'Cancelar', exact: true }).click();
+    assert.equal(
+      await page.locator('[data-transcription-section]').getAttribute('data-mode'),
+      'reading',
+    );
+    assert.match(
+      await page.locator('.segment-text').first().textContent(),
+      /Texto de revisão corrigida/,
+    );
+    record('Transcrição separa leitura e edição; cancelar descarta o rascunho');
+    await page.getByRole('button', { name: 'Versões', exact: true }).click();
     page.once('dialog', (dialog) => dialog.accept());
     await page
       .locator('.version-row')
@@ -1222,6 +1243,7 @@ async function main() {
     await page.locator('[data-summary-section]').waitFor();
     await audit('material-confirmed');
     await page.getByRole('tab', { name: 'Transcrição', exact: true }).click();
+    await page.getByRole('button', { name: 'Editar transcrição', exact: true }).click();
     await page
       .locator('.transcription-segment textarea')
       .fill('Alteração local não salva da fixture.');

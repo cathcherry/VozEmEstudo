@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/css/learning-tools.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
     <script defer src="/js/utils/card-motion.js"></script>
-  <link rel="stylesheet" href="/css/material-refinement.css"><script type="module" src="/js/pages/material-layout.js"></script></head>
+  <link rel="stylesheet" href="/css/material-refinement.css"></head>
   <body class="app-page" data-page="material">
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
     <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo">
@@ -124,23 +124,20 @@
       <nav class="material-breadcrumb" aria-label="Localização">
         <a href="./historico.html">Biblioteca</a>
       </nav>
-      <header class="article-heading material-heading">
-        <div>
+      <header class="material-header">
+        <div class="material-header-text">
           <h1 data-material-title aria-busy="true">
             <span class="title-placeholder" aria-label="Abrindo aula"></span>
           </h1>
-          <p data-material-meta></p>
-          <div data-material-tags></div>
+          <div class="material-meta">
+            <span class="material-subject" data-material-meta></span
+            ><span class="material-status" data-material-status hidden></span
+            ><span data-material-tags></span>
+          </div>
         </div>
         <div class="material-header-actions" data-material-actions hidden>
-          <a
-            class="text-action compact-edit"
-            data-organize-material
-            aria-label="Editar disciplina e tags"
-            title="Editar disciplina e tags"
-            >✎ <span>Editar</span></a
-          >
-          <button class="secondary-action" type="button" data-open-export>↓ Exportar</button>
+          <a class="secondary-action" data-organize-material>Organizar</a
+          ><button class="secondary-action" type="button" data-open-export>Exportar</button>
         </div>
       </header>
       <section class="learning-tools-panel" data-annotations-panel hidden aria-label="Anotações e destaques"></section>
@@ -150,9 +147,7 @@
         <span class="loading-indicator" data-processing-spinner aria-hidden="true"></span>
         <h2 data-processing-status aria-live="polite">Na fila…</h2>
         <p data-elapsed></p>
-        <p class="waiting-tip" data-waiting-tip></p>
-        <p>Você pode sair. A aula aparecerá na Biblioteca quando terminar.</p>
-        <a class="text-action" href="./historico.html">Ir para a Biblioteca</a>
+        <p>Pode sair: a aula aparece na Biblioteca quando terminar.</p>
         <details class="processing-details">
           <summary>Detalhes do processamento</summary>
           <ol class="processing-steps" data-processing-events=""></ol>
@@ -164,32 +159,38 @@
           Conferir transcrição
         </button>
       </section>
+      <section class="material-recording" data-audio-section hidden aria-label="Gravação da aula">
+        <div data-audio-player></div>
+        <div class="recording-footer">
+          <label class="playback-kind" data-playback-choice
+            ><span class="sr-only">Formato de reprodução</span
+            ><select data-playback-kind>
+              <option value="audio">Áudio</option>
+              <option value="video">Vídeo</option>
+            </select></label
+          ><a
+            class="text-action"
+            data-open-original-video
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+            >MP4 original</a
+          ><button type="button" class="text-action" data-remove-video hidden>
+            Remover vídeo</button
+          ><button class="text-action" type="button" data-retry-media hidden>
+            Recarregar mídia
+          </button>
+          <p data-playback-status role="status" aria-live="polite"></p>
+        </div>
+      </section>
       <nav class="material-tabs" role="tablist" aria-label="Conteúdo da aula" hidden>
-        <button
-          type="button"
-          id="tab-transcription"
-          role="tab"
-          aria-controls="transcricao"
-          data-material-tab="transcription"
-        >
+        <button type="button" id="tab-transcription" role="tab" aria-controls="transcricao" data-material-tab="transcription">
           Transcrição
         </button>
-        <button
-          type="button"
-          id="tab-summary"
-          role="tab"
-          aria-controls="resumo"
-          data-material-tab="summary"
-        >
+        <button type="button" id="tab-summary" role="tab" aria-controls="resumo" data-material-tab="summary">
           Resumo
         </button>
-        <button
-          type="button"
-          id="tab-questions"
-          role="tab"
-          aria-controls="questoes"
-          data-material-tab="questions"
-        >
+        <button type="button" id="tab-questions" role="tab" aria-controls="questoes" data-material-tab="questions">
           Questões
         </button>
       </nav>
@@ -199,51 +200,41 @@
         role="tabpanel"
         aria-labelledby="tab-transcription"
         data-transcription-section
+        data-mode="reading"
         hidden
       >
-        <div class="section-title-row">
-          <div>
-            <h2>Transcrição</h2>
-            <p>
-              Revisão <strong data-transcription-revision="">—</strong>. Edite os trechos
-              necessários e salve uma nova revisão.
-            </p>
+        <h2 class="sr-only">Transcrição</h2>
+        <div class="panel-toolbar">
+          <div class="transcript-player-toolbar" data-transcript-player-toolbar></div>
+          <div class="panel-toolbar-actions">
+            <div class="reading-size" role="group" aria-label="Tamanho do texto">
+              <button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button
+              ><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button>
+            </div>
+            <button class="text-action" type="button" data-show-versions>Versões</button
+            ><button class="secondary-action" type="button" data-edit-transcription>
+              Editar transcrição
+            </button>
           </div>
-          <button class="primary-action" data-save-transcription="" type="button">
+        </div>
+        <div class="edit-bar" data-edit-bar hidden>
+          <p data-edit-status>
+            Editando · revisão <strong data-transcription-revision>—</strong>
+          </p>
+          <div class="edit-bar-actions">
+            <button class="text-action" type="button" data-cancel-edit>Cancelar</button
+            ><button class="primary-action" data-save-transcription type="button">
               Salvar alterações
             </button>
-          <details class="quiet-menu">
-            <summary aria-label="Opções da transcrição">⋯</summary>
-            <button class="text-action" data-show-versions type="button">Versões</button
-            ><label class="follow-control"
-              ><input type="checkbox" data-follow-audio /> Seguir áudio</label
-            >
-          </details>
-        </div>
-        <div data-audio-section hidden>
-          <div class="playback-options">
-            <label data-playback-choice>Formato de reprodução <select data-playback-kind><option value="audio">Áudio</option><option value="video">Vídeo original</option></select></label>
-            <button type="button" class="text-action" data-remove-video hidden>Remover vídeo guardado</button>
-            <a data-open-original-video target="_blank" rel="noopener noreferrer" hidden>Abrir MP4 original inteiro</a>
           </div>
-          <p data-playback-status role="status" aria-live="polite"></p>
-          <div data-audio-player></div>
-          <p class="plain-note">Disponível conforme sua escolha de conservação. A linha do tempo corresponde ao trecho transcrito, mesmo no MP4 original. Retomada e velocidade são salvas por conta neste navegador.</p>
-          <button class="text-action" type="button" data-retry-media hidden>
-            Recarregar e tentar reproduzir novamente
-          </button>
         </div>
         <button class="text-action warning-trigger" type="button" data-open-warnings hidden>
           Confira os avisos desta transcrição
         </button>
         <p class="form-status" data-transcription-message role="status"></p>
-        <div class="transcript-player-toolbar" data-transcript-player-toolbar></div>
-        <div class="transcription-segments" data-transcription-segments></div>
+        <div class="transcription-segments reading-measure" data-transcription-segments></div>
         <div class="confirmation-footer">
-          <p>
-            Confirmar registra que você conferiu esta revisão. Isso não comprova a veracidade da
-            aula.
-          </p>
+          <p>Confirmar registra que você conferiu esta revisão.</p>
           <div data-material-permission hidden>
             <label class="storage-choice"
               ><input type="checkbox" id="material-permission" /><span
@@ -267,10 +258,11 @@
         data-summary-section
         hidden
       >
-        <div class="section-title-row">
-          <h2>Resumo</h2>
-          <div class="table-actions">
-            <details class="quiet-menu" data-summary-history hidden>
+        <h2 class="sr-only">Resumo</h2>
+        <div class="panel-toolbar">
+          <p class="panel-meta" data-summary-meta></p>
+          <div class="panel-toolbar-actions">
+            <details class="version-menu" data-summary-history hidden>
               <summary>Versões</summary>
               <div data-summary-version-list></div>
             </details>
@@ -280,7 +272,7 @@
           </div>
         </div>
         <p data-summary-message role="status" aria-live="polite"></p>
-        <div class="generated-content markdown-content" data-summary-text></div>
+        <article class="generated-content markdown-content reading-measure" data-summary-text></article>
       </section>
       <section
         class="article-section"
@@ -290,12 +282,15 @@
         data-questions-section
         hidden
       >
-        <div class="section-title-row">
-          <h2>Questões</h2>
-          <button class="secondary-action" type="button" data-open-questions>Gerar questões</button>
+        <h2 class="sr-only">Questões</h2>
+        <div class="panel-toolbar">
+          <p class="panel-meta" data-questions-meta></p>
+          <div class="panel-toolbar-actions">
+            <button class="secondary-action" type="button" data-open-questions>Gerar questões</button>
+          </div>
         </div>
         <p data-more-questions-message role="status" aria-live="polite"></p>
-        <div data-question-batches></div>
+        <div class="question-batches" data-question-batches></div>
       </section>
       <div class="material-study-tools" data-study-footer hidden>
         <button type="button" class="secondary-action" data-complete-review aria-pressed="false">

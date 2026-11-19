@@ -30,6 +30,7 @@ let currentMaterial,
   original = new Map(),
   reviewOpened = false,
   busy = false,
+  editing = false,
   stopTracking,
   waveformController;
 let activeTab =
@@ -52,20 +53,16 @@ const transcriptPlayer = initTranscriptPlayer({
   toolbar: $('[data-transcript-player-toolbar]'),
   player,
 });
-let playbackIdentity = '', renewBusy = false, lastRenewedAt = 0, playbackRequest = 0;
+let playbackIdentity = '',
+  renewBusy = false,
+  lastRenewedAt = 0,
+  playbackRequest = 0;
 let materialToolsInitialized = false;
-if (materialId) void initStudyTrackingPanel({ materialId }).catch((error) => {
-  const panel = $('[data-study-tracking-panel]');
-  if (panel && !panel.hidden) panel.textContent = error.message || 'Progresso indisponível.';
-});
-// One delegated listener keeps both existing follow controls in agreement.
-const followAudio = $('[data-follow-audio]');
-const toolbarFollow = $('[data-transcript-player-toolbar] input[type="checkbox"]');
-function syncFollowControls(event) {
-  if (event.target !== followAudio && event.target !== toolbarFollow) return;
-  followAudio.checked = toolbarFollow.checked = event.target.checked;
-}
-document.addEventListener('change', syncFollowControls);
+if (materialId)
+  void initStudyTrackingPanel({ materialId }).catch((error) => {
+    const panel = $('[data-study-tracking-panel]');
+    if (panel && !panel.hidden) panel.textContent = error.message || 'Progresso indisponível.';
+  });
 const messages = {
   summary: $('[data-summary-message]'),
   questions: $('[data-more-questions-message]'),
@@ -98,6 +95,25 @@ function hasUnsavedEdits() {
 function ready() {
   return currentMaterial?.review?.state === 'ready_to_generate';
 }
+/** Editing is the mode while a revision awaits confirmation, or when the user chose to edit. */
+function isEditing() {
+  return Boolean(currentMaterial?.transcription) && (!ready() || editing);
+}
+function changedSegments() {
+  return [...document.querySelectorAll('.transcription-segment')].filter(
+    (n) => n.querySelector('textarea').value.trim() !== original.get(n.dataset.segmentId),
+  ).length;
+}
+function updateEditStatus() {
+  const count = changedSegments(),
+    revision = currentMaterial?.transcription?.current_revision ?? '—';
+  $('[data-edit-status]').textContent =
+    `Editando a revisão ${revision}` +
+    (count ? ` · ${count} ${count === 1 ? 'trecho alterado' : 'trechos alterados'}` : '');
+  $('[data-cancel-edit]').textContent = ready() ? 'Cancelar' : 'Descartar alterações';
+  $('[data-cancel-edit]').hidden = !ready() && !count;
+  $('[data-save-transcription]').disabled = busy || !count;
+}
 function layout() {
   if (!currentMaterial) return;
   const transcript = Boolean(currentMaterial.transcription);
@@ -115,7 +131,19 @@ function layout() {
     $(`[data-${name}-section]`).hidden = !showContent || activeTab !== name;
   }
   $('[data-open-export]').hidden = !transcript;
-  $('[data-follow-audio]').closest('label').hidden = !player.source || !hasUsefulTiming();
+  $('[data-follow-control]').hidden = !player.source || !hasUsefulTiming();
+  const mode = isEditing() ? 'editing' : 'reading';
+  $('[data-transcription-section]').dataset.mode = mode;
+  $('[data-edit-bar]').hidden = mode !== 'editing';
+  $('[data-edit-transcription]').hidden = mode === 'editing' || !ready();
+  // Confirmation belongs to editing: a pending revision, or edits that will create one.
+  $('.confirmation-footer').hidden = mode !== 'editing';
+  const status = $('[data-material-status]');
+  const label = !transcript ? 'Processando' : !ready() ? 'Revisão pendente' : '';
+  status.textContent = label;
+  status.hidden = !label;
+  status.dataset.state = !transcript ? 'processing' : 'review';
+  if (mode === 'editing') updateEditStatus();
 }
 function selectTab(name, focus = false) {
   if (!ready() && name !== 'transcription') return;
@@ -173,11 +201,6 @@ function updateWaiting(job) {
   }
   $('[data-processing-spinner]').hidden = ['FALHOU', 'CANCELADA'].includes(job.status);
 }
-const tips = [
-  'Organize suas aulas por disciplina e tags.',
-  'Você pode personalizar o formato e a extensão dos resumos.',
-  'Use as questões para praticar o conteúdo da aula.',
-];
 const clock = setInterval(() => {
   if ($('[data-processing-section]').hidden) return;
   const seconds = Math.max(
@@ -188,7 +211,6 @@ const clock = setInterval(() => {
     seconds < 60
       ? 'Iniciado há poucos segundos'
       : `Iniciado há ${Math.floor(seconds / 60)} ${seconds < 120 ? 'minuto' : 'minutos'}`;
-  $('[data-waiting-tip]').textContent = tips[Math.floor(seconds / 12) % tips.length];
 }, 1000);
 function renderSegments(transcription) {
   const drafts = new Map(
@@ -222,18 +244,21 @@ function renderSegments(transcription) {
     timestamp.className = 'segment-timestamp';
     timestamp.textContent = `${formatTimestamp(segment.start_ms)}–${formatTimestamp(segment.end_ms)}`;
     timestamp.disabled = !player.source;
-    timestamp.title = player.source
-      ? 'Reproduzir a partir deste trecho'
-      : 'Timestamp do trecho';
+    timestamp.title = player.source ? 'Reproduzir a partir deste trecho' : 'Timestamp do trecho';
     timestamp.addEventListener('click', () => {
       if (player.source) player.seekTo(segment.start_ms / 1000);
     });
+    // Reading shows plain text; editing shows the same segment as a field. Both stay in the DOM so
+    // drafts, search and the review flow keep working across mode switches.
+    const text = document.createElement('p');
+    text.className = 'segment-text';
+    text.textContent = segment.current_text;
     const textarea = document.createElement('textarea');
     textarea.value =
       keepDraft && drafts.has(segment.id) ? drafts.get(segment.id) : segment.current_text;
     textarea.rows = Math.max(2, Math.ceil(segment.current_text.length / 90));
     textarea.setAttribute('aria-label', `Trecho iniciado em ${formatTimestamp(segment.start_ms)}`);
-    article.append(timestamp, textarea);
+    article.append(timestamp, text, textarea);
     segmentsContainer.appendChild(article);
   });
   transcriptPlayer.refresh();
@@ -247,15 +272,42 @@ async function saveEdits() {
   if (!edits.length) return;
   await saveTranscriptionEdits(materialId, editingRevision, edits);
   original = new Map();
+  editing = false;
   $('[data-transcription-segments]').replaceChildren();
   await reload();
 }
+function discardEdits() {
+  document.querySelectorAll('.transcription-segment').forEach((n) => {
+    n.querySelector('textarea').value = original.get(n.dataset.segmentId) ?? '';
+  });
+  segmentsContainer.dispatchEvent(new Event('input'));
+}
+$('[data-edit-transcription]').addEventListener('click', () => {
+  editing = true;
+  layout();
+  const first = $('.transcription-segment textarea');
+  first?.focus({ preventScroll: true });
+});
+$('[data-cancel-edit]').addEventListener('click', () => {
+  if (changedSegments() && !confirm('Descartar as alterações não salvas?')) return;
+  discardEdits();
+  editing = false;
+  layout();
+  $(ready() ? '[data-edit-transcription]' : '[data-confirm-transcription]')?.focus();
+});
+segmentsContainer.addEventListener('input', () => {
+  if (isEditing()) updateEditStatus();
+});
 $('[data-save-transcription]').addEventListener('click', async (event) => {
   const button = event.currentTarget;
   button.disabled = true;
-  try { await saveEdits(); }
-  catch (error) { setStatus(transcriptMessage, error.message, 'error'); }
-  finally { button.disabled = false; }
+  try {
+    await saveEdits();
+  } catch (error) {
+    setStatus(transcriptMessage, error.message, 'error');
+  } finally {
+    button.disabled = false;
+  }
 });
 function hasUsefulTiming() {
   const segments = currentMaterial?.transcription?.transcription_segments || [];
@@ -302,22 +354,30 @@ function renderPlayback(material, force = false) {
   else originalLink.removeAttribute('href');
   section.hidden = !audioAvailable && !videoAvailable;
   if (section.hidden) {
-    stopTracking?.(); stopTracking = null;
-    player.media.pause(); player.source = '';
-    player.audio.removeAttribute('src'); player.video.removeAttribute('src');
+    stopTracking?.();
+    stopTracking = null;
+    player.media.pause();
+    player.source = '';
+    player.audio.removeAttribute('src');
+    player.video.removeAttribute('src');
     playbackIdentity = '';
     return;
   }
   const video = kind.value === 'video';
   const identity = `${materialId}:${kind.value}`;
   if (!force && identity === playbackIdentity && player.source) return;
-  stopTracking?.(); stopTracking = null;
+  stopTracking?.();
+  stopTracking = null;
   waveformController?.abort();
   waveformController = new AbortController();
   player.setSource({
     src: video ? material.signedVideoUrl : material.signedAudioUrl,
-    title: material.title, video, format: video ? 'mp4' : material.audio?.extension || 'áudio',
-    duration: video ? (material.video.clipEndMs - material.video.clipStartMs) / 1000 : (material.audio?.duration_ms || 0) / 1000,
+    title: material.title,
+    video,
+    format: video ? 'mp4' : material.audio?.extension || 'áudio',
+    duration: video
+      ? (material.video.clipEndMs - material.video.clipStartMs) / 1000
+      : (material.audio?.duration_ms || 0) / 1000,
     timelineStart: video ? material.video.clipStartMs / 1000 : 0,
     timelineDuration: video ? (material.video.clipEndMs - material.video.clipStartMs) / 1000 : 0,
     preservePosition: Boolean(playbackIdentity),
@@ -330,7 +390,8 @@ function renderPlayback(material, force = false) {
 
 async function renewPlayback({ automatic = false } = {}) {
   if (!currentMaterial || renewBusy || (automatic && Date.now() - lastRenewedAt < 30000)) return;
-  renewBusy = true; lastRenewedAt = Date.now();
+  renewBusy = true;
+  lastRenewedAt = Date.now();
   const version = ++playbackRequest;
   const message = document.querySelector('[data-playback-status]');
   setStatus(message, 'Atualizando o link de reprodução…');
@@ -341,29 +402,45 @@ async function renewPlayback({ automatic = false } = {}) {
     renderPlayback(currentMaterial, true);
     $('[data-retry-media]').hidden = true;
     layout();
-    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !player.source; });
+    document.querySelectorAll('.segment-timestamp').forEach((item) => {
+      item.disabled = !player.source;
+    });
     setStatus(message, 'Link atualizado. Posição e velocidade preservadas.', 'success');
   } catch (error) {
-    if (version === playbackRequest) setStatus(message, error.message || 'Não foi possível renovar. Tente novamente.', 'error');
-  } finally { renewBusy = false; }
+    if (version === playbackRequest)
+      setStatus(message, error.message || 'Não foi possível renovar. Tente novamente.', 'error');
+  } finally {
+    renewBusy = false;
+  }
 }
-document.querySelector('[data-playback-kind]').addEventListener('change', () => renderPlayback(currentMaterial));
+document
+  .querySelector('[data-playback-kind]')
+  .addEventListener('change', () => renderPlayback(currentMaterial));
 document.querySelector('[data-remove-video]').addEventListener('click', async (event) => {
   if (!confirm('Remover o vídeo guardado desta aula?')) return;
   const button = event.currentTarget;
-  button.disabled = true; ++playbackRequest;
+  button.disabled = true;
+  ++playbackRequest;
   try {
     await removeOriginalVideo(materialId);
     Object.assign(currentMaterial, { video: null, signedVideoUrl: null });
     renderPlayback(currentMaterial, true);
-    document.querySelectorAll('.segment-timestamp').forEach((item) => { item.disabled = !player.source; });
+    document.querySelectorAll('.segment-timestamp').forEach((item) => {
+      item.disabled = !player.source;
+    });
     setStatus(document.querySelector('[data-playback-status]'), 'Vídeo removido.', 'success');
-  } catch (error) { setStatus(document.querySelector('[data-playback-status]'), error.message, 'error'); }
-  finally { button.disabled = false; }
+  } catch (error) {
+    setStatus(document.querySelector('[data-playback-status]'), error.message, 'error');
+  } finally {
+    button.disabled = false;
+  }
 });
-const playbackRefreshTimer = setInterval(() => {
-  if (player.source && !player.media.paused) void renewPlayback({ automatic: true });
-}, 8 * 60 * 1000);
+const playbackRefreshTimer = setInterval(
+  () => {
+    if (player.source && !player.media.paused) void renewPlayback({ automatic: true });
+  },
+  8 * 60 * 1000,
+);
 
 async function loadWaveform(url, signal) {
   const bytes = await fetch(url, { signal }).then((response) => {
@@ -393,9 +470,21 @@ async function loadWaveform(url, signal) {
   }
 }
 
-$('[data-retry-media]').addEventListener('click', () => { void renewPlayback(); });
+$('[data-retry-media]').addEventListener('click', () => {
+  void renewPlayback();
+});
 function renderSummary(summary) {
   renderMarkdown($('[data-summary-text]'), summary?.text || '');
+  $('[data-summary-text]').hidden = !summary;
+  $('[data-summary-meta]').textContent = summary
+    ? [
+        `Versão ${summary.version}`,
+        summary.created_at ? formatDate(summary.created_at) : '',
+        summary.stale ? 'baseado em uma revisão anterior da transcrição' : '',
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : 'Ainda não há resumo desta aula.';
 }
 function render(material) {
   currentMaterial = material;
@@ -407,16 +496,17 @@ function render(material) {
   $('[data-material-title]').textContent = material.title;
   $('[data-material-title]').removeAttribute('aria-busy');
   document.title = material.title + ' | Voz em Estudo';
-  $('[data-material-meta]').textContent = material.subject || '';
+  $('[data-material-meta]').textContent = material.subject || 'Sem disciplina';
+  const tagList = studyFor(materialId).tags;
   const tags = document.createElement('ul');
   tags.className = 'material-tags';
   tags.setAttribute('aria-label', 'Tags');
-  for (const tag of studyFor(materialId).tags) {
+  for (const tag of tagList) {
     const item = document.createElement('li');
     item.textContent = tag;
     tags.append(item);
   }
-  $('[data-material-tags]').replaceChildren(tags);
+  $('[data-material-tags]').replaceChildren(...(tagList.length ? [tags] : []));
   $('[data-organize-material]').href = './historico.html?edit=' + encodeURIComponent(materialId);
   renderPlayback(material);
   if (!material.transcription)
@@ -425,16 +515,16 @@ function render(material) {
       current_stage: material.current_stage,
       created_at: material.created_at,
     });
-  else {
-    $('[data-transcription-revision]').textContent = material.transcription.current_revision;
-    renderSegments(material.transcription);
-  }
+  else renderSegments(material.transcription);
   installCaptions();
   scientificReview.render(material);
-  $('[data-save-transcription]').disabled = busy || !material.transcription;
   if (!materialToolsInitialized) {
     materialToolsInitialized = true;
-    void initMaterialTools({ materialId, context: () => currentMaterial, segments: segmentsContainer }).catch((error) => {
+    void initMaterialTools({
+      materialId,
+      context: () => currentMaterial,
+      segments: segmentsContainer,
+    }).catch((error) => {
       const panel = $('[data-material-tools]');
       panel.hidden = false;
       panel.textContent = error.message || 'Ferramentas indisponíveis.';
@@ -443,7 +533,7 @@ function render(material) {
   const summaries = material.summaries || [],
     summary = summaries.find((s) => s.is_current) || summaries[0];
   renderSummary(summary);
-  $('[data-regenerate-summary]').textContent = summary ? 'Novo resumo' : 'Gerar resumo';
+  $('[data-regenerate-summary]').textContent = summary ? 'Gerar novamente' : 'Gerar resumo';
   $('[data-summary-history]').hidden = summaries.length < 2;
   $('[data-summary-version-list]').replaceChildren();
   summaries.forEach((s) => {
@@ -457,22 +547,7 @@ function render(material) {
     });
     $('[data-summary-version-list]').append(b);
   });
-  $('[data-question-batches]').replaceChildren();
-  (material.questionBatches || []).forEach((batch, i, batches) => {
-    const row = document.createElement('details'),
-      heading = document.createElement('summary'),
-      link = document.createElement('a');
-    row.className = 'question-batch-row';
-    const answered = (batch.questions || []).filter(
-      (q) => studyFor(materialId).answers[q.id],
-    ).length;
-    heading.textContent = `${batch.generated_count} questões · Conjunto ${batches.length - i}${answered ? ` · ${answered} respondidas` : ''}`;
-    link.className = 'small-action';
-    link.textContent = 'Responder questões';
-    link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
-    row.append(heading, link);
-    $('[data-question-batches]').append(row);
-  });
+  renderQuestionBatches(material.questionBatches || []);
   $('[data-complete-review]').setAttribute('aria-pressed', String(studyFor(materialId).completed));
   $('[data-complete-review]').textContent = studyFor(materialId).completed
     ? 'Revisão concluída · desfazer'
@@ -488,6 +563,73 @@ function render(material) {
     $('#more-question-count').focus();
   }
 }
+/**
+ * Each batch shows its real questions and the locally recorded result of each one, so an
+ * "answered" count is always backed by something the student can review.
+ */
+function renderQuestionBatches(batches) {
+  const answers = studyFor(materialId).answers;
+  const container = $('[data-question-batches]');
+  container.replaceChildren();
+  const total = batches.reduce(
+    (sum, b) => sum + (b.questions?.length || b.generated_count || 0),
+    0,
+  );
+  $('[data-questions-meta]').textContent = batches.length
+    ? `${batches.length} ${batches.length === 1 ? 'conjunto' : 'conjuntos'} · ${total} questões`
+    : 'Ainda não há questões desta aula.';
+  batches.forEach((batch, i) => {
+    const questions = batch.questions || [];
+    const results = questions.map((q) => answers[q.id]);
+    const answered = results.filter(Boolean).length;
+    const correct = results.filter((r) => r?.correct).length;
+    const count = questions.length || batch.generated_count || 0;
+    const card = document.createElement('article');
+    card.className = 'question-batch-card question-batch-row';
+    const head = document.createElement('div');
+    head.className = 'question-batch-head';
+    const title = document.createElement('h3');
+    title.textContent = `Conjunto ${batches.length - i}`;
+    const meta = document.createElement('p');
+    meta.textContent = answered
+      ? `${answered} de ${count} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}`
+      : `${count} questões · ainda não respondidas`;
+    if (batch.stale) meta.textContent += ' · revisão anterior';
+    const link = document.createElement('a');
+    link.className = answered && answered < count ? 'primary-action' : 'secondary-action';
+    link.textContent = !answered
+      ? 'Responder'
+      : answered < count
+        ? 'Continuar'
+        : 'Responder de novo';
+    link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
+    head.append(title, meta, link);
+    const progress = document.createElement('div');
+    progress.className = 'question-batch-progress';
+    progress.setAttribute('aria-hidden', 'true');
+    progress.style.setProperty('--answered', String(count ? answered / count : 0));
+    progress.style.setProperty('--correct', String(count ? correct / count : 0));
+    card.append(head, progress);
+    if (questions.length) {
+      const list = document.createElement('ol');
+      list.className = 'question-list';
+      questions.forEach((q, index) => {
+        const item = document.createElement('li');
+        const result = results[index];
+        item.dataset.result = result ? (result.correct ? 'correct' : 'wrong') : 'pending';
+        const text = document.createElement('span');
+        text.textContent = q.statement;
+        const badge = document.createElement('span');
+        badge.className = 'question-result';
+        badge.textContent = result ? (result.correct ? 'Acertou' : 'Errou') : 'Não respondida';
+        item.append(text, badge);
+        list.append(item);
+      });
+      card.append(list);
+    }
+    container.append(card);
+  });
+}
 async function reload() {
   const material = await getMaterial(materialId);
   render(material);
@@ -496,7 +638,9 @@ async function reload() {
 $('[data-complete-review]').addEventListener('click', () => {
   const saved = completeReview(materialId, !studyFor(materialId).completed);
   $('[data-review-message]').textContent = saved
-    ? (isStudySyncEnabled() ? 'Andamento salvo neste navegador e aguardando sincronização com a conta.' : 'Seu andamento foi salvo neste navegador.')
+    ? isStudySyncEnabled()
+      ? 'Andamento salvo neste navegador e aguardando sincronização com a conta.'
+      : 'Seu andamento foi salvo neste navegador.'
     : 'Não foi possível salvar o andamento neste navegador.';
   render(currentMaterial);
 });
@@ -547,8 +691,8 @@ $('[data-open-questions]').addEventListener('click', () => {
 });
 function normalizeSummaryOptions(options) {
   return {
-    format: ({ bullets: 'topics' })[options.format] || options.format,
-    length: ({ brief: 'short', intermediate: 'standard' })[options.length] || options.length,
+    format: { bullets: 'topics' }[options.format] || options.format,
+    length: { brief: 'short', intermediate: 'standard' }[options.length] || options.length,
   };
 }
 async function generate(kind, options) {
@@ -559,9 +703,15 @@ async function generate(kind, options) {
   if (!pending.has(operation)) pending.set(operation, crypto.randomUUID());
   busy = true;
   scientificReview.setBusy(true);
-  const generationFields = [...document.querySelectorAll('[data-summary-form] select, [data-summary-form] button, [data-more-questions-form] select, [data-more-questions-form] button')];
+  const generationFields = [
+    ...document.querySelectorAll(
+      '[data-summary-form] select, [data-summary-form] button, [data-more-questions-form] select, [data-more-questions-form] button',
+    ),
+  ];
   const previousDisabled = generationFields.map((field) => field.disabled);
-  generationFields.forEach((field) => { field.disabled = true; });
+  generationFields.forEach((field) => {
+    field.disabled = true;
+  });
   $('[data-save-transcription]').disabled = true;
   $('[data-open-questions]').disabled = true;
   const message = messages[kind];
@@ -569,7 +719,10 @@ async function generate(kind, options) {
   try {
     const job =
       kind === 'summary'
-        ? await regenerateSummary(materialId, source, pending.get(operation), { format: options.format, length: options.length })
+        ? await regenerateSummary(materialId, source, pending.get(operation), {
+            format: options.format,
+            length: options.length,
+          })
         : await generateQuestions(materialId, options.count, source, pending.get(operation));
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => setStatus(message, jobLabel(state)),
@@ -585,7 +738,9 @@ async function generate(kind, options) {
     setStatus(message, e.message, 'error');
   } finally {
     busy = false;
-    generationFields.forEach((field, index) => { field.disabled = previousDisabled[index]; });
+    generationFields.forEach((field, index) => {
+      field.disabled = previousDisabled[index];
+    });
     scientificReview.setBusy(false);
     $('[data-save-transcription]').disabled = !currentMaterial?.transcription;
     $('[data-open-questions]').disabled = false;
@@ -616,7 +771,6 @@ window.addEventListener('pagehide', () => {
   clearInterval(playbackRefreshTimer);
   stopTracking?.();
   transcriptPlayer.destroy();
-  document.removeEventListener('change', syncFollowControls);
   waveformController?.abort();
   player.destroy();
   if (player.captionUrl) URL.revokeObjectURL(player.captionUrl);
