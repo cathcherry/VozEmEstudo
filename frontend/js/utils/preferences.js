@@ -161,22 +161,8 @@ function initializeNavigation() {
       // In focus mode the sidebar opens temporarily as an overlay and is not persisted.
       if (!uiPreferences.focusMode)
         appearance.storage.set('voz-sidebar-collapsed', String(collapsed));
-      else if (!collapsed) nav.querySelector('nav a')?.focus();
       syncNavigation();
     }
-  });
-  const closeFocusOverlay = (restore) => {
-    if (!uiPreferences.focusMode || mobile.matches || root.dataset.sidebarCollapsed === 'true')
-      return;
-    root.dataset.sidebarCollapsed = 'true';
-    syncNavigation();
-    if (restore) toggle.focus();
-  };
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && nav.contains(document.activeElement)) closeFocusOverlay(true);
-  });
-  document.addEventListener('pointerdown', (event) => {
-    if (!nav.contains(event.target) && !toggle.contains(event.target)) closeFocusOverlay(false);
   });
   close?.addEventListener('click', () => closeMenu());
   backdrop?.addEventListener('click', () => closeMenu());
@@ -220,19 +206,22 @@ function initializeNavigation() {
       ),
     ).observe(tabs);
 }
+/** Dock is the navigation in focus mode (auto-hidden) or when chosen in Aparência (pinned). */
+const dockEnabled = () => uiPreferences.focusMode || uiPreferences.navigation === 'dock';
+const dockPinned = () => !uiPreferences.focusMode && uiPreferences.navigation === 'dock';
 function setFocusDockOpen(open) {
   if (!focusDock || !focusDockTrigger) return;
-  focusDockOpen = Boolean(open && uiPreferences.focusMode);
+  focusDockOpen = Boolean((open || dockPinned()) && dockEnabled());
   focusDock.dataset.open = String(focusDockOpen);
   focusDock.inert = !focusDockOpen;
   focusDockTrigger.setAttribute('aria-expanded', String(focusDockOpen));
 }
 function syncFocusDock() {
   if (!focusDock || !focusDockTrigger) return;
-  const enabled = uiPreferences.focusMode;
+  const enabled = dockEnabled();
   focusDock.hidden = !enabled;
-  focusDockTrigger.hidden = !enabled;
-  if (!enabled) setFocusDockOpen(false);
+  focusDockTrigger.hidden = !enabled || dockPinned();
+  setFocusDockOpen(false);
 }
 function initializeFocusDock() {
   if (!document.body.classList.contains('app-page')) return;
@@ -327,7 +316,7 @@ function initializeFocusDock() {
     else if (!focusDock.contains(document.activeElement)) setFocusDockOpen(false);
   });
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && focusDockOpen) {
+    if (event.key === 'Escape' && focusDockOpen && !dockPinned()) {
       setFocusDockOpen(false);
       focusDockTrigger.focus();
     }

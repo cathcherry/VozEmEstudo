@@ -766,7 +766,7 @@ body[data-page="landing"] { display: block; background: var(--background); }
   }
 }
 
-html[data-focus-mode='true'] .app-toast {
+html[data-nav-dock='true'] .app-toast {
   bottom: calc(92px + env(safe-area-inset-bottom));
 }
 [data-reduced-motion='true'] .app-toast,

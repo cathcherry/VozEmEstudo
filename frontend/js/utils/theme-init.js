@@ -12,7 +12,9 @@
     readingWidth: 'comfortable',
     readingFont: 'default',
     readingRuler: 'off',
+    navigation: 'sidebar',
   });
+  const NAVIGATIONS = ['sidebar', 'dock'];
   const RULERS = ['off', 'ruler', 'focus'];
   // Reading fonts: bundled OFL fonts plus a plain system option. "readableFont" is kept only as
   // a derived flag for older saved preferences and themes.
@@ -85,7 +87,9 @@
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
-    // In focus mode the sidebar always starts hidden; reopening it is temporary (per page).
+    // Bottom dock navigation: always in focus mode (auto-hidden), or chosen as the normal
+    // navigation in Aparência (always visible). The sidebar is not shown in either case.
+    root.dataset.navDock = String(prefs.focusMode || prefs.navigation === 'dock');
     root.dataset.sidebarCollapsed = String(
       prefs.focusMode || storage.get('voz-sidebar-collapsed', 'false') === 'true',
     );
@@ -206,6 +210,7 @@
     if (SPACINGS.includes(value?.readingSpacing)) result.readingSpacing = value.readingSpacing;
     if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
+    if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
     if (READING_FONTS.includes(value?.readingFont)) result.readingFont = value.readingFont;
     else if (value?.readableFont === true) result.readingFont = 'readable';
     result.readableFont = result.readingFont !== 'default';

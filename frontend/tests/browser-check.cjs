@@ -486,28 +486,9 @@ async function main() {
     assert.equal(await page.locator('.focus-secondary').first().isVisible(), false);
     assert.equal(await page.locator('.side-navigation').isVisible(), false);
     assert.equal(await page.locator('.app-toast:visible').count(), 0, 'Quick toggle is silent');
-    const contentLeft = await page
-      .locator('main')
-      .evaluate((n) => Math.round(n.getBoundingClientRect().left));
-    // Focus mode keeps a way back to the navigation: a temporary overlay, not a layout change.
-    await page.getByRole('button', { name: 'Expandir barra lateral', exact: true }).click();
-    assert.equal(await page.locator('.side-navigation').isVisible(), true);
-    assert.equal(
-      await page.locator('main').evaluate((n) => Math.round(n.getBoundingClientRect().left)),
-      contentLeft,
-    );
-    assert(
-      await page
-        .locator('.side-navigation nav a')
-        .first()
-        .evaluate((n) => document.activeElement === n),
-    );
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('.side-navigation').isVisible(), false);
-    assert(
-      await page.locator('[data-menu-toggle]').evaluate((n) => document.activeElement === n),
-      'Escape returns focus to the menu button',
-    );
+    // In focus mode the bottom dock is the only navigation: no sidebar and no menu button.
+    assert.equal(await page.locator('[data-menu-toggle]').isVisible(), false);
+    assert.equal(await page.locator('html').getAttribute('data-nav-dock'), 'true');
     const focusDockTrigger = page.getByRole('button', {
       name: 'Mostrar navegação do modo foco',
       exact: true,
@@ -1150,6 +1131,30 @@ async function main() {
     assert.equal(await page.locator('html').getAttribute('data-reading-width'), 'narrow');
     await page.locator('#setting-reading-width').selectOption('comfortable');
     record('Modo foco preserva o tema salvo; largura de leitura persiste após recarregar');
+    // Bottom dock as the normal navigation: pinned, persisted; focus mode keeps it auto-hidden.
+    await page.locator('#setting-navigation').selectOption('dock');
+    await page.reload();
+    assert.equal(await page.locator('#setting-navigation').inputValue(), 'dock');
+    assert.equal(await page.locator('.side-navigation').isVisible(), false);
+    assert.equal(await page.locator('[data-menu-toggle]').isVisible(), false);
+    const dock = page.getByRole('navigation', { name: 'Navegação no modo foco' });
+    await page.mouse.move(200, 200);
+    assert.equal(await dock.getAttribute('data-open'), 'true');
+    assert.equal(
+      await page.getByRole('button', { name: 'Mostrar navegação do modo foco' }).isVisible(),
+      false,
+      'no reveal handle when the dock is pinned',
+    );
+    await dock.getByRole('link', { name: 'Biblioteca' }).focus();
+    assert.equal(await dock.getByRole('link', { name: 'Biblioteca' }).isVisible(), true);
+    await page.getByRole('button', { name: 'Modo foco', exact: true }).click();
+    await page.mouse.move(200, 200);
+    await page.locator('h1').first().click();
+    assert.equal(await dock.getAttribute('data-open'), 'false', 'focus mode auto-hides the dock');
+    await page.getByRole('button', { name: 'Sair do modo foco', exact: true }).click();
+    await page.locator('#setting-navigation').selectOption('sidebar');
+    assert.equal(await page.locator('.side-navigation').isVisible(), true);
+    record('Barra inferior pode ser a navegação normal; no modo foco é a única e se oculta');
     await openSavedThemes();
     await savedThemes.getByRole('button', { name: 'Aplicar tema Meu claro', exact: true }).click();
     await page.goto(base + '/leitura.html');
