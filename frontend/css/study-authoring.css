@@ -30,10 +30,11 @@
 }
 .authoring-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
   gap: 0 1rem;
 }
 .workflow-dialog fieldset {
+  min-width: 0;
   margin: 1rem 0;
   padding: 0;
   border: 0;
@@ -44,11 +45,13 @@
 }
 .choice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
   gap: 0.15rem 1rem;
 }
 .workflow-dialog .choice-grid label,
 .workflow-dialog .choice-row label {
+  min-width: 0;
+  overflow-wrap: anywhere;
   display: flex;
   gap: 0.45rem;
   align-items: flex-start;

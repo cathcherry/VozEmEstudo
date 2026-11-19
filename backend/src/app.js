@@ -42,6 +42,8 @@ app.get('/api/config', (_req, res) => {
     supabasePublishableKey: env.supabasePublishableKey,
     audioBucket: env.audioBucket,
     allowedQuestionCounts: [3, 5, 10, 20],
+    // Custom list sizes exist only once the authoring migration is enabled.
+    ...(isFeatureEnabled('study_authoring') ? { maxQuestionListCount: env.maxQuestionListCount } : {}),
     maxAudioBytes: 100 * 1024 * 1024,
     mediaExtensions: MEDIA_EXTENSIONS,
     maxTranscriptionSeconds: MAX_TRANSCRIPTION_SECONDS,

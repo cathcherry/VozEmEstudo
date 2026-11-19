@@ -9,6 +9,8 @@ const root = path.resolve(__dirname, '..'),
   backend = path.resolve(root, '../backend');
 const express = require(path.join(backend, 'node_modules/express'));
 const summaryCalls = [];
+const listCalls = [];
+const authoringFlags = {};
 const reports = [],
   errors = [],
   requests = [],
@@ -210,7 +212,8 @@ async function main() {
         supabaseUrl: 'https://mock.supabase.co',
         supabasePublishableKey: 'mock-publishable-key',
         audioBucket: 'audios',
-        featureFlags: { mp4_retention: mp4Retention },
+        featureFlags: { mp4_retention: mp4Retention, ...authoringFlags },
+        maxQuestionListCount: 30,
         recordingLanguages: { options: ['auto', 'pt', 'en', 'es', 'zh'], default: 'pt' },
         processingDisclosure: {
           recognitionProvider: 'Provedor ASR de teste',
@@ -323,10 +326,39 @@ async function main() {
       });
       return reply({ jobId: 'job-1' });
     }
+    if (/\/question-batches\/[^/]+$/.test(p) && request.method() === 'PATCH') {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const batch = m.questionBatches.find((item) => item.id === p.split('/').pop());
+      listCalls.push({ rename: request.postDataJSON() });
+      batch.title = request.postDataJSON().title;
+      return reply(batch);
+    }
     if (p.endsWith('/question-batches')) {
       generationCount++;
       const m = materials.find((item) => item.id === p.split('/')[3]),
-        count = request.postDataJSON().count;
+        body = request.postDataJSON(),
+        count = body.count;
+      listCalls.push(body);
+      if (!questionFail && body.config) {
+        // Mirrors the server: a thin lesson yields fewer distinct questions than requested.
+        const generated = Math.max(1, count - 2);
+        m.questionBatches.unshift({
+          id: 'list-' + generationCount,
+          title: body.config.title || null,
+          config: body.config,
+          requested_count: count,
+          generated_count: generated,
+          coverage: { shortfall: 'insufficient_content' },
+          source_transcription_revision: m.transcription.current_revision,
+          created_at: new Date().toISOString(),
+          questions: Array.from({ length: generated }, (_, i) => ({
+            id: `list-${generationCount}-q${i}`,
+            statement: `Questão planejada ${i + 1} sobre energia?`,
+            options: ['A', 'B', 'C', 'D'],
+          })),
+        });
+        return reply({ jobId: 'job-1' });
+      }
       if (!questionFail)
         m.questionBatches.unshift({
           ...m.questionBatches[0],
@@ -1797,6 +1829,84 @@ async function main() {
     jobPending = false;
     await page.waitForURL('**/material.html?**');
     record('Espera separada mostra etapa e tempo decorrido e abre material ao concluir');
+    // Study authoring (FEATURE_STUDY_AUTHORING): named lists, custom counts and on-demand guidance.
+    authoringFlags.study_authoring = true;
+    await page.goto(base + '/material.html?id=aula-real#questoes');
+    await page.locator('[data-questions-section]').waitFor();
+    assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
+    await page.locator('[data-open-questions]').click();
+    await page.locator('[data-questions-dialog][open]').waitFor();
+    assert.equal(await page.locator('[data-questions-advanced]').evaluate((n) => n.open), false);
+    assert(await page.locator('[data-count-recommendation]').isHidden());
+    await page.locator('[data-count-info]').click();
+    assert.equal(await page.locator('[data-count-info]').getAttribute('aria-expanded'), 'true');
+    assert.match(
+      await page.locator('[data-count-recommendation]').textContent(),
+      /Menos de 5 minutos: em geral 3 a 5 questões\..*São referências, não limites \(máximo 30\)/,
+    );
+    await page.locator('[data-more-questions-form] [name=title]').fill('Carros elétricos — Análise');
+    await page.locator('#more-question-count').selectOption('custom');
+    await page.locator('#custom-question-count').fill('35');
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.getByText('Informe uma quantidade inteira de 1 a 30.', { exact: true }).waitFor();
+    assert(await page.locator('[data-questions-dialog][open]').isVisible());
+    await page.locator('#custom-question-count').fill('7');
+    await page.locator('[data-more-questions-form] [name=difficulty][value=basic]').uncheck();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').uncheck();
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.getByText('Escolha pelo menos uma dificuldade e uma habilidade.', { exact: true }).waitFor();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=advanced]').check();
+    await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').check();
+    await page.locator('[data-more-questions-form] [name=skill][value=application]').check();
+    await page.locator('[data-questions-advanced] > summary').click();
+    await page.locator('[data-more-questions-form] [name=previousQuestions][value=prioritize_new]').check();
+    await screenshot(page, output, 'question-list-dialog-desktop.png');
+    await page.locator('[data-more-questions-form] [type=submit]').click();
+    await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Análise' }).waitFor();
+    const listRequest = listCalls.at(-1);
+    assert.equal(listRequest.count, 7);
+    assert.deepEqual(listRequest.config, {
+      title: 'Carros elétricos — Análise',
+      difficulties: ['intermediate', 'advanced'],
+      skills: ['recall', 'understanding', 'application'],
+      format: 'single_choice',
+      distribution: 'balanced',
+      previousQuestions: 'prioritize_new',
+    });
+    const newRow = page.locator('.question-batch-row').first();
+    assert.match(await newRow.textContent(), /5 de 7 questões pedidas/);
+    assert.match(await newRow.textContent(), /a aula não sustenta mais questões distintas/);
+    assert.deepEqual(await newRow.locator('.list-tags li').allTextContents(), [
+      'Intermediário', 'Avançado', 'Recordação', 'Compreensão conceitual', 'Aplicação',
+    ]);
+    // Earlier lists stay, each with its own actions.
+    assert(await page.locator('.question-batch-row').count() >= 3);
+    await newRow.locator('.row-menu > summary').click();
+    await newRow.getByRole('button', { name: 'Renomear', exact: true }).click();
+    await page.locator('[data-rename-dialog][open]').waitFor();
+    await page.locator('#rename-field').fill('Carros elétricos — Avaliação avançada');
+    await page.locator('[data-rename-form] [type=submit]').click();
+    await page.locator('.question-batch-row h3', { hasText: 'Carros elétricos — Avaliação avançada' }).waitFor();
+    assert.deepEqual(listCalls.at(-1), { rename: { title: 'Carros elétricos — Avaliação avançada' } });
+    await screenshot(page, output, 'question-lists-desktop.png');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('[data-open-questions]').click();
+    await page.locator('[data-questions-dialog][open]').waitFor();
+    assert(
+      await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+      'question dialog fits a phone width',
+    );
+    await page.locator('[data-questions-advanced] > summary').click();
+    assert(
+      await page.locator('[data-questions-dialog]').evaluate((d) => d.scrollWidth <= d.clientWidth + 1),
+      'no control overflows the dialog horizontally',
+    );
+    await screenshot(page, output, 'question-list-dialog-mobile.png');
+    await page.keyboard.press('Escape');
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+    await page.setViewportSize({ width: 1280, height: 900 });
+    authoringFlags.study_authoring = false;
+    record('Listas nomeadas: quantidade personalizada limitada, recomendação sob demanda, níveis e habilidades, renomear');
     const safe = await page.evaluate(async () => {
       const { renderMarkdown } = await import('/js/utils/markdown.js');
       const target = document.createElement('div');

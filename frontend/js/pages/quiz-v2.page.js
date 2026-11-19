@@ -59,7 +59,9 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       radio.name = 'feedbackMode';
       radio.value = mode;
       radio.required = true;
-      if (mode === 'deferred') radio.checked = true;
+      // A list may suggest a feedback mode (saved with its settings); the student still chooses.
+      const suggested = new URLSearchParams(location.search).get('feedback');
+      if (mode === (['immediate', 'deferred'].includes(suggested) ? suggested : 'deferred')) radio.checked = true;
       label.append(radio, el('span', labelText));
       fieldset.append(label);
     }

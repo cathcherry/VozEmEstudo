@@ -15,6 +15,11 @@ export const errors = {
   notFound: (resource = 'Recurso') => new AppError('NOT_FOUND', `${resource} não encontrado.`, 404),
   invalidAudioType: () => new AppError('INVALID_AUDIO_TYPE', 'Formato de áudio não aceito.', 400),
   audioTooLarge: () => new AppError('AUDIO_TOO_LARGE', 'O arquivo excede o limite de 100 MB.', 400),
-  invalidQuestionCount: () => new AppError('INVALID_QUESTION_COUNT', 'Escolha 3, 5, 10 ou 20 questões.', 400),
+  invalidQuestionCount: (max) =>
+    new AppError(
+      'INVALID_QUESTION_COUNT',
+      max ? `Escolha de 1 a ${max} questões.` : 'Escolha 3, 5, 10 ou 20 questões.',
+      400,
+    ),
   configuration: (names) => new AppError('CONFIGURATION_ERROR', `Configuração ausente: ${names.join(', ')}.`, 503),
 };

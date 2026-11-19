@@ -32,6 +32,9 @@ if (isFeatureEnabled('study_authoring'))
   materialRouter.patch('/:materialId/summaries/:summaryId', summary.rename);
 materialRouter.get('/:materialId/question-batches', question.listBatchesController);
 materialRouter.post('/:materialId/question-batches', question.createBatch);
+materialRouter.get('/:materialId/question-batches/:batchId/answer-key', question.answerKey);
+if (isFeatureEnabled('study_authoring'))
+  materialRouter.patch('/:materialId/question-batches/:batchId', question.rename);
 
 materialRouter.post('/:materialId/permission', review.permission);
 materialRouter.get('/:materialId/transcription/review', review.state);

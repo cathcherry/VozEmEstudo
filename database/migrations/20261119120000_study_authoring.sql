@@ -112,11 +112,11 @@ begin
   perform public.require_material_permission_admin(p_user_id, p_material_id, p_permission_version);
   if p_source_version_id is null then raise exception 'SOURCE_REVISION_REQUIRED'; end if;
   if p_idempotency_key is null or jsonb_typeof(coalesce(p_params, 'null'::jsonb)) <> 'object'
-    or jsonb_typeof(p_params->'count') <> 'number' then raise exception 'INVALID_GENERATION'; end if;
-  v_count := (p_params->>'count')::integer;
-  if v_count is null or v_count not between 1 and 100 or (p_params->>'count')::numeric <> v_count then
+    or coalesce(jsonb_typeof(p_params->'count'), '') <> 'number' then raise exception 'INVALID_GENERATION'; end if;
+  if (p_params->>'count')::numeric not between 1 and 100 or (p_params->>'count')::numeric % 1 <> 0 then
     raise exception 'INVALID_GENERATION';
   end if;
+  v_count := (p_params->>'count')::integer;
   v_params := p_params || jsonb_build_object('permissionVersion', p_permission_version,
     'sourceRevisionId', p_source_version_id);
   select * into v_job from public.processing_jobs where material_id = p_material_id and type = 'GERAR_QUESTOES'

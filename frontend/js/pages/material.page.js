@@ -9,7 +9,10 @@ import {
   regenerateSummary,
   generateQuestions,
   renameSummary,
+  renameQuestionList,
 } from '../api/material.api.js';
+import { getPublicConfig } from '../api/config.js';
+import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
 import {
   normalizeSummaryOptions,
   summaryName,
@@ -50,6 +53,9 @@ let waitingSince,
   initialRender = true,
   displayedSummary = null;
 const flags = await getFeatureFlags().catch(() => ({}));
+const publicConfig = await getPublicConfig().catch(() => ({}));
+// Custom list sizes only exist with the authoring migration; presets otherwise.
+const maxQuestionCount = flags.study_authoring ? publicConfig.maxQuestionListCount || 40 : 20;
 // Names need the study-authoring migration; without it the field is not offered.
 if (!flags.study_authoring)
   document.querySelector('[data-summary-form] [name=label]').closest('label').hidden = true;
@@ -648,48 +654,30 @@ function render(material) {
   }
 }
 /**
- * Each batch shows its real questions and the locally recorded result of each one, so an
+ * Each list shows its real questions and the locally recorded result of each one, so an
  * "answered" count is always backed by something the student can review.
  */
 function renderQuestionBatches(batches) {
-  const answers = studyFor(materialId).answers;
-  const container = $('[data-question-batches]');
-  container.replaceChildren();
-  const total = batches.reduce(
-    (sum, b) => sum + (b.questions?.length || b.generated_count || 0),
-    0,
-  );
-  $('[data-questions-meta]').textContent = batches.length
-    ? `${batches.length} ${batches.length === 1 ? 'conjunto' : 'conjuntos'} · ${total} questões`
-    : 'Ainda não há questões desta aula.';
-  batches.forEach((batch, i) => {
-    const questions = batch.questions || [];
-    const results = questions.map((q) => answers[q.id]);
-    const answered = results.filter(Boolean).length;
-    const correct = results.filter((r) => r?.correct).length;
-    const count = questions.length || batch.generated_count || 0;
-    const card = document.createElement('article');
-    card.className = 'question-batch-card question-batch-row';
-    const head = document.createElement('div');
-    head.className = 'question-batch-head';
-    const title = document.createElement('h3');
-    title.textContent = `Conjunto ${batches.length - i}`;
-    const meta = document.createElement('p');
-    meta.textContent = answered
-      ? `${answered} de ${count} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}`
-      : `${count} questões · ainda não respondidas`;
-    if (batch.stale) meta.textContent += ' · revisão anterior';
-    const link = document.createElement('a');
-    link.className = answered && answered < count ? 'primary-action' : 'secondary-action';
-    link.textContent = !answered
-      ? 'Responder'
-      : answered < count
-        ? 'Continuar'
-        : 'Responder de novo';
-    link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
-    head.append(title, meta, link);
-    const listen = questions.length
-      ? speakControls({
+  renderQuestionLists({
+    container: $('[data-question-batches]'),
+    meta: $('[data-questions-meta]'),
+    batches,
+    answers: studyFor(materialId).answers,
+    materialId,
+    flags,
+    actions: {
+      rename: (batch, name) =>
+        openRename({
+          title: 'Renomear lista',
+          label: 'Nome da lista',
+          value: batch.title || name,
+          save: (title) => {
+            if (!title) throw new Error('Informe um nome para a lista.');
+            return renameQuestionList(materialId, batch.id, title);
+          },
+        }),
+      listen: (card) =>
+        speakControls({
           blocks: () =>
             [...card.querySelectorAll('.question-list li')].map((li, n) => ({
               element: li,
@@ -697,37 +685,8 @@ function renderQuestionBatches(batches) {
             })),
           lang: lessonLang,
           label: 'Ouvir questões',
-        })
-      : null;
-    if (listen) head.append(listen.element);
-    const progress = document.createElement('div');
-    progress.className = 'question-batch-progress';
-    progress.setAttribute('aria-hidden', 'true');
-    progress.style.setProperty('--answered', String(count ? answered / count : 0));
-    progress.style.setProperty('--correct', String(count ? correct / count : 0));
-    card.append(head, progress);
-    if (questions.length) {
-      const list = document.createElement('ol');
-      list.className = 'question-list';
-      questions.forEach((q, index) => {
-        const item = document.createElement('li');
-        const result = results[index];
-        item.dataset.result = result ? (result.correct ? 'correct' : 'wrong') : 'pending';
-        const text = document.createElement('span');
-        text.textContent = q.statement;
-        const badge = document.createElement('span');
-        badge.className = 'question-result';
-        badge.textContent = result
-          ? result.correct
-            ? '✓ Acertou'
-            : '✗ Errou'
-          : '– Não respondida';
-        item.append(text, badge);
-        list.append(item);
-      });
-      card.append(list);
-    }
-    container.append(card);
+        }),
+    },
   });
 }
 async function reload() {
@@ -815,7 +774,7 @@ async function generate(kind, options) {
     const job =
       kind === 'summary'
         ? await regenerateSummary(materialId, source, pending.get(operation), options)
-        : await generateQuestions(materialId, options.count, source, pending.get(operation));
+        : await generateQuestions(materialId, options.count, source, pending.get(operation), options.config);
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => setStatus(message, jobLabel(state)),
     });
@@ -894,10 +853,19 @@ $('[data-rename-summary]').addEventListener('click', () => {
     save: (name) => renameSummary(materialId, summary.id, name || null),
   });
 });
+const questionDialog = initQuestionDialog({
+  flags,
+  maxCount: maxQuestionCount,
+  material: () => currentMaterial,
+});
 $('[data-more-questions-form]').addEventListener('submit', (e) => {
   e.preventDefault();
+  const request = questionDialog.read();
+  if (!request) return;
   $('[data-questions-dialog]').close();
-  generate('questions', { count: Number($('#more-question-count').value) });
+  void generate('questions', request).then((ok) => {
+    if (ok) questionDialog.reset();
+  });
 });
 $('[data-open-export]').addEventListener('click', () => {
   $('[data-export-dialog]').showModal();

@@ -108,3 +108,81 @@ test('the browser role cannot call authoring functions or read list shares', asy
     await f.db.close();
   }
 });
+
+const listQuestion = (i, extra = {}) => ({
+  statement: `Questão nomeada ${i}?`,
+  options: ['A', 'B', 'C', 'D'],
+  correctIndex: i % 4,
+  explanation: 'Explicação.',
+  metadata: { difficulty: 'basic', skill: 'recall', concept: 'Energia', evidence: 'Energia é conservada.' },
+  ...extra,
+});
+
+test('custom-count lists: enqueue limits, partial commits, names and untouched legacy batches', async () => {
+  const f = await setup();
+  try {
+    const { call, a, materialId, db } = f;
+    const { PERMISSION_DECLARATION } = await import('../src/config/permission-declaration.js');
+    const enqueueList = (params, key = randomUUID(), user = a, material = materialId, source = revisionIds.a) =>
+      call('enqueue_question_list_admin', [user.id, material, JSON.stringify(params), source, key, PERMISSION_DECLARATION.version, 3]);
+    for (const bad of [{ count: 0 }, { count: 101 }, { count: 2.5 }, { count: '7' }, {}])
+      await assert.rejects(enqueueList(bad), /INVALID_GENERATION/);
+    // The E02 enqueue still only accepts presets.
+    await assert.rejects(f.enqueue(a, materialId, 'GERAR_QUESTOES', { count: 7 }, revisionIds.a, randomUUID()), /INVALID_GENERATION/);
+    await assert.rejects(enqueueList({ count: 7 }, randomUUID(), identities.b), /MATERIAL_NOT_FOUND/);
+    await assert.rejects(enqueueList({ count: 7 }, randomUUID(), a, materialId, revisionIds.b), /REVISION_CONFLICT/);
+    const key = randomUUID();
+    const config = { difficulties: ['basic', 'advanced'], skills: ['recall', 'application'] };
+    const job = await enqueueList({ count: 37, config }, key);
+    assert.equal(job.params.count, 37);
+    assert.equal(job.params.sourceRevisionId, revisionIds.a);
+    assert.equal((await enqueueList({ count: 37, config }, key)).id, job.id, 'idempotent retry');
+    await assert.rejects(enqueueList({ count: 36, config }, key), /IDEMPOTENCY_CONFLICT/);
+
+    const commit = (questions, requested = 37, jobId = job.id) =>
+      call('commit_question_list_admin', [
+        materialId, jobId, requested, JSON.stringify(questions), 'model', 'questions-v2',
+        'Física — Conceitos básicos', JSON.stringify(config), JSON.stringify({ requested, generated: questions.length, shortfall: 'insufficient_content' }), 'groq',
+      ]);
+    await assert.rejects(commit([]), /INVALID_GENERATION/);
+    await assert.rejects(commit(Array.from({ length: 38 }, (_, i) => listQuestion(i))), /INVALID_GENERATION/);
+    await assert.rejects(commit([listQuestion(1, { options: ['A', 'B'] })]), /INVALID_GENERATION/);
+    await assert.rejects(commit([listQuestion(1, { metadata: [] })]), /INVALID_GENERATION/);
+    await assert.rejects(commit([listQuestion(1)], 36), /INVALID_JOB_TYPE/, 'requested count must match the job');
+    const before = Number((await db.query('select count(*) n from public.questions')).rows[0].n);
+    await assert.rejects(commit([listQuestion(1), listQuestion(2, { correctIndex: 9 })]));
+    assert.equal(Number((await db.query('select count(*) n from public.questions')).rows[0].n), before, 'rollback');
+    const list = await commit(Array.from({ length: 12 }, (_, i) => listQuestion(i)));
+    assert.equal(list.requested_count, 37);
+    assert.equal(list.generated_count, 12);
+    assert.equal(list.title, 'Física — Conceitos básicos');
+    assert.deepEqual(list.config, config);
+    assert.equal(list.coverage.shortfall, 'insufficient_content');
+    assert.equal(list.provider, 'groq');
+    assert.equal(list.source_transcription_version_id, revisionIds.a);
+    assert.equal((await commit([listQuestion(99)])).id, list.id, 'retry returns the stored list');
+    const stored = (await db.query('select format,metadata from public.questions where batch_id=$1 order by position', [list.id])).rows;
+    assert.equal(stored.length, 12);
+    assert.equal(stored[0].format, 'single_choice');
+    assert.equal(stored[0].metadata.concept, 'Energia');
+    await assert.rejects(db.query("update public.questions set format='true_false' where batch_id=$1", [list.id]));
+
+    const renamed = await call('rename_question_list_admin', [a.id, materialId, list.id, ' Física — Avaliação avançada ']);
+    assert.equal(renamed.title, 'Física — Avaliação avançada');
+    assert.equal(renamed.generated_count, 12);
+    for (const bad of ['', '   ', 'x'.repeat(161)])
+      await assert.rejects(call('rename_question_list_admin', [a.id, materialId, list.id, bad]), /AUTHORING_INVALID_INPUT/);
+    await assert.rejects(call('rename_question_list_admin', [identities.b.id, materialId, list.id, 'X']), /AUTHORING_NOT_FOUND/);
+    await assert.rejects(call('rename_question_list_admin', [a.id, materialId, resourceIds.batchB, 'X']), /AUTHORING_NOT_FOUND/);
+    // The fixture's legacy batch (requested 5, generated 1) and its question are unchanged.
+    const legacy = (await db.query('select title,requested_count,generated_count,config from public.question_batches where id=$1', [resourceIds.batchA])).rows[0];
+    assert.deepEqual(legacy, { title: null, requested_count: 5, generated_count: 1, config: {} });
+    // Legacy preset generation still commits through the E02 function.
+    const presetJob = await f.enqueue(a, materialId, 'GERAR_QUESTOES', { count: 3 }, revisionIds.a, randomUUID());
+    const preset = await call('commit_question_batch_admin', [materialId, presetJob.id, 3,
+      JSON.stringify([0, 1, 2].map((i) => listQuestion(i, { metadata: undefined }))), 'fixture', 'questions-v1']);
+    assert.equal(preset.generated_count, 3);
+  } finally {
+    await f.db.close();
+  }
+});

@@ -295,7 +295,7 @@
         <div class="panel-toolbar">
           <p class="panel-meta" data-questions-meta></p>
           <div class="panel-toolbar-actions">
-            <button class="secondary-action" type="button" data-open-questions>Gerar questões</button>
+            <button class="secondary-action" type="button" data-open-questions>Gerar lista</button>
           </div>
         </div>
         <p data-more-questions-message role="status" aria-live="polite"></p>
@@ -378,21 +378,105 @@
         </form>
       </dialog>
       <dialog
-        class="workflow-dialog"
+        class="workflow-dialog authoring-dialog"
         data-questions-dialog
         aria-labelledby="questions-dialog-title"
       >
         <form method="dialog"><button class="dialog-close" aria-label="Fechar">×</button></form>
-        <h2 id="questions-dialog-title">Gerar questões</h2>
-        <form data-more-questions-form>
-          <label for="more-question-count"
-            >Quantidade<select id="more-question-count">
-              <option value="3">3 questões</option>
-              <option selected value="5">5 questões</option>
-              <option value="10">10 questões</option>
-              <option value="20">20 questões</option>
-            </select></label
-          ><button class="primary-action" type="submit">Gerar questões</button>
+        <h2 id="questions-dialog-title">Gerar lista de questões</h2>
+        <p class="dialog-lead">
+          Múltipla escolha com uma alternativa correta, baseada na revisão confirmada. Listas
+          anteriores e suas tentativas continuam salvas.
+        </p>
+        <form data-more-questions-form novalidate>
+          <label data-authoring-only
+            >Nome da lista
+            <input
+              name="title"
+              maxlength="160"
+              placeholder="Ex.: História do Brasil — Conceitos básicos"
+          /></label>
+          <div class="count-label">
+            <span id="question-count-label">Quantidade</span
+            ><button
+              type="button"
+              class="info-toggle"
+              data-count-info
+              aria-expanded="false"
+              aria-controls="count-recommendation"
+              aria-label="Ver recomendação de quantidade"
+              title="Recomendação de quantidade"
+            >
+              i
+            </button>
+          </div>
+          <div class="count-recommendation" id="count-recommendation" data-count-recommendation hidden></div>
+          <div class="count-fields">
+            <label for="more-question-count"
+              ><span class="sr-only">Quantidade de questões</span
+              ><select id="more-question-count" aria-describedby="question-count-label">
+                <option value="3">3 questões</option>
+                <option selected value="5">5 questões</option>
+                <option value="10">10 questões</option>
+                <option value="20">20 questões</option>
+                <option value="custom" data-authoring-only>Outra quantidade…</option>
+              </select></label
+            ><label for="custom-question-count" data-custom-count hidden
+              ><span class="sr-only">Quantidade personalizada</span
+              ><input id="custom-question-count" name="customCount" type="number" min="1" max="40" step="1" inputmode="numeric"
+            /></label>
+          </div>
+          <fieldset class="choice-row" data-authoring-only>
+            <legend>Dificuldade</legend>
+            <label><input type="checkbox" name="difficulty" value="basic" checked /> Básico</label>
+            <label><input type="checkbox" name="difficulty" value="intermediate" checked /> Intermediário</label>
+            <label><input type="checkbox" name="difficulty" value="advanced" /> Avançado</label>
+          </fieldset>
+          <fieldset class="choice-grid" data-authoring-only>
+            <legend>Habilidades cognitivas</legend>
+            <label><input type="checkbox" name="skill" value="recall" checked /> Recordação</label>
+            <label><input type="checkbox" name="skill" value="understanding" checked /> Compreensão conceitual</label>
+            <label><input type="checkbox" name="skill" value="interpretation" /> Interpretação</label>
+            <label><input type="checkbox" name="skill" value="application" /> Aplicação</label>
+            <label><input type="checkbox" name="skill" value="analysis" /> Análise e comparação</label>
+            <label><input type="checkbox" name="skill" value="cause_effect" /> Causa e efeito</label>
+            <label><input type="checkbox" name="skill" value="evaluation" /> Avaliação crítica, quando a aula sustentar</label>
+            <label><input type="checkbox" name="skill" value="synthesis" /> Síntese, quando a aula sustentar</label>
+          </fieldset>
+          <p class="field-note" data-authoring-only>
+            Cada questão continua com uma única alternativa correta; as habilidades definem o tipo
+            de raciocínio pedido.
+          </p>
+          <details class="advanced-options" data-questions-advanced data-authoring-only>
+            <summary>Opções avançadas</summary>
+            <label
+              >Foco temático <span class="optional-hint">(opcional)</span
+              ><input name="topicFocus" maxlength="300" placeholder="Ex.: causas da Independência"
+            /></label>
+            <p class="field-note">
+              <strong>Formato:</strong> múltipla escolha com uma alternativa correta. Seleção
+              múltipla, verdadeiro ou falso, resposta curta e resposta aberta ainda não estão
+              disponíveis.
+            </p>
+            <fieldset class="choice-row">
+              <legend>Distribuição</legend>
+              <label><input type="radio" name="distribution" value="balanced" checked /> Níveis intercalados</label>
+              <label><input type="radio" name="distribution" value="progressive" /> Do mais fácil ao mais difícil</label>
+            </fieldset>
+            <fieldset class="choice-grid">
+              <legend>Questões de listas anteriores</legend>
+              <label><input type="radio" name="previousQuestions" value="avoid" checked /> Evitar repetir questões já geradas</label>
+              <label><input type="radio" name="previousQuestions" value="prioritize_new" /> Priorizar conceitos ainda não avaliados</label>
+              <label><input type="radio" name="previousQuestions" value="review" /> Permitir repetição para revisão</label>
+            </fieldset>
+            <fieldset class="choice-row" data-feedback-choice hidden>
+              <legend>Feedback ao responder</legend>
+              <label><input type="radio" name="feedbackMode" value="deferred" checked /> Ao finalizar a lista</label>
+              <label><input type="radio" name="feedbackMode" value="immediate" /> Após cada questão</label>
+            </fieldset>
+          </details>
+          <p class="form-status" data-questions-form-message role="status" aria-live="polite"></p>
+          <button class="primary-action" type="submit">Gerar lista</button>
         </form>
       </dialog>
       <dialog class="workflow-dialog" data-export-dialog aria-labelledby="export-dialog-title">
