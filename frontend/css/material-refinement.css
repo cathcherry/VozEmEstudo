@@ -935,3 +935,45 @@ body.app-page[data-page='material'] .material-recording .video-preview {
   max-width: 46ch;
   margin: 0;
 }
+
+/* Estilo da legenda sobre o vídeo: cor do texto e fundo escolhidos no menu CC. */
+.caption-options {
+  display: grid;
+  gap: 4px;
+}
+.caption-options-title {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.caption-sizes button {
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 0.8rem;
+}
+.media-player[data-caption-color='yellow'] .caption-line {
+  color: #ffe066;
+}
+.media-player[data-caption-color='cyan'] .caption-line {
+  color: #7cf3ff;
+}
+.media-player[data-caption-background='solid'] .caption-line {
+  background: #05070b;
+}
+.media-player[data-caption-background='none'] .caption-line {
+  background: transparent;
+  /* Contorno escuro mantém a leitura sobre qualquer imagem. */
+  text-shadow:
+    0 0 3px #000,
+    0 0 3px #000,
+    1px 1px 2px #000,
+    -1px -1px 2px #000;
+}
+.media-player[data-caption-background='solid'] .caption-band {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+/* "Menos estímulos" remove sombras; sem contorno, "Sem fundo" volta a um fundo translúcido. */
+[data-low-stimulation='true'] .media-player[data-caption-background='none'] .caption-line {
+  background: rgb(8 12 20 / 0.74);
+}

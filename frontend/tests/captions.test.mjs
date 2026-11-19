@@ -163,6 +163,15 @@ test('original MP4 uses clip-relative time and renders captions over the video',
     captions.setTranscript(segments, words);
     captions.setPrefs({ mode: 'word' });
     h.at(0.8); // media time 30.8 s
+    captions.setPrefs({ color: 'yellow', background: 'none' });
+    assert.equal(h.player.root.dataset.captionColor, 'yellow');
+    assert.equal(h.player.root.dataset.captionBackground, 'none');
+    const saved = JSON.parse(h.store.get('voz-caption-preferences'));
+    assert.deepEqual([saved.color, saved.background], ['yellow', 'none']);
+    const pressed = [...h.player.root.querySelectorAll('.caption-menu [aria-pressed="true"]')].map(
+      (b) => b.textContent,
+    );
+    assert.deepEqual(pressed, ['M', 'Amarelo', 'Sem fundo']);
     const line = h.player.root.querySelector('.video-preview .caption-line');
     assert.equal(line.querySelector('.is-spoken').textContent, 'turma.');
     assert.equal(h.player.root.querySelector('.caption-band').textContent, '');

@@ -1664,6 +1664,13 @@ async function main() {
       v.dispatchEvent(new Event('timeupdate'));
     });
     await page.locator('.video-preview .caption-line .caption-word').first().waitFor();
+    await page.locator('.caption-toggle').click();
+    await page.getByRole('button', { name: 'Legenda: texto amarelo', exact: true }).click();
+    await page.keyboard.press('Escape');
+    assert.equal(
+      await page.locator('.video-preview .caption-line').evaluate((n) => getComputedStyle(n).color),
+      'rgb(255, 224, 102)',
+    );
     assert.equal(
       await page.locator('.caption-band').isVisible(),
       false,

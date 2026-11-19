@@ -10,6 +10,8 @@
  */
 export const CAPTION_MODES = Object.freeze(['off', 'segment', 'word']);
 export const CAPTION_SIZES = Object.freeze(['small', 'medium', 'large']);
+export const CAPTION_COLORS = Object.freeze(['white', 'yellow', 'cyan']);
+export const CAPTION_BACKGROUNDS = Object.freeze(['solid', 'translucent', 'none']);
 const PREF_KEY = 'voz-caption-preferences';
 const MAX_SEGMENT_MS = 45000;
 
@@ -23,6 +25,8 @@ export function loadCaptionPrefs(storage = window.VozAppearance?.storage) {
   return {
     mode: CAPTION_MODES.includes(saved.mode) ? saved.mode : 'off',
     size: CAPTION_SIZES.includes(saved.size) ? saved.size : 'medium',
+    color: CAPTION_COLORS.includes(saved.color) ? saved.color : 'white',
+    background: CAPTION_BACKGROUNDS.includes(saved.background) ? saved.background : 'translucent',
   };
 }
 export function saveCaptionPrefs(prefs, storage = window.VozAppearance?.storage) {
@@ -77,7 +81,34 @@ export function wordAt(words, ms) {
 }
 
 const MODE_LABELS = { off: 'Desligadas', segment: 'Por trecho', word: 'Palavra a palavra' };
-const SIZE_LABELS = { small: 'P', medium: 'M', large: 'G' };
+// Each option group: preference key, values, short visible label and accessible name.
+const OPTION_GROUPS = [
+  {
+    key: 'size',
+    title: 'Tamanho',
+    values: CAPTION_SIZES,
+    short: { small: 'P', medium: 'M', large: 'G' },
+    name: { small: 'pequena', medium: 'média', large: 'grande' },
+  },
+  {
+    key: 'color',
+    title: 'Cor do texto',
+    values: CAPTION_COLORS,
+    short: { white: 'Branco', yellow: 'Amarelo', cyan: 'Ciano' },
+    name: { white: 'texto branco', yellow: 'texto amarelo', cyan: 'texto ciano' },
+  },
+  {
+    key: 'background',
+    title: 'Fundo',
+    values: CAPTION_BACKGROUNDS,
+    short: { solid: 'Opaco', translucent: 'Translúcido', none: 'Sem fundo' },
+    name: {
+      solid: 'fundo opaco',
+      translucent: 'fundo translúcido',
+      none: 'sem fundo, com contorno',
+    },
+  },
+];
 
 export class PlayerCaptions {
   constructor(player, { storage } = {}) {
@@ -153,24 +184,33 @@ export class PlayerCaptions {
     this.wordNote = document.createElement('small');
     this.wordNote.className = 'caption-note';
     modeGroup.append(this.wordNote);
-    const sizeGroup = document.createElement('div');
-    sizeGroup.className = 'caption-sizes';
-    sizeGroup.setAttribute('role', 'group');
-    sizeGroup.setAttribute('aria-label', 'Tamanho da legenda');
-    this.sizeButtons = CAPTION_SIZES.map((size) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.textContent = SIZE_LABELS[size];
-      b.dataset.size = size;
-      b.setAttribute(
-        'aria-label',
-        `Legenda ${{ small: 'pequena', medium: 'média', large: 'grande' }[size]}`,
-      );
-      b.addEventListener('click', () => this.setPrefs({ size }));
-      sizeGroup.append(b);
-      return b;
+    this.optionButtons = [];
+    const groups = OPTION_GROUPS.map((group) => {
+      const wrapGroup = document.createElement('div');
+      wrapGroup.className = 'caption-options';
+      wrapGroup.setAttribute('role', 'group');
+      wrapGroup.setAttribute('aria-label', `${group.title} da legenda`);
+      const title = document.createElement('span');
+      title.className = 'caption-options-title';
+      title.textContent = group.title;
+      title.setAttribute('aria-hidden', 'true');
+      const row = document.createElement('div');
+      row.className = 'caption-sizes';
+      for (const value of group.values) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = group.short[value];
+        b.dataset.key = group.key;
+        b.dataset.value = value;
+        b.setAttribute('aria-label', `Legenda: ${group.name[value]}`);
+        b.addEventListener('click', () => this.setPrefs({ [group.key]: value }));
+        row.append(b);
+        this.optionButtons.push(b);
+      }
+      wrapGroup.append(title, row);
+      return wrapGroup;
     });
-    this.menu.append(modeGroup, sizeGroup);
+    this.menu.append(modeGroup, ...groups);
     wrap.append(this.button, this.menu);
     root.querySelector('.player-controls').insertBefore(wrap, root.querySelector('.player-speed'));
     const close = (restore) => {
@@ -233,10 +273,12 @@ export class PlayerCaptions {
       ? ''
       : 'Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.';
     this.wordNote.hidden = this.hasWords;
-    for (const b of this.sizeButtons)
-      b.setAttribute('aria-pressed', String(b.dataset.size === this.prefs.size));
+    for (const b of this.optionButtons)
+      b.setAttribute('aria-pressed', String(this.prefs[b.dataset.key] === b.dataset.value));
     this.player.root.dataset.captions = mode;
     this.player.root.dataset.captionSize = this.prefs.size;
+    this.player.root.dataset.captionColor = this.prefs.color;
+    this.player.root.dataset.captionBackground = this.prefs.background;
     this.cueIndex = this.wordIndex = -2;
     this.render();
   }
