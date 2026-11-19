@@ -29,6 +29,10 @@ Nenhuma migration nova é necessária: a E07 já contém tabela, bucket e polít
    `materials_id_user_planning_unique` existe; `material_videos` e o bucket
    `study-videos` **não** existem. Se existirem, parar e inspecionar.
 3. Aplicar `database/migrations/20261105003500_player_video.sql` uma única vez.
+   Em seguida aplicar `database/migrations/20261120090000_player_video_storage_owner_fix.sql`
+   (pode ser reaplicada): as políticas originais liam `materials` como `authenticated`, papel
+   que não tem esse acesso no projeto real, e o envio falhava com "permission denied for table
+   materials".
 4. `notify pgrst, 'reload schema';` para a API enxergar a tabela nova.
 5. `database/checks/e07-postflight.sql`: RLS ligada, sem acesso `anon`/`authenticated`
    à tabela, bucket privado (`video/mp4`, 100 MiB) e nenhum objeto órfão.
