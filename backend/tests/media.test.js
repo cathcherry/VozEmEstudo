@@ -39,6 +39,11 @@ test('rejects invalid or oversized trim ranges', () => {
   assert.throws(() => validateRange(0, MAX_TRANSCRIPTION_SECONDS + 1, 7200), {
     code: 'TRIM_REQUIRED',
   });
+  // The compact upload format keeps the same transcription limit.
+  assert.throws(() => validateRange(0, MAX_TRANSCRIPTION_SECONDS + 1, 7200, 'speech'), {
+    code: 'TRIM_REQUIRED',
+  });
+  assert.doesNotThrow(() => validateRange(0, MAX_TRANSCRIPTION_SECONDS + 1, 7200, 'mp3'));
 });
 test(
   'real FFmpeg: inspect and trim MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM and MOV',
@@ -134,6 +139,56 @@ test(
           }
         });
       }
+      await t.test('speech output: compact mono MP3 for transcription uploads', async () => {
+        const source = path.join(directory, 'speech-source.mp4');
+        generate([
+          '-f',
+          'lavfi',
+          '-i',
+          'color=c=blue:s=160x100:d=3',
+          '-i',
+          wav,
+          '-shortest',
+          '-c:v',
+          'libx264',
+          '-c:a',
+          'aac',
+          source,
+        ]);
+        const buffer = await readFile(source);
+        const speech = await convertMedia(buffer, 'mp4', {
+          start: 0.5,
+          end: 2.5,
+          output: 'speech',
+        });
+        assert.equal(speech.extension, 'mp3');
+        assert.equal(speech.mimeType, 'audio/mpeg');
+        assert.equal(speech.durationMs, 2000);
+        const target = path.join(directory, 'speech.mp3');
+        await writeFile(target, speech.buffer);
+        const meta = JSON.parse(
+          spawnSync(ffprobe, [
+            '-v',
+            'error',
+            '-show_format',
+            '-show_streams',
+            '-of',
+            'json',
+            target,
+          ]).stdout,
+        );
+        assert.equal(meta.streams.length, 1, 'audio only: the video track is dropped');
+        assert.equal(meta.streams[0].codec_name, 'mp3');
+        assert.equal(meta.streams[0].channels, 1);
+        assert.equal(meta.streams[0].sample_rate, '22050');
+        assert(Math.abs(Number(meta.format.duration) - 2) < 0.15);
+        // ~64 kbps: far smaller than the 16 kHz PCM WAV of the same excerpt (~64 KB for 2 s).
+        assert(speech.buffer.length < 32000, `speech clip is ${speech.buffer.length} bytes`);
+        // The stored MP3 converts back to WAV for providers that only take WAV.
+        const back = await convertMedia(speech.buffer, 'mp3', { output: 'wav' });
+        assert.equal(back.mimeType, 'audio/wav');
+        assert(Math.abs(back.durationMs - 2000) < 150);
+      });
       await t.test('malformed file, forbidden format and video without sound', async () => {
         await assert.rejects(inspectMedia(Buffer.from('invalid'), 'mp4'), {
           code: 'INVALID_MEDIA',

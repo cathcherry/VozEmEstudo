@@ -192,7 +192,12 @@ async function main() {
   context.on('page', (p) => {
     p.on('pageerror', (e) => errors.push({ page: p.url(), error: e.stack || e.message }));
     p.on('requestfailed', (r) => {
-      if (!r.failure()?.errorText.includes('ERR_ABORTED'))
+      const text = r.failure()?.errorText || '';
+      // The mock TUS endpoint drops each upload's first chunk on purpose (resume scenario).
+      const intendedDrop =
+        r.url().startsWith('https://mock.supabase.co/storage/v1/upload/resumable/') &&
+        text.includes('ERR_CONNECTION_RESET');
+      if (!text.includes('ERR_ABORTED') && !intendedDrop)
         errors.push(r.url() + ' ' + r.failure()?.errorText);
     });
   });
@@ -240,6 +245,42 @@ async function main() {
   await context.route(base + '/__upload', (route) => {
     uploadCount++;
     return route.fulfill({ json: { ok: true } });
+  });
+  // Minimal TUS endpoint (Supabase resumable uploads). The first chunk of each upload is
+  // dropped once, so every scenario also proves the upload resumes instead of failing.
+  const tusUploads = new Map();
+  await context.route('https://mock.supabase.co/storage/v1/upload/resumable**', async (route) => {
+    const request = route.request(),
+      headers = request.headers(),
+      cors = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Access-Control-Allow-Methods': 'POST, PATCH, HEAD, OPTIONS',
+        'Access-Control-Expose-Headers': 'Location, Upload-Offset, Upload-Length',
+      };
+    if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    assert.equal(headers['tus-resumable'], '1.0.0');
+    if (request.method() === 'POST') {
+      assert.match(headers.authorization, /^Bearer mock-token$/);
+      uploadCount++;
+      const id = String(uploadCount);
+      tusUploads.set(id, { offset: 0, dropped: false });
+      return route.fulfill({
+        status: 201,
+        headers: { ...cors, Location: `https://mock.supabase.co/storage/v1/upload/resumable/${id}` },
+      });
+    }
+    const upload = tusUploads.get(new URL(request.url()).pathname.split('/').pop());
+    if (!upload) return route.fulfill({ status: 404, headers: cors });
+    if (request.method() === 'HEAD')
+      return route.fulfill({ status: 200, headers: { ...cors, 'Upload-Offset': String(upload.offset) } });
+    if (!upload.dropped) {
+      upload.dropped = true;
+      return route.abort('connectionreset');
+    }
+    assert.equal(Number(headers['upload-offset']), upload.offset);
+    upload.offset += (request.postDataBuffer() || Buffer.alloc(0)).length;
+    return route.fulfill({ status: 204, headers: { ...cors, 'Upload-Offset': String(upload.offset) } });
   });
   await context.route(base + '/api/materials**', async (route) => {
     const request = route.request(),
@@ -809,8 +850,10 @@ async function main() {
     assert.deepEqual(processCalls.at(-1), { recordingLanguage: 'es' });
     assert.equal(requests[0].permissionVersion, permissionDeclaration.version);
     assert.equal(requests[0].durationMs, 750);
-    assert.equal(requests[0].extension, 'wav');
-    assert.equal(requests[0].mimeType, 'audio/wav');
+    // The excerpt goes up as compact mono MP3, not uncompressed WAV.
+    assert.equal(requests[0].extension, 'mp3');
+    assert.equal(requests[0].mimeType, 'audio/mpeg');
+    assert.match(requests[0].storagePath, /-trecho\.mp3$/);
     assert.equal(uploadCount, 1);
     assert.equal(createCount, 1);
     await page.getByRole('button', { name: 'Tentar processamento', exact: true }).click();
@@ -1945,7 +1988,7 @@ async function main() {
     await page.locator('[data-transcribe]').click();
     await page.waitForURL('**/material.html?**');
     await page.locator('[data-audio-player] .video-preview:not([hidden])').waitFor();
-    assert.equal(requests.at(-1).extension, 'wav');
+    assert.equal(requests.at(-1).extension, 'mp3');
     assert.equal(requests.at(-1).retainAudio, true);
     assert.equal(
       await page.locator('[data-audio-player] select').count(),

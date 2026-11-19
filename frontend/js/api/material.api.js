@@ -1,6 +1,7 @@
 import { apiFetch } from './http.js';
 import { getSupabase } from './supabase-browser.js';
 import { getPublicConfig } from './config.js';
+import { uploadToStorage } from './resumable-upload.js';
 
 export const listMaterials = () => apiFetch('/api/materials');
 export const getMaterial = (id) => apiFetch(`/api/materials/${id}`);
@@ -22,7 +23,12 @@ export const regenerateSummary = (id, sourceRevisionId, idempotencyKey, options)
 export const generateQuestions = (id, count, sourceRevisionId, idempotencyKey, config) =>
   apiFetch(`/api/materials/${id}/question-batches`, {
     method: 'POST',
-    body: JSON.stringify({ count, sourceRevisionId, idempotencyKey, ...(config ? { config } : {}) }),
+    body: JSON.stringify({
+      count,
+      sourceRevisionId,
+      idempotencyKey,
+      ...(config ? { config } : {}),
+    }),
   });
 export const renameSummary = (id, summaryId, label) =>
   apiFetch(`/api/materials/${id}/summaries/${summaryId}`, {
@@ -72,6 +78,7 @@ export async function createMaterialWithUpload({
   durationMs,
   permissionAccepted,
   permissionVersion,
+  onProgress,
   id = crypto.randomUUID(),
 }) {
   if (permissionAccepted !== true)
@@ -111,13 +118,14 @@ export async function createMaterialWithUpload({
     .slice(0, 150);
   const storagePath = `temp/${userData.user.id}/${id}/${safeName}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(config.audioBucket)
-    .upload(storagePath, file, {
-      cacheControl: '3600',
-      upsert: false,
-      contentType: file.type || undefined,
-    });
+  // Resumable: a dropped connection resumes from the last chunk the server confirmed.
+  const { error: uploadError } = await uploadToStorage({
+    bucket: config.audioBucket,
+    path: storagePath,
+    file,
+    contentType: file.type || undefined,
+    onProgress,
+  });
   if (uploadError) {
     // The same UUID may have an uploaded object after an interrupted POST. Never overwrite it.
     const recovered = await recoverExisting();

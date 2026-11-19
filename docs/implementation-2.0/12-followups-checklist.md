@@ -38,3 +38,13 @@ Sintoma: com `FEATURE_MP4_RETENTION=true`, o app mostrava "A conservação de v�
 Com autorização, `20261119150000_material_videos_table.sql` foi ensaiada com `rollback` e aplicada (nome `material_videos_table`): cria a chave (sem alterar linhas; `id` já é a chave primária) e a tabela com RLS, sem acesso do navegador. Conferido: 19 aulas intactas; 1 arquivo de vídeo já existia no bucket de uma tentativa anterior — reenviar o mesmo MP4 para a mesma aula reaproveita esse arquivo.
 
 A E05 foi ajustada para pular a chave quando ela já existe, então continua aplicável depois (testado: E03 → E05 sobre a tabela de vídeos).
+
+## 5. Envio do áudio: MP3 compacto e upload retomável
+
+Sintoma: "NetworkError when attempting to fetch resource" ao enviar um trecho de 10 min. Os logs mostraram que o upload do navegador para o Storage nunca terminou (conexão caiu no meio). O trecho ia como WAV sem compressão (16 kHz, ~1,9 MB/min), e um trecho de 54 min (~104 MB) passaria do limite de 100 MB do bucket.
+
+- **Formato:** o trecho para transcrição agora é MP3 mono 22,05 kHz / 64 kbps (saída `speech` de `/api/media/convert`, ~0,5 MB/min; 54 min ≈ 26 MB). O limite de duração continua o mesmo. A AssemblyAI recebe o MP3 direto; o fallback síncrono (Whisper/HF) recebe WAV convertido no worker. Áudios antigos em WAV/MP4 seguem funcionando.
+- **Upload retomável (TUS):** `frontend/js/api/resumable-upload.js` envia em blocos de 6 MB para `/storage/v1/upload/resumable`; se a conexão cair, consulta o servidor e continua do último bloco confirmado (até 5 novas tentativas: 1 s, 3 s, 5 s, 10 s, 20 s). Nunca sobrescreve (`x-upsert: false`; 409 cai na recuperação existente). Vale para o áudio e para o MP4 original.
+- **Mensagens:** progresso em % ("Enviando o áudio… 42%") e, se a conexão não voltar, "A conexão caiu durante o envio e não voltou a tempo…".
+- **Verificar depois do deploy:** enviar um trecho real e conferir no Storage o arquivo `…-trecho.mp3`; desligar o Wi-Fi por alguns segundos no meio de um envio de vídeo e ver o envio continuar.
+- Sem migration e sem mudança no Supabase.

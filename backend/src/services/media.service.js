@@ -10,6 +10,9 @@ import { AppError } from '../domain/errors.js';
 export const MEDIA_EXTENSIONS = Object.freeze(['mp4', 'mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac', 'webm', 'mov']);
 export const MAX_MEDIA_BYTES = 100 * 1024 * 1024;
 export const MAX_TRANSCRIPTION_SECONDS = Math.floor((MAX_MEDIA_BYTES - 4096) / 32000);
+/** Transcription outputs: 16 kHz PCM WAV, or 'speech' (mono MP3, ~0.5 MB/min) for uploads. */
+const TRANSCRIPTION_OUTPUTS = new Set(['wav', 'speech']);
+const SPEECH_ARGS = Object.freeze(['-ar', '22050', '-c:a', 'libmp3lame', '-b:a', '64k']);
 const ffmpeg = process.env.FFMPEG_PATH || (ffmpegStatic && existsSync(ffmpegStatic) ? ffmpegStatic : 'ffmpeg');
 const ffprobe = process.env.FFPROBE_PATH || (existsSync(ffprobeStatic.path) ? ffprobeStatic.path : 'ffprobe');
 const inputOptions = ['-protocol_whitelist', 'file,pipe', '-format_whitelist', 'mov,mp3,wav,ogg,matroska,webm,flac,aac'];
@@ -41,7 +44,7 @@ export function validateRange(start, end, duration, output = 'wav') {
   if (!Number.isFinite(from) || !Number.isFinite(to) || from < 0 || to <= from || to > duration + .05 || from >= duration) {
     throw new AppError('INVALID_TRIM', 'Escolha um início e um fim válidos dentro da duração do arquivo.', 400);
   }
-  if (output === 'wav' && to - from > MAX_TRANSCRIPTION_SECONDS) {
+  if (TRANSCRIPTION_OUTPUTS.has(output) && to - from > MAX_TRANSCRIPTION_SECONDS) {
     throw new AppError('TRIM_REQUIRED', `Para transcrever, selecione um trecho de até ${Math.floor(MAX_TRANSCRIPTION_SECONDS / 60)} minutos.`, 413);
   }
   return { start: from, end: Math.min(to, duration), duration: Math.min(to, duration) - from };
@@ -84,14 +87,15 @@ export async function inspectMedia(buffer, extension) {
 }
 
 export async function convertMedia(buffer, extension, { start = 0, end, output = 'wav' } = {}) {
-  if (!['wav', 'mp3', 'mp4'].includes(output)) throw new AppError('INVALID_OUTPUT', 'Formato de exportação inválido.', 400);
+  if (!['wav', 'speech', 'mp3', 'mp4'].includes(output)) throw new AppError('INVALID_OUTPUT', 'Formato de exportação inválido.', 400);
   return withMedia(buffer, extension, async ({ input, directory, duration, hasVideo }) => {
     if (output === 'mp4' && !hasVideo) throw new AppError('NO_VIDEO', 'Escolha MP3 para exportar uma gravação sem vídeo.', 400);
     const range = validateRange(start, end, duration, output);
-    const target = path.join(directory, `clip.${output}`);
+    const clipExtension = output === 'speech' ? 'mp3' : output;
+    const target = path.join(directory, `clip.${clipExtension}`);
     const args = ['-hide_banner', '-loglevel', 'error', '-nostdin', '-y', ...inputOptions, '-i', input, '-ss', String(range.start), '-t', String(range.duration)];
     if (output === 'mp4') args.push('-map', '0:v:0', '-map', '0:a:0', '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart');
-    else args.push('-map', '0:a:0', '-vn', '-ac', '1', ...(output === 'wav' ? ['-ar', '16000', '-c:a', 'pcm_s16le'] : ['-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k']));
+    else args.push('-map', '0:a:0', '-vn', '-ac', '1', ...(output === 'wav' ? ['-ar', '16000', '-c:a', 'pcm_s16le'] : output === 'speech' ? SPEECH_ARGS : ['-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k']));
     args.push('-fs', String(MAX_MEDIA_BYTES + 4096), target);
     await execute(ffmpeg, args);
     const result = await readFile(target);
@@ -99,6 +103,6 @@ export async function convertMedia(buffer, extension, { start = 0, end, output =
     // A file-size limit must never silently produce a shorter clip.
     const check = JSON.parse((await execute(ffprobe, ['-v', 'error', '-show_format', '-of', 'json', target], { maxBytes: 1024 * 1024 })).toString());
     if (Number(check.format?.duration) < range.duration - .15) throw new AppError('MEDIA_TOO_LARGE', 'O trecho exportado excede o limite. Escolha um recorte menor.', 413);
-    return { buffer: result, durationMs: Math.round(range.duration * 1000), extension: output, mimeType: output === 'mp4' ? 'video/mp4' : output === 'mp3' ? 'audio/mpeg' : 'audio/wav' };
+    return { buffer: result, durationMs: Math.round(range.duration * 1000), extension: clipExtension, mimeType: output === 'mp4' ? 'video/mp4' : clipExtension === 'mp3' ? 'audio/mpeg' : 'audio/wav' };
   });
 }

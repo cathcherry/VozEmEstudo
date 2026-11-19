@@ -63,6 +63,7 @@ const STEP_STATE_LABELS = {
   error: ' — não concluído',
 };
 /** Marks one real client-side upload step; earlier visible steps become complete. */
+const percent = (fraction) => `${Math.floor(Math.min(1, Math.max(0, fraction)) * 100)}%`;
 function progress(text, stepName) {
   document.querySelector('[data-upload-progress-title]').textContent = text;
   if (!stepName) return;
@@ -448,6 +449,7 @@ async function startProcessing() {
       file: reviewedChoices.file,
       durationMs: reviewedChoices.sourceDurationMs,
       range: reviewedChoices.range,
+      onProgress: (fraction) => progress(`Guardando o vídeo original… ${percent(fraction)}`),
     });
   }
   progress('Iniciando a transcrição…', 'start');
@@ -573,12 +575,13 @@ form.addEventListener('submit', async (event) => {
       info.hasVideo ? 'Extraindo o áudio do trecho escolhido…' : 'Preparando o áudio…',
       'prepare',
     );
-    const clip = await convertMedia(file, range, 'wav');
+    const clip = await convertMedia(file, range, 'speech');
     progress('Enviando o áudio…', 'upload');
     createdMaterial = await createMaterialWithUpload({
       ...fields,
       file: clip.file,
       durationMs: clip.durationMs,
+      onProgress: (fraction) => progress(`Enviando o áudio… ${percent(fraction)}`),
     });
     saveTags(createdMaterial.id, fields.tags);
     await startProcessing();

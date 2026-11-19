@@ -75,19 +75,30 @@ async function releaseForPolling(job, delayMs, message) {
     });
 }
 
+/**
+ * Downloads the stored audio for a provider. MP4 is always reduced to WAV. Uploads are now
+ * compact MP3 ('speech'); AssemblyAI reads it directly, while synchronous providers (the
+ * Whisper fallback labels its input as WAV) get WAV.
+ */
+async function loadProviderAudio(audio, { wavOnly }) {
+  const bytes = await downloadAudioBuffer(audio.storage_path);
+  const extension = String(audio.extension || '').toLowerCase();
+  if (extension === 'mp4' || (wavOnly && extension !== 'wav'))
+    return (await convertMedia(bytes, extension, { output: 'wav' })).buffer;
+  return bytes;
+}
+
 async function transcribeWithProvider(job, material, audio) {
-  const loadAudio = async () => {
-    let bytes = await downloadAudioBuffer(audio.storage_path);
-    if (audio.extension === 'mp4')
-      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
-    return bytes;
-  };
+  const loadAudio = () => loadProviderAudio(audio, { wavOnly: false });
   const execution = await executionFor(job, 'transcription');
   const { provider, snapshot } = getAiRegistry().transcription(snapshotOf(execution) || undefined);
   const durationMs = audio.duration_ms || 0;
   if (provider.mode === 'sync') {
     await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Transcrevendo o áudio.');
-    await transcribeMaterial(material.id, await loadAudio(), { durationMs, snapshot });
+    await transcribeMaterial(material.id, await loadProviderAudio(audio, { wavOnly: true }), {
+      durationMs,
+      snapshot,
+    });
     return 'completed';
   }
   if (!execution) throw schemaRequired();
@@ -138,9 +149,7 @@ async function transcribeWithFallback(job, material, audio) {
       stage: PROCESSING_STAGE.TRANSCRIPTION,
       message: `Transcrição principal falhou (${error.code}); usando o provedor alternativo configurado.`,
     });
-    let bytes = await downloadAudioBuffer(audio.storage_path);
-    if (audio.extension === 'mp4')
-      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
+    const bytes = await loadProviderAudio(audio, { wavOnly: true });
     await transcribeMaterial(material.id, bytes, { durationMs: audio.duration_ms || 0, snapshot });
     return 'completed';
   }
