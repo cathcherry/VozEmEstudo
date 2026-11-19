@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AppError } from '../domain/errors.js';
+import { createEvidenceLocator } from '../domain/evidence-match.js';
 import { conceptKey, planCoverage } from '../domain/question-plan.js';
 import { filterRedundant, normalizeText } from '../domain/question-redundancy.js';
 import { buildConceptMessages, buildPlannedQuestionMessages } from '../prompts/questions.v2.js';
@@ -7,6 +8,12 @@ import { buildConceptMessages, buildPlannedQuestionMessages } from '../prompts/q
 /** At most three model calls per list: analysis, generation and one replacement round. */
 export const MAX_MODEL_CALLS = 3;
 const MAX_CONCEPTS = 60;
+const MIN_CONCEPTS = 8;
+
+/** Enough concepts for the plan (at most two questions each) plus spares for rejections. */
+export function conceptTarget(count) {
+  return Math.min(MAX_CONCEPTS, Math.max(MIN_CONCEPTS, Math.ceil(count * 1.5)));
+}
 
 const conceptSchema = z.object({
   concepts: z.array(z.object({ label: z.string(), evidence: z.string() }).passthrough()).max(200),
@@ -57,9 +64,14 @@ export function buildQuestionGenerator({ complete }) {
   return async function generate({ source, count, config, previous = [] }) {
     const text = source.full_text || '';
     const normalizedSource = normalizeText(text);
-    const supported = (quote) => {
+    const locate = createEvidenceLocator(text);
+    /** The transcript's own wording for a model quote, or null when the quote is not in it. */
+    const evidenceFor = (quote) => {
       const value = normalizeText(quote);
-      return value.length >= 10 && normalizedSource.includes(value);
+      if (value.length < 10) return null;
+      const found = locate(quote);
+      if (found) return found.text;
+      return normalizedSource.includes(value) ? String(quote).trim().slice(0, 400) : null;
     };
     let calls = 0;
     const call = async (stage, messages, maxTokens) => {
@@ -74,9 +86,10 @@ export function buildQuestionGenerator({ complete }) {
         'concepts',
         buildConceptMessages(text, {
           topicFocus: config.topicFocus,
-          maxConcepts: Math.min(MAX_CONCEPTS, count * 2),
+          maxConcepts: conceptTarget(count),
+          minConcepts: Math.min(conceptTarget(count), Math.ceil(count / 2) + 2),
         }),
-        Math.min(6000, 800 + count * 120),
+        Math.min(8000, 1200 + conceptTarget(count) * 160),
       ),
     );
     if (!analysis.success) throw invalidOutput();
@@ -85,9 +98,10 @@ export function buildQuestionGenerator({ complete }) {
     for (const item of analysis.data.concepts) {
       const label = String(item.label).trim().slice(0, 120),
         key = conceptKey(label);
-      if (!key || seen.has(key) || !supported(item.evidence)) continue;
+      const evidence = key && !seen.has(key) ? evidenceFor(item.evidence) : null;
+      if (!evidence) continue;
       seen.add(key);
-      concepts.push({ key, label, evidence: String(item.evidence).trim().slice(0, 400) });
+      concepts.push({ key, label, evidence });
     }
     if (!concepts.length)
       throw new AppError(
@@ -139,12 +153,14 @@ export function buildQuestionGenerator({ complete }) {
           reject('invalid');
           continue;
         }
-        if (!supported(item.data.evidence)) {
+        const evidence = evidenceFor(item.data.evidence);
+        if (!evidence) {
           reject('unsupported');
           continue;
         }
         candidates.push({
           ...item.data,
+          evidence,
           concept: slot.concept.label,
           skill: slot.skill,
           difficulty: slot.difficulty,

@@ -4,6 +4,7 @@ import {
   validateFlashcardGeneration, validateGeneratedFlashcards, validateFlashcardGenerationV2,
 } from '../validators/flashcard-generation.validator.js';
 import { buildFlashcardMessagesV2, FLASHCARD_V2_PROMPT_VERSION } from '../prompts/flashcards.v2.js';
+import { createEvidenceLocator } from '../domain/evidence-match.js';
 import { filterRedundant, normalizeText } from '../domain/question-redundancy.js';
 import { sourceReferences } from './question-generation.service.js';
 import { buildFlashcardMessages, FLASHCARD_PROMPT_VERSION } from '../prompts/flashcards.v1.js';
@@ -70,6 +71,7 @@ export function buildFlashcardGenerationServiceV2({
       if (source.full_text.length > 80000) throw new AppError('SOURCE_TOO_LARGE',
         'Esta transcrição excede o limite de 80 mil caracteres para geração de cartões.', 422);
       const normalizedSource = normalizeText(source.full_text);
+      const locate = createEvidenceLocator(source.full_text);
       const previous = [...avoid, ...(await existingFronts(userId, materialId, setId))]
         .map((front) => ({ statement: front }));
       const accepted = [];
@@ -95,14 +97,17 @@ export function buildFlashcardGenerationServiceV2({
         for (const item of parsed.data.cards) {
           const card = cardSchema.safeParse(item);
           if (!card.success) { reject('invalid'); continue; }
+          // Tolerates dropped fillers and small edits; stores the transcript's own wording.
           const quote = normalizeText(card.data.evidence);
-          if (quote.length < 10 || !normalizedSource.includes(quote)) { reject('unsupported'); continue; }
+          const located = quote.length >= 10 ? locate(card.data.evidence, { maxLength: 1500 }) : null;
+          const evidence = located?.text || (quote.length >= 10 && normalizedSource.includes(quote) ? card.data.evidence : null);
+          if (!evidence) { reject('unsupported'); continue; }
           candidates.push({
             statement: card.data.front,
             correctText: card.data.back,
             front: card.data.front,
             back: card.data.back,
-            evidence: card.data.evidence,
+            evidence,
             difficulty: config.difficulties.includes(card.data.difficulty) ? card.data.difficulty : config.difficulties[0],
             focus: config.focus.includes(card.data.focus) ? card.data.focus : config.focus[0],
           });

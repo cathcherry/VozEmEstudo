@@ -42,6 +42,15 @@ export const PARAPHRASE_TRIGRAM = 0.72;
 export const PARAPHRASE_TOKENS = 0.6;
 export const SAME_ANSWER_TOKENS = 0.4;
 
+/** Same answer, ignoring word order ("A, B e C" = "C, A e B") and connectors. */
+function sameAnswer(a, b) {
+  if (normalizeText(a) === normalizeText(b)) return true;
+  const ta = tokens(a),
+    tb = tokens(b);
+  return ta.size >= 2 && jaccard(ta, tb) >= SAME_ANSWER_SET;
+}
+export const SAME_ANSWER_SET = 0.85;
+
 const answerOf = (question) =>
   question.correctText ?? question.options?.[question.correctIndex] ?? null;
 
@@ -67,14 +76,12 @@ export function compareQuestions(a, b) {
     return 'same_knowledge';
   const answerA = answerOf(a),
     answerB = answerOf(b);
-  if (
-    answerA &&
-    answerB &&
-    normalizeText(answerA) === normalizeText(answerB) &&
-    tokenScore >= SAME_ANSWER_TOKENS &&
-    (!a.skill || !b.skill || a.skill === b.skill)
-  )
-    return 'same_knowledge';
+  if (answerA && answerB && sameAnswer(answerA, answerB)) {
+    // A different skill on the same concept must test a different fact, so the same correct
+    // answer about the same concept is the same knowledge whatever the skill label says.
+    const sameConcept = a.concept && b.concept && conceptKey(a.concept) === conceptKey(b.concept);
+    if (sameConcept || tokenScore >= SAME_ANSWER_TOKENS) return 'same_knowledge';
+  }
   return null;
 }
 

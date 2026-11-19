@@ -48,3 +48,14 @@ Sintoma: "NetworkError when attempting to fetch resource" ao enviar um trecho de
 - **Mensagens:** progresso em % ("Enviando o áudio… 42%") e, se a conexão não voltar, "A conexão caiu durante o envio e não voltou a tempo…".
 - **Verificar depois do deploy:** enviar um trecho real e conferir no Storage o arquivo `…-trecho.mp3`; desligar o Wi-Fi por alguns segundos no meio de um envio de vídeo e ver o envio continuar.
 - Sem migration e sem mudança no Supabase.
+
+## 6. Questões: poucas geradas e conteúdo fraco
+
+Sintoma: 5 pedidas, 2 geradas (aula de 10 min, 10 mil caracteres), com "conteúdo insuficiente"; uma questão repetida entre listas. Diagnóstico pelos registros (`question_batches.coverage`): 4–5 candidatas rejeitadas como `unsupported` e só 1–2 conceitos aceitos ("Sistema Terra", "Clima"), então o plano tinha 4 vagas. Causa: a conferência do trecho exigia cópia idêntica; o modelo tira "né"/"tá", põe "..." ou troca uma palavra. Qualidade: duas questões da mesma lista com a mesma resposta (as quatro esferas), "avançada" que era só memória, distratores absurdos ("Cor da terra").
+
+- **Trecho de apoio tolerante** (`domain/evidence-match.js`): localiza o trecho por sequências de palavras e confere palavra a palavra (≥ 75%), ignorando hesitações; salva o texto real da transcrição. Texto inventado continua rejeitado. Vale também para flashcards.
+- **Mais conceitos e mais específicos:** pede de ⌈n/2⌉+2 até max(8, 1,5·n) pontos testáveis da aula inteira.
+- **Prompt `questions-v2.1`:** o que cada habilidade exige, "pergunta de memória nunca é avançada", distratores plausíveis do mesmo tipo, respostas diferentes entre questões.
+- **Redundância:** mesma resposta sobre o mesmo conceito = mesma questão, qualquer que seja a habilidade.
+- A repetição entre listas aconteceu porque as duas listas usaram "Permitir repetição para revisão"; com "Evitar repetir" (padrão), questões anteriores são bloqueadas.
+- **Verificar:** gerar 5 e 10 questões na aula "Vegetação" e conferir quantidade, níveis e alternativas.

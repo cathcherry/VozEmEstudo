@@ -407,7 +407,7 @@ test('malformed provider output fails as retryable; prompts keep skills apart fr
   );
   assert.match(
     content,
-    /avaliação crítica: julgar um argumento usando critérios que a própria aula apresenta/,
+    /avaliação crítica\): julgar se uma afirmação ou argumento está correto usando critérios que a própria aula apresenta/,
   );
   assert.match(content, /omita esse slot em vez de inventar conteúdo/);
 });

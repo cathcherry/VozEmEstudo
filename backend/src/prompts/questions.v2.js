@@ -1,4 +1,4 @@
-export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2';
+export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2.1';
 
 const SOURCE_RULES = [
   'Use exclusivamente a transcrição fornecida; não use conhecimento externo.',
@@ -6,35 +6,46 @@ const SOURCE_RULES = [
   'Responda SOMENTE com JSON válido, sem comentários.',
 ];
 
+// Each skill says what the student must DO, so a non-recall slot cannot be a memory question.
 const SKILL_GUIDE = {
-  recall: 'recordação: reconhecer um fato, termo ou definição dito na aula',
-  understanding: 'compreensão conceitual: explicar o sentido de um conceito com outras palavras',
-  interpretation: 'interpretação: inferir o significado de um trecho ou exemplo da aula',
-  application: 'aplicação: usar o conceito da aula em uma situação descrita no enunciado',
-  analysis: 'análise e comparação: relacionar ou distinguir ideias apresentadas na aula',
-  cause_effect: 'causa e efeito: identificar causas ou consequências descritas na aula',
+  recall:
+    'recall (recordação): reconhecer um fato, termo, nome ou definição exatamente como a aula apresenta',
+  understanding:
+    'understanding (compreensão): escolher a explicação correta do PORQUÊ ou do COMO de um conceito, com palavras diferentes das da aula; não basta reconhecer um nome ou lista',
+  interpretation:
+    'interpretation (interpretação): dizer o que um exemplo, comparação ou afirmação da aula significa ou implica',
+  application:
+    'application (aplicação): o enunciado descreve uma situação NOVA (lugar, caso, cenário) e o aluno usa o conceito da aula para resolvê-la',
+  analysis:
+    'analysis (análise e comparação): relacionar, distinguir ou comparar dois ou mais elementos apresentados na aula',
+  cause_effect:
+    'cause_effect (causa e efeito): identificar a causa ou a consequência de um fenômeno, conforme a aula explica',
   evaluation:
-    'avaliação crítica: julgar um argumento usando critérios que a própria aula apresenta',
-  synthesis: 'síntese: integrar duas ou mais ideias da aula em uma conclusão sustentada por ela',
+    'evaluation (avaliação crítica): julgar se uma afirmação ou argumento está correto usando critérios que a própria aula apresenta',
+  synthesis:
+    'synthesis (síntese): combinar duas ou mais ideias de partes diferentes da aula em uma conclusão que ela sustenta',
 };
 const LEVEL_GUIDE = {
-  basic: 'básico: um único passo, linguagem direta',
-  intermediate: 'intermediário: relaciona duas informações da aula',
-  advanced: 'avançado: exige raciocínio em várias etapas, sempre sustentado pela aula',
+  basic: 'basic (básico): um único passo; uma informação da aula; linguagem direta',
+  intermediate:
+    'intermediate (intermediário): exige relacionar DUAS informações da aula ou aplicar uma delas',
+  advanced:
+    'advanced (avançado): exige raciocínio em várias etapas, combinando partes diferentes da aula, com distratores muito próximos da resposta; uma pergunta de memória nunca é avançada',
 };
 
 /** Step 1: list the distinct concepts of the confirmed revision, each with a literal quote. */
-export function buildConceptMessages(transcript, { topicFocus, maxConcepts }) {
+export function buildConceptMessages(transcript, { topicFocus, maxConcepts, minConcepts = 1 }) {
   return [
     {
       role: 'system',
       content: [
         'Você analisa transcrições de aulas em português brasileiro para planejar questões de revisão.',
         ...SOURCE_RULES,
-        `Liste até ${maxConcepts} conceitos, fatos, processos ou relações DISTINTOS ensinados na aula.`,
-        'Não divida a mesma ideia em itens diferentes; não inclua conversas administrativas ou exemplos sem conteúdo.',
-        'Para cada item, copie em evidence um trecho literal da transcrição (15 a 400 caracteres) que o sustenta.',
-        'Se houver pouco conteúdo, retorne poucos itens; nunca invente.',
+        `Liste de ${minConcepts} a ${maxConcepts} pontos de conteúdo DISTINTOS ensinados na aula: conceitos, definições, fatores, tipos, exemplos com conteúdo, processos, causas e consequências, comparações.`,
+        'Seja específico: em vez de um tema amplo (ex.: "Vegetação"), liste cada ponto testável (ex.: "Influência do clima na vegetação", "Esferas do sistema Terra", "Papel do relevo"). Percorra a aula inteira, do início ao fim, não só a introdução.',
+        'Dois itens não podem ter a mesma resposta: se dois rótulos descrevem o mesmo fato, mantenha um só. Não inclua saudações, avisos ou conversas sem conteúdo.',
+        'Para cada item, copie em evidence uma frase da transcrição (15 a 400 caracteres) que o sustenta, com as mesmas palavras.',
+        `Só retorne menos de ${minConcepts} itens se a aula realmente não tiver mais conteúdo; nunca invente.`,
         ...(topicFocus
           ? ['Priorize os itens relacionados ao foco temático informado, se existirem na aula.']
           : []),
@@ -55,14 +66,17 @@ export function buildPlannedQuestionMessages(transcript, { slots, avoid = [], to
       content: [
         'Você gera questões de múltipla escolha para revisão em português brasileiro.',
         ...SOURCE_RULES,
-        'Gere no máximo uma questão para cada slot do plano, respeitando o conceito, a habilidade e a dificuldade do slot.',
-        'Cada questão tem enunciado claro, exatamente quatro alternativas plausíveis e distintas, UMA única alternativa correta (correctIndex de 0 a 3) e explicação breve sustentada pela aula.',
-        'Habilidades cognitivas descrevem o tipo de raciocínio, não o número de respostas corretas.',
+        'Gere exatamente uma questão para cada slot do plano. Cada questão deve seguir o conceito, a habilidade (skill) e a dificuldade (difficulty) do SEU slot: a forma da pergunta muda com a habilidade.',
         `Habilidades: ${skills.map((key) => SKILL_GUIDE[key]).join('; ')}.`,
         `Dificuldades: ${levels.map((key) => LEVEL_GUIDE[key]).join('; ')}.`,
-        'Copie em evidence um trecho literal da transcrição (15 a 400 caracteres) que sustenta a alternativa correta.',
-        'Não reformule questões da lista "avoid" nem teste o mesmo fato com outras palavras.',
-        'Se a aula não sustenta uma questão para o slot, omita esse slot em vez de inventar conteúdo.',
+        'Cada questão tem enunciado claro, exatamente quatro alternativas distintas, UMA única alternativa correta (correctIndex de 0 a 3) e explicação breve sustentada pela aula.',
+        'Distratores: os três errados devem ser plausíveis para quem não estudou, do mesmo tipo e tamanho da resposta certa, de preferência outros termos ou ideias da própria aula ou confusões comuns; nunca use alternativas absurdas ou fora do assunto.',
+        'Varie a posição da alternativa correta entre as questões.',
+        'Questões diferentes não podem ter a mesma resposta nem testar o mesmo fato com outras palavras, mesmo quando dois slots têm o mesmo conceito: nesse caso, cada uma testa um aspecto diferente dele.',
+        'Habilidades cognitivas descrevem o tipo de raciocínio, não o número de respostas corretas.',
+        'Copie em evidence a frase da transcrição (15 a 400 caracteres), com as mesmas palavras, que sustenta a alternativa correta.',
+        'Não reformule questões da lista "avoid" nem teste o mesmo fato delas.',
+        'Use a transcrição inteira para encontrar apoio. Se a aula realmente não sustenta uma questão para o slot, omita esse slot em vez de inventar conteúdo.',
         'Formato: {"questions":[{"slot":"s1","statement":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"...","evidence":"trecho literal"}]}',
       ].join(' '),
     },
