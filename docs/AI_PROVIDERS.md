@@ -4,11 +4,11 @@ Os serviços (resumo, questões, avisos, flashcards, transcrição) não importa
 pedem ao registro `backend/src/ai/provider-registry.js` um provedor por tarefa; formatos de API,
 autenticação, erros e parsing ficam nos adaptadores em `backend/src/integrations/`.
 
-| Contrato                                                   | Adaptadores                                                 | Arquivo                           |
-| ---------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------- |
-| TranscriptionProvider (`ai/contracts/transcription.js`)    | `huggingface` (legado, síncrono), `assemblyai` (assíncrono) | `integrations/asr/*`              |
-| TextGenerationProvider (`ai/contracts/text-generation.js`) | `groq`                                                      | `integrations/llm/groq.client.js` |
-| VisualAnalysisProvider (`ai/contracts/visual-analysis.js`) | nenhum (desativado)                                         | —                                 |
+| Contrato                                                   | Adaptadores                                                 | Arquivo              |
+| ---------------------------------------------------------- | ----------------------------------------------------------- | -------------------- |
+| TranscriptionProvider (`ai/contracts/transcription.js`)    | `huggingface` (legado, síncrono), `assemblyai` (assíncrono) | `integrations/asr/*` |
+| TextGenerationProvider (`ai/contracts/text-generation.js`) | `groq`, `assemblyai-gateway`                                | `integrations/llm/*` |
+| VisualAnalysisProvider (`ai/contracts/visual-analysis.js`) | nenhum (desativado)                                         | —                    |
 
 ## Configuração (`backend/.env`)
 
@@ -25,6 +25,7 @@ Valores vazios mantêm o comportamento anterior (Hugging Face + Groq).
 | `ASR_POLL_INTERVAL_MS`, `ASR_MAX_WAIT_MS`          | intervalo de consulta (15 s) e prazo total (3 h)                                                                                            |
 | `LLM_PROVIDER`, `LLM_MODEL`                        | padrão para todas as tarefas de texto                                                                                                       |
 | `LLM_<TAREFA>_PROVIDER`, `LLM_<TAREFA>_MODEL`      | `SUMMARY`, `QUESTIONS`, `WARNINGS`, `FLASHCARDS`, `CLEANUP`                                                                                 |
+| `ASSEMBLYAI_LLM_JSON_MODE`                         | `json_object` (padrão) ou `none`; a saída é sempre validada localmente                                                                      |
 | `ASSEMBLYAI_API_KEY`, `GROQ_API_KEY`               | credenciais, apenas no servidor                                                                                                             |
 | `WORKER_STALE_LEASE_SECONDS`                       | `0` desligado; `>= 60` recupera tarefas de workers interrompidos                                                                            |
 | `VISION_PROVIDER`                                  | `disabled`                                                                                                                                  |
@@ -61,6 +62,10 @@ em produção, confira em https://www.assemblyai.com/docs/pre-recorded-audio/sel
   (lido de `speech_model_used`, depois `speech_model`);
 - `language_code: "pt"`, `language_detection` e `language_detection_options.expected_languages`;
 - se a listagem `GET /v2/transcript` devolve `audio_url` (usado para recuperar envios ambíguos).
+  No LLM Gateway, confira os modelos disponíveis e o suporte a `response_format`; o
+  Gateway não tem modelo padrão (`LLM_<TAREFA>_MODEL` obrigatório).
+  No LLM Gateway, confira os modelos disponíveis e o suporte a `response_format`; o Gateway não
+  tem modelo padrão (`LLM_<TAREFA>_MODEL` obrigatório).
   Faça um teste com uma gravação curta e confira tempos de palavras no player.
 
 ## Migration (não aplicada)

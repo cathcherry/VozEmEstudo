@@ -4,6 +4,7 @@ import { createAiConfig, snapshotTask } from './provider-config.js';
 import { assertTextGenerationProvider } from './contracts/text-generation.js';
 import { assertTranscriptionProvider } from './contracts/transcription.js';
 import { createGroqProvider } from '../integrations/llm/groq.client.js';
+import { createAssemblyAiGatewayProvider } from '../integrations/llm/assemblyai-gateway.client.js';
 import { createHuggingFaceProvider } from '../integrations/asr/huggingface-whisper.client.js';
 import { createAssemblyAiProvider } from '../integrations/asr/assemblyai.client.js';
 
@@ -11,6 +12,15 @@ import { createAssemblyAiProvider } from '../integrations/asr/assemblyai.client.
 export const defaultFactories = Object.freeze({
   text: {
     groq: (config, { mock }) => createGroqProvider({ apiKey: config.credentials.groq, mock }),
+    // MOCK_EXTERNAL_SERVICES reuses the offline demo outputs; no request leaves the server.
+    'assemblyai-gateway': (config, { mock }) =>
+      mock
+        ? { ...createGroqProvider({ apiKey: '', mock: true }), name: 'assemblyai-gateway' }
+        : createAssemblyAiGatewayProvider({
+            apiKey: config.credentials.assemblyai,
+            baseUrl: config.endpoints.assemblyaiGateway,
+            jsonMode: config.endpoints.assemblyaiGatewayJsonMode,
+          }),
   },
   transcription: {
     huggingface: () => createHuggingFaceProvider(),

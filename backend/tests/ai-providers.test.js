@@ -192,3 +192,67 @@ test('legacy Whisper results are normalized without inventing word timestamps', 
   assert.equal(result.metadata.provider, 'huggingface');
   assert.equal(result.metadata.capabilities.wordTimestamps, false);
 });
+
+test('switching a task to the AssemblyAI LLM Gateway is configuration-only and validated locally', async (t) => {
+  const nativeFetch = globalThis.fetch;
+  t.after(() => {
+    globalThis.fetch = nativeFetch;
+  });
+  const requests = [];
+  let reply = { status: 200, content: '```json\n{"questions":[]}\n```' };
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url: String(url), headers: init.headers, body: JSON.parse(init.body) });
+    if (reply.status !== 200)
+      return new Response('{"error":"secret detail"}', { status: reply.status });
+    return Response.json({
+      model: 'gateway-served',
+      choices: [{ message: { content: reply.content } }],
+    });
+  };
+  const registry = createProviderRegistry({
+    config: createAiConfig({
+      LLM_QUESTIONS_PROVIDER: 'assemblyai-gateway',
+      LLM_QUESTIONS_MODEL: 'gateway-model',
+      ASSEMBLYAI_API_KEY: 'aai-key',
+      GROQ_API_KEY: 'groq-key',
+    }),
+    mock: false,
+  });
+  assert.equal(registry.text('summary').provider, 'groq');
+  const questions = registry.text('questions');
+  assert.deepEqual(await questions.completeJson({ messages: [{ role: 'user', content: 'x' }] }), {
+    data: { questions: [] },
+    model: 'gateway-served',
+  });
+  assert.equal(requests[0].url, 'https://llm-gateway.assemblyai.com/v1/chat/completions');
+  assert.equal(requests[0].headers.authorization, 'aai-key');
+  assert.equal(requests[0].body.model, 'gateway-model');
+  assert.deepEqual(requests[0].body.response_format, { type: 'json_object' });
+  reply = { status: 200, content: 'não é JSON' };
+  await assert.rejects(
+    questions.completeJson({ messages: [] }),
+    (e) => e.code === 'LLM_INVALID_OUTPUT' && e.retryable,
+  );
+  reply = { status: 429 };
+  await assert.rejects(
+    questions.completeText({ messages: [] }),
+    (e) => e.code === 'LLM_TEMPORARY_ERROR' && !e.message.includes('secret'),
+  );
+  reply = { status: 400 };
+  await assert.rejects(
+    questions.completeText({ messages: [] }),
+    (e) => e.code === 'LLM_FAILED' && !e.retryable,
+  );
+  const plain = createProviderRegistry({
+    config: createAiConfig({
+      LLM_PROVIDER: 'assemblyai-gateway',
+      LLM_MODEL: 'm',
+      ASSEMBLYAI_API_KEY: 'k',
+      ASSEMBLYAI_LLM_JSON_MODE: 'none',
+    }),
+    mock: false,
+  });
+  reply = { status: 200, content: '{"ok":true}' };
+  await plain.text('warnings').completeJson({ messages: [] });
+  assert(!('response_format' in requests.at(-1).body));
+});

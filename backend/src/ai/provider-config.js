@@ -96,6 +96,13 @@ export function createAiConfig(source = process.env) {
     assemblyaiGateway: (
       text(source.ASSEMBLYAI_LLM_GATEWAY_URL) || 'https://llm-gateway.assemblyai.com/v1'
     ).replace(/\/$/, ''),
+    // 'json_object' requests JSON mode; 'none' relies only on prompts + local validation.
+    assemblyaiGatewayJsonMode: choose(
+      'ASSEMBLYAI_LLM_JSON_MODE',
+      source.ASSEMBLYAI_LLM_JSON_MODE,
+      ['json_object', 'none'],
+      'json_object',
+    ),
   });
   return Object.freeze({ asr, llm, vision, credentials, endpoints });
 }
