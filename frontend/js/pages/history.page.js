@@ -2,7 +2,7 @@ import { createFolderIcons } from '../utils/folder-icons.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
-import { getCatalog, getLibraryResources, createSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
+import { getCatalog, getLibraryResources, createSubject, updateSubject, deleteSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { studyFor, metadataTags, saveTags } from '../utils/study-store.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
@@ -14,8 +14,8 @@ const folderIcons = createFolderIcons(session.user.id);
 const query = new URLSearchParams(location.search);
 const search = document.querySelector('#library-search');
 const groups = document.querySelector('[data-library-groups]');
-document.addEventListener('click',event=>{for(const menu of groups.querySelectorAll('.row-menu[open]'))if(!menu.contains(event.target))menu.open=false;});
-document.addEventListener('keydown',event=>{if(event.key==='Escape')for(const menu of groups.querySelectorAll('.row-menu[open]')){menu.open=false;menu.querySelector('summary').focus();}});
+document.addEventListener('click',event=>{for(const menu of document.querySelectorAll('.row-menu[open]'))if(!menu.contains(event.target))menu.open=false;});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')for(const menu of document.querySelectorAll('.row-menu[open]')){menu.open=false;menu.querySelector('summary').focus();}});
 const state = document.querySelector('[data-library-state]');
 const container = document.querySelector('[data-library-data]');
 const count = document.querySelector('[data-library-count]');
@@ -322,7 +322,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
     const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',option===remove?'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7':menuIcons[option.dataset.icon]||menuIcons.list);svg.append(path);option.append(svg);
   }
   menu.append(summary, options);
-  menu.addEventListener('toggle',()=>{if(menu.open)for(const other of groups.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
+  menu.addEventListener('toggle',()=>{if(menu.open)for(const other of document.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
   actions.replaceChildren(actions.querySelector('a.secondary-action'), menu);
   enableDrag(item, material);
   return item;
@@ -377,6 +377,86 @@ function treeFiles(material) {
   if(!list.children.length){const link=document.createElement('a');link.href=materialHref(material.id);link.textContent='▤ '+material.title;list.append(link);}
   return list;
 }
+const SUBJECT_MENU_ICONS = {
+  edit: 'M4 20h4L20 8l-4-4L4 16v4M14 6l4 4',
+  remove: 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7',
+};
+function menuIcon(path) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.6');
+  svg.setAttribute('aria-hidden', 'true');
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  line.setAttribute('d', path);
+  svg.append(line);
+  return svg;
+}
+/** "⋯" menu for a subject folder: Editar (rename, icon) and Remover (lessons are kept). */
+function subjectMenu(group) {
+  const menu = document.createElement('details');
+  menu.className = 'row-menu subject-menu';
+  menu.dataset.subjectMenu = '';
+  const summary = document.createElement('summary');
+  summary.textContent = '⋯';
+  summary.title = 'Opções da disciplina';
+  summary.setAttribute('aria-label', `Opções da disciplina ${group.name}`);
+  const options = document.createElement('div');
+  options.className = 'row-menu-content';
+  const editOption = document.createElement('button');
+  editOption.type = 'button';
+  editOption.textContent = 'Editar';
+  editOption.append(menuIcon(SUBJECT_MENU_ICONS.edit));
+  editOption.addEventListener('click', () => {
+    menu.open = false;
+    openSubjectDialog({ id: group.id, name: group.name });
+  });
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.className = 'delete-button';
+  remove.textContent = 'Remover';
+  remove.append(menuIcon(SUBJECT_MENU_ICONS.remove));
+  remove.addEventListener('click', () => {
+    menu.open = false;
+    void removeSubject(group, remove);
+  });
+  options.append(editOption, remove);
+  menu.append(summary, options);
+  menu.addEventListener('toggle', () => {
+    if (menu.open) for (const other of document.querySelectorAll('.row-menu[open]')) if (other !== menu) other.open = false;
+  });
+  return menu;
+}
+
+async function removeSubject(group, button) {
+  const lessons = materials.filter((material) => material.subject_id === group.id).length;
+  const units = catalog.units.filter((unit) => unit.subject_id === group.id).length;
+  const details = [
+    lessons ? `${lessonCountLabel(lessons)} não ${lessons === 1 ? 'será apagada' : 'serão apagadas'}: ${lessons === 1 ? 'ela vai' : 'elas vão'} para “Sem disciplina”.` : 'A pasta está vazia.',
+    units ? `${units === 1 ? 'A unidade desta disciplina também será removida' : `As ${units} unidades desta disciplina também serão removidas`}.` : '',
+  ].filter(Boolean).join(' ');
+  if (!confirm(`Remover a disciplina “${group.name}”?\n\n${details}`)) return;
+  button.disabled = true;
+  try {
+    await deleteSubject(group.id);
+    catalog.subjects = catalog.subjects.filter((subject) => subject.id !== group.id);
+    catalog.units = catalog.units.filter((unit) => unit.subject_id !== group.id);
+    for (const material of materials)
+      if (material.subject_id === group.id) Object.assign(material, { subject: null, subject_id: null, unit_id: null });
+    openSubjects.delete(String(group.id));
+    populateFilters();
+    const route = new URLSearchParams(location.search);
+    if (route.get('folder') === String(group.id)) navigateFolder();
+    else render();
+    setStatus(viewStatus, lessons ? `Disciplina removida. ${lessonCountLabel(lessons)} ${lessons === 1 ? 'foi' : 'foram'} para “Sem disciplina”.` : 'Disciplina removida.', 'success');
+  } catch (error) {
+    setStatus(viewStatus, error.message || 'Não foi possível remover a disciplina.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+}
+
 function navigateFolder(subject = '', unit = '') {
   const url=new URL(location.href);
   for(const [key,value] of [['folder',subject],['unit',unit]]) { if(value)url.searchParams.set(key,value);else url.searchParams.delete(key); }
@@ -399,6 +479,7 @@ function renderFolderGroups(visible, _needle) {
   breadcrumb.prepend(toolbarTitle);
   for(const old of folderToolbar.querySelectorAll('.library-breadcrumb'))if(old!==breadcrumb)old.remove();
   folderToolbar.querySelector('[data-create-unit-shortcut]')?.remove();
+  folderToolbar.querySelector('[data-subject-menu]')?.remove();
   let groupIndex = 0;
   for (const group of folderGroups) {
     if(selected && String(group.id||group.name)!==selected)continue;
@@ -491,9 +572,13 @@ function renderFolderGroups(visible, _needle) {
     }
 
     if(createUnitButton)folderToolbar.append(createUnitButton);
+    // Discreet "⋯" with Editar/Remover: on the card in the grid, in the toolbar on the folder page.
+    const subjectActions = catalogEnabled && group.id ? subjectMenu(group) : null;
+    if (subjectActions && selected) folderToolbar.append(subjectActions);
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
     if(selected){section.classList.add('library-folder-page');section.append(content);}else section.append(folder);
+    if (subjectActions && !selected) { section.classList.add('has-subject-menu'); section.append(subjectActions); }
     groups.append(section);
   }
 }
@@ -624,12 +709,19 @@ editDialog.addEventListener('close', () => {
 });
 document.querySelector('[data-close-metadata]').addEventListener('click', () => editDialog.close());
 
-newSubjectButton.addEventListener('click', () => {
+/** Opens the subject dialog to create (no argument) or edit an existing subject. */
+function openSubjectDialog(subject = null) {
   subjectForm.reset();
   subjectMessage.textContent = '';
+  if (subject) subjectForm.dataset.editId = subject.id;
+  else delete subjectForm.dataset.editId;
+  subjectDialog.querySelector('#subject-dialog-title').textContent = subject ? 'Editar disciplina' : 'Nova disciplina';
+  subjectForm.querySelector('[type="submit"]').textContent = subject ? 'Salvar' : 'Criar pasta';
+  subjectForm.querySelector('[name="name"]').value = subject?.name || '';
   subjectDialog.showModal();
   subjectForm.querySelector('[name="name"]').focus();
-});
+}
+newSubjectButton.addEventListener('click', () => openSubjectDialog());
 subjectForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   if (!subjectForm.reportValidity()) return;
@@ -637,7 +729,20 @@ subjectForm.addEventListener('submit', async (event) => {
   button.disabled = true;
   try {
     await subjectIconPicker.validate();
-    const created = await createSubject(subjectForm.querySelector('[name="name"]').value.trim());
+    const name = subjectForm.querySelector('[name="name"]').value.trim();
+    const editId = subjectForm.dataset.editId;
+    if (editId) {
+      const updated = await updateSubject(editId, name);
+      const entry = catalog.subjects.find((subject) => subject.id === editId);
+      if (entry) entry.name = updated.name;
+      for (const material of materials) if (material.subject_id === editId) material.subject = updated.name;
+      try { await subjectIconPicker.commit(editId); } catch { setStatus(viewStatus,'Disciplina salva. Tente adicionar o PNG novamente mais tarde.','error'); }
+      populateFilters();
+      render();
+      subjectDialog.close();
+      return;
+    }
+    const created = await createSubject(name);
     catalog.subjects.push(created);
     try { await subjectIconPicker.commit(created.id); } catch { setStatus(viewStatus,'Pasta criada. Tente adicionar o PNG novamente mais tarde.','error'); }
     populateFilters();
@@ -645,7 +750,7 @@ subjectForm.addEventListener('submit', async (event) => {
     render();
     subjectDialog.close();
   } catch (error) {
-    setStatus(subjectMessage, error.message || 'Não foi possível criar a disciplina.', 'error');
+    setStatus(subjectMessage, error.message || (subjectForm.dataset.editId ? 'Não foi possível salvar a disciplina.' : 'Não foi possível criar a disciplina.'), 'error');
   } finally {
     button.disabled = false;
   }

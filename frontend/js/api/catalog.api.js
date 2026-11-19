@@ -7,6 +7,14 @@ export const createSubject = (name) =>
     method: 'POST',
     body: JSON.stringify({ name }),
   });
+export const updateSubject = (subjectId, name) =>
+  apiFetch(`/api/catalog/subjects/${encodeURIComponent(subjectId)}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  });
+/** Removes the subject and its units; its lessons move to "Sem disciplina" (never deleted). */
+export const deleteSubject = (subjectId) =>
+  apiFetch(`/api/catalog/subjects/${encodeURIComponent(subjectId)}`, { method: 'DELETE' });
 export const createUnit = (subjectId, title, description = null) =>
   apiFetch(`/api/catalog/subjects/${encodeURIComponent(subjectId)}/units`, {
     method: 'POST',

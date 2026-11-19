@@ -59,3 +59,11 @@ Sintoma: 5 pedidas, 2 geradas (aula de 10 min, 10 mil caracteres), com "conteúd
 - **Redundância:** mesma resposta sobre o mesmo conceito = mesma questão, qualquer que seja a habilidade.
 - A repetição entre listas aconteceu porque as duas listas usaram "Permitir repetição para revisão"; com "Evitar repetir" (padrão), questões anteriores são bloqueadas.
 - **Verificar:** gerar 5 e 10 questões na aula "Vegetação" e conferir quantidade, níveis e alternativas.
+
+## 7. Disciplinas: menu "⋯" com Editar e Remover
+
+- Na Biblioteca, cada pasta de disciplina tem um "⋯" discreto no canto (mais visível ao passar o mouse); na página da pasta, ele fica ao lado do "+".
+- **Editar** abre o mesmo diálogo da criação com o nome preenchido (e o ícone opcional). O rótulo das aulas da disciplina é atualizado junto.
+- **Remover** pede confirmação dizendo quantas aulas existem: elas **não são apagadas**, vão para "Sem disciplina"; as unidades da disciplina são removidas.
+- API: `PATCH /api/catalog/subjects/:id` e `DELETE /api/catalog/subjects/:id` (só do dono; sem migration).
+- Verificar: renomear e remover uma disciplina de teste com 1 aula.

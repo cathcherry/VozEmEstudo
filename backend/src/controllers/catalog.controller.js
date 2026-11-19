@@ -24,6 +24,22 @@ export async function createSubject(req, res, next) {
   }
 }
 
+export async function updateSubject(req, res, next) {
+  try {
+    res.json(await catalogService.updateSubject(req.user.id, req.params.subjectId, req.body));
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteSubject(req, res, next) {
+  try {
+    res.json(await catalogService.deleteSubject(req.user.id, req.params.subjectId));
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function createUnit(req, res, next) {
   try {
     res

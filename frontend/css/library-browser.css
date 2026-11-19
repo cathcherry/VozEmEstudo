@@ -132,3 +132,17 @@ body[data-page='history'][data-library-layout='list'] .library-unit-content { ma
 .library-tree-files a:hover,.library-tree-files a:focus-visible { background:var(--accent-soft); }
 .library-tree-files a > span:nth-child(2) { flex:1; min-width:0; overflow-wrap:anywhere; }
 .library-tree-files small { font-size:.67rem; color:var(--muted); }
+
+/* Subject "⋯" menu: a quiet corner control on the folder card, full strength on hover/focus. */
+body[data-page='history'] .library-folder-group.has-subject-menu { position:relative; }
+body[data-page='history'] .library-folder-group > .subject-menu { position:absolute; top:10px; right:10px; z-index:5; }
+body[data-page='history'] .subject-menu > summary { width:32px; height:32px; min-height:32px; font-size:1.25rem; color:var(--muted); background:transparent; border:0; opacity:.6; transition:opacity .15s, background-color .15s; }
+body[data-page='history'] .library-folder-group:hover > .subject-menu > summary,
+body[data-page='history'] .subject-menu > summary:focus-visible,
+body[data-page='history'] .subject-menu[open] > summary { opacity:1; background:var(--accent-soft); }
+body[data-page='history'] .subject-menu .row-menu-content { top:36px; width:180px; }
+@media (hover:none) { body[data-page='history'] .subject-menu > summary { opacity:.85; } }
+/* An open .row-menu takes the full row elsewhere (library.css); here it keeps the button's size. */
+body[data-page='history'] .subject-menu,
+body[data-page='history'] .subject-menu[open] { flex:0 0 32px; width:32px; }
+body[data-page='history'] .library-folder-toolbar .subject-menu > summary { opacity:1; }

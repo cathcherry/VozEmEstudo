@@ -21,6 +21,17 @@ export function buildCatalogService(store = repository) {
       return store.insertSubject(userId, validateSubject(input));
     },
 
+    async updateSubject(userId, subjectId, input) {
+      const id = validateCatalogId(subjectId);
+      return store.updateSubject(userId, id, validateSubject(input));
+    },
+
+    async deleteSubject(userId, subjectId) {
+      const id = validateCatalogId(subjectId);
+      await store.getOwnedSubject(userId, id);
+      return store.deleteSubject(userId, id);
+    },
+
     async createUnit(userId, subjectId, input) {
       const id = validateCatalogId(subjectId);
       await store.getOwnedSubject(userId, id);

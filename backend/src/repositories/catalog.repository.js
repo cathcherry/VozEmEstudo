@@ -5,6 +5,12 @@ function ensureDatabaseResult(error) {
   if (!error) return;
   if (error.code === '23505')
     throw new AppError('CATALOG_DUPLICATE', 'Já existe um item com esse nome neste grupo.', 409);
+  if (error.code === '23503')
+    throw new AppError(
+      'CATALOG_IN_USE',
+      'Esta pasta ainda tem itens vinculados. Atualize a página e tente novamente.',
+      409,
+    );
   if (['42P01', '42703', 'PGRST202'].includes(error.code))
     throw new AppError(
       'CATALOG_SCHEMA_REQUIRED',
@@ -83,6 +89,64 @@ export async function insertUnit(userId, subjectId, unit) {
   return data;
 }
 
+/** Renames a subject; lessons keep the legacy label in sync with the new name. */
+export async function updateSubject(userId, subjectId, subject) {
+  const db = getAdminSupabase();
+  const { data, error } = await db
+    .from('study_subjects')
+    .update(subject)
+    .eq('id', subjectId)
+    .eq('user_id', userId)
+    .is('archived_at', null)
+    .select('id,name,color_token,sort_order,created_at')
+    .maybeSingle();
+  ensureDatabaseResult(error);
+  if (!data) throw errors.notFound('Disciplina');
+  const labels = await db
+    .from('materials')
+    .update({ subject: data.name })
+    .eq('user_id', userId)
+    .eq('subject_id', subjectId);
+  ensureDatabaseResult(labels.error);
+  return data;
+}
+
+/**
+ * Removes a subject and its units. Lessons are never deleted: they are unassigned first
+ * (back to "Sem disciplina"), then the units, then the subject itself.
+ */
+export async function deleteSubject(userId, subjectId) {
+  const db = getAdminSupabase();
+  const moved = await db
+    .from('materials')
+    .update({ subject: null, subject_id: null, unit_id: null })
+    .eq('user_id', userId)
+    .eq('subject_id', subjectId)
+    .select('id');
+  ensureDatabaseResult(moved.error);
+  const units = await db
+    .from('study_units')
+    .delete()
+    .eq('user_id', userId)
+    .eq('subject_id', subjectId)
+    .select('id');
+  ensureDatabaseResult(units.error);
+  const removed = await db
+    .from('study_subjects')
+    .delete()
+    .eq('id', subjectId)
+    .eq('user_id', userId)
+    .select('id')
+    .maybeSingle();
+  ensureDatabaseResult(removed.error);
+  if (!removed.data) throw errors.notFound('Disciplina');
+  return {
+    id: subjectId,
+    unassignedMaterials: (moved.data || []).length,
+    deletedUnits: (units.data || []).length,
+  };
+}
+
 /**
  * Read-only resource index for E04. Only owned material IDs enter the four
  * downstream queries. No transcription, summary, question text or audio path
@@ -125,7 +189,10 @@ export async function listLibraryResources(userId) {
     if (ids.length === 0) break;
 
     const results = await Promise.all([
-      db.from('audio_files').select('material_id,retain_original,storage_path').in('material_id', ids),
+      db
+        .from('audio_files')
+        .select('material_id,retain_original,storage_path')
+        .in('material_id', ids),
       db.from('transcriptions').select('material_id').in('material_id', ids),
       db
         .from('summary_versions')
