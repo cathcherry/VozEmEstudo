@@ -502,7 +502,7 @@ async function main() {
       buffer: Buffer.from('texto'),
     });
     assert.equal(await page.locator('[data-dropzone]').getAttribute('data-state'), 'error');
-    assert.match(await page.locator('[data-file-message]').textContent(), /Use MP4, MP3/);
+    assert.match(await page.locator('.app-toast').textContent(), /Use MP4, MP3/);
     assert.equal(await page.locator('[data-wizard-next]').isDisabled(), true);
     record('Área de envio única, com estado de erro para formato inválido');
     await page.locator('#audio-file').setInputFiles(mp4Input);
@@ -531,14 +531,14 @@ async function main() {
     record('Download real do recorte MP4');
     assert.equal(await page.locator('[data-trim-duration]').textContent(), '00:00 → 00:01 · 00:00');
     await screenshot(page, output, 'player-desktop.png');
-    await page.getByRole('button', { name: 'Continuar para identificação' }).click();
+    await page.getByRole('button', { name: 'Continuar', exact: true }).click();
     assert.equal(
       await page.locator('[aria-current="step"]').getAttribute('data-workflow-step'),
       '2',
     );
     await page.getByRole('button', { name: 'Voltar', exact: true }).click();
     assert.equal(await page.locator('[data-trim-start-range]').inputValue(), '0.8');
-    await page.getByRole('button', { name: 'Continuar para identificação' }).click();
+    await page.getByRole('button', { name: 'Continuar', exact: true }).click();
     await page.locator('#class-title').fill('Aula de teste recortada');
     assert.equal(await page.locator('#keep-original-video').isEnabled(), true);
     assert.equal(await page.locator('#keep-original-video').isChecked(), false);
@@ -1158,7 +1158,7 @@ async function main() {
     await page.goto(base + '/nova-transcricao.html');
     await page.locator('#audio-file').setInputFiles(wavInput);
     await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled);
-    await page.getByRole('button', { name: 'Continuar para identificação' }).click();
+    await page.getByRole('button', { name: 'Continuar', exact: true }).click();
     await page.locator('#class-title').fill('Aula sintética de acessibilidade');
     await page.locator('#permission-declaration').check();
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
@@ -1398,10 +1398,7 @@ async function main() {
     await page.locator('[data-wizard-next]').click();
     assert.equal(await page.locator('#keep-original-video').isVisible(), true);
     assert.equal(await page.locator('#keep-original-video').isDisabled(), true);
-    assert.match(
-      await page.locator('[data-video-retention-note]').textContent(),
-      /ainda não foi ativado/,
-    );
+    assert.match(await page.locator('[data-video-retention-note]').textContent(), /não ativado/);
     mp4Retention = true;
     record(
       'Sem a flag do servidor, o vídeo não é descartado em silêncio: a opção explica a indisponibilidade',

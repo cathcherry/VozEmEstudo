@@ -1,6 +1,6 @@
 import { getPublicConfig } from '../api/config.js';
 import '../utils/preferences.js';
-import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
+import { initAuthenticatedShell } from '../utils/shell.js';
 import { createMaterialWithUpload, processMaterial } from '../api/material.api.js';
 import { MEDIA_EXTENSIONS, mediaExtension, inspectMedia, convertMedia } from '../api/media.api.js';
 import { tagInput } from '../utils/tag-input.js';
@@ -8,12 +8,11 @@ import { saveTags } from '../utils/study-store.js';
 import { MediaPlayer, timeLabel } from '../utils/media-player.js';
 import { retainOriginalVideo } from '../api/playback.api.js';
 import { describeProcessing } from '../utils/processing-disclosure.js';
+import { toast, dismissToast } from '../utils/toast.js';
 
 await initAuthenticatedShell();
 const form = document.querySelector('.transcription-form'),
   fileInput = document.querySelector('#audio-file');
-const fileMessage = document.querySelector('[data-file-message]'),
-  status = document.querySelector('[data-transcription-status]');
 const nextButton = document.querySelector('[data-wizard-next]'),
   downloadButton = document.querySelector('[data-download-clip]');
 const editor = document.querySelector('[data-upload-editor]'),
@@ -30,7 +29,7 @@ let step = 1,
 const permissionInput = document.querySelector('#permission-declaration');
 const reviewPanel = document.querySelector('[data-upload-review]');
 const tags = tagInput(document.querySelector('#upload-tags'));
-let preparationTimer;
+let tooLong = false;
 function shortName(name) {
   return name.length > 55 ? name.slice(0, 32) + '…' + name.slice(-19) : name;
 }
@@ -58,11 +57,14 @@ function sizeLabel(bytes) {
   }
   return `${value.toLocaleString('pt-BR', { maximumFractionDigits: value < 10 ? 1 : 0 })} ${units[unit]}`;
 }
-const STEP_STATE_LABELS = { active: ' — em andamento', done: ' — concluído', error: ' — não concluído' };
+const STEP_STATE_LABELS = {
+  active: ' — em andamento',
+  done: ' — concluído',
+  error: ' — não concluído',
+};
 /** Marks one real client-side upload step; earlier visible steps become complete. */
 function progress(text, stepName) {
   document.querySelector('[data-upload-progress-title]').textContent = text;
-  setStatus(status, '');
   if (!stepName) return;
   let reached = false;
   for (const item of document.querySelectorAll('[data-upload-step]')) {
@@ -85,7 +87,7 @@ function resetProgress() {
   document.querySelector('[data-upload-progress]').dataset.state = 'busy';
   document.querySelector('[data-upload-progress-title]').textContent = 'Preparando o áudio…';
   document.querySelector('[data-upload-progress-note]').textContent =
-    'Mantenha esta página aberta até o envio terminar.';
+    'Não feche esta página até o envio terminar.';
 }
 function fileDetails() {
   if (!sourceFile) return '';
@@ -105,10 +107,8 @@ function setFileState(state) {
   }
 }
 const VIDEO_NOTES = Object.freeze({
-  available: 'O arquivo inteiro, incluindo as partes fora do trecho. Não é enviado à IA.',
-  format: 'Disponível somente para arquivos MP4.',
-  disabled:
-    'Indisponível no momento: o armazenamento de vídeos ainda não foi ativado neste servidor.',
+  format: 'Somente arquivos MP4',
+  disabled: 'Ainda não ativado neste servidor',
 });
 /** Video retention is shown for every video and explains itself when it cannot be offered. */
 function videoRetentionAvailability() {
@@ -125,7 +125,7 @@ function updateVideoRetentionChoice() {
   if (input.disabled) input.checked = false;
   choice.classList.toggle('is-unavailable', availability !== 'available');
   document.querySelector('[data-video-retention-note]').textContent =
-    VIDEO_NOTES[availability] || VIDEO_NOTES.available;
+    VIDEO_NOTES[availability] || '';
 }
 document.querySelector('[data-change-file]').addEventListener('click', () => fileInput.click());
 document.querySelector('[data-edit-upload]').addEventListener('click', () => {
@@ -152,8 +152,48 @@ const player = new MediaPlayer(document.querySelector('[data-upload-player]'), {
   trim: true,
   onRangeChange: updateRange,
 });
-// Export sits with the other trim actions so the selected file reads as one component.
-player.root.querySelector('.trim-fields').append(downloadButton);
+const icon = (paths) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+/** Trimming lives in the player: waveform handles plus one compact row of time fields. */
+function compactTrimControls() {
+  const root = player.root,
+    fields = root.querySelector('.trim-fields');
+  for (const [selector, label, paths] of [
+    [
+      '[data-preview-trim]',
+      'Ouvir trecho',
+      '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+    ],
+    [
+      '[data-reset-trim]',
+      'Usar arquivo inteiro',
+      '<path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4"/>',
+    ],
+  ]) {
+    const button = root.querySelector(selector);
+    button.className = 'icon-action';
+    button.setAttribute('aria-label', label);
+    button.title = label;
+    button.innerHTML = icon(paths);
+  }
+  fields.querySelectorAll('label > span').forEach((span) => span.classList.add('sr-only'));
+  const separator = document.createElement('span');
+  separator.className = 'trim-separator';
+  separator.setAttribute('aria-hidden', 'true');
+  separator.textContent = '–';
+  const [startField, endField] = fields.querySelectorAll('label');
+  fields.insertBefore(separator, endField);
+  const scissors = document.createElement('span');
+  scissors.className = 'trim-glyph';
+  scissors.innerHTML = icon(
+    '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+  );
+  fields.insertBefore(scissors, startField);
+  fields.append(downloadButton);
+  fields.classList.add('trim-inline');
+  root.querySelector('.player-controls').insertBefore(fields, root.querySelector('.player-speed'));
+}
+compactTrimControls();
 
 function setStep(next, moveFocus = true) {
   player.media.pause();
@@ -200,13 +240,9 @@ function updateRange() {
   document.querySelector('[data-selected-range]').textContent = ready
     ? `Trecho ${timeLabel(range.start)} – ${timeLabel(range.end)} · ${durationLabel(range.end - range.start)}`
     : '';
-  if (ready && nextButton.disabled)
-    setStatus(
-      fileMessage,
-      'Escolha um trecho de até 54 minutos para transcrever. Você ainda pode exportar um recorte maior.',
-      'error',
-    );
-  else if (ready) setStatus(fileMessage, '', 'success');
+  const exceeds = Boolean(ready && nextButton.disabled);
+  if (exceeds && !tooLong) toast('O trecho pode ter até 54 minutos.', { type: 'error' });
+  tooLong = exceeds;
 }
 async function chooseFile() {
   const token = ++generation;
@@ -233,10 +269,8 @@ async function chooseFile() {
   document.querySelector('[data-file-name]').textContent = shortName(sourceFile?.name || '');
   document.querySelector('[data-file-name]').title = sourceFile?.name || '';
   document.querySelector('[data-selected-range]').textContent = '';
-  if (!sourceFile) {
-    setStatus(fileMessage, '');
-    return;
-  }
+  document.querySelector('[data-step1-actions]').hidden = true;
+  if (!sourceFile) return;
   const validType = MEDIA_EXTENSIONS.includes(mediaExtension(sourceFile));
   const validSize = sourceFile.size > 0 && sourceFile.size <= 100 * 1024 * 1024;
   if (!validType || !validSize) {
@@ -245,9 +279,11 @@ async function chooseFile() {
       : 'Escolha um arquivo com conteúdo e até 100 MB.';
     fileInput.setCustomValidity(message);
     dropzone.dataset.state = 'error';
-    setStatus(fileMessage, `${shortName(sourceFile.name)}: ${message}`, 'error');
+    toast(message, { type: 'error' });
     return;
   }
+  dismissToast();
+  document.querySelector('[data-step1-actions]').hidden = false;
   const focusWasInDropzone = dropzone.contains(document.activeElement);
   dropzone.hidden = true;
   editor.hidden = false;
@@ -256,22 +292,18 @@ async function chooseFile() {
   editor.dataset.kind = video ? 'video' : 'audio';
   setFileState('loading');
   // Keep keyboard users in the component once the drop surface is replaced by the file view.
-  if (focusWasInDropzone) document.querySelector('[data-change-file]').focus({ preventScroll: true });
+  if (focusWasInDropzone)
+    document.querySelector('[data-change-file]').focus({ preventScroll: true });
   player.setSource({
     src: objectUrl,
     title: sourceFile.name,
     video,
     format: mediaExtension(sourceFile),
   });
-  clearTimeout(preparationTimer);
-  preparationTimer = setTimeout(() => {
-    if (token === generation && !info) setStatus(fileMessage, 'Preparando prévia…');
-  }, 1200);
   analysisController = new AbortController();
   try {
     const result = await inspectMedia(sourceFile, analysisController.signal);
     if (token !== generation) return;
-    clearTimeout(preparationTimer);
     info = result;
     editor.dataset.kind = result.hasVideo ? 'video' : 'audio';
     setFileState('ready');
@@ -287,15 +319,12 @@ async function chooseFile() {
     updateRange();
   } catch (error) {
     if (token !== generation || error.name === 'AbortError') return;
-    clearTimeout(preparationTimer);
     setFileState('error');
-    setStatus(fileMessage, error.message || 'Não foi possível preparar a gravação.', 'error');
-    const retry = document.createElement('button');
-    retry.className = 'text-action';
-    retry.type = 'button';
-    retry.textContent = 'Tentar novamente';
-    retry.addEventListener('click', chooseFile);
-    fileMessage.append(' ', retry);
+    toast(error.message || 'Não foi possível preparar a gravação.', {
+      type: 'error',
+      duration: 0,
+      action: { label: 'Tentar de novo', onClick: chooseFile },
+    });
   }
 }
 fileInput.addEventListener('change', chooseFile);
@@ -303,7 +332,6 @@ nextButton.addEventListener('click', () => {
   if (!nextButton.disabled && info) {
     updateRange();
     if (!nextButton.disabled) {
-      setStatus(status, '');
       setStep(2);
     }
   }
@@ -314,7 +342,6 @@ document.querySelectorAll('[data-wizard-back]').forEach((button) =>
       reviewedChoices = null;
       reviewPanel.hidden = true;
       document.querySelector('[data-review-upload]').hidden = false;
-      setStatus(status, '');
       setStep(1);
     }
   }),
@@ -344,7 +371,7 @@ downloadButton.addEventListener('click', async () => {
   if (!info || !sourceFile || exporting) return;
   exporting = true;
   downloadButton.disabled = true;
-  downloadButton.querySelector('.download-label').textContent = 'Preparando…';
+  downloadButton.setAttribute('aria-busy', 'true');
   player.media.pause();
   const file = sourceFile,
     range = player.getRange(),
@@ -360,12 +387,11 @@ downloadButton.addEventListener('click', async () => {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
-    setStatus(fileMessage, 'Recorte pronto para download.', 'success');
   } catch (error) {
-    if (selectedGeneration === generation) setStatus(fileMessage, error.message, 'error');
+    if (selectedGeneration === generation) toast(error.message, { type: 'error' });
   } finally {
     exporting = false;
-    downloadButton.querySelector('.download-label').textContent = 'Baixar trecho';
+    downloadButton.removeAttribute('aria-busy');
     updateRange();
   }
 });
@@ -384,7 +410,7 @@ form.addEventListener('reset', (event) => {
     document.querySelector('[data-identification-actions]').hidden = false;
     chooseFile();
     setStep(1);
-    setStatus(status, '');
+    dismissToast();
     document.querySelectorAll('[data-retry-actions]').forEach((node) => node.remove());
     resetProgress();
   }, 0);
@@ -409,11 +435,7 @@ async function startProcessing() {
 document.querySelector('[data-review-upload]').addEventListener('click', () => {
   if (busy || !form.reportValidity() || !info || !sourceFile) return;
   if (!declaration?.version) {
-    setStatus(
-      status,
-      'A declaração de permissão não está disponível. Recarregue a página antes de enviar.',
-      'error',
-    );
+    toast('A declaração de permissão não carregou. Recarregue a página.', { type: 'error' });
     return;
   }
   const range = player.getRange();
@@ -421,7 +443,7 @@ document.querySelector('[data-review-upload]').addEventListener('click', () => {
     id: crypto.randomUUID(),
     title: document.querySelector('#class-title').value.trim(),
     subject: document.querySelector('#subject').value.trim(),
-    questionCount: Number(document.querySelector('#question-count').value),
+    questionCount: Number(document.querySelector('[name="question-count"]:checked').value),
     retainAudio: document.querySelector('#keep-original-audio').checked,
     retainVideo:
       videoRetentionAvailability() === 'available' &&
@@ -528,31 +550,25 @@ form.addEventListener('submit', async (event) => {
       setStep(2);
       document.querySelector('[data-identification-fields]').hidden = false;
       document.querySelector('[data-identification-actions]').hidden = false;
-      setStatus(
-        status,
-        error.message || 'Não foi possível enviar a gravação. Tente novamente.',
-        'error',
-      );
+      toast(error.message || 'Não foi possível enviar a gravação. Tente novamente.', {
+        type: 'error',
+      });
     } else {
-      setStatus(
-        status,
-        `O áudio foi salvo. Falta concluir o envio adicional ou iniciar o processamento. ${error.message || ''}`,
-        'error',
-      );
+      toast(error.message || 'Não foi possível concluir o envio.', { type: 'error' });
       const failedStep = document.querySelector('[data-upload-step][data-state="active"]');
       if (failedStep) setStepState(failedStep, 'error');
       document.querySelector('.upload-progress .loading-indicator').hidden = true;
       document.querySelector('[data-upload-progress]').dataset.state = 'error';
       document.querySelector('.upload-progress h2').textContent = 'Seu áudio foi salvo';
       document.querySelector('[data-upload-progress-note]').textContent =
-        'Você pode tentar de novo agora ou abrir a aula salva e continuar depois.';
+        'Tente de novo agora ou continue depois pela aula.';
       const actions = document.createElement('div');
-      actions.className = 'form-actions';
+      actions.className = 'form-actions wizard-actions';
       actions.dataset.retryActions = '';
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.className = 'primary-action';
-      retry.textContent = fields.retainVideo ? 'Concluir envio e iniciar transcrição' : 'Tentar processamento';
+      retry.textContent = fields.retainVideo ? 'Concluir envio' : 'Tentar processamento';
       retry.addEventListener('click', async () => {
         retry.disabled = true;
         document.querySelector('.upload-progress .loading-indicator').hidden = false;
@@ -564,15 +580,15 @@ form.addEventListener('submit', async (event) => {
           if (activeStep) setStepState(activeStep, 'error');
           document.querySelector('.upload-progress .loading-indicator').hidden = true;
           document.querySelector('[data-upload-progress]').dataset.state = 'error';
-          setStatus(status, e.message, 'error');
+          toast(e.message, { type: 'error' });
           retry.disabled = false;
         }
       });
       const link = document.createElement('a');
       link.className = 'secondary-action button-link';
-      link.textContent = 'Abrir material salvo';
+      link.textContent = 'Abrir aula';
       link.href = `./material.html?id=${encodeURIComponent(createdMaterial.id)}`;
-      actions.append(retry, link);
+      actions.append(link, retry);
       document.querySelector('[data-wizard-panel="3"]').append(actions);
     }
   } finally {
