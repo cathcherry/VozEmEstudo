@@ -4,6 +4,8 @@ import { validateGeneration } from './review.validator.js';
 export const validateSummaryOptions = (input = {}) => z.object({
   format: z.enum(['paragraphs', 'topics']).default('paragraphs'),
   length: z.enum(['short', 'standard', 'detailed']).default('standard'),
+  // Optional and absent by default, so legacy options keep their exact shape.
+  readingLevel: z.enum(['simple']).optional(),
 }).strict().parse(input);
 
 export function validateSummaryGeneration(input = {}) {

@@ -120,3 +120,17 @@ test('summary prompts apply format and depth while restricting content to the so
     assert.equal(messages[1].content, `TRANSCRIÇÃO:\n\n${text}`);
   }
 });
+
+test('plain-language summaries are opt-in and keep glossary definitions to the source', () => {
+  assert.deepEqual(validateSummaryOptions({ readingLevel: 'simple' }), {
+    format: 'paragraphs',
+    length: 'standard',
+    readingLevel: 'simple',
+  });
+  assert.throws(() => validateSummaryOptions({ readingLevel: 'child' }));
+  const simple = buildSummaryMessages('texto', { readingLevel: 'simple' })[0].content;
+  assert.match(simple, /linguagem simples/);
+  assert.match(simple, /## Glossário/);
+  assert.match(simple, /não explicado na aula/);
+  assert.doesNotMatch(buildSummaryMessages('texto', {})[0].content, /Glossário/);
+});

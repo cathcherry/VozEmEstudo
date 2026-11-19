@@ -686,7 +686,11 @@ function renderQuestionBatches(batches) {
         text.textContent = q.statement;
         const badge = document.createElement('span');
         badge.className = 'question-result';
-        badge.textContent = result ? (result.correct ? '✓ Acertou' : '✗ Errou') : '– Não respondida';
+        badge.textContent = result
+          ? result.correct
+            ? '✓ Acertou'
+            : '✗ Errou'
+          : '– Não respondida';
         item.append(text, badge);
         list.append(item);
       });
@@ -758,6 +762,8 @@ function normalizeSummaryOptions(options) {
   return {
     format: { bullets: 'topics' }[options.format] || options.format,
     length: { brief: 'short', intermediate: 'standard' }[options.length] || options.length,
+    // Plain language is opt-in; omitted otherwise so the request keeps its legacy shape.
+    ...(options.readingLevel === 'simple' ? { readingLevel: 'simple' } : {}),
   };
 }
 async function generate(kind, options) {
@@ -787,6 +793,7 @@ async function generate(kind, options) {
         ? await regenerateSummary(materialId, source, pending.get(operation), {
             format: options.format,
             length: options.length,
+            ...(options.readingLevel ? { readingLevel: options.readingLevel } : {}),
           })
         : await generateQuestions(materialId, options.count, source, pending.get(operation));
     const result = await pollJob(job.jobId, {
@@ -815,7 +822,11 @@ $('[data-summary-form]').addEventListener('submit', (e) => {
   e.preventDefault();
   const data = new FormData(e.currentTarget);
   $('[data-summary-dialog]').close();
-  generate('summary', { format: data.get('format'), length: data.get('length') });
+  generate('summary', {
+    format: data.get('format'),
+    length: data.get('length'),
+    readingLevel: data.get('readingLevel'),
+  });
 });
 $('[data-more-questions-form]').addEventListener('submit', (e) => {
   e.preventDefault();

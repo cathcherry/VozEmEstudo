@@ -855,6 +855,13 @@ async function main() {
     );
     assert.deepEqual(summaryCalls.at(-1).options, { format: 'topics', length: 'short' });
     assert.equal(summaryCalls.at(-1).format, undefined);
+    await page.locator('[data-regenerate-summary]').click();
+    await page.locator('[data-summary-form] [name=readingLevel]').selectOption('simple');
+    await page.locator('[data-summary-form] [type=submit]').click();
+    await page.waitForFunction(
+      () => document.querySelector('[data-regenerate-summary]').disabled === false,
+    );
+    assert.equal(summaryCalls.at(-1).options.readingLevel, 'simple');
     await page.locator('[data-open-export]').click();
     const exportPromise = page.waitForEvent('download');
     await page
