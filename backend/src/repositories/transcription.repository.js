@@ -3,7 +3,11 @@ import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { errors } from '../domain/errors.js';
 
 export async function createInitialTranscription(materialId, result) {
-  return rpc('create_initial_transcription_admin', { p_material_id: materialId, p_result: result });
+  // Results with word timings also store their alignment atomically (AI migration required).
+  const name = result.words?.length
+    ? 'create_initial_transcription_with_alignment_admin'
+    : 'create_initial_transcription_admin';
+  return rpc(name, { p_material_id: materialId, p_result: result });
 }
 
 export async function getByMaterial(materialId) {

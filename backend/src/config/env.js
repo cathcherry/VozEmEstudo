@@ -36,6 +36,8 @@ export const env = Object.freeze({
   workerId: process.env.WORKER_ID || `worker-${process.pid}`,
   workerPollMs: number(process.env.WORKER_POLL_MS, 2000),
   workerConcurrency: number(process.env.WORKER_CONCURRENCY, 1),
+  // 0 keeps the original claim RPC; >= 60 reclaims jobs whose worker died (needs the AI migration).
+  workerStaleLeaseSeconds: number(process.env.WORKER_STALE_LEASE_SECONDS, 0),
   jobMaxAttempts: number(process.env.JOB_MAX_ATTEMPTS, 3),
   retryDelay1Ms: number(process.env.JOB_RETRY_DELAY_1_MS, 15000),
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),

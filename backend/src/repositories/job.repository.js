@@ -4,6 +4,26 @@ import { PERMISSION_DECLARATION } from '../config/permission-declaration.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { env } from '../config/env.js';
 import { errors } from '../domain/errors.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
+import { recordExecutionSnapshot } from './ai-execution.repository.js';
+import { logger } from '../utils/logger.js';
+
+const JOB_TASK = Object.freeze({
+  PROCESSAMENTO_INICIAL: 'transcription',
+  REGERAR_RESUMO: 'summary',
+  GERAR_QUESTOES: 'questions',
+});
+
+/** Pins provider/model at enqueue; if this write fails the worker records it when claiming. */
+async function snapshotProviders(job) {
+  const task = JOB_TASK[job?.type];
+  if (!task) return;
+  try {
+    await recordExecutionSnapshot(job, getAiRegistry().snapshot(task));
+  } catch (error) {
+    logger.info('AI_SNAPSHOT_DEFERRED', { jobId: job.id, code: error?.code || 'UNKNOWN' });
+  }
+}
 
 export async function createJob(
   userId,
@@ -12,7 +32,7 @@ export async function createJob(
   params = {},
   { sourceRevisionId = null, idempotencyKey = randomUUID() } = {},
 ) {
-  return rpc('enqueue_processing_job_admin', {
+  const job = await rpc('enqueue_processing_job_admin', {
     p_user_id: userId,
     p_material_id: materialId,
     p_type: type,
@@ -22,6 +42,8 @@ export async function createJob(
     p_permission_version: PERMISSION_DECLARATION.version,
     p_max_attempts: env.jobMaxAttempts,
   });
+  await snapshotProviders(job);
+  return job;
 }
 
 export async function getOwnedJob(userId, jobId) {
@@ -52,7 +74,12 @@ export async function listOwnedEvents(userId, jobId) {
 
 export async function claimNextJob(workerId) {
   const db = getAdminSupabase();
-  const { data, error } = await db.rpc('claim_next_processing_job', { p_worker_id: workerId });
+  const { data, error } = await db.rpc(
+    'claim_next_processing_job',
+    env.workerStaleLeaseSeconds > 0
+      ? { p_worker_id: workerId, p_stale_after_seconds: env.workerStaleLeaseSeconds }
+      : { p_worker_id: workerId },
+  );
   if (error) throw error;
   return data?.[0] || null;
 }

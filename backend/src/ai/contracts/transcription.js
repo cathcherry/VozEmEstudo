@@ -1,12 +1,13 @@
 /**
  * TranscriptionProvider contract.
  *
- * Synchronous providers implement `transcribe(buffer, { durationMs, settings })` and resolve a
- * normalized result. Asynchronous providers instead implement:
- *   submit(buffer, { settings, onUploaded }) -> { externalJobId, uploadRef }
- *   poll(externalJobId)                      -> { state: 'processing' } | { state: 'completed', result }
- *                                               | { state: 'failed', code, message }
- *   findSubmission(uploadRef)                -> externalJobId | null  (recovers ambiguous submits)
+ * Synchronous providers implement `transcribe(buffer, { durationMs, model, settings })` and resolve
+ * a normalized result. Asynchronous providers instead implement short, resumable steps:
+ *   upload(buffer)                         -> uploadRef (private reference held by the provider)
+ *   submit(uploadRef, { model, settings }) -> externalJobId
+ *   poll(externalJobId, { model })         -> { state: 'processing' } | { state: 'completed', result }
+ *                                             | { state: 'failed', code }
+ *   findSubmission(uploadRef)              -> externalJobId | null  (recovers ambiguous submits)
  * Every provider exposes `name`, `mode` ('sync' | 'async') and `capabilities`.
  *
  * Normalized result (milliseconds relative to the processed clip):
@@ -19,7 +20,8 @@ const finite = (value) => Number.isFinite(Number(value));
 export function assertTranscriptionProvider(provider) {
   if (!provider?.name || !['sync', 'async'].includes(provider.mode))
     throw new TypeError('Provedor de transcrição inválido.');
-  const required = provider.mode === 'sync' ? ['transcribe'] : ['submit', 'poll', 'findSubmission'];
+  const required =
+    provider.mode === 'sync' ? ['transcribe'] : ['upload', 'submit', 'poll', 'findSubmission'];
   for (const method of required)
     if (typeof provider[method] !== 'function')
       throw new TypeError(`Provedor ${provider.name} não implementa ${method}().`);

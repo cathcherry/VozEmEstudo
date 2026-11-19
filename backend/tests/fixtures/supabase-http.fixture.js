@@ -164,8 +164,8 @@ export function createSupabaseHttpFixture() {
       return response({});
     assert(url.pathname.startsWith('/rest/v1/'), 'Unexpected fixture endpoint');
     const table = url.pathname.split('/').at(-1);
-    // Additive E07 table is absent in the legacy E00/E02 database fixture.
-    if (table === 'material_videos' && !Object.hasOwn(tables, table))
+    // Additive E07 and AI-provider tables are absent in the legacy E00/E02 database fixture.
+    if (['material_videos', 'ai_job_executions'].includes(table) && !Object.hasOwn(tables, table))
       return response({ code: '42P01', message: 'relation does not exist' }, 404);
     assert(Object.hasOwn(tables, table), `Unexpected fixture table: ${table}`);
     if (failures[table])

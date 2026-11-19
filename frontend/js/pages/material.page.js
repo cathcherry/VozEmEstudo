@@ -147,7 +147,8 @@ function jobLabel(job) {
   if (job.status === 'FALHOU')
     return job.error_message || 'Não foi possível concluir. Tente novamente.';
   if (job.status === 'CANCELADA') return 'Processamento cancelado';
-  if (job.status === 'AGUARDANDO_REPETICAO') return 'Aguardando nova tentativa…';
+  // Without an error the job is only waiting for the external transcription to be polled again.
+  if (job.status === 'AGUARDANDO_REPETICAO' && job.error_code) return 'Aguardando nova tentativa…';
   return (
     {
       VALIDACAO: 'Preparando o áudio…',

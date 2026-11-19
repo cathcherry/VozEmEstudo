@@ -2,6 +2,7 @@ import { JOB_STATUS, JOB_TYPE, MATERIAL_STATUS, PROCESSING_STAGE } from '../conf
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { logger } from '../utils/logger.js';
 import {
+  createInitialTranscription,
   getByMaterial as getTranscription,
   getVersion,
 } from '../repositories/transcription.repository.js';
@@ -17,9 +18,126 @@ import {
 import { convertMedia } from './media.service.js';
 import { downloadAudioBuffer, finalizeAudioStorage } from './audio.service.js';
 import { transcribeMaterial } from './transcription.service.js';
+import { createAsyncTranscriptionRunner } from './async-transcription.service.js';
+import {
+  executionStore,
+  isSchemaMissing,
+  schemaRequired,
+} from '../repositories/ai-execution.repository.js';
+import { getAiRegistry } from '../ai/provider-registry.js';
+import { AppError } from '../domain/errors.js';
 import { generateSummary } from './summary.service.js';
 import { generateQuestions } from './question.service.js';
 import { evaluateWarnings, initialWarningAnalysisId } from './warnings.service.js';
+
+/** Provider/model pinned at enqueue (recorded now for jobs enqueued before the snapshot existed). */
+async function executionFor(job, task) {
+  try {
+    return (
+      (await executionStore.get(job.id)) ||
+      (await executionStore.record(job, getAiRegistry().snapshot(task)))
+    );
+  } catch (error) {
+    // Before the AI migration only synchronous providers with live configuration can run.
+    if (isSchemaMissing(error)) return null;
+    throw error;
+  }
+}
+const snapshotOf = (execution) =>
+  execution && {
+    task: execution.task,
+    provider: execution.provider,
+    model: execution.requested_model,
+    settings: execution.settings || {},
+  };
+
+/** Frees the worker while the external provider transcribes; polling does not consume attempts. */
+async function releaseForPolling(job, delayMs, message) {
+  await updateJob(job.id, {
+    status: JOB_STATUS.WAITING_RETRY,
+    current_stage: PROCESSING_STAGE.TRANSCRIPTION,
+    next_attempt_at: new Date(Date.now() + delayMs).toISOString(),
+    locked_at: null,
+    locked_by: null,
+    error_code: null,
+    error_message: null,
+    attempt_count: Math.max(0, Number(job.attempt_count) - 1),
+  });
+  if (message)
+    await addJobEvent(job.id, {
+      status: JOB_STATUS.WAITING_RETRY,
+      stage: PROCESSING_STAGE.TRANSCRIPTION,
+      message,
+    });
+}
+
+async function transcribeWithProvider(job, material, audio) {
+  const loadAudio = async () => {
+    let bytes = await downloadAudioBuffer(audio.storage_path);
+    if (audio.extension === 'mp4')
+      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
+    return bytes;
+  };
+  const execution = await executionFor(job, 'transcription');
+  const { provider, snapshot } = getAiRegistry().transcription(snapshotOf(execution) || undefined);
+  const durationMs = audio.duration_ms || 0;
+  if (provider.mode === 'sync') {
+    await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Transcrevendo o áudio.');
+    await transcribeMaterial(material.id, await loadAudio(), { durationMs, snapshot });
+    return 'completed';
+  }
+  if (!execution) throw schemaRequired();
+  const firstStep = ['pending', 'uploaded'].includes(execution.state);
+  if (firstStep)
+    await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Enviando o áudio para transcrição.');
+  const { asr } = getAiRegistry().config;
+  const advance = createAsyncTranscriptionRunner({
+    store: executionStore,
+    persist: (result) => createInitialTranscription(material.id, result),
+  });
+  const outcome = await advance(execution, provider, {
+    loadAudio,
+    durationMs,
+    pollIntervalMs: asr.pollIntervalMs,
+    maxWaitMs: asr.maxWaitMs,
+  });
+  if (outcome.status === 'waiting') {
+    await releaseForPolling(
+      job,
+      outcome.delayMs,
+      firstStep ? 'Áudio enviado. Aguardando o provedor de transcrição.' : null,
+    );
+    return 'waiting';
+  }
+  return 'completed';
+}
+
+/** Explicit, observable fallback (ASR_FALLBACK_PROVIDER); never chosen implicitly. */
+async function transcribeWithFallback(job, material, audio) {
+  try {
+    return await transcribeWithProvider(job, material, audio);
+  } catch (error) {
+    const fallback = getAiRegistry().config.asr.fallbackProvider;
+    if (!fallback || !(error instanceof AppError) || error.retryable) throw error;
+    const { provider, snapshot } = getAiRegistry().transcription({
+      ...getAiRegistry().snapshot('transcription'),
+      provider: fallback,
+      model: null,
+    });
+    if (provider.mode !== 'sync') throw error;
+    logger.info('ASR_FALLBACK_USED', { jobId: job.id, from: error.code, to: fallback });
+    await addJobEvent(job.id, {
+      status: JOB_STATUS.RUNNING,
+      stage: PROCESSING_STAGE.TRANSCRIPTION,
+      message: `Transcrição principal falhou (${error.code}); usando o provedor alternativo configurado.`,
+    });
+    let bytes = await downloadAudioBuffer(audio.storage_path);
+    if (audio.extension === 'mp4')
+      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
+    await transcribeMaterial(material.id, bytes, { durationMs: audio.duration_ms || 0, snapshot });
+    return 'completed';
+  }
+}
 
 async function getMaterialForWorker(materialId) {
   const { data, error } = await getAdminSupabase()
@@ -92,11 +210,8 @@ async function runInitial(job) {
   const transcription = await getTranscription(material.id);
   if (!transcription) {
     if (!audio?.storage_path) throw new Error('Arquivo de áudio temporário não encontrado.');
-    await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Transcrevendo o áudio.');
-    let bytes = await downloadAudioBuffer(audio.storage_path);
-    if (audio.extension === 'mp4')
-      bytes = (await convertMedia(bytes, 'mp4', { output: 'wav' })).buffer;
-    await transcribeMaterial(material.id, bytes, { durationMs: audio.duration_ms || 0 });
+    // Source media stays untouched until the transcript is durable (retention runs below).
+    if ((await transcribeWithFallback(job, material, audio)) === 'waiting') return;
   }
   // Retention is resolved after the ASR snapshot is durable, independently of human review or LLM success.
   await stage(job, PROCESSING_STAGE.FINALIZATION, 'Aplicando a escolha de conservação do áudio.');
@@ -116,6 +231,9 @@ async function runInitial(job) {
   );
 }
 async function runGeneration(job, kind) {
+  job.aiSnapshot = snapshotOf(
+    await executionFor(job, kind === 'summary' ? 'summary' : 'questions'),
+  );
   // This RPC reads only the immutable, confirmed source fixed at enqueue; it never selects current_text.
   const source = await getGenerationSource(job);
   const stageName = kind === 'summary' ? PROCESSING_STAGE.SUMMARY : PROCESSING_STAGE.QUESTIONS;
