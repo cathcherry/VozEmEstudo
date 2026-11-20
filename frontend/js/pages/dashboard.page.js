@@ -10,11 +10,18 @@ import { initFlashcardsPanel } from './flashcards-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { initDashboardTools } from './dashboard-tools.js';
 import { initGlobalSearch } from './global-search.js';
+import { initDashboardHome } from './dashboard-home.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { listAnnotations } from '../api/learning-tools.api.js';
 
 const session=await initAuthenticatedShell();
-// Search bar: lessons, questions and transcripts, with results in tabs on this page.
+// Widgets listen to the study tools, so they must be ready before any tool starts loading.
+const home=initDashboardHome();
+// Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.
 const searchForm=document.querySelector('.topbar-search');
-if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading')});
+if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading'),
+  notes:async(q)=>(await isFeatureEnabled('annotations').catch(()=>false))?listAnnotations({q,offset:0}):null,
+  openNotes:(q)=>{home.openWorkspace('notes');document.dispatchEvent(new CustomEvent('voz:notes-command',{detail:{action:'search',q}}));}});
 let planningInitialized = false;
 let flashcardsInitialized = false;
 let trackingInitialized = false;
@@ -163,7 +170,7 @@ async function load() {
     if (last.length) for (const material of last) {
       continued.append(dashboardLesson(material));
     } else continued.append(emptyState(materials.length?'Nenhuma aula em andamento.':'Sua Biblioteca está vazia.',materials.length?'Acesse a Biblioteca para escolher uma aula.':'Envie uma aula para começar.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:materials.length?'reading':'laptop'}));
-    const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,3);
+    const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,4);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
     for (const material of recentMaterials) recent.append(dashboardLesson(material));
     const shelf=document.querySelector('[data-subject-list]'); shelf.replaceChildren();

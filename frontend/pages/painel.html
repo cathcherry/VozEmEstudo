@@ -3,6 +3,7 @@
   <script defer src="/js/utils/card-motion.js"></script>
 <link rel="stylesheet" href="/css/study-tracking.css" />
 <link rel="stylesheet" href="/css/learning-tools.css" />
+<link rel="stylesheet" href="/css/dashboard-home.css" />
 </head><body class="app-page" data-page="dashboard">
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
 <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span></a>
@@ -13,32 +14,86 @@
 <div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
 <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg><span data-focus-toggle-label>Modo foco</span></button>
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
-<main class="article-content" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1></div><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></header>
-<section class="learning-tools-panel" data-note-search-panel hidden aria-label="Buscar anotações"></section>
-<section class="learning-tools-panel" data-calendar-panel hidden aria-label="Calendário de estudos"></section>
-<section class="study-tracking-panel" data-study-tracking-panel hidden aria-label="Tempo e progresso de estudo"></section>
+<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1></div><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></header>
+<ul class="dash-pulse" data-dash-pulse aria-label="O que pede sua atenção" hidden>
+<li data-pulse="tasks" hidden><button type="button" data-open-workspace="planning" aria-haspopup="dialog"><strong data-pulse-value></strong> <span data-pulse-label></span></button></li>
+<li data-pulse="cards" hidden><button type="button" data-open-workspace="flashcards" data-workspace-command="review" aria-haspopup="dialog"><strong data-pulse-value></strong> <span data-pulse-label></span></button></li>
+<li data-pulse="week" hidden><button type="button" data-open-workspace="tracking" aria-haspopup="dialog"><strong data-pulse-value></strong> <span data-pulse-label></span></button></li>
+</ul>
+<div class="dash-home" data-dashboard-data aria-busy="true">
+<div class="dash-top">
+<section class="dash-continue" aria-labelledby="continue-heading"><div class="section-title-row"><h2 id="continue-heading">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action">Aulas em estudo</a></div><div data-continue-list></div></section>
+<section class="dash-week" data-week-widget hidden aria-labelledby="week-heading">
+<h2 id="week-heading">Sua semana</h2>
+<p class="dash-week-figure" data-week-figure></p>
+<progress class="dash-week-progress" data-week-progress max="100" value="0" hidden></progress>
+<ol class="dash-week-days" data-week-days aria-label="Minutos de estudo por dia"></ol>
+<div class="dash-timer" data-week-timer>
+<p class="dash-timer-state" data-timer-state>Nenhuma sessão em andamento.</p>
+<span class="dash-timer-clock" data-timer-clock aria-hidden="true">00:00</span>
+<button type="button" class="secondary-action" data-timer-toggle>Iniciar sessão</button>
+</div>
+<button type="button" class="text-action dash-more" data-open-workspace="tracking" aria-haspopup="dialog">Meta, histórico e sincronização</button>
+</section>
+</div>
+<section class="dash-plan" data-plan-section hidden aria-labelledby="plan-heading">
+<h2 id="plan-heading" class="dash-section-title">Para estudar</h2>
+<div class="dash-plan-grid">
+<article class="dash-widget" data-tasks-widget hidden aria-labelledby="tasks-heading">
+<h3 id="tasks-heading">Próximas tarefas</h3>
+<div class="dash-widget-body" data-tasks-preview></div>
+<div class="dash-widget-actions"><button type="button" class="secondary-action" data-open-workspace="planning" aria-haspopup="dialog">Abrir planejamento</button><button type="button" class="text-action" data-open-workspace="planning" data-workspace-command="task" data-tasks-add aria-haspopup="dialog">Nova tarefa</button></div>
+</article>
+<article class="dash-widget" data-cards-widget hidden aria-labelledby="cards-heading">
+<h3 id="cards-heading">Revisão de flashcards</h3>
+<div class="dash-widget-body" data-cards-preview></div>
+<div class="dash-widget-actions"><button type="button" class="secondary-action" data-open-workspace="flashcards" data-workspace-command="review" data-cards-review aria-haspopup="dialog">Revisar agora</button><button type="button" class="text-action" data-open-workspace="flashcards" data-workspace-command="create" aria-haspopup="dialog">Criar ou gerenciar cartões</button></div>
+</article>
+<article class="dash-widget" data-events-widget hidden aria-labelledby="events-heading">
+<h3 id="events-heading">Próximos dias</h3>
+<div class="dash-widget-body" data-events-preview></div>
+<div class="dash-widget-actions"><button type="button" class="secondary-action" data-open-workspace="calendar" aria-haspopup="dialog">Abrir calendário</button><button type="button" class="text-action" data-open-workspace="calendar" data-workspace-command="compose" aria-haspopup="dialog">Agendar estudo</button></div>
+</article>
+</div>
+</section>
+<div class="library-dashboard">
+<div class="dashboard-main">
+<section class="study-section focus-secondary" data-recent-section aria-labelledby="recent-heading"><div class="section-title-row"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Abrir Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div></section>
+</div>
+<div class="dashboard-library-side focus-secondary">
+<section class="study-section" aria-labelledby="subjects-heading"><h2 id="subjects-heading">Suas disciplinas</h2><div class="subject-shelf" data-subject-list></div></section>
+<section class="study-section" data-topics-section aria-labelledby="topics-heading"><h2 id="topics-heading">Assuntos revisitados</h2><ol class="studied-topics topic-list" data-topic-list></ol></section>
+<section class="study-section dash-notes" data-notes-widget hidden aria-labelledby="notes-heading"><h2 id="notes-heading">Anotações e destaques</h2><p data-notes-summary></p><button type="button" class="secondary-action" data-open-workspace="notes" aria-haspopup="dialog">Ver e buscar anotações</button></section>
+</div></div>
+</div></main>
+<dialog class="workspace-sheet" id="workspace-planning" data-workspace="planning" aria-labelledby="planning-heading"><div class="workspace-inner"><div class="workspace-bar"><button type="button" class="workspace-close" data-workspace-close aria-label="Fechar planejamento"><span aria-hidden="true">×</span></button></div>
 <section class="planning-panel" data-planning-panel hidden aria-labelledby="planning-heading">
 <h2 id="planning-heading">Meu planejamento</h2>
+<div class="planning-toolbar" data-planning-toolbar>
+<button type="button" class="primary-action" data-planning-open="goal" aria-expanded="false" aria-controls="planning-goal-form">Novo objetivo</button>
+<button type="button" class="secondary-action" data-planning-open="task" aria-expanded="false" aria-controls="planning-task-form" hidden>Nova tarefa</button>
+<button type="button" class="secondary-action" data-planning-open="subgoal" aria-expanded="false" aria-controls="planning-subgoal-form" hidden>Novo subobjetivo</button>
+</div>
 <div class="planning-forms">
-<form data-planning-goal-form><h3>Novo objetivo</h3>
+<form id="planning-goal-form" data-planning-goal-form hidden><h3>Novo objetivo</h3>
 <label for="planning-goal-title">O que deseja alcançar?<input id="planning-goal-title" name="title" maxlength="160" required></label>
 <label for="planning-goal-date">Prazo (opcional)<input id="planning-goal-date" name="targetDate" type="date"></label>
-<button type="submit" class="secondary-action">Criar objetivo</button></form>
-<form data-planning-subgoal-form><h3>Novo subobjetivo</h3>
+<div class="planning-form-actions"><button type="submit" class="primary-action">Criar objetivo</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
+<form id="planning-subgoal-form" data-planning-subgoal-form hidden><h3>Novo subobjetivo</h3>
 <label for="planning-subgoal-goal">Objetivo principal<select id="planning-subgoal-goal" data-planning-subgoal-goal required></select></label>
 <label for="planning-subgoal-title">Subobjetivo<input id="planning-subgoal-title" name="title" maxlength="160" required></label>
 <label for="planning-subgoal-date">Prazo (opcional)<input id="planning-subgoal-date" name="dueDate" type="date"></label>
-<button type="submit" class="secondary-action">Adicionar subobjetivo</button></form>
-<form data-planning-task-form><h3>Nova tarefa</h3>
+<div class="planning-form-actions"><button type="submit" class="primary-action">Adicionar subobjetivo</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
+<form id="planning-task-form" data-planning-task-form hidden><h3>Nova tarefa</h3>
 <label for="planning-task-goal">Objetivo<select id="planning-task-goal" data-planning-goal-select required></select></label>
 <label for="planning-task-title">Tarefa<input id="planning-task-title" name="title" maxlength="180" required></label>
 <label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
 <label for="planning-task-date">Prazo (opcional)<input id="planning-task-date" name="dueDate" type="date"></label>
 <label for="planning-task-material">Aula relacionada (opcional)<select id="planning-task-material" data-planning-material-select></select></label>
 <label for="planning-task-link">Link de apoio (opcional)<input id="planning-task-link" data-planning-task-link name="referenceUrl" type="url" maxlength="2048" pattern="https://.*" placeholder="https://exemplo.com/material"></label>
-<button type="submit" class="secondary-action">Adicionar tarefa</button></form>
+<div class="planning-form-actions"><button type="submit" class="primary-action">Adicionar tarefa</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
 </div>
-<div class="planning-controls" aria-label="Organização das tarefas">
+<div class="planning-controls" data-planning-controls aria-label="Organização das tarefas">
 <label for="planning-task-filter">Mostrar tarefas
 <select id="planning-task-filter" data-planning-task-filter>
 <option value="all">Todas</option><option value="pending">Pendentes</option><option value="completed">Concluídas</option>
@@ -50,17 +105,20 @@
 </div>
 <p data-planning-status role="status" aria-live="polite"></p>
 <div data-planning-list></div>
-</section>
+</section></div></dialog>
+<dialog class="workspace-sheet workspace-wide" id="workspace-flashcards" data-workspace="flashcards" aria-labelledby="flashcards-heading"><div class="workspace-inner"><div class="workspace-bar"><button type="button" class="workspace-close" data-workspace-close aria-label="Fechar flashcards"><span aria-hidden="true">×</span></button></div>
 <section class="flashcards-panel" data-flashcards-panel hidden aria-labelledby="flashcards-heading">
 <h2 id="flashcards-heading">Flashcards</h2>
 <div class="flashcard-columns">
-<div class="flashcard-column">
+<div class="flashcard-column flashcard-review-column">
 <h3>Revisão de hoje</h3><p data-flashcard-count class="flashcard-muted"></p>
 <div data-flashcard-due-area aria-live="polite"></div>
 <p data-flashcard-review-status role="status" aria-live="polite"></p>
 </div>
-<div class="flashcard-column">
-<h3>Novo cartão</h3>
+<div class="flashcard-column flashcard-create-column">
+<h3>Novos cartões</h3>
+<details class="flashcard-disclosure" data-flashcard-generate-disclosure><summary>Gerar cartões com IA</summary><div data-flashcard-generator-slot></div></details>
+<details class="flashcard-disclosure" data-flashcard-create-disclosure><summary>Criar cartão manualmente</summary>
 <form data-flashcard-create-form class="flashcard-form">
 <label for="flashcard-front">Pergunta ou conceito
 <textarea id="flashcard-front" name="front" maxlength="1000" rows="3" required></textarea></label>
@@ -69,7 +127,7 @@
 <label for="flashcard-material">Aula relacionada (opcional)
 <select id="flashcard-material" name="materialId"></select></label>
 <button type="submit" class="secondary-action">Criar cartão</button>
-</form><p data-flashcard-create-status role="status" aria-live="polite"></p>
+</form></details><p data-flashcard-create-status role="status" aria-live="polite"></p>
 </div>
 </div>
 <details class="flashcard-management">
@@ -88,15 +146,11 @@
 <p data-flashcard-manage-limit class="flashcard-muted"></p>
 <p data-flashcard-manage-status role="status" aria-live="polite"></p>
 </details>
-</section>
-<div class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</div>
-<div class="library-dashboard" data-dashboard-data aria-busy="true">
-<div class="dashboard-main">
-<section class="study-section" aria-labelledby="continue-heading"><div class="section-title-row"><h2 id="continue-heading">Seu último estudo</h2><a href="./historico.html?study=active" class="text-action">Ver aulas em estudo <span aria-hidden="true">→</span></a></div><div data-continue-list></div></section>
-<section class="study-section focus-secondary" data-recent-section aria-labelledby="recent-heading"><div class="section-title-row"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Ver todas <span aria-hidden="true">→</span></a></div><div data-recent-list></div></section>
-</div>
-<div class="dashboard-library-side focus-secondary">
-<section class="study-section" aria-labelledby="subjects-heading"><h2 id="subjects-heading">Suas disciplinas</h2><div class="subject-shelf" data-subject-list></div></section>
-<section class="study-section" data-topics-section aria-labelledby="topics-heading"><h2 id="topics-heading">Assuntos revisitados</h2><ol class="studied-topics topic-list" data-topic-list></ol></section>
-</div></div></main>
+</section></div></dialog>
+<dialog class="workspace-sheet workspace-wide" id="workspace-calendar" data-workspace="calendar" aria-label="Calendário de estudos"><div class="workspace-inner"><div class="workspace-bar"><button type="button" class="workspace-close" data-workspace-close aria-label="Fechar calendário de estudos"><span aria-hidden="true">×</span></button></div>
+<section class="learning-tools-panel" data-calendar-panel hidden aria-label="Calendário de estudos"></section></div></dialog>
+<dialog class="workspace-sheet " id="workspace-tracking" data-workspace="tracking" aria-label="Tempo e progresso de estudo"><div class="workspace-inner"><div class="workspace-bar"><button type="button" class="workspace-close" data-workspace-close aria-label="Fechar tempo e progresso de estudo"><span aria-hidden="true">×</span></button></div>
+<section class="study-tracking-panel" data-study-tracking-panel hidden aria-label="Tempo e progresso de estudo"></section></div></dialog>
+<dialog class="workspace-sheet " id="workspace-notes" data-workspace="notes" aria-label="Anotações e destaques"><div class="workspace-inner"><div class="workspace-bar"><button type="button" class="workspace-close" data-workspace-close aria-label="Fechar anotações e destaques"><span aria-hidden="true">×</span></button></div>
+<section class="learning-tools-panel" data-note-search-panel hidden aria-label="Buscar anotações"></section></div></dialog>
 <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>

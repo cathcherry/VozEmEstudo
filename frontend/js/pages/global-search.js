@@ -21,7 +21,7 @@ export const SCOPES = Object.freeze({
   questions: 'nas questões',
   transcripts: 'nas transcrições',
 });
-const TAB_LABELS = { lessons: 'Aulas', questions: 'Questões', transcripts: 'Transcrições' };
+const TAB_LABELS = { lessons: 'Aulas', questions: 'Questões', transcripts: 'Transcrições', notes: 'Anotações' };
 
 /** Text with the searched words in bold (<mark>), built from text nodes only. */
 export function markedText(tag, text, query, className) {
@@ -38,14 +38,17 @@ export function markedText(tag, text, query, className) {
 
 /** Only categories with results become tabs; with one category there is no tab bar at all. */
 export function resultGroups(result) {
-  return ['lessons', 'questions', 'transcripts']
+  return ['lessons', 'questions', 'transcripts', 'notes']
+    .filter((key) => Array.isArray(result[key]))
     .map((key) => ({
       key,
       label: TAB_LABELS[key],
       count:
         key === 'transcripts'
           ? result[key].reduce((sum, lesson) => sum + lesson.total, 0)
-          : result[key].length,
+          : key === 'notes'
+            ? Math.max(result.notesTotal || 0, result[key].length)
+            : result[key].length,
       items: result[key],
     }))
     .filter((group) => group.items.length);
@@ -53,9 +56,10 @@ export function resultGroups(result) {
 
 /**
  * Painel search bar: suggestions (matching lesson titles + where to search) and results on the
- * dashboard, separated in tabs for lessons, questions and transcripts.
+ * dashboard, separated in tabs for lessons, questions and transcripts. When the dashboard passes
+ * `notes`, the user's own annotations become one more tab (first page; `openNotes` shows them all).
  */
-export function initGlobalSearch({ form, main, heading }) {
+export function initGlobalSearch({ form, main, heading, notes = null, openNotes = null }) {
   const input = form.querySelector('input[type=search]');
   input.setAttribute('aria-label', 'Buscar em aulas, questões e transcrições');
   input.placeholder = 'Buscar aulas, questões e transcrições';
@@ -251,6 +255,15 @@ export function initGlobalSearch({ form, main, heading }) {
     return block;
   }
 
+  function noteItem(note, q) {
+    const link = el('a', null, `search-result search-note annotation-${note.color || 'yellow'}`);
+    link.href = materialHref(note.material_id);
+    link.append(el('small', `${note.lessonTitle || 'Aula'} · revisão ${note.source_revision}`));
+    if (note.quote) link.append(markedText('span', note.quote, q, 'search-note-quote'));
+    if (note.note_text) link.append(markedText('span', note.note_text, q));
+    return link;
+  }
+
   function render(result, q, scope) {
     results.replaceChildren();
     const title = el('h2', `Resultados para “${q}”`);
@@ -292,9 +305,18 @@ export function initGlobalSearch({ form, main, heading }) {
             ? lessonItem(item, q)
             : group.key === 'questions'
               ? questionItem(item, q)
-              : transcriptItem(item, q),
+              : group.key === 'notes'
+                ? noteItem(item, q)
+                : transcriptItem(item, q),
         );
       panel.append(list);
+      if (group.key === 'notes' && openNotes) {
+        const all = el('button', `Ver ${group.count === 1 ? 'a anotação' : `as ${group.count} anotações`} com busca e páginas`, 'text-action');
+        all.type = 'button';
+        all.setAttribute('aria-haspopup', 'dialog');
+        all.addEventListener('click', () => openNotes(q));
+        panel.append(all);
+      }
       return panel;
     });
     if (groups.length === 1) {
@@ -354,8 +376,17 @@ export function initGlobalSearch({ form, main, heading }) {
     results.replaceChildren(el('p', 'Procurando…', 'loading-state'));
     const version = ++request;
     try {
-      const result = await searchLibrary(q, scope);
+      // Annotations are optional: a failure there never hides the library results.
+      const [result, notePage] = await Promise.all([
+        searchLibrary(q, scope),
+        scope === 'all' && notes ? notes(q).catch(() => null) : null,
+      ]);
       if (version !== request) return;
+      if (notePage?.notes?.length) {
+        const titles = new Map((await loadMaterials()).map((m) => [m.id, m.title]));
+        result.notes = notePage.notes.slice(0, 20).map((note) => ({ ...note, lessonTitle: titles.get(note.material_id) }));
+        result.notesTotal = notePage.total;
+      }
       // Tags live in this browser, so lessons found by tag are added here.
       if (scope === 'all' || scope === 'lessons') {
         const known = new Set(result.lessons.map((lesson) => lesson.materialId));
