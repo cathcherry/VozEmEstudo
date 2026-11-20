@@ -1,5 +1,8 @@
-import { loadCloudState, saveCloudState } from './profile-cloud.js';
+import { registerCloudMerge, loadCloudState, saveCloudState } from './profile-cloud.js';
 import { readProfileMedia, saveProfileMedia } from './profile-storage.js';
+
+// Custom icons are only ever added: keep the icons saved from every device.
+registerCloudMerge('catalog-icons', (remote, local) => ({ ...(remote || {}), ...(local || {}) }));
 
 export async function validateFolderPng(file) {
   if (!file) return;

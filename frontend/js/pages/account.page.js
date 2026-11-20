@@ -1,6 +1,6 @@
 import { enhanceCard } from '../utils/card-layout.js';
-import { loadCloudState, saveCloudState } from '../utils/profile-cloud.js';
-import { milestones, evaluateMilestones, orderedMilestones, unlockedAvatars } from '../utils/gamification.js';
+import { loadCloudState, saveCloudState, registerCloudMerge } from '../utils/profile-cloud.js';
+import { milestones, evaluateMilestones, orderedMilestones, unlockedAvatars, mergeMilestoneStates } from '../utils/gamification.js';
 import { widgetDocument, blockTemplates, templateFields, compileTemplate } from '../utils/profile-widgets.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, updateUserIdentity, setStatus } from '../utils/shell.js';
@@ -14,6 +14,9 @@ import {
   removeProfileMedia,
   saveProfileMedia,
 } from '../utils/profile-storage.js';
+
+// Milestones reached on another device are kept; the state is cosmetic (see gamification.js).
+registerCloudMerge('milestones', mergeMilestoneStates);
 
 const session = await initAuthenticatedShell();
 const userId = session.user.id;

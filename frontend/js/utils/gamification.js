@@ -33,3 +33,24 @@ export function orderedMilestones(state) {
 export function unlockedAvatars(state) {
   return new Set(['reading', ...milestones.filter(badge => state.unlocked?.[badge.id]).map(badge => badge.avatar)]);
 }
+
+/**
+ * Combines two copies of the milestone state (e.g. from two devices): earliest unlock date per
+ * milestone, highest value per metric, XP and level recomputed. Only milestones that exist in
+ * this version count, so stray entries cannot inflate XP.
+ * These values are derived in the browser and are cosmetic (provisional), not server-verified.
+ */
+export function mergeMilestoneStates(remote = {}, local = {}) {
+  const best = {};
+  for (const metric of ['aulas', 'revisoes', 'questoes', 'minutos'])
+    best[metric] = Math.max(Number(remote?.best?.[metric]) || 0, Number(local?.best?.[metric]) || 0);
+  const unlocked = {};
+  for (const badge of milestones) {
+    const dates = [remote?.unlocked?.[badge.id], local?.unlocked?.[badge.id]].filter(
+      (value) => typeof value === 'string' && !Number.isNaN(Date.parse(value)),
+    );
+    if (dates.length) unlocked[badge.id] = dates.sort()[0];
+  }
+  const xp = milestones.reduce((sum, badge) => sum + (unlocked[badge.id] ? badge.xp : 0), 0);
+  return { best, unlocked, xp, level: Math.floor(xp / 100) + 1 };
+}
