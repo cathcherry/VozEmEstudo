@@ -2,6 +2,56 @@
 
 Situação de cada flag e roteiro para ligar o que falta em produção. Atualizado em 20/11/2026.
 
+## Inventário de 20/11/2026 (21h, somente leitura)
+
+Conferido diretamente no projeto `audioestudo` (Postgres 17.11), sem alterar nada:
+
+- **Histórico de migrations do Supabase**: `study_authoring`, `security_hardening`,
+  `material_videos_table`. Aplicadas fora do histórico (conferidas pelos objetos): base `001`, E02,
+  E03, `ai_executions`, correção das políticas de vídeo, `profile_state` (proposta).
+- **Tabelas existentes (20)**: base + E02 + E03 + `ai_job_executions`, `transcription_word_alignments`,
+  `material_videos`, `question_list_shares`, `profile_state`. **Nenhuma** tabela de planejamento,
+  tentativas, flashcards, tempo de estudo, anotações, calendário ou cópias de material.
+- **Buckets**: `audios` (100 MB), `study-videos` (100 MB), `profile-media` (8 MB), todos privados, com
+  políticas de dono.
+- **Pré-requisitos das migrations pendentes**: todos atendidos (E03 presente; chave
+  `materials(id,user_id)` já existe e a E05 a reaproveita; `set_updated_at`; tabelas de questões;
+  `transcription_versions`/`confirmations`; chaves de `profile_state` no formato, máximo 9 por conta).
+- **Riscos de dados**: nenhum (sem questões sem lista, listas sem aula, chaves duplicadas ou aulas sem
+  dono).
+- **Linha de base**: 22 aulas, 13 transcrições, 25 versões, 11 confirmações, 17 resumos, 19 listas,
+  102 questões, 8 disciplinas, 3 unidades, 18 linhas de `profile_state`, 4 contas.
+- **Ensaio**: as 10 migrations pendentes, em ordem, numa réplica do esquema de produção (PGlite),
+  dentro de uma transação desfeita no fim: 16 tabelas novas, todas com RLS, sem escrita do navegador,
+  **nenhuma linha existente alterada** (contagem e hash de conteúdo de cada tabela antes/depois). Em
+  produção, cada migration terá o próprio ensaio com `rollback` imediatamente antes de ser aplicada.
+- **Advisor de desempenho**: 13 políticas lentas (corrigidas por `rls_performance`) e 14 chaves
+  estrangeiras sem índice (`rls_performance` cobre todas, inclusive `material_videos`, incluída em
+  20/11).
+
+### Plano de ativação (em ordem; cada passo só com aprovação)
+
+| #   | Migration                                     | Libera a flag         | Depende de | Situação             |
+| --- | --------------------------------------------- | --------------------- | ---------- | -------------------- |
+| 1   | E05 `20261104203000_study_planning.sql`       | `planning`            | E03 ✅     | Aguardando aprovação |
+| 2   | E10 `20261104223000_quiz_sessions.sql`        | `quiz_v2`             | E05        | Aguardando aprovação |
+| 3   | E12 `20261104233000_quiz_review.sql`          | `quiz_review`         | E10        | Aguardando aprovação |
+| 4   | E13 `20261104234500_flashcards.sql`           | `flashcards`          | E05        | Aguardando aprovação |
+| 5   | `20261119121000_flashcard_sets.sql`           | `flashcard_sets`      | E13        | Aguardando aprovação |
+| 6   | E08/E09 `20261105011000_study_tracking.sql`   | `study_tracking`      | E05        | Aguardando aprovação |
+| 7   | E14/E15 `20261105014000_annotations.sql`      | `annotations`         | E02 ✅     | Aguardando aprovação |
+| 8   | E18/E19 `20261105014500_calendar_sharing.sql` | `calendar`, `sharing` | E05        | Aguardando aprovação |
+| 9   | `20261120120000_profile_state_hardening.sql`  | — (segurança)         | —          | Aguardando aprovação |
+| 10  | `20261119140000_rls_performance.sql`          | — (desempenho)        | —          | Aguardando aprovação |
+
+Para cada passo aprovado: ensaio com `rollback` em produção → aplicar → pós-check → conferir contagens
+da linha de base → ligar só a flag correspondente no `backend/.env` → reiniciar o `INICIAR.cmd` → todos
+os `[OK]` → teste manual da tabela "Ordem e testes manuais" abaixo.
+
+**Backup**: o plano gratuito do Supabase não oferece backups automáticos baixáveis. Antes do primeiro
+passo, faça um dump (`supabase db dump` ou `pg_dump` com a string de conexão do painel) e guarde fora do
+repositório. As migrations só acrescentam objetos; desfazer um passo é remover os objetos novos.
+
 ## Como ler a matriz
 
 "Pronto para produção" não é uma coisa só. Para cada flag separamos:

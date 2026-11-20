@@ -67,7 +67,8 @@ begin
       ('question_list_shares', 'question_list_shares_material_idx', array['material_id']),
       ('study_units', 'study_units_subject_owner_idx', array['subject_id', 'user_id']),
       ('study_units', 'study_units_user_idx', array['user_id']),
-      ('transcription_confirmations', 'transcription_confirmations_user_idx', array['user_id'])
+      ('transcription_confirmations', 'transcription_confirmations_user_idx', array['user_id']),
+      ('material_videos', 'material_videos_owner_idx', array['material_id', 'user_id'])
     ) as i(table_name, index_name, columns)
   loop
     -- Only when the table and every column exist (some belong to later, optional migrations).
