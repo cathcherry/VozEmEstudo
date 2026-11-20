@@ -1,5 +1,8 @@
 # Etapa 6 de 9 — Player 2.0 / E07
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Implementação preparada no PR #2, fora da `main`. Nenhum SQL, deploy ou ativação de flag foi realizado.** A conservação de MP4 depende da migration candidata E07 e de `FEATURE_MP4_RETENTION=true`. As melhorias de áudio/transcrição/retomada local não exigem nova tabela. A etapa está concluída em código para o escopo abaixo; homologação com Supabase, Storage e mídias reais permanece pendente.
 
 ## Reprodução e transcrição

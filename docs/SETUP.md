@@ -1,5 +1,8 @@
 # Preparação do ambiente
 
+> ⚠️ **Documento histórico.** Escrito em 04/11/2026: lista só variáveis do Hugging Face/Groq e 8 das 13 flags. Para a situação atual, veja [CONFIGURACAO.md](CONFIGURACAO.md) e o [README](../README.md).
+
+
 > **Situação em 04/11/2026:** o desenvolvimento corrente está no repositório privado `cathcherry/VozEmEstudo`, na branch `main`. O projeto Supabase existente recebeu a migration E02 segundo o histórico de operação informado pela responsável; o estado remoto não foi reinspecionado nesta etapa. Não reaplique a migration nem a baseline `001_initial.sql`. As observações E00/E01 abaixo preservam o contexto técnico e histórico de 09/10/2026.
 
 ## Fluxo recomendado sem Docker

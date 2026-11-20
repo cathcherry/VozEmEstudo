@@ -1,5 +1,18 @@
 # Testes e checks
 
+> **Situação em 20/11/2026.** `npm test` roda backend (PGlite + fixtures), DOM, interfaces de cada
+> recurso (`test:catalog-ui`, `test:planning-ui`, `test:quiz-v2-ui`, `test:flashcards-ui`,
+> `test:player-v2`, `test:study-tracking`, `test:learning-tools`, `test:study-authoring`,
+> `test:auth-css`), Python e qualidade. `npm run test:browser` roda três verificações com Chromium:
+> `browser-check.cjs` (jornadas, FFmpeg real, axe), `subject-menu-check.cjs` (menu ⋯ das
+> disciplinas) e `password-signup-check.cjs` (regras e senhas vazadas). Fora do contêiner de CI,
+> indique o navegador com `BROWSER_EXECUTABLE`. Falhas conhecidas: o teste de recorte de **AAC** em
+> `media.test.js` depende da versão do FFmpeg, e `check:openapi` não roda porque o arquivo OpenAPI
+> não está no repositório (a referência de rotas atual é [API.md](API.md)). Os links para
+> `gates-readiness.md`, `e01-issues.md` e `testing-contract.md` abaixo apontam para arquivos que não
+> foram publicados.
+
+
 Execute a partir da raiz após [SETUP.md](SETUP.md). Os comandos normais não precisam de credenciais. Use dados sintéticos; não importar .env da instalação para a suíte de fixtures.
 
 > **Política enxuta da etapa 1 (04/11/2026):** `npm run check` não executa `format:check` até a dívida de formatação herdada ser resolvida. A checagem Prettier/Ruff continua disponível separadamente por `npm run format:check`, mas não bloqueia o CI por estilos antigos e não demanda Docker. Testes de lint, sintaxe, segredos e regressões continuam obrigatórios. O validador OpenAPI foi também retirado do check padrão porque o arquivo `docs/engineering/AudioEstudo_openapi.yaml` não foi incluído na versão publicada; `npm run check:openapi` continua disponível para quando o contrato for recuperado ou reconstruído com evidência. Não interpretar CI verde como aprovação de integrações reais ou gates E00–E02.

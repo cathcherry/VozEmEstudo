@@ -1,5 +1,8 @@
 # Consolidação do TCC — 18/11/2026
 
+> ⚠️ **Documento histórico.** Relatório da consolidação de 18/11/2026. Para a situação atual, veja [FUNCIONALIDADES.md](FUNCIONALIDADES.md).
+
+
 ## Versão escolhida
 
 `consolidacao/tcc` combina a base funcional `feat/acessibilidade-teste-integrado`

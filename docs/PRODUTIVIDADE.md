@@ -1,5 +1,8 @@
 # Produtividade no Voz em Estudo — proposta enxuta
 
+> ⚠️ **Documento histórico.** Proposta de 08/10/2026; cronômetro e metas foram implementados depois (E08/E09). Para a situação atual, veja [FUNCIONALIDADES.md](FUNCIONALIDADES.md#4-painel).
+
+
 Avaliação em 8 de outubro de 2026, com base no código da versão 0.3.1. O ajuste visual está implementado. Timer, histórico de minutos e metas abaixo são uma proposta para a próxima etapa; não foram adicionados à interface nem ao banco.
 
 ## Um ciclo de estudo

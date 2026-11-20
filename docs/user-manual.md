@@ -1,5 +1,8 @@
 # Manual de uso — permissão, transcrição e geração
 
+> ⚠️ **Documento histórico.** Descreve o fluxo da etapa E02, com o áudio enviado só ao Hugging Face. Para a situação atual, veja [FUNCIONALIDADES.md](FUNCIONALIDADES.md).
+
+
 Este fluxo pertence à implementação local E02. A ativação no ambiente compartilhado depende da migration e do aceite descritos no relatório E02.
 
 ## Enviar uma gravação

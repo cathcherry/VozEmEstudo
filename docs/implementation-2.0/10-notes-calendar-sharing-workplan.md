@@ -1,5 +1,8 @@
 # Etapas 8 e 9 — Anotações/exportação e calendário/compartilhamento
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 Implementação preparada no PR #2 em rascunho, fora da `main`. **Nenhuma migration aplicada, deploy, link público real ou ativação de flag.** Novas flags `FEATURE_ANNOTATIONS` e `FEATURE_CALENDAR`; a flag existente `FEATURE_SHARING` controla os links. Todas OFF por padrão. A implementação do escopo abaixo está preparada; validação integrada com dados reais e aceite continuam pendentes.
 
 ## Etapa 8 — E14/E15

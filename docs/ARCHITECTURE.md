@@ -1,59 +1,108 @@
-# Arquitetura vigente
+# Arquitetura
 
-O produto continua em JavaScript modular: frontend estático HTML/CSS/ES Modules, API Express e worker Node independentes, Supabase Auth/PostgreSQL/Storage e adaptadores ASR/LLM. A E01 acrescenta infraestrutura de qualidade e flags; a E02 acrescenta declaração, conferência humana, avisos e fonte imutável de geração. Catálogo, planejamento, tracking e quiz v2 continuam fora desta etapa.
+Visão técnica do Voz em Estudo. Atualizado em 20/11/2026 (a versão anterior descrevia a etapa E02;
+o histórico continua no git).
+
+## Componentes
 
 ```mermaid
 flowchart TD
-  Browser["Navegador: páginas e módulos ES"] --> Auth["Supabase Auth: sessão"]
-  Browser --> API["Express: sessão, DTO e ownership"]
-  Browser --> Storage["Storage privado: upload por usuário"]
-  API --> DB["PostgreSQL: materiais e jobs"]
-  Worker["Worker: claim, etapas e retry"] --> DB
+  Browser["Navegador<br/>HTML + ES modules, sem build"] -->|login PKCE| Auth["Supabase Auth"]
+  Browser -->|upload TUS retomável| Storage["Supabase Storage<br/>audios · study-videos · profile-media"]
+  Browser -->|Bearer token| API["API Express<br/>backend/src/server.js"]
+  Browser -->|perfil e preferências| Profile["profile_state"]
+  API -->|chave secreta + RPCs *_admin| DB["Postgres<br/>materiais, versões, gerações, fila"]
+  API --> FFmpeg["FFmpeg<br/>inspeção e recorte"]
+  Worker["Worker<br/>backend/src/worker.js"] -->|claim de tarefas| DB
   Worker --> Storage
-  Worker --> Providers["ASR e LLM: adaptadores"]
+  Worker --> ASR["Transcrição<br/>AssemblyAI ou Whisper (HF)"]
+  Worker --> LLM["Texto<br/>Groq ou AssemblyAI Gateway"]
 ```
 
-## Responsabilidades reais
+- **Frontend** (`frontend/`): páginas HTML estáticas e módulos ES, sem framework e sem etapa de
+  build. `theme-init.js` aplica preferências antes da página aparecer.
+- **API** (`backend/src/app.js`): Express 5 com helmet, CORS restrito a `APP_ORIGIN`, `x-request-id`
+  em toda resposta e erros padronizados. Também entrega as páginas (`SERVE_FRONTEND`).
+- **Worker** (`backend/src/worker.js`): processo separado que busca tarefas na fila
+  (`processing_jobs`), executa e registra eventos. Pode rodar em várias instâncias.
+- **Supabase**: Auth (e-mail/senha, Google, GitHub), Postgres com RLS e Storage privado.
+- **Provedores de IA** atrás de um registro (`backend/src/ai/provider-registry.js`); ver
+  [AI_PROVIDERS.md](AI_PROVIDERS.md).
 
-| Camada            | Arquivos                                    | Responsabilidade                                                      |
-| ----------------- | ------------------------------------------- | --------------------------------------------------------------------- |
-| Inicialização API | backend/src/app.js, server.js               | Middleware, routers, configuração pública e arquivos frontend         |
-| HTTP              | backend/src/routes, controllers, middleware | Sessão, entrada/saída e erros com requestId                           |
-| Regras            | backend/src/services, domain, validators    | Mídia/recortes, derivação, validação e autorização antes de persistir |
-| Persistência      | backend/src/repositories                    | Consultas filtradas por owner; SDK administrativo somente no servidor |
-| Worker            | backend/src/worker.js, jobs/job-runner.js   | Fila persistente, etapas, tentativas e eventos                        |
-| Integrações       | backend/src/integrations                    | Supabase, Groq, Gradio/Hugging Face                                   |
-| UI                | frontend/js/pages, api, utils               | Jornadas, HTTP, player, preferências e estudo local                   |
-| ASR opcional      | asr-space/app.py                            | Interface Gradio e adaptação de chunks para milissegundos             |
+## Camadas do backend
 
-Controllers legados de transcrição/questões ainda chamam alguns repositories diretamente para verificação de ownership/leitura. É um desvio documentado da separação ideal, não motivo para criar novas camadas ou reestruturar todos os controllers na E01.
+| Camada              | Pasta                                    | Responsabilidade                                                                                        |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Rotas e controllers | `routes/`, `controllers/`, `middleware/` | HTTP, autenticação, validação de entrada, erros                                                         |
+| Validação           | `validators/`                            | Esquemas zod de cada corpo; caminhos de Storage seguros                                                 |
+| Domínio             | `domain/`                                | Regras puras: plano de cobertura de questões, redundância, localização de trechos de apoio, erros       |
+| Serviços            | `services/`                              | Casos de uso: mídia, processamento, geração, compartilhamento, busca                                    |
+| Repositórios        | `repositories/`                          | Consultas sempre filtradas pelo dono; chamadas às RPCs `*_admin`                                        |
+| Integrações         | `integrations/`                          | Supabase, AssemblyAI, Hugging Face (Gradio), Groq                                                       |
+| Prompts             | `prompts/`                               | Texto versionado enviado aos modelos (`summary-v3`, `questions-v2.1`, `flashcards-v2`, `warnings-v1.0`) |
+| Tarefas             | `jobs/`                                  | Execução, tentativas e atrasos                                                                          |
 
-## Fluxos preservados
+## Fluxo de uma aula
 
-Auth usa e-mail/senha e OAuth Google/GitHub com PKCE. A API verifica o token com Supabase antes das rotas protegidas. O browser recebe apenas configuração pública; nenhuma chave administrativa é necessária em CI.
+1. **Recorte** — o navegador manda o arquivo para `POST /api/media/inspect` (duração, forma de onda)
+   e `POST /api/media/convert?output=speech`, que devolve o trecho em MP3 mono compacto.
+2. **Upload** — o navegador envia o MP3 direto ao Storage pelo protocolo TUS em blocos de 6 MB, em
+   `temp/{userId}/{materialId}/`, retomando do ponto confirmado se a conexão cair.
+3. **Registro** — `POST /api/materials` cria aula, áudio e declaração de permissão numa transação
+   (`create_material_with_permission_admin`); `POST /process` enfileira a tarefa inicial com chave
+   de idempotência.
+4. **Transcrição (worker)** —
+   - Provedor síncrono (Whisper/HF): baixa, converte para WAV e transcreve.
+   - Provedor assíncrono (AssemblyAI): máquina de estados em `ai_job_executions`
+     (`pending → uploaded → submitting → processing → completed`), com transições condicionais para
+     que um worker reiniciado continue em vez de reenviar. Enquanto espera, a tarefa volta para
+     `AGUARDANDO_REPETICAO` sem gastar tentativas.
+   - Grava a versão inicial imutável, os trechos e, se houver, os tempos por palavra.
+5. **Finalização** — apaga o áudio ou move para `retained/…`, conforme a escolha; gera os três avisos
+   de conteúdo (idempotentes por tarefa). A aula fica `PARCIAL` e aguardando revisão.
+6. **Conferência humana** — a pessoa edita (cada edição é uma nova versão), restaura versões e
+   confirma uma versão específica.
+7. **Gerações** — resumos, listas e cartões só são enfileirados com a versão confirmada, que fica
+   fixada na tarefa. Se a tarefa for repetida depois de gravar o resultado, o resultado existente é
+   reaproveitado. A aula fica `PRONTO` quando há resumo e questões da versão atual.
 
-A inspeção/conversão autenticada aceita nove formatos. O recorte vira WAV mono 16 kHz para upload em temp/{userId}/{materialId}/arquivo. A API registra material/áudio e declaração versionada na mesma transação. O job inicial transcreve, persiste a revisão, resolve retenção e registra avisos; não gera resumo/questões. A confirmação humana libera jobs de geração que leem o snapshot fixado no enqueue. Retenção atual é do WAV do trecho, não do MP4 original. Download de exportação MP4 continua disponível.
+Falhas temporárias (rede, 429/5xx do provedor, saída inválida do modelo, banco indisponível) são
+repetidas até `JOB_MAX_ATTEMPTS` vezes; mensagens de erro são higienizadas antes de chegar ao usuário.
 
-Materiais são a raiz de ownership. Jobs são filtrados pelo owner do material; questões passam pelo lote/material. Guardas da E00 rejeitam chaves Storage que poderiam mudar com normalização de URL. URLs assinadas têm TTL de 600 segundos no contrato legado.
+## Geração de questões (`questions-v2.1`)
 
-Título/disciplina e conteúdo vêm da API; perfil/avatar vêm de Auth user_metadata. Tags extras, temas nomeados, progresso de reprodução, acessos, revisão explícita e respostas locais continuam por usuário neste navegador. Eles não medem atenção ou minutos estudados e não são sincronizados entre aparelhos.
+```
+transcrição confirmada
+  → conceitos distintos, cada um com trecho de apoio        (chamada 1)
+  → plano: conceito × habilidade × dificuldade               (sem IA; máx. 2 por conceito)
+  → uma questão por vaga, com trecho de apoio                (chamada 2)
+  → validação: 4 alternativas distintas, apoio localizado na transcrição,
+    sem repetidas (texto, paráfrase, mesma resposta no mesmo conceito)
+  → reposição das vagas vazias                               (chamada 3, opcional)
+```
 
-## Contratos e evolução
+O trecho de apoio é localizado na transcrição de forma tolerante (o modelo costuma tirar "né", pôr
+reticências ou trocar uma palavra) e gravado com as palavras reais da aula
+(`domain/evidence-match.js`). A lista registra um relatório de cobertura com os motivos de descarte.
 
-[OpenAPI](engineering/AudioEstudo_openapi.yaml) descreve rotas efetivas, inclusive config/media, UUID de criação obrigatório, DTO de job snake_case e erros. E01 corrige JSON malformado para 400 INVALID_JSON com requestId, bloqueia chaves privadas em /api/config e acrescenta featureFlags em /api/config. Flags não são usadas para autorização e não habilitam capacidades ainda ausentes.
+## Segurança
 
-Cada entrega futura deve validar schema/RLS/ownership, DTO, serviço, UI, regressão e documentação quando aplicável. Não reescrever 001_initial.sql nem inventar histórico de migrations. O catálogo remoto existe apesar de o histórico registrado estar vazio; ver [baseline E00](implementation-2.0/00-baseline.md).
+- **Dono primeiro**: a aula é a raiz de posse. Toda rota confere `user_id`; as RPCs `*_admin`
+  recebem o usuário do token e conferem no SQL. Ver [BANCO_DE_DADOS.md](BANCO_DE_DADOS.md).
+- **Navegador sem acesso de escrita** ao banco; só lê `profile_state` próprio e envia arquivos ao
+  próprio prefixo do Storage.
+- **Chaves**: só a chave publicável vai para o navegador; a API recusa expor uma chave secreta.
+- **Caminhos de Storage** validados contra `..`, codificações e prefixos de outra conta.
+- **Compartilhamento**: token aleatório de 256 bits gerado no navegador; o servidor guarda só o
+  SHA-256; validade de 1/7/30 dias; revogável; respostas sem gabarito e com `noindex`.
+- **Gabarito protegido** enquanto há tentativa com feedback adiado.
+- **Limites**: 2 MB de JSON, 100 MB de mídia, 2 conversões simultâneas, uma geração de cartões por
+  pessoa. Não há limitador de requisições global.
 
-## Limites e decisões
+## Decisões registradas
 
-A E02 usa RPCs transacionais com lock por material, revisão imutável/confirmada no enqueue e conclusão idempotente por job. Derivados/avisos anteriores são preservados. RLS/ownership/rollback foram testados localmente em PostgreSQL embutido; concorrência em múltiplas conexões, grants/Storage reais e rollout permanecem pendentes. MOCK_EXTERNAL_SERVICES simula ASR/LLM, não substitui Supabase. CI substitui o transporte HTTP de Supabase por fixtures, sem dados pessoais. Modelo/GPU, provedores reais e restore não foram inferidos a partir dos mocks.
-
-Ver [ADR-001](decisions/ADR-001-quality-and-compatibility.md), [padrões](CODING_STANDARDS.md) e [contrato de testes](implementation-2.0/testing-contract.md).
-
-## Fluxo acadêmico E02
-
-`materials.review_state` separa `pending_transcription`, `awaiting_review` e `ready_to_generate` dos enums legados de material/job. Confirmação usa UUID de revisão, conta, versão da declaração e UTC. Snapshot histórico e fonte de job ficam imutáveis. Edição/restauração exige outra confirmação, sem alterar a fonte de jobs anteriores.
-
-`material_permissions`, `transcription_confirmations` e `content_warnings` são estruturas aditivas com RLS. RPCs server-only verificam ownership mesmo com cliente administrativo. O banco serializa número de versão/current e grava lote/questões num commit. Provedor roda fora dos locks; retry após commit reutiliza o derivado existente. Storage não compartilha transação; há reconciliação de move finalizado antes de falha do banco.
-
-Avisos são três análises independentes com JSON validado, referência ao snapshot e histórico de execuções; erro/insuficiência não certifica conteúdo. A UI diferencia progresso pessoal local de confirmação científica no servidor. Ver [ADR-002](decisions/ADR-002-human-review-and-generation.md), [runbook](implementation-2.0/02-review-migration-runbook.md) e [manual de uso](user-manual.md). G1 não foi aprovado e não houve migration remota.
+- [ADR-001](decisions/ADR-001-quality-and-compatibility.md) — qualidade e compatibilidade.
+- [ADR-002](decisions/ADR-002-human-review-and-generation.md) — revisão humana e fonte imutável.
+- Flags desligadas por padrão; cada recurso novo chega atrás de uma flag e de uma migration aditiva.
+- Provedor de IA nunca muda sozinho: reserva só se configurada, e o provedor/modelo fica fixado em
+  cada tarefa.

@@ -1,5 +1,8 @@
 # Primeira rodada de testes — Voz em Estudo
 
+> ⚠️ **Documento histórico.** Registro do primeiro teste integrado. Para a situação atual, veja [TESTING.md](TESTING.md).
+
+
 O código das nove frentes está reunido no [PR #2 em rascunho](https://github.com/cathcherry/VozEmEstudo/pull/2), branch `feat/etapa-2-biblioteca-2-0`. A `main` permanece preservada. Implementação preparada não equivale a homologação: ainda precisamos do banco configurado e do uso real pelo navegador.
 
 Este roteiro usa o GitHub, o painel do Supabase e o iniciador que já acompanha o projeto. Não exige Docker, instalação local de PostgreSQL nem configuração de terminal.

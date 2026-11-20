@@ -1,5 +1,8 @@
 # Biblioteca 2.0 — implementação na branch de integração
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Branch:** `feat/etapa-2-biblioteca-2-0`  
 **Referência inicial:** `c1a7f62490b66168269d0e1168909b565209058a` (`main`, 04/11/2026)  
 **Estado:** fatias E03/E04 implementadas na branch com flag OFF; migration E03 candidata e verificações SQL versionadas, **sem execução remota nem aprovação de gate**; a `main` segue intacta.

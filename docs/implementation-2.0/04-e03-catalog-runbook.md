@@ -1,5 +1,8 @@
 # E03 — aplicar catálogo persistente com segurança (sem Docker)
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Estado em 04/11/2026:** scripts versionados na branch `feat/etapa-2-biblioteca-2-0`. **NÃO EXECUTADOS** no Supabase. O PR #2 continua em rascunho; a `main` continua aprovada e separada. Este documento não representa aprovação do gate G2a.
 
 ## Arquivos e ordem

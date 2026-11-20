@@ -1,5 +1,8 @@
 # Etapa 4 de 9 — Questões 2.0 (E10, primeira fatia)
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Branch:** `feat/etapa-2-biblioteca-2-0` • **PR #2 em Draft**. Nenhum merge na `main`. **Nenhuma migration executada no Supabase real.** `FEATURE_QUIZ_V2=false` por padrão.
 
 ## Implementado nesta versão

@@ -1,5 +1,8 @@
 # Estado da consolidação — 18/11/2026
 
+> ⚠️ **Documento histórico.** Situação de 18/11/2026, antes da autoria de estudo, das migrations de 19–20/11 e das melhorias seguintes. Para a situação atual, veja [FUNCIONALIDADES.md](FUNCIONALIDADES.md#disponibilidade-por-recurso) e [BANCO_DE_DADOS.md](BANCO_DE_DADOS.md).
+
+
 A versão candidata é `consolidacao/tcc`: base de acessibilidade, interface simplificada e histórico de estabilização integrados. Consulte [o relatório da consolidação e o plano futuro Gemini](CONSOLIDACAO_TCC.md). Os registros datados abaixo preservam o histórico; não indicam ausência dos módulos posteriores. A homologação do banco remoto e os resultados do GitHub Actions devem ser conferidos separadamente.
 
 ---

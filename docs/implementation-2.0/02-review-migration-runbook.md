@@ -1,5 +1,8 @@
 # E02 — procedimento de migration, staging e reversão
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Preparado, sem execução remota.** Usar somente após autorização explícita do ambiente, confirmação de staging/backup/restore e aceite dos responsáveis. O projeto existente inspecionado não foi classificado como staging. E00/G0a e E01/G0b não são aprovados por inferência.
 
 ## Base e divergências

@@ -1,5 +1,8 @@
 # Backup lógico manual do staging — plano Free
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 Atualizado em 10/10/2026. **Procedimento preparado; backup e restore ainda não executados. G0a/G0b/G1 não aprovados e E03 não iniciada.** Esta preparação autoriza somente leitura de `cissxpmmjnnpewreuxeo`. Os comandos de instalação, inicialização local e restauração abaixo são referências para execução acompanhada posterior. Nenhuma migration, permissão ou configuração remota foi alterada.
 
 ## Próxima ação pessoal — somente esta agora

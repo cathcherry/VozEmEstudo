@@ -1,5 +1,8 @@
 # Etapa 7 de 9 — Progresso, tempo, Pomodoro e metas (E08/E09)
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 Implementação preparada no PR #2, em rascunho e fora da `main`. **Nenhuma migration foi aplicada, nenhum deploy ou ativação de flag ocorreu.** `FEATURE_STUDY_TRACKING` permanece OFF por padrão. Depende da E05 para a chave composta de conta/aula. O código da etapa está concluído para o escopo abaixo; integração real e aceite humano continuam pendentes.
 
 ## Andamento da conta e histórico antigo

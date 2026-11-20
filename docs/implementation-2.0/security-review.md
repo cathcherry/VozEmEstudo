@@ -1,5 +1,8 @@
 # E00 — segredos, permissões e riscos concretos
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 Revisão em 09/10/2026. Consultas remotas somente de leitura. Sem rotação, revogação, alteração de Auth/RLS/grants ou aplicação de migration. Não foram encontrados arquivos `.env` reais no checkout ou no pacote aprovado atual.
 
 ## Segredos e distribuição

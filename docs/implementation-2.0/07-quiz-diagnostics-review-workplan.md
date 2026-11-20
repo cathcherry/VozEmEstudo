@@ -1,5 +1,8 @@
 # Etapa 4 — E11/E12: diagnóstico e revisão dos erros
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Em desenvolvimento:** PR #2 (Draft), branch `feat/etapa-2-biblioteca-2-0`. Nenhum merge na `main`, nenhuma migration aplicada ao Supabase e nenhuma feature ativada em ambiente real.
 
 ## O que já está implementado

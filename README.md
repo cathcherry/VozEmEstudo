@@ -1,76 +1,107 @@
-# Voz em Estudo — protótipo (código organizado)
+# Voz em Estudo
 
-Esta pasta contém o frontend, backend Node.js/Express, worker de processamento,
-integrações com Supabase, Hugging Face/Whisper e Groq, além dos scripts SQL.
+Plataforma de estudo que transforma a **gravação de uma aula** em material de estudo:
+transcrição revisável, resumos, listas de questões, flashcards e ferramentas de revisão, com foco em
+acessibilidade. Projeto de TCC.
+
+```
+gravação → recorte → transcrição automática → conferência humana → resumos, questões e cartões → estudo
+```
+
+Nada é gerado antes de a pessoa **conferir e confirmar** a transcrição, e tudo o que é gerado guarda
+a versão exata da transcrição de origem.
+
+## O que o app faz
+
+- **Envio de aulas**: áudio ou vídeo (MP4, MOV, WebM, MP3, WAV, M4A, AAC, OGG, FLAC) até 100 MB;
+  recorte de até ~54 min no navegador; envio retomável que continua de onde parou se a internet cair.
+- **Transcrição** com Whisper (Hugging Face) ou AssemblyAI, com idioma da gravação, legendas por
+  trecho ou palavra a palavra, edição com histórico de versões e três avisos automáticos de conteúdo.
+- **Resumos** em 7 formatos, 3 extensões, linguagem simples com glossário e prioridades de estudo;
+  versões nomeadas.
+- **Listas de questões** com quantidade personalizada, dificuldades, habilidades cognitivas e foco
+  temático; cada questão traz o trecho da aula que a sustenta; filtro de repetidas; compartilhamento
+  de folhas sem gabarito.
+- **Biblioteca** com busca, filtros, grade/lista e pastas de disciplinas e unidades.
+- **Busca global** em aulas, questões e transcrições.
+- **Exportação** em PDF, Markdown, TXT e CSV (flashcards).
+- **Acessibilidade**: modo para leitores de tela, leitura em voz alta, modo foco, fontes para
+  dislexia, régua de leitura, temas de alto contraste e temas personalizados.
+- **Perfil** com marcos de estudo e o mascote Nino.
+- Recursos prontos no código e aguardando migrations no banco de produção: planejamento,
+  tentativas e diagnóstico de questões, flashcards com revisão espaçada, tempo de estudo,
+  anotações, calendário e cópias de leitura de materiais.
+
+Lista completa, com o que depende de cada flag: **[docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md)**.
 
 ## Como iniciar no Windows
 
-1. Verifique que o Supabase e o Space do Hugging Face estão ativos.
-2. Dê dois cliques em **INICIAR.cmd**. Na primeira execução, o script instalará
-   automaticamente as dependências do backend com `npm ci` (precisa de internet).
-3. Aguarde a mensagem de inicialização da API e do worker.
-4. Abra **http://localhost:3000/painel.html** no navegador.
-5. Deixe a janela do terminal aberta; para encerrar, pressione Ctrl+C.
+Requisito: **Node.js 22.19 ou mais novo** (de preferência 24).
 
-Requisito: **Node.js 22.19+**, preferencialmente Node.js 24.
+1. Coloque seu arquivo privado `backend/.env` (modelo em `backend/.env.example`; variáveis
+   explicadas em [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)).
+2. Dê dois cliques em **INICIAR.cmd**. Na primeira vez ele instala as dependências do backend
+   (precisa de internet).
+3. Espere as mensagens de que a API e o worker iniciaram.
+4. Abra **http://localhost:3000/painel.html**.
+5. Deixe a janela aberta. Para encerrar, pressione **Ctrl+C**. Depois de mudar o `.env` ou de
+   atualizar o código, feche e abra o `INICIAR.cmd` de novo.
 
-## Se preferir usar o PowerShell
+### Pelo PowerShell
 
-Abra dois terminais na pasta `backend`, e execute:
+Se o PowerShell bloquear scripts, use `npm.cmd` em vez de `npm`. Em dois terminais, dentro da
+pasta `backend`:
 
-Terminal 1: `npm.cmd start`
-Terminal 2: `npm.cmd run worker`
+```bash
+npm.cmd ci
+```
 
-Instale as dependências antes com `npm.cmd ci` na pasta `backend`.
+```bash
+npm.cmd start
+```
 
-## Atualizar pelo GitHub Desktop (sem Docker)
+```bash
+npm.cmd run worker
+```
 
-1. Crie uma branch para cada lote de alterações, preservando a `main`.
-2. Envie as mudanças com **Commit** e **Push origin**.
-3. Abra um pull request e confira a execução **Quality** em GitHub Actions; ela utiliza máquinas do GitHub, não seu computador.
-4. Depois do merge, use **Fetch origin** e **Pull origin** no GitHub Desktop.
-5. Mudanças no Supabase serão fornecidas como SQL versionado e exigem conferência do destino e backup antes de execução no Dashboard. Não é necessário instalar PostgreSQL, Docker ou Supabase CLI para esse fluxo.
+## Atualizar pelo GitHub Desktop
 
-## Configuração e banco
+1. **Fetch origin** e depois **Pull origin** na branch desejada.
+2. Feche e abra o `INICIAR.cmd`; no navegador, **Ctrl+F5**.
+3. Para publicar mudanças: crie uma branch, faça **Commit** e **Push origin**, abra um pull request
+   e confira a verificação **Quality** no GitHub Actions antes do merge.
 
-- O repositório **não contém** `backend/.env`. Na instalação local, mantenha seu
-  próprio arquivo privado (use `backend/.env.example` apenas como referência).
-  Nunca publique credenciais, mesmo em repositório privado.
-- A migração E02 (`database/migrations/20261009101846_academic_review.sql`)
-  foi aplicada anteriormente ao projeto Supabase usado nos testes. **Não é
-  necessário reaplicá-la** se você estiver usando o mesmo banco.
-- Ao usar outro banco, conferir o schema e fazer backup antes de migrar.
-- O ZIP contém código e configuração, mas não inclui os dados armazenados
-  remotamente no Supabase nem os arquivos de áudio do Storage.
+Mudanças no banco vêm como SQL versionado em `database/migrations/` e nunca são aplicadas
+automaticamente: ver [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md).
 
-## Organização
+## Organização do repositório
 
-- `backend/`: servidor, worker, integração com APIs e `.env`.
-- `frontend/`: páginas e interface web.
-- `database/`: schema e migrações.
-- `asr-space/`: código do Space de reconhecimento de fala.
-- `scripts/`: verificações e inicializador usado pelo `INICIAR.cmd`.
-- `docs/`: documentação técnica (preservada), decisões e referências.
+| Pasta        | Conteúdo                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------- |
+| `frontend/`  | Páginas HTML, CSS e JavaScript (módulos ES, sem etapa de build)                             |
+| `backend/`   | API Express (`src/server.js`), worker de processamento (`src/worker.js`), integrações de IA |
+| `database/`  | Migrations, verificações e propostas de SQL                                                 |
+| `asr-space/` | Space do Hugging Face com Whisper (transcrição com tempos)                                  |
+| `scripts/`   | Inicializador do `INICIAR.cmd`, verificações de qualidade, segredos e distribuição          |
+| `docs/`      | Documentação — comece pelo [índice](docs/README.md)                                         |
+| `quality/`   | Linha de base de formatação                                                                 |
 
-Arquivos de licença permanecem em seus locais originais.
+## Documentação
 
-**Nota:** este ZIP é uma organização do pacote corrigido, sem modificações nos
-fluxos de negócio. A versão corrigida do cliente Whisper não foi validada aqui
-contra a API externa; o protótipo que você confirmou funcionando anteriormente
-foi a pasta original após aplicar E02 no Supabase.
+| Documento                                          | Para quê                                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [docs/README.md](docs/README.md)                   | Índice de toda a documentação                                                |
+| [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) | Tudo o que o app faz, página por página, e o que está disponível em produção |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)       | Arquitetura e fluxo de processamento                                         |
+| [docs/API.md](docs/API.md)                         | Rotas HTTP                                                                   |
+| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)   | Tabelas, migrations, segurança e situação da produção                        |
+| [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)       | Variáveis de ambiente e flags                                                |
+| [docs/AI_PROVIDERS.md](docs/AI_PROVIDERS.md)       | Provedores de transcrição e texto                                            |
+| [docs/TESTING.md](docs/TESTING.md)                 | Como rodar os testes                                                         |
 
+## Segurança
 
-### Recuperação de senha (Supabase Auth)
-
-A página `frontend/pages/recuperar-senha.html` envia um link de recuperação usando `resetPasswordForEmail` e permite definir uma nova senha após validar o código PKCE.
-
-No painel do Supabase, em **Authentication → URL Configuration → Redirect URLs**, inclua exatamente `http://localhost:3000/recuperar-senha.html` (além da URL de `auth-callback.html` usada no login social). Confira também que a opção de autenticação por e-mail está habilitada e que o SMTP/limite de envio permite mensagens de recuperação. Para o fluxo PKCE funcionar, abra o link de recuperação no mesmo navegador onde solicitou o e-mail.
-
-O formulário de cadastro apresenta uma mensagem genérica por privacidade quando a API não confirma se o e-mail é novo.
-
-
-## CSS de autenticação e publicação
-
-As páginas `login.html`, `cadastro.html` e `recuperar-senha.html` compartilham agora **uma folha de CSS de ajustes**, `frontend/css/auth-pages.css`, carregada depois dos estilos gerais. Os estilos globais (base, temas, kit) são mantidos intactos para as demais telas. Para não criar conflitos futuros, ajuste estas telas **somente nesse arquivo**. A verificação `node frontend/tests/auth-style-check.mjs` agora faz parte de `npm test` no GitHub Actions. Consulte [o mapa de CSS](docs/CSS_GUIDE.md) antes de alterar outros estilos.
-
-**GitHub:** o código é versionado no repositório privado `cathcherry/VozEmEstudo`. As instruções de publicação inicial em [`PUBLICAR_NO_GITHUB.md`](PUBLICAR_NO_GITHUB.md) são históricas. Faça as próximas alterações em branches e revise o CI antes de incorporar à `main`.
+- **Nunca publique `backend/.env`** nem chaves, mesmo em repositório privado. Ver
+  [PUBLICAR_NO_GITHUB.md](PUBLICAR_NO_GITHUB.md).
+- O navegador não escreve no banco: tudo passa pela API, que confere o dono de cada dado.
+- Links de compartilhamento guardam só o hash do token, expiram e podem ser revogados.

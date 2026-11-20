@@ -8,7 +8,8 @@ acessíveis nas suas abas; gerar novamente não apaga conteúdo já produzido.
 
 ## Conservação de vídeo
 
-Áudio e vídeo têm escolhas independentes. O trecho enviado para transcrição é WAV;
+Áudio e vídeo têm escolhas independentes. O trecho enviado para transcrição é um MP3 mono compacto (~0,5 MB/min; aulas antigas podem estar em WAV),
+enviado por upload retomável;
 quando solicitado e habilitado por `FEATURE_MP4_RETENTION=true`, o MP4 original
 inteiro é conservado separadamente no bucket privado `study-videos`, com metadados
 em `material_videos`. Partes fora do recorte também são conservadas no original.

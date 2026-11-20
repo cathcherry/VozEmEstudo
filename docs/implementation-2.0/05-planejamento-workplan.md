@@ -1,5 +1,8 @@
 # Etapa 3 de 9 — E05/E06: planejamento (terceira fatia)
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Referência:** PR #2 (Draft), branch `feat/etapa-2-biblioteca-2-0`. A `main` continua sendo a versão aprovada. **Sem migrações aplicadas ao Supabase.**
 
 ## O que já está na branch

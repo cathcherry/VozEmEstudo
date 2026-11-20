@@ -39,7 +39,8 @@ no `.env` não afetam tarefas já criadas. O modelo efetivamente informado pelo 
 
 ## Transcrição assíncrona (AssemblyAI)
 
-1. O worker prepara o WAV com o pipeline FFmpeg existente e envia (`/v2/upload`).
+1. O worker envia o áudio guardado (`/v2/upload`): o MP3 compacto do envio vai direto; MP4 é convertido
+   antes. Provedores síncronos (Whisper/HF) sempre recebem WAV.
 2. Registra a intenção (`submitting`) antes de `POST /v2/transcript` e salva o `id` externo.
 3. Libera o worker: a tarefa volta a `AGUARDANDO_REPETICAO` sem erro e sem consumir tentativas.
 4. Cada consulta é curta; ao concluir, palavras e segmentos são normalizados e gravados pela RPC

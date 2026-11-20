@@ -1,5 +1,8 @@
 # Etapa 5 de 9 — E13: Flashcards e revisão espaçada
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Estado:** implementação da etapa 5 concluída em código; aguardando homologação integrada. Versão de desenvolvimento salva na branch `feat/etapa-2-biblioteca-2-0`, PR #2 em rascunho. **Nenhum SQL foi aplicado ao Supabase.** A flag `FEATURE_FLASHCARDS=false` por padrão.
 
 ## Funcionalidades preparadas

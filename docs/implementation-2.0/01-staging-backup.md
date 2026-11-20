@@ -1,5 +1,8 @@
 # E00 — runbook de staging, backup e reversão
 
+> ⚠️ **Documento histórico.** Plano/runbook da etapa; afirmações como "nenhuma migration aplicada" refletem a data em que foi escrito. Para a situação atual, veja [BANCO_DE_DADOS.md](../BANCO_DE_DADOS.md).
+
+
 **Atualização de 10/10/2026:** staging `cissxpmmjnnpewreuxeo` criado pela usuária, com duas contas fictícias; leitura autorizada. Plano Free, sem backup automático conforme painel verificado pela usuária. Para esse alvo, seguir o complemento [03-manual-staging-backup.md](03-manual-staging-backup.md): backup lógico manual, Auth/permissões/histórico/Storage e ensaio Supabase local sem upgrade. Exportação/restore ainda não executados; nenhuma escrita remota autorizada. Os números do projeto anterior abaixo são históricos, não os deste staging.
 
 **Estado: preparado, execução remota dependente bloqueada.** Em E00 não foi criado staging, não houve dump de dados, restore, migration, rotação, limpeza de mídia ou publicação. O projeto existente conectado foi apenas consultado. Este runbook não autoriza executar as operações de escrita descritas.
