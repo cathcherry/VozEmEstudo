@@ -6,14 +6,14 @@ import { dirname, resolve } from 'node:path';
 import { progressForGoal, dateLabel, sortedPlanningTasks } from '../js/utils/planning-view.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(resolve(root,'pages/painel.html'),'utf8');
+const html = readFileSync(resolve(root,'pages/planejar.html'),'utf8');
 const css = readFileSync(resolve(root,'css/planning.css'),'utf8');
 const code = readFileSync(resolve(root,'js/pages/planning-panel.js'),'utf8');
 
-test('planning is hidden by default and uses scoped dashboard styles', () => {
+test('planning is hidden by default and uses styles scoped to the Planejar page', () => {
   assert.match(html,/data-planning-panel hidden/);
   assert.match(html,/\/css\/planning\.css/);
-  assert.match(css,/body\[data-page='dashboard'\]/);
+  assert.match(css,/data-page='plan'/);
   assert.match(code,/isFeatureEnabled\('planning'\)/);
   for(const name of [
     'data-planning-goal-form','data-planning-task-form',

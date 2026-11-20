@@ -9,9 +9,9 @@ import {
 } from '../js/utils/flashcard-view.js';
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(resolve(frontend, 'pages/painel.html'), 'utf8');
+const html = readFileSync(resolve(frontend, 'pages/revisar.html'), 'utf8');
 const code = readFileSync(resolve(frontend, 'js/pages/flashcards-panel.js'), 'utf8');
-const dashboard = readFileSync(resolve(frontend, 'js/pages/dashboard.page.js'), 'utf8');
+const dashboard = readFileSync(resolve(frontend, 'js/pages/review.page.js'), 'utf8');
 const css = readFileSync(resolve(frontend, 'css/flashcards.css'), 'utf8');
 
 test('flashcards are hidden until the feature is explicitly enabled', () => {
@@ -19,7 +19,7 @@ test('flashcards are hidden until the feature is explicitly enabled', () => {
   assert.match(code, /isFeatureEnabled\('flashcards'\)/);
   assert.match(dashboard, /initFlashcardsPanel/);
   assert.match(html, /\/css\/flashcards\.css/);
-  assert.match(css, /body\[data-page='dashboard'\]/);
+  assert.match(css, /data-page='review'/);
 });
 
 test('create, reveal, rate, edit, and archive controls have labels and statuses', () => {

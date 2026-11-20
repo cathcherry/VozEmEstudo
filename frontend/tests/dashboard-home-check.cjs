@@ -41,6 +41,25 @@ const materials = [
   lesson('l-ondas', 'Ondas e som', 'Física', 12, 1290000),
 ];
 
+/** A lesson at a given point of the study path: 'pending' (unconfirmed), 'summary', 'questions'. */
+function lessonDetail(m, stage) {
+  return {
+    ...m,
+    review: stage === 'pending'
+      ? { state: 'awaiting_confirmation', sourceRevisionId: null, revision: 1, permissionRequired: false }
+      : { state: 'ready_to_generate', sourceRevisionId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', revision: 1, permissionRequired: false },
+    warnings: [],
+    audio: m.audio_files[0],
+    transcription: {
+      current_revision: 1,
+      id: `tr-${m.id}`,
+      transcription_segments: [{ id: 'seg-1', position: 0, start_ms: 0, end_ms: 1500, current_text: 'A fotossíntese converte energia luminosa em energia química.' }],
+    },
+    summaries: stage === 'pending' ? [] : [{ id: 's1', is_current: true, version: 1, source_transcription_revision: 1, text: 'A **fotossíntese** ocorre no cloroplasto.' }],
+    questionBatches: stage === 'questions' ? [{ id: 'b1', generated_count: 1, source_transcription_revision: 1, questions: [{ id: 'q1', statement: 'Onde ocorre a fotossíntese?', options: ['Cloroplasto', 'Núcleo', 'Ribossomo'] }] }] : [],
+  };
+}
+
 function state() {
   return {
     goals: [
@@ -157,6 +176,24 @@ function state() {
         version: 1,
       },
     ],
+    quizSessions: [
+      {
+        id: 'qs1',
+        material_id: 'l-foto',
+        batch_id: 'b1',
+        status: 'active',
+        kind: 'full',
+        created_at: at(-1, 10),
+      },
+      {
+        id: 'qs2',
+        material_id: 'l-rev',
+        batch_id: 'b2',
+        status: 'completed',
+        kind: 'full',
+        created_at: at(-3, 10),
+      },
+    ],
     reviews: 0,
     sessions: 0,
     ticks: [],
@@ -201,6 +238,12 @@ async function setup(context, base, flags, data) {
         oauthProviders: [],
       });
     if (p === '/api/materials' && method === 'GET') return json(materials);
+    if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
+      const m = materials.find((item) => item.id === p.split('/')[3]);
+      return json({ ...lessonDetail(m, data.lessonStage?.[m.id] || 'summary'), signedAudioUrl: `${base}/__fixture.wav` });
+    }
+    if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
+    if (p.endsWith('/playback')) return json({ video: null, signedVideoUrl: null, signedAudioUrl: `${base}/__fixture.wav` });
     if (p === '/api/planning' && method === 'GET')
       return json({ goals: data.goals, subgoals: data.subgoals, tasks: data.tasks });
     if (p === '/api/planning/goals' && method === 'POST') {
@@ -214,10 +257,27 @@ async function setup(context, base, flags, data) {
       data.createdGoals.push(goal);
       return json(goal, 201);
     }
+    if (/^\/api\/planning\/goals\/[^/]+\/tasks$/.test(p) && method === 'POST') {
+      const body = request.postDataJSON();
+      const task = {
+        id: `t${data.tasks.length + 1}`,
+        goal_id: p.split('/')[4],
+        subgoal_id: body.subgoalId || null,
+        title: body.title,
+        due_date: body.dueDate || null,
+        material_id: body.materialId || null,
+        reference_url: body.referenceUrl || null,
+        completed_at: null,
+        sort_order: 9000,
+        created_at: new Date().toISOString(),
+      };
+      data.tasks.push(task);
+      return json(task, 201);
+    }
     if (p === '/api/flashcards/sets') return json([]);
     if (p === '/api/flashcards' && method === 'GET') {
       const filter = url.searchParams.get('filter');
-      const cards = filter === 'due' ? data.dueCards : data.dueCards;
+      const cards = filter === 'due' ? data.dueCards : (data.allCards ?? data.dueCards);
       return json({ cards, total: cards.length, limit: 100, offset: 0 });
     }
     if (/^\/api\/flashcards\/[^/]+\/reviews$/.test(p) && method === 'POST') {
@@ -281,6 +341,7 @@ async function setup(context, base, flags, data) {
       });
     }
     if (p === '/api/study/settings') return json({ ok: true });
+    if (p === '/api/quiz-sessions' && method === 'GET') return json(data.quizSessions);
     if (p === '/api/study/sessions' && method === 'POST') {
       data.sessions++;
       const body = request.postDataJSON();
@@ -378,6 +439,24 @@ const focusedText = (page) =>
     return `${el?.tagName}|${(el?.getAttribute('aria-label') || el?.textContent || '').trim().slice(0, 60)}`;
   });
 
+async function openApp(browser, base, flags, data, viewport = { width: 1440, height: 1000 }) {
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+  await setup(context, base, flags, data);
+  const page = await context.newPage();
+  page.on('pageerror', (e) => errors.push(`${page.url()} ${e.stack || e.message}`));
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !/404|Failed to load resource/.test(m.text()))
+      errors.push(m.text());
+  });
+  return { context, page };
+}
+const shot = (page, name, fullPage = true) =>
+  page.screenshot({ path: path.join(output, `${name}.png`), fullPage });
+async function settle(page) {
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(350);
+}
+
 async function main() {
   const app = express();
   app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png')));
@@ -385,6 +464,7 @@ async function main() {
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
+  app.get('/__fixture.wav', (_req, res) => res.sendFile(path.join(__dirname, 'artifacts', 'fixture.wav')));
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -403,301 +483,337 @@ async function main() {
     sharing: true,
     study_authoring: true,
     catalog_units: true,
+    quiz_v2: true,
+    quiz_review: true,
   };
   try {
-    // ---------- All study tools enabled -------------------------------------------------
+    // ---------- Returning student: Início with real summaries -----------------------------
     const data = state();
-    const context = await browser.newContext({
-      viewport: { width: 1440, height: 1000 },
-      deviceScaleFactor: 1,
-    });
-    await setup(context, base, allFlags, data);
-    const page = await context.newPage();
-    page.on('pageerror', (e) => errors.push(e.stack || e.message));
-    page.on('console', (m) => {
-      if (m.type() === 'error' && !/404|Failed to load resource/.test(m.text()))
-        errors.push(m.text());
-    });
+    data.allCards = [
+      ...data.dueCards,
+      {
+        id: 'c9',
+        front_text: 'Extra',
+        back_text: 'x',
+        status: 'active',
+        due_at: at(5, 8),
+        material_id: 'l-foto',
+      },
+    ];
+    let { context, page } = await openApp(browser, base, allFlags, data);
     await page.goto(base + '/painel.html');
     await ready(page);
-    await page.locator('[data-tasks-widget]:not([hidden])').waitFor();
-    await page.locator('[data-cards-widget]:not([hidden])').waitFor();
-    await page.locator('[data-events-widget] .dash-agenda-list').waitFor();
-    await page.locator('[data-week-widget]:not([hidden]) .dash-day-bar').first().waitFor();
-    await page.locator('[data-notes-widget]:not([hidden])').waitFor();
-
-    assert.equal(await page.locator('dialog[open]').count(), 0, 'no workspace is open by default');
-    for (const form of [
-      '[data-planning-goal-form]',
-      '[data-flashcard-create-form]',
-      '.calendar-event-form',
-      '.study-settings',
-    ])
-      assert(!(await page.locator(form).isVisible()), `${form} is hidden until requested`);
-    assert.match(
-      await page.locator('.dash-continue').textContent(),
-      /Fotossíntese e respiração celular/,
+    await page.locator('[data-tasks-preview] .dash-task-list').waitFor();
+    await page.locator('[data-cards-preview] .dash-next-card').waitFor();
+    await page.locator('[data-events-preview] .dash-agenda-list').waitFor();
+    await page.locator('[data-week-body] .dash-day-bar').first().waitFor();
+    await page.locator('[data-notes-summary]', { hasText: 'anotações salvas' }).waitFor();
+    await settle(page);
+    assert.equal(await page.locator('dialog').count(), 0, 'Início has no hidden tool panels');
+    assert.equal(
+      await page.locator('.primary-navigation a[aria-current="page"] span').textContent(),
+      'Início',
     );
+    for (const name of ['Nova transcrição', 'Início', 'Biblioteca', 'Revisar', 'Planejar'])
+      assert(
+        await page.locator('.primary-navigation a', { hasText: name }).isVisible(),
+        `${name} in the navigation`,
+      );
     assert.match(
       await page.locator('[data-pulse="tasks"]').textContent(),
       /3\s+tarefas pendentes \(1 atrasada\)/,
     );
-    assert.match(
-      await page.locator('[data-pulse="cards"]').textContent(),
-      /5\s+cartões para revisar/,
+    assert.equal(
+      await page.locator('[data-pulse="tasks"] a').getAttribute('href'),
+      './planejar.html#tarefas',
     );
-    assert.match(
-      await page.locator('[data-pulse="week"]').textContent(),
-      /95\s+de 150 min na semana/,
+    assert.equal(
+      await page.locator('[data-cards-actions] .button-link').textContent(),
+      'Revisar 5 cartões',
     );
-    assert.match(await page.locator('[data-tasks-preview]').textContent(), /Atrasada desde/);
-    assert.match(await page.locator('[data-events-preview]').textContent(), /Estudar fotossíntese/);
-    assert.match(await page.locator('[data-notes-summary]').textContent(), /7 anotações salvas/);
-    assert.equal(await page.locator('[data-recent-list] .dashboard-lesson-card').count(), 4);
-    const desktopHeight = await page.evaluate(() => document.documentElement.scrollHeight);
-    record(
-      `Painel com todos os recursos: resumo real de tarefas, cartões, semana, agenda e anotações; nenhum formulário aberto (altura ${desktopHeight}px)`,
-    );
-    // Hovering the hero (and its progress bar) must not move or hide its content.
+    for (const host of ['[data-tasks-actions]', '[data-cards-actions]', '[data-events-actions]'])
+      assert(
+        (await page.locator(`${host} .button-link`).count()) <= 1,
+        `${host}: at most one primary action`,
+      );
     const hero = page.locator('.dash-continue .dashboard-lesson-card');
     const before = await hero.locator('.dashboard-lesson-percent').boundingBox();
-    for (const target of [hero.locator('.dashboard-lesson-title'), hero.locator('.dashboard-lesson-playback progress')]) {
+    for (const target of [
+      hero.locator('.dashboard-lesson-title'),
+      hero.locator('.dashboard-lesson-playback progress'),
+    ]) {
       await target.hover();
       await page.waitForTimeout(250);
       const after = await hero.locator('.dashboard-lesson-percent').boundingBox();
-      const card = await hero.boundingBox();
-      assert(Math.abs(after.x - before.x) < 1 && Math.abs(after.y - before.y) < 1, 'progress text stays in place on hover');
-      assert(after.x >= card.x, 'progress text stays inside the card');
-      assert.equal(await hero.locator('.dashboard-lesson-cue').evaluate((n) => getComputedStyle(n).opacity), '1');
+      assert(
+        Math.abs(after.x - before.x) < 1 && Math.abs(after.y - before.y) < 1,
+        'hero progress stays in place on hover',
+      );
+      assert.equal(
+        await hero.locator('.dashboard-lesson-cue').evaluate((n) => getComputedStyle(n).opacity),
+        '1',
+      );
     }
     await page.mouse.move(0, 0);
-    record('Continuar estudando: passar o mouse não desloca nem esconde o progresso e o botão');
-    await axeCheck(page, 'body', 'dashboard');
-    record('Painel sem violações automáticas WCAG A/AA (axe-core)');
-    await page.screenshot({ path: path.join(output, 'painel-1440.png'), fullPage: true });
-
-    // Planning workspace: open, one form at a time, Escape layers, focus restoration.
-    const openPlanning = page.locator('[data-tasks-widget] button', {
-      hasText: 'Abrir planejamento',
-    });
-    await openPlanning.focus();
-    await page.keyboard.press('Enter');
-    await page.locator('#workspace-planning[open]').waitFor();
-    await page.locator('#workspace-planning .planning-goal').first().waitFor();
-    assert(!(await page.locator('[data-planning-goal-form]').isVisible()));
-    await page.locator('[data-planning-open="goal"]').click();
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-goal-title');
-    await page.keyboard.press('Escape');
-    assert.equal(
-      await page.locator('#workspace-planning[open]').count(),
-      1,
-      'Escape closes the form first',
-    );
-    assert(!(await page.locator('[data-planning-goal-form]').isVisible()));
-    assert.match(await focusedText(page), /Novo objetivo/);
-    await page
-      .getByRole('button', { name: 'Adicionar tarefa em Terminar o módulo de História' })
-      .click();
-    assert.equal(await page.locator('#planning-task-goal').inputValue(), 'g2');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-task-title');
-    await page.locator('[data-planning-task-form] [data-planning-cancel]').click();
-    await page.locator('[data-planning-open="goal"]').click();
-    await page.locator('#planning-goal-title').fill('Preparar seminário de Física');
-    await page.locator('[data-planning-goal-form] [type=submit]').click();
-    await page.locator('[data-planning-status]', { hasText: 'Objetivo criado' }).waitFor();
-    assert.equal(data.createdGoals.length, 1);
-    assert(
-      !(await page.locator('[data-planning-goal-form]').isVisible()),
-      'form closes after creating',
-    );
-    await page.screenshot({ path: path.join(output, 'workspace-planejamento-1440.png') });
-    await axeCheck(page, '#workspace-planning', 'planning workspace');
-    await page.keyboard.press('Escape');
-    await page
-      .locator('#workspace-planning[open]')
-      .waitFor({ state: 'detached' })
-      .catch(() => {});
-    assert.equal(await page.locator('#workspace-planning[open]').count(), 0);
-    assert.match(await focusedText(page), /Abrir planejamento/);
+    await axeCheck(page, 'body', 'Início');
+    await shot(page, 'inicio-1440');
     record(
-      'Planejamento: formulários sob demanda, ações por objetivo, Esc em camadas e foco devolvido ao botão de origem',
+      'Início: resumo real, cada cartão leva a uma página (no máximo uma ação principal), menu com Revisar e Planejar, sem painéis escondidos, hover estável, axe sem violações',
     );
 
-    // Flashcards: review straight from the dashboard.
-    await page.locator('[data-cards-review]').click();
-    await page.locator('#workspace-flashcards[open]').waitFor();
-    await page.waitForTimeout(350);
-    assert.match(await focusedText(page), /Revelar resposta/);
-    assert(!(await page.locator('[data-flashcard-create-form]').isVisible()), 'manual form folded');
+    // ---------- Planning journey: task → schedule → time ---------------------------------
+    await page.locator('[data-tasks-actions] a', { hasText: 'Adicionar tarefa' }).click();
+    await page.waitForURL('**/planejar.html#tarefas');
+    await page.locator('[data-planning-task-form]:visible').waitFor();
+    assert.equal(await page.locator('#tab-tarefas').getAttribute('aria-selected'), 'true');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-task-goal');
+    await page.locator('#planning-task-goal').selectOption('g2');
+    await page.locator('#planning-task-title').fill('Resumir o capítulo 5');
+    await page.locator('[data-planning-task-form] [type=submit]').click();
+    await page.locator('[data-planning-status]', { hasText: 'Tarefa criada' }).waitFor();
+    assert(data.tasks.some((t) => t.title === 'Resumir o capítulo 5'));
+    assert.equal(new URL(page.url()).search, '', 'the creation request is not repeated on reload');
+    await settle(page);
+    await axeCheck(page, 'main', 'Planejar › tarefas');
+    await shot(page, 'planejar-tarefas-1440');
+    await page.locator('#tab-tarefas').focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-calendario');
+    assert(page.url().endsWith('#calendario'));
+    await page.locator('#calendario .study-calendar-grid button').first().waitFor();
+    await page.locator('#calendario details.calendar-compose > summary').click();
+    await page
+      .locator('#calendario .calendar-event-form input[type=text]')
+      .fill('Estudar capítulo 5');
+    await page
+      .locator('#calendario input[type=datetime-local]')
+      .nth(0)
+      .fill(`${day(2)}T10:00`);
+    await page
+      .locator('#calendario input[type=datetime-local]')
+      .nth(1)
+      .fill(`${day(2)}T11:00`);
+    await page.locator('#calendario .calendar-event-form [type=submit]').click();
+    await page.locator('#calendario [role=status]', { hasText: 'Horário salvo' }).waitFor();
+    await settle(page);
+    await axeCheck(page, 'main', 'Planejar › calendário');
+    await shot(page, 'planejar-calendario-1440');
+    await page.locator('#tab-tempo').click();
+    await page.locator('#tempo .study-timer-controls').waitFor();
+    assert(
+      !(await page.locator('#tempo .study-settings').isVisible()),
+      'goal settings folded until requested',
+    );
+    await page.locator('#tempo .study-timer-controls button', { hasText: 'Iniciar' }).click();
+    await page.waitForTimeout(1500);
+    assert.equal(data.sessions, 1);
+    await page.locator('#tempo .study-timer-controls button', { hasText: 'Pausar' }).click();
+    await settle(page);
+    await axeCheck(page, 'main', 'Planejar › tempo');
+    await shot(page, 'planejar-tempo-1440');
+    record(
+      'Jornada de planejamento: Início › Adicionar tarefa abre o formulário certo; abas com setas e #endereço; agendar horário; cronômetro',
+    );
+
+    // ---------- Flashcard and question journey -------------------------------------------
+    await page.goto(base + '/painel.html');
+    await ready(page);
+    await page.locator('[data-cards-actions] a', { hasText: 'Revisar 5 cartões' }).click();
+    await page.waitForURL('**/revisar.html#flashcards');
+    await page
+      .locator('[data-flashcard-due-area] button', { hasText: 'Revelar resposta' })
+      .waitFor();
+    await page.waitForFunction(() =>
+      document.activeElement?.textContent?.includes('Revelar resposta'),
+    );
     await page.keyboard.press('Enter');
     assert.match(await focusedText(page), /De novo|Difícil|Bom|Fácil/);
-    await page.screenshot({ path: path.join(output, 'workspace-flashcards-1440.png') });
     await page.getByRole('button', { name: 'Bom', exact: true }).click();
     await page
       .locator('[data-flashcard-review-status]', { hasText: 'Revisão registrada' })
       .waitFor();
     assert.equal(data.reviews, 1);
-    assert.match(await focusedText(page), /Revelar resposta/);
-    await axeCheck(page, '#workspace-flashcards', 'flashcards workspace');
-    await page.locator('#workspace-flashcards [data-workspace-close]').click();
+    await settle(page);
+    await axeCheck(page, 'main', 'Revisar › flashcards');
+    await shot(page, 'revisar-flashcards-1440');
+    await page.locator('#tab-questoes').click();
+    await page.locator('.quiz-history-list a', { hasText: 'Continuar tentativa' }).waitFor();
+    assert.match(await page.locator('.quiz-history-list').first().textContent(), /Fotossíntese/);
     assert.match(
-      await page.locator('[data-pulse="cards"]').textContent(),
-      /4\s+cartões para revisar/,
+      await page
+        .locator('.quiz-history-list a', { hasText: 'Ver resultado e erros' })
+        .getAttribute('href'),
+      /responder\.html\?material=l-rev&batch=b2&session=qs2/,
     );
+    await axeCheck(page, 'main', 'Revisar › questões');
+    await shot(page, 'revisar-questoes-1440');
     record(
-      'Flashcards: "Revisar agora" abre a revisão com foco, avaliação registrada e contagem do painel atualizada',
+      'Jornada de revisão: Início › Revisar 5 cartões abre a revisão com foco; Questões lista tentativas com Continuar / Ver resultado e erros',
     );
 
-    // Calendar: schedule from the dashboard.
-    const queriesBefore = data.calendarQueries;
-    await page.locator('[data-events-widget] button', { hasText: 'Agendar estudo' }).click();
-    await page.locator('#workspace-calendar[open]').waitFor();
-    await page.locator('#workspace-calendar .study-calendar-grid button').first().waitFor();
-    assert(
-      await page.locator('#workspace-calendar details.calendar-compose').evaluate((d) => d.open),
-    );
-    assert.equal(
-      await page.evaluate(() => document.activeElement.closest('form')?.className),
-      'calendar-event-form',
-    );
-    await page.keyboard.type('Revisar funções');
-    const local = (offset, hour) => {
-      const d = new Date();
-      d.setDate(d.getDate() + offset);
-      return `${day(offset)}T${String(hour).padStart(2, '0')}:00`;
-    };
-    await page.locator('#workspace-calendar input[type=datetime-local]').nth(0).fill(local(2, 10));
-    await page.locator('#workspace-calendar input[type=datetime-local]').nth(1).fill(local(2, 11));
-    await page.locator('#workspace-calendar .calendar-event-form [type=submit]').click();
-    await page.locator('#workspace-calendar [role=status]', { hasText: 'Horário salvo' }).waitFor();
-    await page.screenshot({ path: path.join(output, 'workspace-calendario-1440.png') });
-    await axeCheck(page, '#workspace-calendar', 'calendar workspace');
-    await page.keyboard.press('Escape');
-    await page.locator('[data-events-preview]', { hasText: 'Revisar funções' }).waitFor();
-    assert(data.calendarQueries > queriesBefore);
-    record(
-      'Calendário: "Agendar estudo" abre o formulário com foco, salva e a agenda do painel se atualiza',
-    );
-
-    // Study time: the timer keeps running with the sheet closed.
-    await page.locator('[data-timer-toggle]').click();
-    await page.locator('[data-week-timer].is-running').waitFor();
-    assert.equal(data.sessions, 1);
-    await page.locator('[data-week-widget] [data-open-workspace="tracking"]').click();
-    await page.locator('#workspace-tracking[open]').waitFor();
-    await page.waitForTimeout(350);
-    assert(
-      !(await page.locator('#workspace-tracking .study-settings').isVisible()),
-      'goal settings folded',
-    );
-    await page.screenshot({ path: path.join(output, 'workspace-tempo-1440.png') });
-    await axeCheck(page, '#workspace-tracking', 'tracking workspace');
-    await page.keyboard.press('Escape');
-    await page.waitForTimeout(2200);
-    assert(
-      await page.locator('[data-week-timer].is-running').count(),
-      'timer still running after closing the sheet',
-    );
-    assert.notEqual(await page.locator('[data-timer-clock]').textContent(), '00:00');
-    await page.locator('[data-timer-toggle]').click();
-    await page.locator('[data-week-timer]:not(.is-running)').waitFor();
-    assert(data.ticks.length > 0);
-    record(
-      'Tempo de estudo: iniciar/pausar no painel; a sessão continua ao fechar o painel lateral',
-    );
-
-    // Annotations through the existing global search.
+    // ---------- Finding information: annotations through the global search ---------------
+    await page.goto(base + '/painel.html');
+    await ready(page);
     await page.locator('.topbar-search input').fill('energia');
     await page.locator('.topbar-search input').press('Enter');
     await page.getByRole('tab', { name: /Anotações/ }).click();
     await page.locator('.search-note', { hasText: 'Cai na prova!' }).waitFor();
-    await page.locator('#search-panel-notes button', { hasText: 'anotaç' }).click();
-    await page.locator('#workspace-notes[open]').waitFor();
-    assert.equal(await page.locator('#workspace-notes input[type=search]').inputValue(), 'energia');
-    await page.locator('#workspace-notes .annotation-card').first().waitFor();
-    await page.screenshot({ path: path.join(output, 'workspace-anotacoes-1440.png') });
-    await axeCheck(page, '#workspace-notes', 'notes workspace');
-    await page.keyboard.press('Escape');
+    await page.locator('#search-panel-notes button', { hasText: 'em Revisar' }).click();
+    await page.waitForURL('**/revisar.html#anotacoes');
+    await page.locator('#anotacoes .annotation-card').first().waitFor();
+    assert.equal(await page.locator('#anotacoes input[type=search]').inputValue(), 'energia');
+    await settle(page);
+    await axeCheck(page, 'main', 'Revisar › anotações');
+    await shot(page, 'revisar-anotacoes-1440');
     record(
-      'Anotações: aba na busca global e painel completo com a mesma busca, sem um segundo campo de busca no painel',
+      'Encontrar informação: a busca global mostra a aba Anotações e leva a Revisar com a mesma busca',
     );
 
-    // Widths, zoom and preferences.
+    // ---------- Question practice from the lesson: steps and the next action -------------
+    data.lessonStage = { 'l-foto': 'summary', 'l-rev': 'pending', 'l-func': 'questions' };
+    await page.goto(base + '/material.html?id=l-foto');
+    await page.locator('[data-lesson-steps]:not([hidden]) .lesson-next button').waitFor();
+    assert.deepEqual(
+      await page.locator('.lesson-step').evaluateAll((items) => items.map((i) => i.className.replace('lesson-step ', ''))),
+      ['is-done', 'is-done', 'is-current', 'is-todo'],
+    );
+    assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
+    assert.equal(await page.locator('.lesson-tools .lesson-tool[open] > summary').first().textContent(), 'Cronômetro de estudo');
+    const stepsBox = await page.locator('[data-lesson-steps]').boundingBox();
+    const toolsBox = await page.locator('.lesson-tools').boundingBox();
+    assert(toolsBox.y > stepsBox.y, 'timer and annotations come after the lesson content');
+    await settle(page);
+    await axeCheck(page, 'main', 'Aula › etapas');
+    await shot(page, 'aula-etapas-1440');
+    await page.locator('.lesson-next button', { hasText: 'Criar questões' }).click();
+    await page.locator('[data-questions-dialog][open]').waitFor();
+    assert.equal(await page.locator('#tab-questions').getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('Escape');
+    await page.goto(base + '/material.html?id=l-func');
+    await page.locator('.lesson-next button', { hasText: 'Responder a lista' }).waitFor();
+    await page.goto(base + '/material.html?id=l-rev');
+    await page.locator('[data-lesson-steps]:not([hidden])').waitFor();
+    assert.equal(await page.locator('.lesson-next button').count(), 0, 'one primary action: the page already asks to check the transcript');
+    assert(await page.locator('.lesson-step-button').nth(1).isDisabled(), 'summary waits for confirmation');
+    await shot(page, 'aula-pendente-1440');
+    record('Jornada de questões: a aula mostra as etapas e o próximo passo (Criar questões abre a lista; Responder a lista; etapas travadas até confirmar)');
+
+    // ---------- Widths, zoom, themes, screen-reader mode ---------------------------------
+    for (const route of ['painel.html', 'planejar.html#tarefas', 'revisar.html#flashcards']) {
+      await page.goto(`${base}/${route}`);
+      await settle(page);
+      for (const [width, height] of [
+        [1920, 1080],
+        [1280, 800],
+        [834, 1112],
+        [640, 800],
+        [390, 844],
+        [320, 640],
+      ]) {
+        await page.setViewportSize({ width, height });
+        await page.waitForTimeout(250);
+        await noHorizontalScroll(page, `${route} @${width}`);
+        if ([1280, 834, 390].includes(width)) await shot(page, `${route.split('.')[0]}-${width}`);
+      }
+      await page.setViewportSize({ width: 1440, height: 1000 });
+    }
+    record(
+      'Sem rolagem horizontal em Início, Planejar e Revisar de 320 a 1920 px (640 px = zoom 200%)',
+    );
     await page.goto(base + '/painel.html');
     await ready(page);
-    for (const [width, height, name] of [
-      [1920, 1080, 'painel-1920'],
-      [1280, 800, 'painel-1280'],
-      [834, 1112, 'painel-tablet-834'],
-      [390, 844, 'painel-mobile-390'],
-      [640, 800, 'painel-zoom200-640'],
-      [320, 640, 'painel-320'],
-    ]) {
-      await page.setViewportSize({ width, height });
-      await page.waitForTimeout(350);
-      await noHorizontalScroll(page, name);
-      await page.screenshot({ path: path.join(output, `${name}.png`), fullPage: true });
-    }
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator('[data-tasks-widget] button', { hasText: 'Abrir planejamento' }).click();
-    await page.locator('#workspace-planning[open]').waitFor();
-    await noHorizontalScroll(page, 'planning sheet on phone');
-    const sheet = await page.locator('#workspace-planning').boundingBox();
-    assert(sheet.width >= 389, 'sheet fills the phone screen');
-    await page.screenshot({ path: path.join(output, 'workspace-planejamento-mobile-390.png') });
-    await page.keyboard.press('Escape');
-    await page.locator('[data-cards-review]').click();
-    await page.locator('#workspace-flashcards[open]').waitFor();
-    await page.waitForTimeout(350);
-    await page.screenshot({ path: path.join(output, 'workspace-flashcards-mobile-390.png') });
-    await page.keyboard.press('Escape');
-    record(
-      'Sem rolagem horizontal em 1920, 1280, 834, 640 (zoom 200%), 390 e 320 px; painéis laterais em tela cheia no celular',
-    );
-
-    await page.setViewportSize({ width: 1440, height: 1000 });
     for (const [attr, value, name] of [
-      ['data-theme', 'night', 'painel-tema-noturno'],
-      ['data-high-contrast', 'true', 'painel-alto-contraste'],
-      ['data-focus-mode', 'true', 'painel-modo-foco'],
+      ['data-theme', 'night', 'inicio-tema-noturno'],
+      ['data-high-contrast', 'true', 'inicio-alto-contraste'],
+      ['data-screen-reader-mode', 'true', 'inicio-leitor-de-tela'],
     ]) {
       await page.evaluate(([a, v]) => document.documentElement.setAttribute(a, v), [attr, value]);
       await page.waitForTimeout(250);
-      await page.screenshot({ path: path.join(output, `${name}.png`), fullPage: true });
+      await shot(page, name);
       await page.evaluate(([a]) => document.documentElement.removeAttribute(a), [attr]);
     }
-    record('Tema noturno, alto contraste e modo foco renderizados');
+    record('Tema noturno, alto contraste e modo leitor de tela renderizados');
     await context.close();
 
-    // ---------- Fallback: study tools disabled ------------------------------------------
-    const offContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    await setup(offContext, base, {}, state());
-    const off = await offContext.newPage();
-    off.on('pageerror', (e) => errors.push(e.stack || e.message));
-    await off.goto(base + '/painel.html');
-    await ready(off);
-    await off.waitForTimeout(600);
-    assert(await off.locator('[data-plan-section]').isHidden());
-    assert(await off.locator('[data-week-widget]').isHidden());
-    assert(await off.locator('[data-dash-pulse]').isHidden());
-    assert(await off.locator('[data-notes-widget]').isHidden());
-    assert.match(await off.locator('.dash-continue').textContent(), /Fotossíntese/);
-    assert.equal(await off.locator('[data-recent-list] .dashboard-lesson-card').count(), 4);
-    await off.screenshot({
-      path: path.join(output, 'painel-recursos-desligados-1280.png'),
-      fullPage: true,
+    // ---------- New student: empty account -----------------------------------------------
+    const fresh = state();
+    Object.assign(fresh, {
+      goals: [],
+      subgoals: [],
+      tasks: [],
+      dueCards: [],
+      allCards: [],
+      events: [],
+      notes: [],
+      quizSessions: [],
     });
-    record(
-      'Flags desligadas: só aparecem aula em andamento e Biblioteca; nenhum resumo ou botão sem função',
+    ({ context, page } = await openApp(browser, base, allFlags, fresh));
+    await page.route('**/api/study/overview', (route) =>
+      route.fulfill({
+        json: {
+          weekStart: day(-3),
+          timezone: 'America/Sao_Paulo',
+          goalMinutes: 120,
+          weekSeconds: 0,
+          completedMaterials: 0,
+          days: [],
+          activeSession: null,
+        },
+      }),
     );
-    await offContext.close();
+    await page.goto(base + '/painel.html');
+    await ready(page);
+    await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).waitFor();
+    await page
+      .locator('[data-cards-preview]', { hasText: 'Crie cartões a partir do resumo' })
+      .waitFor();
+    await page.locator('[data-events-preview]', { hasText: 'Planeje quando' }).waitFor();
+    await page.locator('[data-week-body]', { hasText: 'Use o cronômetro' }).waitFor();
+    await settle(page);
+    assert.equal(await page.locator('.dash-day-bar').count(), 0, 'no empty chart');
+    assert(await page.locator('[data-dash-pulse]').isHidden(), 'no zero counters');
+    await axeCheck(page, 'body', 'Início vazio');
+    await shot(page, 'inicio-conta-nova-1440');
+    await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).click();
+    await page.waitForURL('**/planejar.html#tarefas');
+    await page.locator('#planning-goal-title:focus').waitFor();
+    await page.goto(base + '/revisar.html#questoes');
+    await page
+      .locator('#questoes', { hasText: 'Você ainda não respondeu nenhuma lista' })
+      .waitFor();
+    await shot(page, 'revisar-questoes-vazio-1440');
+    record(
+      'Conta nova: cada cartão explica o recurso e oferece uma ação; sem gráficos ou contadores zerados; "Criar primeiro objetivo" abre o formulário',
+    );
+    await context.close();
+
+    // ---------- Flags off ----------------------------------------------------------------
+    ({ context, page } = await openApp(browser, base, {}, state(), { width: 1280, height: 800 }));
+    await page.goto(base + '/painel.html');
+    await ready(page);
+    await page.waitForTimeout(600);
+    assert(await page.locator('.primary-navigation a', { hasText: 'Revisar' }).isHidden());
+    assert(await page.locator('.primary-navigation a', { hasText: 'Planejar' }).isHidden());
+    assert(await page.locator('[data-plan-section]').isHidden());
+    assert(await page.locator('[data-week-widget]').isHidden());
+    assert(await page.locator('[data-notes-widget]').isHidden());
+    assert.match(await page.locator('.dash-continue').textContent(), /Fotossíntese/);
+    await shot(page, 'inicio-recursos-desligados-1280');
+    await page.goto(base + '/planejar.html');
+    await page
+      .locator('[data-tool-unavailable]', { hasText: 'O planejamento ainda não está ativo' })
+      .waitFor();
+    record(
+      'Flags desligadas: menu sem Revisar/Planejar, Início só com aula e Biblioteca, página direta explica que o recurso não está ativo',
+    );
+    await context.close();
   } finally {
     await browser.close();
     server.close();
   }
   assert.deepEqual(errors, [], 'browser errors');
   fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify(passed, null, 2));
-  console.log(`${passed.length} dashboard checks passed`);
+  console.log(`${passed.length} navigation and journey checks passed`);
 }
 main().catch((error) => {
   console.error(error);

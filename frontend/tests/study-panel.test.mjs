@@ -27,7 +27,7 @@ test('study panel renders metrics and validates settings without breaking other 
   } finally {dom.window.close();}
 });
 test('tracking markers remain hidden by default and routes require explicit feature flag',()=>{
-  for(const file of ['painel','material']){
+  for(const file of ['planejar','material']){
     const html=readFileSync(new URL(`../pages/${file}.html`,import.meta.url),'utf8');
     assert.match(html,/data-study-tracking-panel hidden/);
   }

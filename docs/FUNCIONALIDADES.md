@@ -14,7 +14,7 @@ de produção (`audioestudo`) e o que ainda depende de migrations não aplicadas
 1. [Visão geral do fluxo](#1-visão-geral-do-fluxo)
 2. [Conta e acesso](#2-conta-e-acesso)
 3. [Estrutura comum das páginas](#3-estrutura-comum-das-páginas)
-4. [Painel](#4-painel)
+4. [Início, Revisar e Planejar](#4-início-revisar-e-planejar)
 5. [Nova transcrição (envio)](#5-nova-transcrição-envio)
 6. [Processamento](#6-processamento)
 7. [Biblioteca](#7-biblioteca)
@@ -77,58 +77,77 @@ Páginas: `login.html`, `cadastro.html`, `recuperar-senha.html`, `auth-callback.
 
 ## 3. Estrutura comum das páginas
 
-- **Barra lateral**: Painel, Nova transcrição, Biblioteca e Configurações. Pode ser recolhida, ou
-  trocada por uma **barra inferior** (Aparência › Navegação).
+- **Barra lateral**, organizada por atividade:
+  - **Nova transcrição** (botão no topo): enviar uma aula.
+  - **Início**: o que estudar agora (visão geral).
+  - **Biblioteca**: todas as aulas; cada aula é onde se estuda.
+  - **Revisar**: flashcards, tentativas de questões e anotações (aparece se ao menos um desses
+    recursos estiver ativo).
+  - **Planejar**: objetivos e tarefas, calendário e tempo de estudo (aparece se ao menos um desses
+    recursos estiver ativo).
+  - **Configurações**, no rodapé do menu.
+
+  O menu pode ser recolhido, ou trocado por uma **barra inferior** (Aparência › Navegação); no modo
+  foco, os mesmos destinos ficam no atalho de navegação do modo foco.
+
 - **Barra superior**: busca na Biblioteca, atalho para Aparência, **Modo foco** (Alt+F, com A−/A+),
   e o menu da conta (Perfil, Configurações, Sair).
 - **Atalhos**: `?` abre a lista de atalhos de teclado.
 - **Nino**, o mascote, aparece em estados vazios e becos sem saída (busca sem resultado, link
   expirado, pasta vazia) com poses diferentes.
 
-## 4. Painel
+## 4. Início, Revisar e Planejar
 
-Página: `painel.html`. O Painel mostra resumos e ações; a interface completa de cada ferramenta
-abre num **painel lateral** (`<dialog>`, ocupa a tela toda no celular), sem sair da página. Esc ou
-o botão × fecham o painel lateral e o foco volta ao botão que o abriu. Roteiro de teste manual:
-[PAINEL_TESTE_MANUAL.md](PAINEL_TESTE_MANUAL.md).
+### Início (`painel.html`)
 
-Ordem da página:
+Visão geral; nada é editado aqui. Cada bloco tem um destino claro:
 
-1. **"Olá, {nome}"** e **Nova transcrição**.
+1. "Olá, {nome}". Com o menu lateral visível, **Nova transcrição** fica só no menu; em telas
+   estreitas e no modo foco, também ao lado da saudação.
 2. **Linha de atenção**: tarefas pendentes (e atrasadas), cartões para revisar e minutos da semana.
-   Cada item abre a ferramenta correspondente. Só aparece o que tem dado real.
-3. **Continuar estudando**: a última aula aberta, com disciplina, trecho ouvido e **Continuar
-   aula**.
-4. **Sua semana** (`study_tracking`): minutos e meta semanal, barras por dia, cronômetro com
-   **Iniciar sessão / Pausar / Retomar**. A sessão continua contando com o painel lateral fechado.
-   **Meta, histórico e sincronização** abre o painel completo (tipo de sessão, meta, fuso, conflitos
-   de sincronização e importação do andamento local, os dois últimos recolhidos).
-5. **Para estudar**: até três colunas, conforme as flags:
-   - **Próximas tarefas** (`planning`): até quatro pendentes, por prazo, com o objetivo. **Abrir
-     planejamento** mostra objetivos, subobjetivos e tarefas; criar objetivo, subobjetivo ou tarefa
-     abre um formulário de cada vez (também pelos botões **Adicionar tarefa / Adicionar
-     subobjetivo** de cada objetivo). Filtros, ordenação manual, edição, link de apoio e aula
-     relacionada continuam no painel lateral.
-   - **Revisão de flashcards** (`flashcards`): cartões do dia e a pergunta do primeiro da fila.
-     **Revisar agora** abre a revisão (De novo / Difícil / Bom / Fácil); **Criar ou gerenciar
-     cartões** leva a **Gerar cartões com IA** e **Criar cartão manualmente** (recolhidos),
-     **Organizar meus cartões** (filtros, edição, arquivar, histórico) e, com `flashcard_sets`,
-     **Conjuntos de flashcards**.
-   - **Próximos dias** (`calendar`): horários e prazos de tarefas dos próximos 14 dias. **Abrir
-     calendário** mostra o mês, a agenda do dia, edição e exportação **.ics**; **Agendar estudo**
-     abre direto o formulário.
-6. **Aulas recentes**, com o resumo da Biblioteca, **Suas disciplinas**, **Assuntos revisitados** e
-   **Anotações e destaques** (`annotations`: total salvo e **Ver e buscar anotações**).
+   Só aparece o que tem valor diferente de zero; cada item abre a página correspondente.
+3. **Continuar estudando**: última aula aberta, disciplina, trecho ouvido e **Continuar aula**.
+4. **Sua semana** (`study_tracking`): minutos, meta e barras por dia. Sem minutos registrados, explica
+   o cronômetro em vez de mostrar um gráfico vazio. **Ver tempo de estudo e meta** → Planejar.
+5. **Para estudar** (cada coluna só com a flag ligada): **Próximas tarefas**, **Flashcards** (cartões
+   do dia e a pergunta do primeiro da fila) e **Próximos 14 dias** (horários e prazos). Cada coluna
+   tem no máximo uma ação principal e um link; sem dados, explica o recurso e oferece um primeiro
+   passo ("Criar primeiro objetivo", "Escolher uma aula", "Agendar estudo").
+6. **Aulas recentes**, **Suas disciplinas**, **Assuntos revisitados** e **Anotações e destaques**.
 
-**Busca global** (`GET /api/search`): procura em títulos de aulas, enunciados de questões e na
-transcrição, sem diferenciar acentos. Mostra sugestões enquanto se digita (setas e Esc); o resultado
-abre em abas (Aulas, Questões, Transcrições e, com `annotations`, **Anotações**) que só aparecem
-quando têm resultados. Termos encontrados ficam em negrito, e o resultado de transcrição abre a aula
-já no trecho. Na aba Anotações, um botão abre todas as anotações encontradas com paginação.
-Gabaritos nunca entram na busca.
+**Busca global** (`GET /api/search`): títulos, enunciados de questões e transcrição, sem diferenciar
+acentos, com sugestões enquanto se digita. Resultados em abas (Aulas, Questões, Transcrições e, com
+`annotations`, **Anotações**) que só aparecem quando têm resultados; o botão da aba Anotações abre
+Revisar › Anotações com a mesma busca. Gabaritos nunca entram na busca.
 
-Com uma flag desligada, o resumo e o painel lateral daquele recurso não aparecem. Com todas
-desligadas, o Painel mostra só Continuar estudando e a Biblioteca.
+### Revisar (`revisar.html`)
+
+Uma aba por recurso ativo, com endereço próprio (`#flashcards`, `#questoes`, `#anotacoes`):
+
+- **Flashcards** (`flashcards`): revisão do dia (De novo / Difícil / Bom / Fácil, com o foco
+  acompanhando a revisão pelo teclado); **Gerar cartões com IA** e **Criar cartão manualmente**
+  (recolhidos); **Organizar meus cartões** (filtros, edição, arquivar, excluir, histórico) e, com
+  `flashcard_sets`, **Conjuntos de flashcards** (renomear, arquivar, exportar CSV ou Markdown).
+- **Questões** (`quiz_v2`): todas as tentativas, em andamento (**Continuar tentativa**) e concluídas
+  (**Ver resultado e erros**, onde fica "Refazer apenas as questões erradas").
+- **Anotações** (`annotations`): busca e paginação em todas as anotações, com link para a aula.
+
+### Planejar (`planejar.html`)
+
+Abas `#tarefas`, `#calendario`, `#tempo`:
+
+- **Objetivos e tarefas** (`planning`): **Novo objetivo / Nova tarefa / Novo subobjetivo** abrem um
+  formulário de cada vez; cada objetivo tem **Adicionar tarefa** e **Adicionar subobjetivo** com o
+  objetivo já escolhido. Filtros, ordem manual, edição, aula relacionada e link de apoio.
+- **Calendário** (`calendar`): mês, agenda do dia, **Agendar estudo** (recolhido até ser pedido),
+  edição, horário ligado a tarefa e exportação **.ics**.
+- **Tempo de estudo** (`study_tracking`): cronômetro (estudo livre ou Pomodoro 25/5), minutos por
+  dia; **Meta semanal e fuso horário** e **Sincronização** recolhidos (abrem sozinhos num conflito).
+
+Links diretos usados pelo Início: `planejar.html?criar=objetivo|tarefa#tarefas`,
+`planejar.html?criar=horario#calendario`, `revisar.html?acao=revisar#flashcards`,
+`revisar.html?busca=…#anotacoes`. Com todas as flags de uma página desligadas, ela explica que o
+recurso não está ativo.
 
 ## 5. Nova transcrição (envio)
 
@@ -183,9 +202,9 @@ Página: `historico.html`.
 
 - Busca, visualização em **Grade** ou **Lista**, e **Filtros**: por aula ou por tipo de recurso,
   disciplina, tag, situação (prontos, em processamento, com erro), progresso de estudo e ordenação.
-- Menu **⋯** de cada aula: Abrir material, Editar transcrição, Organizar, Ver questões, Gerar novas
+- Menu **⋯** de cada aula: Abrir aula, Editar transcrição, Editar informações, Ver questões, Gerar novas
   questões, Mover para pasta, Excluir material (com confirmação).
-- **Organizar**: título, disciplina, pasta/unidade e até 12 tags extras.
+- **Editar informações**: título, disciplina, pasta/unidade e até 12 tags extras.
 - **Pastas** (`catalog_units`, E03): disciplinas e unidades como pastas, criação com **+**,
   arrastar-e-soltar aulas, ícone PNG personalizado.
   - Menu **⋯** da disciplina: **Editar** (nome e ícone) e **Remover**. Remover nunca apaga aulas:
@@ -193,9 +212,22 @@ Página: `historico.html`.
 
 ## 8. Página da aula (material)
 
-Página: `material.html`. Cabeçalho com **Organizar**, **Exportar** e **Compartilhar**; player; três
-abas: **Transcrição | Resumo | Questões** (setas/Home/End; endereços `#transcricao`, `#resumo`,
-`#questoes`).
+Página: `material.html`. Cabeçalho com **Editar informações** (título, disciplina e tags, na
+Biblioteca), **Exportar** e **Compartilhar**; player; **etapas de estudo**; três abas:
+**Transcrição | Resumo | Questões** (setas/Home/End; endereços `#transcricao`, `#resumo`,
+`#questoes`). Depois do conteúdo: **Cronômetro de estudo** (aberto) e **Anotações e destaques desta
+aula** (recolhido), quando as flags estão ligadas, e **Marcar aula como estudada**.
+
+### Etapas de estudo
+
+Mostra onde a aula está e o próximo passo, com um único botão principal:
+**1 Conferir transcrição → 2 Resumo → 3 Questões → 4 Flashcards** (a 4ª só com
+`flashcards` + `flashcard_sets`). Cada etapa leva à aba correspondente; resumo, questões e
+flashcards ficam travados até a transcrição ser confirmada (nesse momento, a ação da página já é
+"Conferir transcrição" / "Confirmar e continuar"). O próximo passo usa os botões existentes:
+**Gerar resumo**, **Criar questões** (abre "Gerar lista de questões"), **Responder a lista** e
+**Criar flashcards**. Questões contam como feitas quando há resposta registrada ou tentativa na
+conta. Com tudo feito: "Aula estudada" e o link para Revisar.
 
 ### Player
 
@@ -272,7 +304,7 @@ Escolha do conteúdo e do formato em um único diálogo:
 - **Compartilhar** (`sharing`, E18/E19): cópia de leitura da transcrição e/ou do resumo, por 1, 7 ou
   30 dias, revogável.
 - **Marcar revisão concluída** (e desfazer).
-- **Tempo de estudo** (`study_tracking`): o mesmo cronômetro do Painel.
+- **Tempo de estudo** (`study_tracking`): o mesmo cronômetro de Planejar › Tempo de estudo.
 
 ## 9. Responder questões
 
