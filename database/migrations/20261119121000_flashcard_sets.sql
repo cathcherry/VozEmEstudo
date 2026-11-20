@@ -111,6 +111,13 @@ begin
     where tv.id = v_revision and t.material_id = v_material) then
     raise exception 'FLASHCARD_NOT_FOUND';
   end if;
+  -- Generated cards come only from a revision the owner confirmed (at any time: the transcript may
+  -- have been edited after the preview). Direct API calls cannot bypass the human review.
+  if v_revision is not null and not exists (
+    select 1 from public.transcription_confirmations tc
+    where tc.material_id = v_material and tc.user_id = p_user_id and tc.transcription_version_id = v_revision) then
+    raise exception 'TRANSCRIPTION_CONFIRMATION_REQUIRED';
+  end if;
   insert into public.study_flashcard_sets(id, user_id, material_id, name, config, source_revision_id)
   values (p_set_id, p_user_id, v_material, btrim(p_body->>'name'), coalesce(p_body->'config', '{}'::jsonb), v_revision)
   returning * into v_set;

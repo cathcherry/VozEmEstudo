@@ -280,6 +280,59 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
         400,
       );
     });
+
+    await t.test(
+      'confirmation boundary: an edited, unconfirmed revision cannot feed a list or summary',
+      async () => {
+        const before = (await request(materialPath)).body;
+        const segment = before.transcription.transcription_segments[0];
+        const edit = await request(materialPath + '/transcription', 'PATCH', {
+          expectedRevision: before.transcription.current_revision,
+          segments: [{ id: segment.id, text: 'Texto editado e ainda não conferido.' }],
+        });
+        assert.equal(edit.status, 200);
+        const review = (await request(materialPath + '/transcription/review')).body;
+        assert.equal(review.state, 'awaiting_review');
+        assert.notEqual(review.sourceRevisionId, revisionIds.a);
+        const list = (sourceRevisionId) =>
+          request(materialPath + '/question-batches', 'POST', {
+            count: 5,
+            sourceRevisionId,
+            idempotencyKey: randomUUID(),
+            config: { title: 'Depois da edição' },
+          });
+        const unconfirmed = await list(review.sourceRevisionId);
+        assert.equal(unconfirmed.status, 409);
+        assert.equal(unconfirmed.body.error.code, 'TRANSCRIPTION_CONFIRMATION_REQUIRED');
+        // The previously confirmed revision is no longer current: it cannot be used either.
+        const stale = await list(revisionIds.a);
+        assert.equal(stale.status, 409);
+        assert.equal(stale.body.error.code, 'REVISION_CONFLICT');
+        const summary = await request(materialPath + '/summaries', 'POST', {
+          sourceRevisionId: review.sourceRevisionId,
+        });
+        assert.equal(summary.status, 409);
+        assert.equal(summary.body.error.code, 'TRANSCRIPTION_CONFIRMATION_REQUIRED');
+        // Resources generated earlier keep pointing at the revision they were made from.
+        const lists = fixture.state.tables.question_batches.filter(
+          (row) => row.material_id === resourceIds.materialA && row.processing_job_id,
+        );
+        assert(lists.length > 0);
+        for (const row of lists) assert.equal(row.source_transcription_version_id, revisionIds.a);
+        const after = (await request(materialPath)).body;
+        assert(after.questionBatches.every((batch) => batch.stale === true));
+        // Retrying a finished job does not create a second list.
+        const done = fixture.state.tables.processing_jobs.find(
+          (row) => row.id === lists[0].processing_job_id,
+        );
+        await executeClaimedJob({ ...done, attempt_count: 2, max_attempts: 3 });
+        assert.equal(
+          fixture.state.tables.question_batches.filter((row) => row.processing_job_id === done.id)
+            .length,
+          1,
+        );
+      },
+    );
   } finally {
     await new Promise((resolve) => server.close(resolve));
     await fixture.close();

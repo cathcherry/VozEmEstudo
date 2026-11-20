@@ -33,6 +33,8 @@ test('sets: atomic creation, dedupe, ownership, archive, delete and preserved hi
     const { call, db } = f;
     const a = identities.a.id,
       b = identities.b.id;
+    // Generated cards may only cite a revision the owner confirmed.
+    await f.permit(identities.a, resourceIds.materialA);
     // A card created before the migration keeps its schedule and review history.
     const legacy = (
       await db.query(
@@ -59,6 +61,12 @@ test('sets: atomic creation, dedupe, ownership, archive, delete and preserved hi
       config: { count: 3, difficulties: ['basic'] },
       cards: [card(1), card(2), card(1, { front: '  PERGUNTA 1? ' })],
     };
+    await assert.rejects(
+      call('study_create_flashcard_set_admin', [a, setId, JSON.stringify(body)]),
+      /TRANSCRIPTION_CONFIRMATION_REQUIRED/,
+      'a direct call cannot save generated cards from an unconfirmed revision',
+    );
+    await f.confirm(identities.a, resourceIds.materialA, revisionIds.a);
     const created = await call('study_create_flashcard_set_admin', [
       a,
       setId,
