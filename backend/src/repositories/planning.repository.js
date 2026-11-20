@@ -3,7 +3,7 @@ import { AppError, errors } from '../domain/errors.js';
 
 function assertDb(error) {
   if (!error) return;
-  if (['42P01', '42703', 'PGRST202'].includes(error.code))
+  if (['42P01', '42703', 'PGRST202', 'PGRST205'].includes(error.code))
     throw new AppError('PLANNING_SCHEMA_REQUIRED', 'O planejamento ainda não foi habilitado no banco.', 503);
   if (error.code === '23503') throw errors.notFound('Vínculo de planejamento');
   if (error.code === '23514')

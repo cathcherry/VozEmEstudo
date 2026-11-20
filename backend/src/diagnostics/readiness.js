@@ -10,16 +10,24 @@ export const featureSchema = Object.freeze({
   annotations: { migration: '20261105014000_annotations.sql', tables: { study_annotations: 'id,source_revision_id,version' } },
   calendar: { migration: '20261105014500_calendar_sharing.sql', tables: { study_calendar_events: 'id,version', study_tasks: 'id,due_date' } },
   sharing: { migration: '20261105014500_calendar_sharing.sql', tables: { material_shares: 'id,token_hash,expires_at,revoked_at' } },
+  study_authoring: { migration: '20261119120000_study_authoring.sql', tables: { question_batches: 'id,title,config,coverage', summary_versions: 'id,label,options', question_list_shares: 'id,token_hash,expires_at,revoked_at' } },
+  flashcard_sets: { migration: '20261119121000_flashcard_sets.sql', tables: { study_flashcard_sets: 'id,user_id,status', study_flashcards: 'id,set_id,source_revision_id' } },
+});
+
+/** Not flags, but configuration with its own schema (checked when the setting is active). */
+export const configSchema = Object.freeze({
+  assemblyai: { migration: '20261119030000_ai_executions.sql', tables: { ai_job_executions: 'job_id,state', transcription_word_alignments: 'transcription_version_id' } },
 });
 
 export function readinessFlagErrors(flags) {
   const errors = [];
   if (flags.social_basic) errors.push('FEATURE_SOCIAL_BASIC não está implementada; mantenha false.');
   if (flags.quiz_review && !flags.quiz_v2) errors.push('FEATURE_QUIZ_REVIEW exige FEATURE_QUIZ_V2=true.');
+  if (flags.flashcard_sets && !flags.flashcards) errors.push('FEATURE_FLASHCARD_SETS exige FEATURE_FLASHCARDS=true.');
   return errors;
 }
 
-export function createReadinessChecks(db, flags, audioBucket, permissionVersion) {
+export function createReadinessChecks(db, flags, audioBucket, permissionVersion, { asrProvider } = {}) {
   const table = (label, name, columns) => ({ label, run: () => db.from(name).select(columns, { head: true }) });
   const checks = [
     table('Banco de materiais', 'materials', 'id'),
@@ -33,6 +41,9 @@ export function createReadinessChecks(db, flags, audioBucket, permissionVersion)
       checks.push(table(`${flag}: ${name} — conferir ${module.migration}`, name, columns));
     }
   }
+  if (asrProvider === 'assemblyai')
+    for (const [name, columns] of Object.entries(configSchema.assemblyai.tables))
+      checks.push(table(`ASR_PROVIDER=assemblyai: ${name} — conferir ${configSchema.assemblyai.migration}`, name, columns));
   if (flags.mp4_retention) checks.push({
     label: 'Bucket study-videos: privado, MP4, limite 100 MiB',
     run: () => db.storage.getBucket('study-videos'),

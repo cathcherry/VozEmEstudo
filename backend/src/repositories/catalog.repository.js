@@ -11,7 +11,7 @@ function ensureDatabaseResult(error) {
       'Esta pasta ainda tem itens vinculados. Atualize a página e tente novamente.',
       409,
     );
-  if (['42P01', '42703', 'PGRST202'].includes(error.code))
+  if (['42P01', '42703', 'PGRST202', 'PGRST205'].includes(error.code))
     throw new AppError(
       'CATALOG_SCHEMA_REQUIRED',
       'O catálogo ainda não foi habilitado no banco de dados.',

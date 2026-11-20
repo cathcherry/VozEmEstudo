@@ -44,3 +44,19 @@ test('timeouts and thrown provider errors become bounded, redacted failures', as
   assert(readinessFlagErrors({ quiz_review: true }).length);
   assert.deepEqual(readinessFlagErrors({ quiz_v2: true, quiz_review: true }), []);
 });
+
+test('newer modules are probed: study_authoring, flashcard_sets and AssemblyAI tables', async () => {
+  const { db } = fixture({ missing: 'study_flashcard_sets' });
+  const flags = { study_authoring: true, flashcards: true, flashcard_sets: true };
+  const results = await runReadinessChecks(
+    createReadinessChecks(db, flags, 'audios', 'test-version', { asrProvider: 'assemblyai' }),
+  );
+  for (const name of ['question_list_shares', 'ai_job_executions', 'transcription_word_alignments'])
+    assert(results.some((r) => r.label.includes(name)), name);
+  assert(results.some((r) => !r.ok && r.label.includes('study_flashcard_sets')));
+  assert.deepEqual(readinessFlagErrors(flags), []);
+  assert.match(readinessFlagErrors({ flashcard_sets: true }).join(' '), /FEATURE_FLASHCARDS/);
+  // Without AssemblyAI the AI tables are not required.
+  const plain = createReadinessChecks(db, {}, 'audios', 'test-version', { asrProvider: 'huggingface' });
+  assert(!plain.some((check) => check.label.includes('ai_job_executions')));
+});

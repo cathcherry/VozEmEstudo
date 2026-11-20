@@ -17,7 +17,7 @@ function assertDb(error) {
   };
   const match = mapped[error.message];
   if (match) throw new AppError(error.message, match[1], match[0]);
-  if (['42P01', '42703', '42883', 'PGRST202'].includes(error.code))
+  if (['42P01', '42703', '42883', 'PGRST202', 'PGRST205'].includes(error.code))
     throw new AppError('FLASHCARDS_SCHEMA_REQUIRED',
       'Os flashcards ainda não foram habilitados no banco.', 503);
   if (error.code === '23503') throw errors.notFound('Aula relacionada');

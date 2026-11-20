@@ -26,7 +26,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-const checks = createReadinessChecks(getAdminSupabase(), featureFlags, env.audioBucket, PERMISSION_DECLARATION.version);
+const checks = createReadinessChecks(getAdminSupabase(), featureFlags, env.audioBucket, PERMISSION_DECLARATION.version, { asrProvider: aiConfig.asr.provider });
 console.log('Verificando Supabase e recursos ativos (sem alterar nenhum dado)...');
 const results = await runReadinessChecks(checks);
 for (const result of results) {

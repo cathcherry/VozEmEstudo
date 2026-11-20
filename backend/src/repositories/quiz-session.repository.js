@@ -28,7 +28,7 @@ function dbError(error) {
     const [status, message] = messages[error.message];
     throw new AppError(error.message, message, status);
   }
-  if (['42P01', '42703', '42883', 'PGRST202'].includes(error.code))
+  if (['42P01', '42703', '42883', 'PGRST202', 'PGRST205'].includes(error.code))
     throw new AppError('QUIZ_SCHEMA_REQUIRED', 'As sessões de questões ainda não estão habilitadas no banco.', 503);
   if (error.code === '23503') throw errors.notFound('Lote de questões');
   throw error;
