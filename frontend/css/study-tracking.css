@@ -5,3 +5,12 @@
 .study-timer-controls output { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
 .study-tracking-panel button { margin: .25rem; }
 .study-tracking-panel [hidden] { display: none; }
+/* Goal/time-zone and synchronization tools are folded; they open on request or on a conflict. */
+.study-disclosure { margin-block: .75rem; }
+.study-disclosure > summary { min-height: 44px; padding-block: .6rem; cursor: pointer; font-weight: 600; }
+.study-day-list { display: grid; gap: .35rem; margin: .75rem 0; padding: 0; list-style: none; }
+.study-day-list li { display: grid; grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr) 4.5rem; align-items: center; gap: .75rem; font-size: .9rem; }
+.study-day-list li > span:last-child { text-align: end; font-variant-numeric: tabular-nums; }
+.study-day-bar { position: relative; height: .55rem; overflow: hidden; border-radius: 999px; background: var(--border-light); }
+.study-day-bar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: calc(var(--fill, 0) * 1%); border-radius: inherit; background: var(--accent-strong); }
+@media (forced-colors: active) { .study-day-bar::after { background: Highlight; } }

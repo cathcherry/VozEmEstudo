@@ -12,6 +12,14 @@ import {
 import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
 import { ninoNote } from '../utils/material-ui.js';
 
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal = (name, detail) => {
+  try {
+    const view = document.defaultView;
+    if (view?.CustomEvent) document.dispatchEvent(new view.CustomEvent(`voz:${name}`, { detail }));
+  } catch { /* the dashboard summary is optional */ }
+};
+
 function make(tag, value, className) {
   const element = document.createElement(tag);
   if (value !== undefined && value !== null) element.textContent = value;
@@ -77,7 +85,27 @@ export async function initFlashcardsPanel({ materials }) {
   generator.append(make('h3', 'Criar cartões com IA'),
     make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.'),
     generateForm, generateMessage, drafts);
-  createForm.before(generator);
+  const generatorSlot = panel.querySelector('[data-flashcard-generator-slot]');
+  if (generatorSlot) generatorSlot.append(generator);
+  else createForm.before(generator);
+  // Re-rendering the review card replaces the focused button; keep keyboard users in place.
+  const keepFocus = (selector) => {
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected && panel.contains(active)) return;
+    dueArea.querySelector(selector)?.focus();
+  };
+  document.addEventListener('voz:flashcards-command', (event) => {
+    const action = event.detail?.action;
+    if (action === 'review') {
+      (dueArea.querySelector('button') || count)?.focus?.();
+      dueArea.scrollIntoView?.({ block: 'nearest' });
+    } else if (action === 'create') {
+      const summary = panel.querySelector('[data-flashcard-generate-disclosure] > summary')
+        || panel.querySelector('[data-flashcard-create-disclosure] > summary');
+      summary?.focus();
+      summary?.scrollIntoView?.({ block: 'nearest' });
+    }
+  });
 
   generateForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -102,6 +130,8 @@ export async function initFlashcardsPanel({ materials }) {
           const use = make('button', 'Editar este cartão no formulário', 'secondary-action');
           use.type = 'button';
           use.addEventListener('click', () => {
+            const disclosure = createForm.closest('details');
+            if (disclosure) disclosure.open = true;
             frontInput.value = card.front;
             backInput.value = card.back;
             materialInput.value = selectedMaterial;
@@ -194,6 +224,11 @@ export async function initFlashcardsPanel({ materials }) {
   function renderDue() {
     dueArea.replaceChildren();
     count.textContent = flashcardSummary(dueTotal);
+    signal('flashcards', {
+      dueTotal,
+      next: dueCards[0]?.front_text || '',
+      filtered: Boolean(lessonFilter.value || (setsEnabled && setFilter.value)),
+    });
     if (dueTotal > dueCards.length) {
       const note = make('p', `Mais cartões serão carregados à medida que você revisar. ${dueTotal} pendentes no filtro atual.`, 'flashcard-muted');
       dueArea.append(note);
@@ -222,6 +257,7 @@ export async function initFlashcardsPanel({ materials }) {
       reveal.addEventListener('click', () => {
         revealed = true;
         renderDue();
+        keepFocus('.flashcard-rating-buttons button:not([disabled])');
       });
       article.append(reveal);
     } else {
@@ -396,6 +432,7 @@ export async function initFlashcardsPanel({ materials }) {
       reviewing = false;
       updateControls();
       renderDue();
+      keepFocus('button:not([disabled])');
     }
   }
 
@@ -483,6 +520,7 @@ export async function initFlashcardsPanel({ materials }) {
     createForm.querySelector('[type="submit"]').disabled = true;
     manager.querySelector('[type="submit"]').disabled = true;
     dueArea.append(make('p', 'Não foi possível carregar as revisões.', 'flashcard-muted'));
+    signal('flashcards', { error: error.message || 'Os flashcards estão indisponíveis.' });
   }
 }
 

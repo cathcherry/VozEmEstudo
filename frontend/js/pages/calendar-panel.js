@@ -4,6 +4,8 @@ import { monthRange,localDay,itemOnDay,calendarIcs } from '../utils/calendar-exp
 import { downloadText } from '../utils/study-export.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
 const localInput=(date)=>`${localDay(date)}T${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
 function utcInput(value){const date=new Date(value);if(!Number.isFinite(date.getTime())||localInput(date)!==value)throw new Error('Confira o horário no fuso deste aparelho.');return date.toISOString();}
 export async function initCalendarPanel({panel,materials=[]}){
@@ -12,20 +14,22 @@ export async function initCalendarPanel({panel,materials=[]}){
   const monthLabel=make('label','Mês'),month=make('input');month.type='month';month.min='1970-01';month.max='2100-12';month.value=localDay(new Date()).slice(0,7);monthLabel.append(month);
   const refresh=make('button','Atualizar calendário'),all=make('button','Mostrar mês todo'),exportButton=make('button','Baixar calendário ICS');refresh.type=all.type=exportButton.type='button';controls.append(monthLabel,refresh,all,exportButton);
   const status=make('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');const grid=make('div');grid.className='study-calendar-grid';grid.setAttribute('role','group');grid.setAttribute('aria-label','Dias do mês');const agenda=make('div');panel.append(controls,status,grid,agenda);
-  const form=make('form');form.className='calendar-event-form';form.append(make('h3','Agendar estudo'));
+  // The form stays folded until the user schedules or edits something.
+  const compose=make('details');compose.className='calendar-compose';compose.append(make('summary','Agendar estudo'));
+  const form=make('form');form.className='calendar-event-form';
   const fields={};for(const [name,label,type] of [['title','Título','text'],['startsAt','Início','datetime-local'],['endsAt','Fim','datetime-local']]){
     const wrap=make('label',label),input=make('input');input.type=type;input.required=true;if(name==='title')input.maxLength=200;wrap.append(input);form.append(wrap);fields[name]=input;
   }
   const descLabel=make('label','Descrição (opcional)'),description=make('textarea');description.maxLength=3000;descLabel.append(description);form.append(descLabel);
   const materialLabel=make('label','Aula (opcional)'),material=make('select');material.append(new Option('Sem aula',''));for(const item of materials)material.append(new Option(item.title,item.id));materialLabel.append(material);form.append(materialLabel);
   const taskLabel=make('p'),unlink=make('button','Desvincular tarefa');unlink.type='button';unlink.hidden=true;
-  const submit=make('button','Salvar horário'),cancel=make('button','Novo horário');submit.type='submit';cancel.type='button';form.append(taskLabel,unlink,submit,cancel);panel.append(form);
+  const submit=make('button','Salvar horário'),cancel=make('button','Novo horário');submit.type='submit';cancel.type='button';form.append(taskLabel,unlink,submit,cancel);compose.append(form);panel.append(compose);
   let items=[],selectedDay='',editing=null,taskId=null,draftId=crypto.randomUUID(),offset=0,total=0,loading=0;
   const more=make('button','Carregar mais registros do mês');more.type='button';panel.append(more);
   const mutate=pendingMutation(saveCalendarEvent,()=>crypto.randomUUID());
   function reset(){editing=null;taskId=null;draftId=crypto.randomUUID();form.reset();taskLabel.textContent='';unlink.hidden=true;submit.textContent='Salvar horário';}
   cancel.addEventListener('click',reset);unlink.addEventListener('click',()=>{taskId=null;taskLabel.textContent='';unlink.hidden=true;});
-  function edit(item){editing=item;fields.title.value=item.title;description.value=item.description||'';fields.startsAt.value=localInput(new Date(item.startsAt));fields.endsAt.value=localInput(new Date(item.endsAt));material.value=item.materialId||'';taskId=item.taskId||null;taskLabel.textContent=taskId?'Horário vinculado a uma tarefa.':'';unlink.hidden=!taskId;submit.textContent='Salvar edição';fields.title.focus();}
+  function edit(item){editing=item;fields.title.value=item.title;description.value=item.description||'';fields.startsAt.value=localInput(new Date(item.startsAt));fields.endsAt.value=localInput(new Date(item.endsAt));material.value=item.materialId||'';taskId=item.taskId||null;taskLabel.textContent=taskId?'Horário vinculado a uma tarefa.':'';unlink.hidden=!taskId;submit.textContent='Salvar edição';compose.open=true;fields.title.focus();}
   function render(){
     grid.replaceChildren();const [year,m]=month.value.split('-').map(Number);const count=new Date(year,m,0).getDate();
     for(const day of ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']){const label=make('span',day);label.setAttribute('aria-hidden','true');grid.append(label);}
@@ -41,12 +45,13 @@ export async function initCalendarPanel({panel,materials=[]}){
     for(const item of visible){
       const card=make('article');card.className='calendar-entry';card.append(make('h4',item.title));
       if(item.kind==='task'){
-        card.append(make('p',`Prazo de tarefa · ${item.date}`));const schedule=make('button','Agendar horário para esta tarefa');schedule.type='button';
-        schedule.addEventListener('click',()=>{reset();fields.title.value=item.title;taskId=item.id;material.value=item.materialId||'';taskLabel.textContent=`Tarefa: ${item.title}`;unlink.hidden=false;fields.startsAt.value=item.date+'T09:00';fields.endsAt.value=item.date+'T10:00';fields.startsAt.focus();});card.append(schedule);
+        card.append(make('p',`Prazo de tarefa · ${new Date(item.date+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'})}`));const schedule=make('button','Agendar horário para esta tarefa');schedule.type='button';
+        schedule.addEventListener('click',()=>{reset();fields.title.value=item.title;taskId=item.id;material.value=item.materialId||'';taskLabel.textContent=`Tarefa: ${item.title}`;unlink.hidden=false;fields.startsAt.value=item.date+'T09:00';fields.endsAt.value=item.date+'T10:00';compose.open=true;fields.startsAt.focus();});card.append(schedule);
       }else{
-        card.append(make('p',`${new Date(item.startsAt).toLocaleString('pt-BR')} – ${new Date(item.endsAt).toLocaleString('pt-BR')}`),make('p',item.description||''));
+        const when={weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'};
+        card.append(make('p',`${new Date(item.startsAt).toLocaleString('pt-BR',when)} – ${new Date(item.endsAt).toLocaleString('pt-BR',when)}`));if(item.description)card.append(make('p',item.description));
         const change=make('button','Editar horário'),remove=make('button','Remover horário');change.type=remove.type='button';change.addEventListener('click',()=>edit(item));
-        const archive=pendingMutation(saveCalendarEvent,()=>crypto.randomUUID());remove.addEventListener('click',()=>{if(!confirm('Remover este horário do calendário?'))return;remove.disabled=true;void archive({id:item.id,version:item.version,body:{deleted:true}}).then(()=>load(true)).catch((e)=>{status.textContent=e.message;remove.disabled=false;});});card.append(change,remove);
+        const archive=pendingMutation(saveCalendarEvent,()=>crypto.randomUUID());remove.addEventListener('click',()=>{if(!confirm('Remover este horário do calendário?'))return;remove.disabled=true;void archive({id:item.id,version:item.version,body:{deleted:true}}).then(()=>{signal('calendar',{changed:true});return load(true);}).catch((e)=>{status.textContent=e.message;remove.disabled=false;});});card.append(change,remove);
       }
       if(item.materialId){const link=make('a','Abrir aula');link.href=`./material.html?id=${encodeURIComponent(item.materialId)}`;card.append(link);}agenda.append(card);
     }
@@ -64,7 +69,9 @@ export async function initCalendarPanel({panel,materials=[]}){
     try{const startsAt=editing&&localInput(new Date(editing.startsAt))===fields.startsAt.value?editing.startsAt:utcInput(fields.startsAt.value);
       const endsAt=editing&&localInput(new Date(editing.endsAt))===fields.endsAt.value?editing.endsAt:utcInput(fields.endsAt.value);
       submit.disabled=true;void mutate({id:editing?.id||draftId,version:editing?.version||0,body:{title:fields.title.value,description:description.value,startsAt,endsAt,materialId:material.value||null,taskId}})
-        .then(()=>{reset();status.textContent='Horário salvo na conta.';return load(true);}).catch((e)=>{status.textContent=e.message;}).finally(()=>{submit.disabled=false;});
+        .then(()=>{reset();compose.open=false;signal('calendar',{changed:true});return load(true);})
+        // The reload reports the month's count; keep the confirmation in front of it.
+        .then(()=>{status.textContent=`Horário salvo na conta. ${status.textContent}`;}).catch((e)=>{status.textContent=e.message;}).finally(()=>{submit.disabled=false;});
     }catch(error){status.textContent=error.message;}
   });
   month.addEventListener('change',()=>{selectedDay='';void load(true);});refresh.addEventListener('click',()=>{void load(true);});all.addEventListener('click',()=>{selectedDay='';render();});more.addEventListener('click',()=>{void load();});
@@ -73,5 +80,7 @@ export async function initCalendarPanel({panel,materials=[]}){
     void (async()=>{const allItems=[];let start=0,count;const range=monthRange(selected);do{const page=await listCalendar({...range,offset:start});allItems.push(...page.items);count=page.total;if(!page.items.length&&start<count)throw new Error('Não foi possível completar o calendário.');start+=page.limit;}while(start<count);
       downloadText(calendarIcs(allItems),`calendario_${selected}.ics`,'text/calendar;charset=utf-8');status.textContent='Arquivo ICS preparado com o mês completo.';
     })().catch((error)=>{status.textContent=error.message;}).finally(()=>{exportButton.disabled=false;});
-  });await load(true);
+  });
+  document.addEventListener('voz:calendar-command',(event)=>{if(event.detail?.action==='compose'){reset();compose.open=true;fields.title.focus();}});
+  await load(true);
 }

@@ -3,6 +3,9 @@ import { StudyClock } from '../utils/study-clock.js';
 import { getStudyOverview,saveStudySettings,startStudySession,tickStudySession } from '../api/study.api.js';
 
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
+const disclosure=(title)=>{const node=make('details');node.className='study-disclosure';node.append(make('summary',title));return node;};
 const clockLabel=(seconds)=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
 export async function initStudyTrackingPanel({materials=[],materialId=null}={}) {
   const panel=document.querySelector('[data-study-tracking-panel]');
@@ -24,6 +27,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       timer.textContent=clockLabel(state.mode==='reading'?state.elapsed:Math.ceil(state.remaining));
       start.disabled=state.running||state.busy;pause.disabled=!state.running||state.busy;
       if(status.textContent!==state.message)status.textContent=state.message;
+      signal('study-clock',{mode:state.mode,elapsed:state.elapsed,remaining:state.remaining,running:state.running,busy:state.busy,session:state.session?{id:state.session.id}:null});
       const marker=state.session?`${state.session.id}:${state.session.last_sequence}`:'';
       if(marker!==lastSessionMarker){lastSessionMarker=marker;void refresh();}
     },
@@ -43,14 +47,16 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
         .catch((error)=>{syncStatus.textContent=error.message;}).finally(()=>{button.disabled=false;});
     });conflicts.append(button);
   }
-  const showSync=(event)=>{syncStatus.textContent=event.detail.message;conflicts.hidden=!event.detail.conflicts;};
-  window.addEventListener('study-sync-status',showSync);showSync({detail:studySync().state()});
-  panel.append(syncStatus,retry,conflicts);
+  // Synchronization tools are rarely needed: folded away, and opened by themselves on a conflict.
+  const syncTools=disclosure('Sincronização e andamento deste navegador');syncTools.classList.add('study-sync-tools');
+  const showSync=(event)=>{syncStatus.textContent=event.detail.message;conflicts.hidden=!event.detail.conflicts;if(event.detail.conflicts)syncTools.open=true;};
+  window.addEventListener('study-sync-status',showSync);
+  syncTools.append(retry,conflicts);showSync({detail:studySync().state()});
   if(materials.length) {
     const importButton=make('button','Importar andamento local sem registro na conta');importButton.type='button';
     importButton.addEventListener('click',()=>{
       importButton.disabled=true;void importLocalProgress(materials).catch(notice).finally(()=>{importButton.disabled=false;});
-    });panel.append(importButton);
+    });syncTools.append(importButton);
   }
   const metrics=make('section');metrics.setAttribute('aria-label','Indicadores semanais');
   const settings=make('form');settings.className='study-settings';
@@ -66,7 +72,15 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       const data=await getStudyOverview();metrics.replaceChildren(make('h3',`Semana iniciada em ${data.weekStart} · ${data.timezone}`));
       const minutes=Math.floor(Number(data.weekSeconds)/60);
       metrics.append(make('p',`${minutes} min de estudo registrados · meta: ${data.goalMinutes?data.goalMinutes+' min':'desativada'} · ${data.completedMaterials} revisões marcadas como concluídas na conta`));
-      const list=make('ul');for(const day of data.days)list.append(make('li',`${day.date}: ${Math.floor(Number(day.seconds)/60)} min`));metrics.append(list);
+      const list=make('ul');list.className='study-day-list';
+      const most=Math.max(1,...data.days.map((day)=>Number(day.seconds)||0));
+      for(const day of data.days){
+        const item=make('li'),label=make('span',`${new Date(day.date+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})}`),bar=make('span'),value=make('span',`${Math.floor(Number(day.seconds)/60)} min`);
+        bar.className='study-day-bar';bar.setAttribute('aria-hidden','true');bar.style.setProperty('--fill',String(Math.round(((Number(day.seconds)||0)/most)*100)));
+        item.append(label,bar,value);list.append(item);
+      }
+      metrics.append(list);
+      signal('study-overview',data);
       if(initial){goal.value=data.goalMinutes;zone.value=data.timezone;initial=false;}
       if(data.activeSession&&!clock.session) {
         const close=make('button','Encerrar sessão ativa em outro aparelho ou aba');close.type='button';
@@ -75,7 +89,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
             .then(refresh).catch(notice).finally(()=>{close.disabled=false;});
         });metrics.append(close);
       }
-    } catch(error){metrics.replaceChildren(make('p',error.message||'Indicadores indisponíveis.'));}
+    } catch(error){metrics.replaceChildren(make('p',error.message||'Indicadores indisponíveis.'));signal('study-overview',{error:error.message||'Indicadores indisponíveis.'});}
     finally{refreshing=false;}
   }
   settings.addEventListener('submit',(event)=>{
@@ -84,7 +98,14 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       .catch(notice).finally(()=>{save.disabled=false;});
   });
   const reload=make('button','Atualizar indicadores');reload.type='button';reload.addEventListener('click',()=>{void refresh();});
-  panel.append(metrics,settings,reload);
+  const goalTools=disclosure('Meta semanal e fuso horário');goalTools.append(settings);
+  metrics.className='study-metrics';
+  panel.append(metrics,reload,syncStatus,goalTools,syncTools);
+  document.addEventListener('voz:tracking-command',(event)=>{
+    const action=event.detail?.action;
+    if(action==='start'&&!clock.running)void clock.start(mode.value).catch(notice);
+    else if(action==='pause'&&clock.running)void clock.pause().then(refresh).catch(notice);
+  });
   let pump;
   const startPump=()=>{clearInterval(pump);pump=setInterval(()=>{void clock.pump().catch(notice);},1000);};
   startPump();

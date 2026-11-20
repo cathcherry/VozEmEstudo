@@ -3,6 +3,8 @@ import { listAnnotations,saveAnnotation } from '../api/learning-tools.api.js';
 import { selectionAnchor,focusAnnotation } from '../utils/annotation-anchor.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
 export async function initAnnotationsPanel({panel,materialId,context,segments,materials=[]}){
   panel.hidden=false;panel.replaceChildren(make('h2',materialId?'Anotações e destaques':'Buscar nas suas anotações'));
   const status=make('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
@@ -43,6 +45,7 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
     try{
       const result=await listAnnotations({materialId,q:search.value.trim(),offset:nextOffset});if(request!==version)return;
       offset=nextOffset;total=result.total;list.replaceChildren();
+      if(!materialId&&!search.value.trim())signal('notes',{total});
       if(!result.notes.length)list.append(ninoNote(search.value.trim()?'Nenhuma anotação encontrada.':'Nenhuma anotação ainda.',search.value.trim()?'curious':'rest'));
       for(const note of result.notes){
         const card=make('article');card.className=`annotation-card annotation-${note.color}`;
@@ -60,9 +63,10 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
         }list.append(card);
       }
       count.textContent=`${result.notes.length?offset+1:0}–${offset+result.notes.length} de ${total}`;
-    }catch(error){if(request===version){list.replaceChildren();status.textContent=error.message;}}
+    }catch(error){if(request===version){list.replaceChildren();status.textContent=error.message;if(!materialId)signal('notes',{error:error.message||'Anotações indisponíveis.'});}}
     finally{if(request===version){find.disabled=false;previous.disabled=offset===0;next.disabled=offset+50>=total;}}
   }
-  searchForm.addEventListener('submit',(e)=>{e.preventDefault();void load(0);});previous.addEventListener('click',()=>{void load(Math.max(0,offset-50));});next.addEventListener('click',()=>{void load(offset+50);});
+  searchForm.addEventListener('submit',(e)=>{e.preventDefault();void load(0);});
+  if(!materialId)document.addEventListener('voz:notes-command',(event)=>{if(event.detail?.action!=='search')return;search.value=String(event.detail.q||'').slice(0,200);search.focus();void load(0);});previous.addEventListener('click',()=>{void load(Math.max(0,offset-50));});next.addEventListener('click',()=>{void load(offset+50);});
   await load(0);
 }
