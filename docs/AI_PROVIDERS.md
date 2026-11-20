@@ -21,7 +21,7 @@ Valores vazios mantêm o comportamento anterior (Hugging Face + Groq).
 | `ASR_FALLBACK_PROVIDER`                            | vazio = sem fallback. Se definido, é usado só após falha definitiva do principal e registrado em evento da tarefa e log `ASR_FALLBACK_USED`                                                                                                    |
 | `ASR_LANGUAGE`                                     | código fixo (padrão `pt`)                                                                                                                                                                                                                      |
 | `ASR_LANGUAGE_DETECTION`, `ASR_EXPECTED_LANGUAGES` | detecção automática (não é enviada junto com idioma fixo)                                                                                                                                                                                      |
-| `ASR_SELECTABLE_LANGUAGES`                         | idiomas oferecidos no campo "Idioma da gravação" (padrão `pt,en,es,zh`; só provedores que aceitam idioma). A escolha do envio vira `language_code` fixo ou `language_detection` ("Detectar automaticamente") no snapshot do job. Nunca traduz. |
+| `ASR_SELECTABLE_LANGUAGES`                         | idiomas oferecidos no campo "Idioma da gravação" (padrão: os 32 idiomas do AssemblyAI-STT-3.7, 35 códigos com as variantes do inglês; só provedores que aceitam idioma). A escolha do envio vira `language_code` fixo ou `language_detection` ("Detectar automaticamente") no snapshot do job. Nunca traduz. |
 | `ASR_SPEAKER_LABELS`                               | rótulos de falante                                                                                                                                                                                                                             |
 | `ASR_POLL_INTERVAL_MS`, `ASR_MAX_WAIT_MS`          | intervalo de consulta (15 s) e prazo total (3 h)                                                                                                                                                                                               |
 | `LLM_PROVIDER`, `LLM_MODEL`                        | padrão para todas as tarefas de texto                                                                                                                                                                                                          |
@@ -84,3 +84,20 @@ sobrecarga `claim_next_processing_job(text, integer)`. Nenhuma tabela ou funçã
 
 Sem a migration, o modo legado continua funcionando; provedores assíncronos falham com
 `SCHEMA_UPGRADE_REQUIRED`. Materiais antigos não são retranscritos e seguem sem alinhamento de palavras.
+
+## Idiomas da gravação (AssemblyAI-STT-3.7)
+
+Lista oficial do modelo `assemblyai-stt-3-7` ([Supported Languages](https://www.assemblyai.com/docs/pre-recorded-audio/supported-languages),
+conferida em 20/11/2026): 32 idiomas, 35 códigos com as variantes do inglês. Todos aparecem em
+"Idioma da gravação" quando `ASR_SELECTABLE_LANGUAGES` está vazio.
+
+`pt` português · `en` inglês (`en_us`, `en_uk`, `en_au`) · `es` espanhol · `fr` francês · `de` alemão ·
+`it` italiano · `af` africâner · `ar` árabe · `yue` cantonês · `ca` catalão · `da` dinamarquês ·
+`nl` holandês · `et` estoniano · `fi` finlandês · `gl` galego · `he` hebraico · `hi` hindi ·
+`ja` japonês · `ko` coreano · `zh` mandarim · `mr` marati · `no` norueguês · `nn` nynorsk ·
+`fa` persa · `ro` romeno · `ru` russo · `sv` sueco · `tr` turco · `ur` urdu · `vi` vietnamita ·
+`xh` xhosa · `zu` zulu.
+
+O sotaque regional não precisa de código próprio (ex.: `pt` cobre o português brasileiro e o europeu).
+Um código fora desta lista faria a AssemblyAI usar outro modelo (Universal-2) sem avisar, por isso não
+é oferecido.

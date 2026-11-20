@@ -155,7 +155,13 @@ const LANGUAGE_NAMES = {
   pt: 'Português',
   en: 'Inglês',
   es: 'Espanhol',
-  zh: 'Chinês',
+  zh: 'Chinês (mandarim)',
+  yue: 'Chinês (cantonês)',
+  en_us: 'Inglês (Estados Unidos)',
+  en_uk: 'Inglês (Reino Unido)',
+  en_au: 'Inglês (Austrália)',
+  no: 'Norueguês',
+  nn: 'Norueguês (nynorsk)',
 };
 function languageName(code) {
   if (LANGUAGE_NAMES[code]) return LANGUAGE_NAMES[code];
@@ -172,7 +178,12 @@ function setupRecordingLanguage(choice) {
     select = document.querySelector('#recording-language');
   const options = Array.isArray(choice?.options) ? choice.options : [];
   field.hidden = !options.length;
-  select.replaceChildren(...options.map((code) => new Option(languageName(code), code)));
+  // "Detectar automaticamente" and Portuguese first, then every other language by its Portuguese name.
+  const pinned = ['auto', 'pt'].filter((code) => options.includes(code));
+  const others = options
+    .filter((code) => !pinned.includes(code))
+    .sort((a, b) => languageName(a).localeCompare(languageName(b), 'pt-BR'));
+  select.replaceChildren(...[...pinned, ...others].map((code) => new Option(languageName(code), code)));
   if (options.includes(choice.default)) select.value = choice.default;
 }
 let declaration, reviewedChoices;

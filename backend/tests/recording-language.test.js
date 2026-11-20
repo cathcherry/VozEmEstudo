@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  ASSEMBLYAI_STT_3_7_LANGUAGES,
   createAiConfig,
   recordingLanguageOptions,
   applyRecordingLanguage,
@@ -14,9 +15,15 @@ const assembly = createAiConfig({ ASR_PROVIDER: 'assemblyai', LLM_PROVIDER: 'gro
 test('only providers that accept a language parameter offer the choice', () => {
   assert.deepEqual(recordingLanguageOptions(createAiConfig({})), { options: [], default: null });
   assert.deepEqual(recordingLanguageOptions(assembly), {
-    options: ['auto', 'pt', 'en', 'es', 'zh'],
+    options: ['auto', ...ASSEMBLYAI_STT_3_7_LANGUAGES],
     default: 'pt',
   });
+  // Every AssemblyAI-STT-3.7 language (32, plus English regional codes) is offered by default,
+  // and each code passes the server-side format check and is accepted as a choice.
+  assert.equal(ASSEMBLYAI_STT_3_7_LANGUAGES.length, 35);
+  assert.equal(new Set(ASSEMBLYAI_STT_3_7_LANGUAGES).size, 35);
+  for (const code of ['pt', 'en_uk', 'yue', 'nn', 'zh', 'xh', 'zu', 'he', 'fa'])
+    assert(recordingLanguageOptions(assembly).options.includes(code), code);
   const custom = createAiConfig({
     ASR_PROVIDER: 'assemblyai',
     ASR_SELECTABLE_LANGUAGES: 'pt, EN, fr, <bad>',

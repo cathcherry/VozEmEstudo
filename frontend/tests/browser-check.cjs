@@ -223,7 +223,10 @@ async function main() {
         audioBucket: 'audios',
         featureFlags: { mp4_retention: mp4Retention, ...authoringFlags },
         maxQuestionListCount: 30,
-        recordingLanguages: { options: ['auto', 'pt', 'en', 'es', 'zh'], default: 'pt' },
+        recordingLanguages: {
+          options: ['auto', 'pt', 'en', 'en_uk', 'es', 'zh', 'yue', 'af', 'nn'],
+          default: 'pt',
+        },
         processingDisclosure: {
           recognitionProvider: 'Provedor ASR de teste',
           textProvider: 'Provedor de texto de teste',
@@ -827,6 +830,21 @@ async function main() {
     // Spoken language of the recording: separate from the interface language, default from server.
     await page.getByRole('button', { name: 'Editar', exact: true }).last().click();
     assert.equal(await page.getByLabel('Idioma da gravação').inputValue(), 'pt');
+    // Automatic and Portuguese first, then every language by its Portuguese name.
+    assert.deepEqual(
+      await page.locator('#recording-language option').allTextContents(),
+      [
+        'Detectar automaticamente',
+        'Português',
+        'Africâner',
+        'Chinês (cantonês)',
+        'Chinês (mandarim)',
+        'Espanhol',
+        'Inglês',
+        'Inglês (Reino Unido)',
+        'Norueguês (nynorsk)',
+      ],
+    );
     await page.getByLabel('Idioma da gravação').selectOption('es');
     await page.getByRole('button', { name: 'Revisar envio', exact: true }).click();
     assert.equal(await page.locator('[data-upload-choice-list]').locator('dt').count(), 9);

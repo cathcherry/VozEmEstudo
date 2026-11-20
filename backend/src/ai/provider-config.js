@@ -22,7 +22,50 @@ export const ASSEMBLYAI_STT_MODEL = 'assemblyai-stt-3-7';
  * The recording language is never translated and is independent of the interface language.
  */
 export const LANGUAGE_CHOICE_PROVIDERS = Object.freeze(['assemblyai']);
-const DEFAULT_SELECTABLE_LANGUAGES = Object.freeze(['pt', 'en', 'es', 'zh']);
+/**
+ * Every language of AssemblyAI-STT-3.7 (32 languages; English also has three regional codes), from
+ * https://www.assemblyai.com/docs/pre-recorded-audio/supported-languages (checked 2026-11-20).
+ * Codes outside this list would silently fall back to another model (Universal-2), so they are not
+ * offered. Portuguese first; the page sorts the rest by name.
+ */
+export const ASSEMBLYAI_STT_3_7_LANGUAGES = Object.freeze([
+  'pt',
+  'en',
+  'en_us',
+  'en_uk',
+  'en_au',
+  'es',
+  'fr',
+  'de',
+  'it',
+  'af',
+  'ar',
+  'yue',
+  'ca',
+  'da',
+  'nl',
+  'et',
+  'fi',
+  'gl',
+  'he',
+  'hi',
+  'ja',
+  'ko',
+  'zh',
+  'mr',
+  'no',
+  'nn',
+  'fa',
+  'ro',
+  'ru',
+  'sv',
+  'tr',
+  'ur',
+  'vi',
+  'xh',
+  'zu',
+]);
+const DEFAULT_SELECTABLE_LANGUAGES = ASSEMBLYAI_STT_3_7_LANGUAGES;
 const GROQ_DEFAULT_MODEL = 'llama-3.3-70b-versatile';
 
 const text = (value) => String(value ?? '').trim();

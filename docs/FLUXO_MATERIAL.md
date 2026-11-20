@@ -53,7 +53,7 @@ silêncio.
   transcrição AssemblyAI ainda não editada; sem isso, `/captions` devolve
   `granularity: "segment"` e o player usa trechos.
 - "Idioma da gravação" aparece só quando o provedor de ASR aceita idioma (AssemblyAI).
-  A lista vem de `ASR_SELECTABLE_LANGUAGES` (padrão `pt,en,es,zh`); confira a cobertura
+  A lista vem de `ASR_SELECTABLE_LANGUAGES` (padrão: todos os 32 idiomas do AssemblyAI-STT-3.7); confira a cobertura
   do modelo configurado e remova códigos não suportados. A escolha vai no snapshot do job
   como `language_code` fixo ou `language_detection` e o idioma reconhecido fica em
   `transcriptions.language`. Nada é traduzido.
