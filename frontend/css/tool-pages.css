@@ -1,0 +1,526 @@
+/* Revisar and Planejar: full study tools on their own pages, one tab per tool.
+   Panel rules moved from the dashboard side sheets; colours come from the theme tokens. */
+
+.tool-page :is(button, a, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+/* The panels drop their dashboard framing on these pages. */
+
+body.app-page
+  .tool-page
+  :is(.planning-panel, .flashcards-panel, .learning-tools-panel, .study-tracking-panel) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+body.app-page
+  .tool-page
+  :is(.planning-panel, .flashcards-panel, .learning-tools-panel, .study-tracking-panel)
+  > h2 {
+  margin: 0 0 6px;
+  padding: 22px 56px 10px 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+}
+
+body.app-page .tool-page :is(.learning-tools-panel, .study-tracking-panel) > p:first-of-type {
+  max-width: 62ch;
+  margin-top: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Buttons the tools create without a class get the product's secondary style. */
+
+body.app-page .tool-page button:not([class]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin: 0;
+  padding: 9px 15px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+body.app-page .tool-page button:not([class]):hover:not(:disabled) {
+  background: var(--surface-alt);
+}
+
+body.app-page .tool-page button:not([class])[type='submit'] {
+  border-color: var(--button-background);
+  color: var(--button-text);
+  background: var(--button-background);
+}
+
+body.app-page .tool-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+body.app-page .tool-page label {
+  font-size: 0.875rem;
+}
+
+body.app-page .tool-page :is(input:not([type='checkbox'], [type='radio']), select, textarea) {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+body.app-page .tool-page [role='status']:empty {
+  display: none;
+}
+
+/* Disclosures used by the tools for rarely needed controls. */
+
+body.app-page
+  .tool-page
+  :is(
+    details.flashcard-disclosure,
+    details.flashcard-management,
+    details.calendar-compose,
+    details.study-disclosure
+  ) {
+  margin: 12px 0;
+  border: 1px solid var(--border-light);
+  border-radius: var(--dash-radius-small);
+  background: var(--surface);
+}
+
+body.app-page .tool-page details > summary {
+  min-height: 48px;
+  padding: 12px 16px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+body.app-page .tool-page details[open] > summary {
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.app-page .tool-page details > :not(summary) {
+  margin-inline: 16px;
+}
+
+body.app-page .tool-page details > :last-child {
+  margin-bottom: 16px;
+}
+
+/* Planning sheet */
+
+body.app-page .tool-page .planning-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 4px;
+}
+
+body.app-page .tool-page .planning-toolbar [hidden] {
+  display: none;
+}
+
+body.app-page .tool-page .planning-forms {
+  display: block;
+  margin: 12px 0;
+}
+
+body.app-page .tool-page .planning-forms form[hidden] {
+  display: none;
+}
+
+body.app-page .tool-page .planning-forms form {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 12px 16px;
+  padding: 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--dash-radius-small);
+  background: var(--surface);
+}
+
+body.app-page .tool-page .planning-forms h3 {
+  grid-column: 1 / -1;
+  font-size: 1.05rem;
+}
+
+body.app-page .tool-page .planning-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 8px 18px;
+}
+
+body.app-page .tool-page .planning-controls[hidden] {
+  display: none;
+}
+
+body.app-page .tool-page .planning-goal {
+  margin-top: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--dash-radius-small);
+  background: var(--surface);
+}
+
+body.app-page .tool-page .planning-goal h3 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.2rem;
+}
+
+body.app-page .tool-page .planning-goal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+body.app-page .tool-page .planning-goal-actions .planning-edit-form {
+  margin-top: 6px;
+}
+
+body.app-page .tool-page .planning-inline-button {
+  font-size: 0.82rem;
+}
+
+body.app-page .tool-page .planning-tasks li {
+  border-top: 1px solid var(--border-light);
+}
+
+body.app-page .tool-page .planning-empty.nino-note {
+  margin-top: 18px;
+}
+
+/* Flashcards sheet */
+
+body.app-page .tool-page .flashcard-columns {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+body.app-page .tool-page .flashcard-review-card {
+  padding: clamp(18px, 2.4vw, 26px);
+  border-radius: var(--dash-radius);
+  background: var(--surface);
+}
+
+body.app-page .tool-page .flashcard-review-card > h3:first-child {
+  color: var(--muted);
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+body.app-page .tool-page .flashcard-review-card .flashcard-content:not(.flashcard-answer) {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+}
+
+body.app-page .tool-page .flashcard-answer {
+  background: var(--dash-quiet);
+}
+
+body.app-page .tool-page .flashcard-generator {
+  margin: 12px 0;
+}
+
+body.app-page .tool-page .flashcard-generator > h3 {
+  display: none;
+}
+
+body.app-page .tool-page .flashcard-generator > p:first-of-type {
+  margin-top: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+body.app-page .tool-page .flashcard-filters {
+  margin-top: 4px;
+}
+
+body.app-page .tool-page .flashcard-draft {
+  border-color: var(--border-light);
+  background: var(--surface);
+}
+
+/* Calendar sheet */
+
+body.app-page .tool-page .learning-tools-controls {
+  gap: 8px 10px;
+}
+
+body.app-page .tool-page .learning-tools-controls label {
+  font-weight: 600;
+}
+
+body.app-page .tool-page .learning-tools-controls input[type='month'] {
+  width: auto;
+  min-height: 42px;
+}
+
+body.app-page .tool-page .study-calendar-grid {
+  gap: 6px;
+}
+
+body.app-page .tool-page .study-calendar-grid > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+body.app-page .tool-page .study-calendar-grid button {
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 3.2rem;
+  padding: 6px 8px;
+  border-color: var(--border-light);
+  font-variant-numeric: tabular-nums;
+}
+
+body.app-page .tool-page .study-calendar-grid button[aria-pressed='true'] {
+  border-color: var(--accent-strong);
+  outline: 2px solid var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+body.app-page .tool-page :is(.calendar-entry, .annotation-card) {
+  border-color: var(--border-light);
+  border-radius: var(--dash-radius-small);
+  background: var(--surface);
+}
+
+body.app-page .tool-page :is(.calendar-entry, .annotation-card) h3,
+body.app-page .tool-page .calendar-entry h4 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+body.app-page .tool-page :is(.calendar-entry, .annotation-card) > :is(button, a) {
+  margin: 6px 10px 0 0;
+}
+
+body.app-page .tool-page .calendar-event-form {
+  max-width: none;
+}
+
+body.app-page .tool-page .calendar-event-form > p:empty {
+  display: none;
+}
+
+body.app-page .tool-page .learning-tools-panel > form:not(.calendar-event-form) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+body.app-page .tool-page .learning-tools-panel > form:not(.calendar-event-form) label {
+  flex: 1 1 16rem;
+}
+
+body.app-page .tool-page .learning-tools-panel nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* Study time sheet */
+
+body.app-page .tool-page .study-timer-controls {
+  align-items: center;
+  padding: 18px;
+  border-radius: var(--dash-radius);
+  background: var(--dash-quiet);
+}
+
+body.app-page .tool-page .study-timer-controls output {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.2rem;
+}
+
+body.app-page .tool-page .study-metrics h3 {
+  margin: 18px 0 4px;
+  font-size: 1.05rem;
+}
+
+body.app-page .tool-page .study-tracking-panel > p[role='status'] {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* ---- Page frame: title, one line about the page, tabs ------------------------------------ */
+.tool-page {
+  --tool-radius: 16px;
+  --tool-radius-small: 10px;
+  --dash-radius: 16px;
+  --dash-radius-small: 10px;
+  --dash-quiet: color-mix(in srgb, var(--accent-soft) 55%, var(--surface));
+}
+.tool-page .tool-heading {
+  margin-bottom: 4px;
+}
+.tool-page .tool-intro {
+  max-width: 68ch;
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 1rem;
+}
+.tool-page .tool-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 0 0 24px;
+  padding: 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.tool-page .tool-tabs[hidden],
+.tool-page .tool-tabs [hidden] {
+  display: none;
+}
+.tool-page .tool-tabs [role='tab'] {
+  min-height: 46px;
+  margin-bottom: -1px;
+  padding: 10px 16px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  color: var(--muted);
+  background: none;
+  font-size: 0.98rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.tool-page .tool-tabs [role='tab']:hover {
+  color: var(--text);
+  background: var(--surface-alt);
+}
+.tool-page .tool-tabs [role='tab'][aria-selected='true'] {
+  border-bottom-color: var(--accent-strong);
+  color: var(--text);
+}
+.tool-page .tool-section[hidden] {
+  display: none;
+}
+.tool-page .tool-section {
+  min-width: 0;
+}
+body.app-page
+  .tool-page
+  :is(
+    .planning-panel,
+    .flashcards-panel,
+    .learning-tools-panel,
+    .study-tracking-panel,
+    .quiz-history-panel
+  )
+  > h2 {
+  padding: 0 0 6px;
+  font-size: clamp(1.3rem, 2vw, 1.55rem);
+}
+.tool-page .tool-unavailable[hidden] {
+  display: none;
+}
+.tool-page .tool-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---- Revisar › Questões ---------------------------------------------------------------- */
+.tool-page .quiz-history-panel [role='status']:empty {
+  display: none;
+}
+.tool-page .quiz-history-group h3 {
+  margin: 22px 0 8px;
+  font-size: 1.02rem;
+}
+.tool-page .quiz-history-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border-light);
+  border-radius: var(--tool-radius-small);
+  background: var(--surface);
+}
+.tool-page .quiz-history-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-light);
+}
+.tool-page .quiz-history-list li:first-child {
+  border-top: 0;
+}
+.tool-page .quiz-history-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tool-page .quiz-history-copy strong {
+  overflow-wrap: anywhere;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+}
+.tool-page .quiz-history-copy small {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.tool-page .quiz-history-list .button-link {
+  min-height: 42px;
+  padding: 9px 15px;
+  font-size: 0.875rem;
+}
+
+/* Wider pages: the planning and flashcard panels can use two columns. */
+@media (min-width: 1100px) {
+  body.app-page .tool-page .flashcard-columns {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .tool-page .tool-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .tool-page .tool-tabs [role='tab'] {
+    flex: 0 0 auto;
+    padding-inline: 12px;
+  }
+}
+
+/* The tab already names the section, so each tool's own title is kept for screen readers only. */
+body.app-page
+  .tool-page
+  .tool-section
+  > :is(
+    .planning-panel,
+    .flashcards-panel,
+    .learning-tools-panel,
+    .study-tracking-panel,
+    .quiz-history-panel
+  )
+  > h2:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
