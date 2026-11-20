@@ -5,6 +5,17 @@ import { initStudySync } from './study-sync.js';
 import { readProfileMedia } from './profile-storage.js';
 import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud } from './preference-cloud.js';
+import { getFeatureFlags } from './feature-flags.js';
+
+/** Shows Revisar/Planejar in the navigation when at least one of their tools is enabled. */
+export async function revealStudyNavigation() {
+  try {
+    const flags = await getFeatureFlags();
+    const root = document.documentElement;
+    root.dataset.navReview = String(Boolean(flags.flashcards || flags.annotations || flags.quiz_v2));
+    root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
+  } catch { /* Navigation keeps the always-available pages. */ }
+}
 
 export async function initAuthenticatedShell() {
   let session;
@@ -22,6 +33,7 @@ export async function initAuthenticatedShell() {
   }
   updateUserIdentity(session.user);
   setupAccountMenus(session.user);
+  void revealStudyNavigation();
   document.querySelectorAll('.sidebar-settings a[href="./aparencia.html"]').forEach((link) => {
     link.href = './configuracoes.html';
     const label = link.querySelector('span');

@@ -230,8 +230,10 @@ function syncFocusDock() {
 function initializeFocusDock() {
   if (!document.body.classList.contains('app-page')) return;
   const iconMarkup = {
-    dashboard:
-      '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    dashboard: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/>',
+    review:
+      '<rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v11"/><path d="m7 13 2 2 4-4"/>',
+    plan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 15h3M8 18h6"/>',
     transcription: '<path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/>',
     library: '<path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/>',
     appearance: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
@@ -239,9 +241,11 @@ function initializeFocusDock() {
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',
   };
   const links = [
-    ['Painel', './painel.html', 'dashboard'],
+    ['Início', './painel.html', 'dashboard'],
     ['Nova transcrição', './nova-transcricao.html', 'transcription'],
     ['Biblioteca', './historico.html', 'library'],
+    ['Revisar', './revisar.html', 'review'],
+    ['Planejar', './planejar.html', 'plan'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');
@@ -258,6 +262,7 @@ function initializeFocusDock() {
     const link = document.createElement('a');
     link.href = href;
     link.className = 'focus-dock-link';
+    if (iconName === 'review' || iconName === 'plan') link.dataset.navFeature = iconName;
     link.setAttribute('aria-label', label);
     const path = location.pathname.split('/').at(-1) || 'painel.html';
     if (
@@ -344,7 +349,9 @@ function initializeAccessibilityEntryPoints() {
   toggle.addEventListener('click', () => {
     const next = !uiPreferences.screenReaderMode;
     updateUiPreference('screenReaderMode', next);
-    showToast(next ? 'Modo para leitores de tela ativado.' : 'Modo para leitores de tela desativado.');
+    showToast(
+      next ? 'Modo para leitores de tela ativado.' : 'Modo para leitores de tela desativado.',
+    );
     toggle.focus();
   });
   syncScreenReaderToggle();

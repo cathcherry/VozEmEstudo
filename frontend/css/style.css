@@ -941,3 +941,17 @@ html[data-screen-reader-mode='true'] :focus-visible {
 html[data-screen-reader-mode='true'] :is(.library-dashboard, .dashboard-library-side, .flashcard-columns, .authoring-grid, .choice-grid) {
   display: block !important;
 }
+
+/* Navigation: "Nova transcrição" is the create action at the top; Revisar and Planejar appear
+   only when at least one of their study tools is enabled (set by shell.js from the flags). */
+.side-navigation nav a.nav-create { margin-bottom: 10px; border-color: var(--button-background); color: var(--button-text); background: var(--button-background); font-weight: 700; }
+.side-navigation nav a.nav-create:hover { color: var(--button-text); background: var(--button-background); filter: brightness(.95); }
+.side-navigation nav a.nav-create.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-strong); }
+html:not([data-nav-review='true']) [data-nav-feature='review'],
+html:not([data-nav-plan='true']) [data-nav-feature='plan'] { display: none !important; }
+@media (forced-colors: active) { .side-navigation nav a.nav-create { border: 2px solid ButtonText; } }
+/* With the sidebar visible, "Nova transcrição" lives at its top; the page-heading copy stays only
+   where the sidebar is folded into the menu (narrow screens and focus mode). */
+@media (min-width: 901px) {
+  html:not([data-focus-mode='true']) .app-page .article-heading > .primary-action[href='./nova-transcricao.html'] { display: none; }
+}
