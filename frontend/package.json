@@ -5,7 +5,7 @@
   "description": "Front-end estático do Voz em Estudo; npm é usado somente nos testes opcionais.",
   "scripts": {
     "test": "node tests/browser-check.cjs",
-    "test:browser": "node tests/browser-check.cjs && node tests/subject-menu-check.cjs && node tests/password-signup-check.cjs",
+    "test:browser": "node tests/browser-check.cjs && node tests/subject-menu-check.cjs && node tests/password-signup-check.cjs && node tests/dashboard-home-check.cjs",
     "test:dom": "node tests/dom-check.cjs",
     "check:syntax": "python ../scripts/static-check.py"
   },

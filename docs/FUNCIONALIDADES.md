@@ -87,27 +87,48 @@ Páginas: `login.html`, `cadastro.html`, `recuperar-senha.html`, `auth-callback.
 
 ## 4. Painel
 
-Página: `painel.html`.
+Página: `painel.html`. O Painel mostra resumos e ações; a interface completa de cada ferramenta
+abre num **painel lateral** (`<dialog>`, ocupa a tela toda no celular), sem sair da página. Esc ou
+o botão × fecham o painel lateral e o foco volta ao botão que o abriu. Roteiro de teste manual:
+[PAINEL_TESTE_MANUAL.md](PAINEL_TESTE_MANUAL.md).
 
-- "Olá, {nome}", atalho **Nova transcrição**, **Seu último estudo**, **Aulas recentes**,
-  **Suas disciplinas** e **Assuntos revisitados**.
-- **Busca global** (`GET /api/search`): procura em títulos de aulas, enunciados de questões e na
-  transcrição, sem diferenciar acentos. Mostra sugestões enquanto se digita (setas e Esc); o
-  resultado abre em abas (Aulas, Questões, Transcrições) que só aparecem quando têm resultados.
-  Termos encontrados ficam em negrito, e o resultado de transcrição abre a aula já no trecho.
-  Gabaritos nunca entram na busca.
-- Painéis que dependem de flags (e de migrations ainda não aplicadas em produção):
-  - **Meu planejamento** (`planning`, E05): objetivos, subobjetivos e tarefas com prazo, aula
-    relacionada e link de apoio; filtros, ordenação manual e conclusão.
-  - **Flashcards** (`flashcards`, E13): revisão do dia com espaçamento (De novo / Difícil / Bom /
-    Fácil), criar cartão, gerar cartões com IA, organizar, histórico de revisões. Com
-    `flashcard_sets`: **Conjuntos de flashcards** (ver, renomear, arquivar, excluir, exportar CSV
-    ou Markdown).
-  - **Tempo e progresso de estudo** (`study_tracking`, E08/E09): sessões de estudo livre ou
-    Pomodoro (25/5), meta semanal, fuso horário, sincronização entre aparelhos.
-  - **Anotações e destaques** (`annotations`, E14/E15): busca nas anotações de todas as aulas.
-  - **Calendário de estudos** (`calendar`, E18/E19): mês, horários ligados a aulas e tarefas,
-    exportação **.ics**.
+Ordem da página:
+
+1. **"Olá, {nome}"** e **Nova transcrição**.
+2. **Linha de atenção**: tarefas pendentes (e atrasadas), cartões para revisar e minutos da semana.
+   Cada item abre a ferramenta correspondente. Só aparece o que tem dado real.
+3. **Continuar estudando**: a última aula aberta, com disciplina, trecho ouvido e **Continuar
+   aula**.
+4. **Sua semana** (`study_tracking`): minutos e meta semanal, barras por dia, cronômetro com
+   **Iniciar sessão / Pausar / Retomar**. A sessão continua contando com o painel lateral fechado.
+   **Meta, histórico e sincronização** abre o painel completo (tipo de sessão, meta, fuso, conflitos
+   de sincronização e importação do andamento local, os dois últimos recolhidos).
+5. **Para estudar**: até três colunas, conforme as flags:
+   - **Próximas tarefas** (`planning`): até quatro pendentes, por prazo, com o objetivo. **Abrir
+     planejamento** mostra objetivos, subobjetivos e tarefas; criar objetivo, subobjetivo ou tarefa
+     abre um formulário de cada vez (também pelos botões **Adicionar tarefa / Adicionar
+     subobjetivo** de cada objetivo). Filtros, ordenação manual, edição, link de apoio e aula
+     relacionada continuam no painel lateral.
+   - **Revisão de flashcards** (`flashcards`): cartões do dia e a pergunta do primeiro da fila.
+     **Revisar agora** abre a revisão (De novo / Difícil / Bom / Fácil); **Criar ou gerenciar
+     cartões** leva a **Gerar cartões com IA** e **Criar cartão manualmente** (recolhidos),
+     **Organizar meus cartões** (filtros, edição, arquivar, histórico) e, com `flashcard_sets`,
+     **Conjuntos de flashcards**.
+   - **Próximos dias** (`calendar`): horários e prazos de tarefas dos próximos 14 dias. **Abrir
+     calendário** mostra o mês, a agenda do dia, edição e exportação **.ics**; **Agendar estudo**
+     abre direto o formulário.
+6. **Aulas recentes**, com o resumo da Biblioteca, **Suas disciplinas**, **Assuntos revisitados** e
+   **Anotações e destaques** (`annotations`: total salvo e **Ver e buscar anotações**).
+
+**Busca global** (`GET /api/search`): procura em títulos de aulas, enunciados de questões e na
+transcrição, sem diferenciar acentos. Mostra sugestões enquanto se digita (setas e Esc); o resultado
+abre em abas (Aulas, Questões, Transcrições e, com `annotations`, **Anotações**) que só aparecem
+quando têm resultados. Termos encontrados ficam em negrito, e o resultado de transcrição abre a aula
+já no trecho. Na aba Anotações, um botão abre todas as anotações encontradas com paginação.
+Gabaritos nunca entram na busca.
+
+Com uma flag desligada, o resumo e o painel lateral daquele recurso não aparecem. Com todas
+desligadas, o Painel mostra só Continuar estudando e a Biblioteca.
 
 ## 5. Nova transcrição (envio)
 
