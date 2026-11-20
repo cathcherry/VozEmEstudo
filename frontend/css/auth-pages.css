@@ -153,3 +153,10 @@ body.auth-page .auth-toast__close:focus-visible { outline: 3px solid #245fc5; ou
   body.auth-page .auth-toast__text { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) { body.auth-page .auth-toast { animation: none; } }
+
+/* Password rules: a quiet checklist under the field; each rule turns green when met. */
+body.auth-page .password-rules { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(11rem,100%),1fr)); gap:2px 14px; margin:-4px 0 4px; padding:0; list-style:none; font-size:.76rem; color:var(--muted); }
+body.auth-page .password-rules li { display:flex; align-items:center; gap:6px; min-width:0; }
+body.auth-page .password-rules li::before { content:''; flex:0 0 8px; width:8px; height:8px; border:1.5px solid currentColor; border-radius:50%; }
+body.auth-page .password-rules li[data-ok='true'] { color:var(--success,#1f7a4d); }
+body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; border:0; width:auto; height:auto; flex-basis:auto; font-size:.8rem; line-height:1; }

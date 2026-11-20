@@ -1,9 +1,11 @@
 import '../utils/preferences.js';
 import { getSupabase } from '../api/supabase-browser.js';
 import { requestPasswordReset, updatePassword } from '../api/auth.api.js';
+import { attachPasswordRules, passwordProblem, translatePasswordError } from '../utils/password-policy.js';
 
 const requestForm = document.querySelector('[data-recovery-request]');
 const updateForm = document.querySelector('[data-recovery-update]');
+attachPasswordRules(updateForm?.senha);
 import { showAuthToast } from '../utils/auth-toast.js';
 const description = document.querySelector('[data-recovery-description]');
 const params = new URLSearchParams(location.search);
@@ -59,8 +61,15 @@ updateForm?.addEventListener('submit', async (event) => {
   }
   const button = updateForm.querySelector('button[type="submit"]');
   button.disabled = true;
-  showAuthToast('Atualizando senha...', { type: 'info' });
   try {
+    showAuthToast('Conferindo a senha...', { type: 'info' });
+    const problem = await passwordProblem(updateForm.senha.value);
+    if (problem) {
+      showAuthToast(problem, { type: 'error', duration: 10000 });
+      updateForm.senha.focus();
+      return;
+    }
+    showAuthToast('Atualizando senha...', { type: 'info' });
     await updatePassword(updateForm.senha.value);
     const supabase = await getSupabase();
     const { error: signOutError } = await supabase.auth.signOut();
@@ -74,7 +83,7 @@ updateForm?.addEventListener('submit', async (event) => {
     description.textContent = 'Senha alterada com sucesso. Volte ao login e entre com sua nova senha.';
     showAuthToast('Senha atualizada. Volte ao login e entre com sua nova senha.', { type: 'success' });
   } catch (error) {
-    showAuthToast(error.message || 'Não foi possível alterar a senha.', { type: 'error' });
+    showAuthToast(translatePasswordError(error) || error.message || 'Não foi possível alterar a senha.', { type: 'error' });
   } finally {
     button.disabled = false;
   }

@@ -1,9 +1,11 @@
 import '../utils/preferences.js';
 import { signUp } from '../api/auth.api.js';
 import { initSocialAuth } from '../utils/social-auth.js';
+import { attachPasswordRules, passwordProblem, translatePasswordError } from '../utils/password-policy.js';
 initSocialAuth();
 
 const form = document.querySelector('.login-form');
+attachPasswordRules(form?.senha);
 import { showAuthToast } from '../utils/auth-toast.js';
 
 form?.addEventListener('submit', async (event) => {
@@ -17,6 +19,13 @@ form?.addEventListener('submit', async (event) => {
   }
   try {
     button.disabled = true;
+    showAuthToast('Conferindo a senha...', { type: 'info' });
+    const problem = await passwordProblem(password);
+    if (problem) {
+      showAuthToast(problem, { type: 'error', duration: 10000 });
+      form.senha.focus();
+      return;
+    }
     showAuthToast('Criando conta...', { type: 'info' });
     const data = await signUp(form.email.value.trim(), password);
     if (data.session) {
@@ -25,7 +34,7 @@ form?.addEventListener('submit', async (event) => {
       showAuthToast('Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.', { type: 'success', duration: 12000 });
     }
   } catch (error) {
-    showAuthToast(error.message || 'Não foi possível criar a conta.', { type: 'error' });
+    showAuthToast(translatePasswordError(error) || error.message || 'Não foi possível criar a conta.', { type: 'error' });
   } finally {
     button.disabled = false;
   }

@@ -23,7 +23,7 @@ O formulário antigo (anterior a esta atualização), que aparecia como um bloco
 
 ## 3. Ainda dependem de você (fora do código)
 
-- **Supabase → Authentication → Password security:** ativar a proteção contra senhas vazadas.
+- ~~Supabase → proteção contra senhas vazadas~~: disponível só no plano Pro; substituída pela verificação do app (seção 8). O aviso correspondente continua no advisor de segurança.
 - **Merge de `feat/study-authoring`** e deploy; depois `FEATURE_STUDY_AUTHORING=true`.
 - **Conjuntos de flashcards:** dependem das migrations E03, E05 e E13, que não estão no `audioestudo`. Aplicá-las exige o mesmo processo de diagnóstico, ensaio e confirmação.
 
@@ -67,3 +67,11 @@ Sintoma: 5 pedidas, 2 geradas (aula de 10 min, 10 mil caracteres), com "conteúd
 - **Remover** pede confirmação dizendo quantas aulas existem: elas **não são apagadas**, vão para "Sem disciplina"; as unidades da disciplina são removidas.
 - API: `PATCH /api/catalog/subjects/:id` e `DELETE /api/catalog/subjects/:id` (só do dono; sem migration).
 - Verificar: renomear e remover uma disciplina de teste com 1 aula.
+
+## 8. Senhas: regras visíveis e verificação de vazamento (gratuita)
+
+- No Supabase (feito pela responsável): mínimo de 8 caracteres e "minúsculas, maiúsculas, dígitos e símbolos".
+- Cadastro e recuperação de senha mostram as cinco regras abaixo do campo, marcando cada uma quando atendida, e bloqueiam a senha fraca antes de enviar.
+- Senhas que cumprem as regras são conferidas no Have I Been Pwned por k-anonimato: só os 5 primeiros caracteres do hash SHA-1 saem do navegador (com padding). Se a senha aparece em vazamentos, o app pede outra. Se o serviço estiver fora do ar, a verificação é pulada (não bloqueia).
+- Erros de senha fraca do Supabase aparecem em português.
+- Limite: roda no navegador, então quem chamar a API do Supabase diretamente não passa por ela; as regras do Supabase continuam valendo.
