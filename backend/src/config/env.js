@@ -15,6 +15,12 @@ function number(value, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+/** Stale-lease window: 600 s by default, 0 disables, other values are raised to the 60 s minimum. */
+export function leaseSeconds(value) {
+  const seconds = String(value ?? '').trim() === '' ? 600 : number(value, 600);
+  return seconds <= 0 ? 0 : Math.max(60, Math.round(seconds));
+}
+
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: number(process.env.PORT, 3000),
@@ -25,7 +31,10 @@ export const env = Object.freeze({
   supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || '',
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || '',
   audioBucket: process.env.SUPABASE_AUDIO_BUCKET || 'audios',
-  oauthProviders: (process.env.OAUTH_PROVIDERS || 'google,github').split(',').map((p) => p.trim()).filter((p) => ['google', 'github'].includes(p)),
+  oauthProviders: (process.env.OAUTH_PROVIDERS || 'google,github')
+    .split(',')
+    .map((p) => p.trim())
+    .filter((p) => ['google', 'github'].includes(p)),
 
   groqApiKey: process.env.GROQ_API_KEY || '',
   groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
@@ -42,7 +51,8 @@ export const env = Object.freeze({
   workerPollMs: number(process.env.WORKER_POLL_MS, 2000),
   workerConcurrency: number(process.env.WORKER_CONCURRENCY, 1),
   // 0 keeps the original claim RPC; >= 60 reclaims jobs whose worker died (needs the AI migration).
-  workerStaleLeaseSeconds: number(process.env.WORKER_STALE_LEASE_SECONDS, 0),
+  // 0 disables recovery of jobs abandoned by a stopped worker; otherwise at least 60 s.
+  workerStaleLeaseSeconds: leaseSeconds(process.env.WORKER_STALE_LEASE_SECONDS),
   jobMaxAttempts: number(process.env.JOB_MAX_ATTEMPTS, 3),
   retryDelay1Ms: number(process.env.JOB_RETRY_DELAY_1_MS, 15000),
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),
@@ -57,5 +67,7 @@ export function missingRuntimeSecrets() {
     ['SUPABASE_URL', env.supabaseUrl],
     ['SUPABASE_PUBLISHABLE_KEY', env.supabasePublishableKey],
     ['SUPABASE_SECRET_KEY', env.supabaseSecretKey],
-  ].filter(([, value]) => !value).map(([name]) => name);
+  ]
+    .filter(([, value]) => !value)
+    .map(([name]) => name);
 }

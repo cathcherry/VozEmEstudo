@@ -32,6 +32,8 @@ while (!stopping) {
   } catch (error) {
     logger.error('WORKER_LOOP_ERROR', {
       code: error instanceof AppError ? error.code : 'WORKER_LOOP_FAILED',
+      // A short cause (e.g. ENOTFOUND, ECONNRESET, PGRST301) without message text or data.
+      cause: String(error?.cause?.code || error?.code || error?.name || 'unknown').slice(0, 40),
     });
     await sleep(env.workerPollMs);
   }

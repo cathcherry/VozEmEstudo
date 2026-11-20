@@ -637,13 +637,28 @@ async function main() {
         ? []
         : new URL(route.request().url()).pathname.endsWith('/job-failed')
           ? { status: 'FALHOU', error_message: 'Falha simulada na geração.' }
-          : jobPending
+          : jobPending === 'polling'
             ? {
-                status: 'EM_EXECUCAO',
+                status: 'AGUARDANDO_REPETICAO',
+                error_code: null,
                 current_stage: 'TRANSCRICAO',
                 created_at: new Date(Date.now() - 125000).toISOString(),
               }
-            : { status: 'CONCLUIDA' },
+            : jobPending === 'retry'
+              ? {
+                  status: 'AGUARDANDO_REPETICAO',
+                  error_code: 'ASR_PROVIDER_UNAVAILABLE',
+                  attempt_count: 1,
+                  max_attempts: 3,
+                  created_at: new Date(Date.now() - 125000).toISOString(),
+                }
+              : jobPending
+                ? {
+                    status: 'EM_EXECUCAO',
+                    current_stage: 'TRANSCRICAO',
+                    created_at: new Date(Date.now() - 125000).toISOString(),
+                  }
+                : { status: 'CONCLUIDA' },
     }),
   );
   await context.route(base + '/api/questions/**', (route) =>
@@ -2029,9 +2044,23 @@ async function main() {
     await audit('tela separada de processamento');
     assert.deepEqual(accessibility.at(-1).violations, []);
     await screenshot(page, output, 'processing-redesign.png');
+    // Waiting for the external transcription service is progress, not a failure.
+    jobPending = 'polling';
+    await page.getByText('O áudio está com o serviço de transcrição.', { exact: false }).waitFor();
+    assert.equal(await page.getByRole('heading', { name: 'Aguardando nova tentativa' }).count(), 0);
+    assert.equal(
+      await page.locator('[data-processing-step="transcribe"]').getAttribute('aria-current'),
+      'step',
+    );
+    // A real temporary failure says so and shows which attempt comes next.
+    jobPending = 'retry';
+    await page.getByRole('heading', { name: 'Aguardando nova tentativa' }).waitFor();
+    await page.getByText('(tentativa 2 de 3)', { exact: false }).waitFor();
     jobPending = false;
     await page.waitForURL('**/material.html?**');
-    record('Espera separada mostra etapa e tempo decorrido e abre material ao concluir');
+    record(
+      'Espera separada mostra etapa e tempo, distingue espera do provedor de falha temporária e abre o material',
+    );
     // Library "Editar transcrição" opens the Transcrição tab directly in edit mode.
     await page.goto(base + '/material.html?id=aula-real&edit=transcricao#transcricao');
     await page.locator('[data-transcription-section][data-mode="editing"]').waitFor();

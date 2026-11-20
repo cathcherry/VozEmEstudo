@@ -21,8 +21,10 @@ const STEP_ORDER = ['upload', 'queue', 'transcribe', 'ready'];
 /** Shows one real backend state: no percentages, only the stage the job reports. */
 function show({ state, step, title, detail = '' }) {
   screen.dataset.processingState = state;
-  $('[data-wait-status]').textContent = title;
-  $('[data-wait-detail]').textContent = detail;
+  // The title is a live region polled every few seconds: write only on change, so screen
+  // readers announce real progress once instead of repeating the same sentence.
+  if ($('[data-wait-status]').textContent !== title) $('[data-wait-status]').textContent = title;
+  if ($('[data-wait-detail]').textContent !== detail) $('[data-wait-detail]').textContent = detail;
   $('[data-wait-detail]').hidden = !detail;
   const reached = STEP_ORDER.indexOf(step);
   for (const item of document.querySelectorAll('[data-processing-step]')) {
@@ -57,12 +59,25 @@ function update(job) {
   if (job.created_at) started = new Date(job.created_at).getTime();
   if (job.status === 'PENDENTE')
     show({ state: 'queued', step: 'queue', title: 'Na fila para transcrição' });
+  // AGUARDANDO_REPETICAO has two meanings. With an error code it is a real retry after a
+  // temporary failure. Without one, the audio is with the transcription service and the job is
+  // only waiting to check again: that is normal progress, not a failure.
+  else if (job.status === 'AGUARDANDO_REPETICAO' && job.error_code)
+    show({
+      state: 'running',
+      step: 'transcribe',
+      title: 'Aguardando nova tentativa',
+      detail: `Houve uma falha temporária. Uma nova tentativa automática já está agendada (tentativa ${Math.min(
+        (job.attempt_count || 0) + 1,
+        job.max_attempts || 3,
+      )} de ${job.max_attempts || 3}).`,
+    });
   else if (job.status === 'AGUARDANDO_REPETICAO')
     show({
-      state: 'queued',
-      step: 'queue',
-      title: 'Aguardando nova tentativa',
-      detail: 'Houve uma falha temporária. Uma nova tentativa automática já está agendada.',
+      state: 'running',
+      step: 'transcribe',
+      title: 'Transcrevendo o áudio…',
+      detail: 'O áudio está com o serviço de transcrição. Esta página atualiza sozinha.',
     });
   else if (job.status === 'EM_EXECUCAO')
     show({

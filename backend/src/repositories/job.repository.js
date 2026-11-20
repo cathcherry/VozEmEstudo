@@ -96,16 +96,44 @@ export async function listOwnedEvents(userId, jobId) {
   return data || [];
 }
 
+let staleClaimAvailable = true;
+
+/**
+ * Claims the next due job. With a stale-lease window (default 600 s) the claim also recovers jobs
+ * whose worker stopped mid-task (closed window, crash, lost network); running jobs renew their
+ * lease with renewJobLease, so a long job is not mistaken for a dead one. Databases without the
+ * newer claim function (migration 20261119030000_ai_executions.sql) fall back to the plain claim.
+ */
 export async function claimNextJob(workerId) {
   const db = getAdminSupabase();
-  const { data, error } = await db.rpc(
-    'claim_next_processing_job',
-    env.workerStaleLeaseSeconds > 0
-      ? { p_worker_id: workerId, p_stale_after_seconds: env.workerStaleLeaseSeconds }
-      : { p_worker_id: workerId },
-  );
+  const stale = env.workerStaleLeaseSeconds;
+  if (stale > 0 && staleClaimAvailable) {
+    const { data, error } = await db.rpc('claim_next_processing_job', {
+      p_worker_id: workerId,
+      p_stale_after_seconds: stale,
+    });
+    if (!error) return data?.[0] || null;
+    if (error.code !== 'PGRST202') throw error;
+    staleClaimAvailable = false;
+    logger.warn('WORKER_STALE_LEASE_UNAVAILABLE', {
+      hint: 'Aplique 20261119030000_ai_executions.sql para recuperar tarefas interrompidas.',
+    });
+  }
+  const { data, error } = await db.rpc('claim_next_processing_job', { p_worker_id: workerId });
   if (error) throw error;
   return data?.[0] || null;
+}
+
+/** Keeps a running job's lease fresh. Only the worker that holds the lock can renew it. */
+export async function renewJobLease(jobId, workerId) {
+  const db = getAdminSupabase();
+  const { error } = await db
+    .from('processing_jobs')
+    .update({ locked_at: new Date().toISOString() })
+    .eq('id', jobId)
+    .eq('locked_by', workerId)
+    .eq('status', 'EM_EXECUCAO');
+  if (error) throw error;
 }
 
 export async function updateJob(jobId, patch) {
