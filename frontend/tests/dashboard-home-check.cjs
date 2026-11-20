@@ -45,18 +45,64 @@ const materials = [
 function lessonDetail(m, stage) {
   return {
     ...m,
-    review: stage === 'pending'
-      ? { state: 'awaiting_confirmation', sourceRevisionId: null, revision: 1, permissionRequired: false }
-      : { state: 'ready_to_generate', sourceRevisionId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', revision: 1, permissionRequired: false },
+    review:
+      stage === 'pending'
+        ? {
+            state: 'awaiting_confirmation',
+            sourceRevisionId: null,
+            revision: 1,
+            permissionRequired: false,
+          }
+        : {
+            state: 'ready_to_generate',
+            sourceRevisionId: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+            revision: 1,
+            permissionRequired: false,
+          },
     warnings: [],
     audio: m.audio_files[0],
     transcription: {
       current_revision: 1,
       id: `tr-${m.id}`,
-      transcription_segments: [{ id: 'seg-1', position: 0, start_ms: 0, end_ms: 1500, current_text: 'A fotossíntese converte energia luminosa em energia química.' }],
+      transcription_segments: [
+        {
+          id: 'seg-1',
+          position: 0,
+          start_ms: 0,
+          end_ms: 1500,
+          current_text: 'A fotossíntese converte energia luminosa em energia química.',
+        },
+      ],
     },
-    summaries: stage === 'pending' ? [] : [{ id: 's1', is_current: true, version: 1, source_transcription_revision: 1, text: 'A **fotossíntese** ocorre no cloroplasto.' }],
-    questionBatches: stage === 'questions' ? [{ id: 'b1', generated_count: 1, source_transcription_revision: 1, questions: [{ id: 'q1', statement: 'Onde ocorre a fotossíntese?', options: ['Cloroplasto', 'Núcleo', 'Ribossomo'] }] }] : [],
+    summaries:
+      stage === 'pending'
+        ? []
+        : [
+            {
+              id: 's1',
+              is_current: true,
+              version: 1,
+              source_transcription_revision: 1,
+              text: 'A **fotossíntese** ocorre no cloroplasto.',
+            },
+          ],
+    questionBatches:
+      stage === 'questions'
+        ? [
+            {
+              id: 'b1',
+              generated_count: 1,
+              source_transcription_revision: 1,
+              questions: [
+                {
+                  id: 'q1',
+                  statement: 'Onde ocorre a fotossíntese?',
+                  options: ['Cloroplasto', 'Núcleo', 'Ribossomo'],
+                },
+              ],
+            },
+          ]
+        : [],
   };
 }
 
@@ -240,10 +286,14 @@ async function setup(context, base, flags, data) {
     if (p === '/api/materials' && method === 'GET') return json(materials);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
-      return json({ ...lessonDetail(m, data.lessonStage?.[m.id] || 'summary'), signedAudioUrl: `${base}/__fixture.wav` });
+      return json({
+        ...lessonDetail(m, data.lessonStage?.[m.id] || 'summary'),
+        signedAudioUrl: `${base}/__fixture.wav`,
+      });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
-    if (p.endsWith('/playback')) return json({ video: null, signedVideoUrl: null, signedAudioUrl: `${base}/__fixture.wav` });
+    if (p.endsWith('/playback'))
+      return json({ video: null, signedVideoUrl: null, signedAudioUrl: `${base}/__fixture.wav` });
     if (p === '/api/planning' && method === 'GET')
       return json({ goals: data.goals, subgoals: data.subgoals, tasks: data.tasks });
     if (p === '/api/planning/goals' && method === 'POST') {
@@ -464,7 +514,9 @@ async function main() {
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
-  app.get('/__fixture.wav', (_req, res) => res.sendFile(path.join(__dirname, 'artifacts', 'fixture.wav')));
+  app.get('/__fixture.wav', (_req, res) =>
+    res.sendFile(path.join(__dirname, 'artifacts', 'fixture.wav')),
+  );
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;
@@ -519,14 +571,11 @@ async function main() {
         await page.locator('.primary-navigation a', { hasText: name }).isVisible(),
         `${name} in the navigation`,
       );
-    assert.match(
-      await page.locator('[data-pulse="tasks"]').textContent(),
-      /3\s+tarefas pendentes \(1 atrasada\)/,
-    );
-    assert.equal(
-      await page.locator('[data-pulse="tasks"] a').getAttribute('href'),
-      './planejar.html#tarefas',
-    );
+    assert.equal(await page.locator('[data-tasks-count]').textContent(), '3');
+    assert.equal(await page.locator('[data-cards-count]').textContent(), '5');
+    assert.match(await page.locator('[data-tasks-preview]').textContent(), /Atrasada/);
+    assert.equal(await page.locator('.dash-mini-day.is-today').count(), 1);
+    assert.equal(await page.locator('main .nino-note').count(), 0, 'no mascot in the cards');
     assert.equal(
       await page.locator('[data-cards-actions] .button-link').textContent(),
       'Revisar 5 cartões',
@@ -534,8 +583,15 @@ async function main() {
     for (const host of ['[data-tasks-actions]', '[data-cards-actions]', '[data-events-actions]'])
       assert(
         (await page.locator(`${host} .button-link`).count()) <= 1,
-        `${host}: at most one primary action`,
+        `${host}: at most one action button`,
       );
+    // Balanced columns: the right column ends where the main column ends.
+    const mainBox = await page.locator('.dash-main').boundingBox();
+    const railBox = await page.locator('.dash-rail').boundingBox();
+    assert(
+      Math.abs(mainBox.y + mainBox.height - (railBox.y + railBox.height)) < 2,
+      'columns end together',
+    );
     const hero = page.locator('.dash-continue .dashboard-lesson-card');
     const before = await hero.locator('.dashboard-lesson-percent').boundingBox();
     for (const target of [
@@ -674,11 +730,16 @@ async function main() {
     await page.goto(base + '/material.html?id=l-foto');
     await page.locator('[data-lesson-steps]:not([hidden]) .lesson-next button').waitFor();
     assert.deepEqual(
-      await page.locator('.lesson-step').evaluateAll((items) => items.map((i) => i.className.replace('lesson-step ', ''))),
+      await page
+        .locator('.lesson-step')
+        .evaluateAll((items) => items.map((i) => i.className.replace('lesson-step ', ''))),
       ['is-done', 'is-done', 'is-current', 'is-todo'],
     );
     assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
-    assert.equal(await page.locator('.lesson-tools .lesson-tool[open] > summary').first().textContent(), 'Cronômetro de estudo');
+    assert.equal(
+      await page.locator('.lesson-tools .lesson-tool[open] > summary').first().textContent(),
+      'Cronômetro de estudo',
+    );
     const stepsBox = await page.locator('[data-lesson-steps]').boundingBox();
     const toolsBox = await page.locator('.lesson-tools').boundingBox();
     assert(toolsBox.y > stepsBox.y, 'timer and annotations come after the lesson content');
@@ -693,10 +754,19 @@ async function main() {
     await page.locator('.lesson-next button', { hasText: 'Responder a lista' }).waitFor();
     await page.goto(base + '/material.html?id=l-rev');
     await page.locator('[data-lesson-steps]:not([hidden])').waitFor();
-    assert.equal(await page.locator('.lesson-next button').count(), 0, 'one primary action: the page already asks to check the transcript');
-    assert(await page.locator('.lesson-step-button').nth(1).isDisabled(), 'summary waits for confirmation');
+    assert.equal(
+      await page.locator('.lesson-next button').count(),
+      0,
+      'one primary action: the page already asks to check the transcript',
+    );
+    assert(
+      await page.locator('.lesson-step-button').nth(1).isDisabled(),
+      'summary waits for confirmation',
+    );
     await shot(page, 'aula-pendente-1440');
-    record('Jornada de questões: a aula mostra as etapas e o próximo passo (Criar questões abre a lista; Responder a lista; etapas travadas até confirmar)');
+    record(
+      'Jornada de questões: a aula mostra as etapas e o próximo passo (Criar questões abre a lista; Responder a lista; etapas travadas até confirmar)',
+    );
 
     // ---------- Widths, zoom, themes, screen-reader mode ---------------------------------
     for (const route of ['painel.html', 'planejar.html#tarefas', 'revisar.html#flashcards']) {
@@ -771,7 +841,8 @@ async function main() {
     await page.locator('[data-week-body]', { hasText: 'Use o cronômetro' }).waitFor();
     await settle(page);
     assert.equal(await page.locator('.dash-day-bar').count(), 0, 'no empty chart');
-    assert(await page.locator('[data-dash-pulse]').isHidden(), 'no zero counters');
+    assert(await page.locator('[data-tasks-count]').isHidden(), 'no zero counters');
+    assert.equal(await page.locator('main .nino-note').count(), 0, 'no mascot in empty cards');
     await axeCheck(page, 'body', 'Início vazio');
     await shot(page, 'inicio-conta-nova-1440');
     await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).click();

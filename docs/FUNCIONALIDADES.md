@@ -100,20 +100,20 @@ Páginas: `login.html`, `cadastro.html`, `recuperar-senha.html`, `auth-callback.
 
 ### Início (`painel.html`)
 
-Visão geral; nada é editado aqui. Cada bloco tem um destino claro:
+Visão geral em duas colunas que terminam juntas; nada é editado aqui.
 
-1. "Olá, {nome}". Com o menu lateral visível, **Nova transcrição** fica só no menu; em telas
-   estreitas e no modo foco, também ao lado da saudação.
-2. **Linha de atenção**: tarefas pendentes (e atrasadas), cartões para revisar e minutos da semana.
-   Só aparece o que tem valor diferente de zero; cada item abre a página correspondente.
-3. **Continuar estudando**: última aula aberta, disciplina, trecho ouvido e **Continuar aula**.
-4. **Sua semana** (`study_tracking`): minutos, meta e barras por dia. Sem minutos registrados, explica
-   o cronômetro em vez de mostrar um gráfico vazio. **Ver tempo de estudo e meta** → Planejar.
-5. **Para estudar** (cada coluna só com a flag ligada): **Próximas tarefas**, **Flashcards** (cartões
-   do dia e a pergunta do primeiro da fila) e **Próximos 14 dias** (horários e prazos). Cada coluna
-   tem no máximo uma ação principal e um link; sem dados, explica o recurso e oferece um primeiro
-   passo ("Criar primeiro objetivo", "Escolher uma aula", "Agendar estudo").
-6. **Aulas recentes**, **Suas disciplinas**, **Assuntos revisitados** e **Anotações e destaques**.
+- **Coluna principal**: "Olá, {nome}" e a data; **Continuar estudando** (última aula, disciplina,
+  trecho ouvido, **Continuar aula**); **Próximas tarefas** e **Flashcards** lado a lado, cada um com
+  a contagem no título, um link "Ver todas/Ver todos" e no máximo um botão (Adicionar tarefa,
+  Revisar N cartões); **Aulas recentes** (até 6) com **Mais revisitados**.
+- **Coluna da direita** (um painel contínuo): **Sua semana** (minutos, meta e barras por dia),
+  **o mês** com o dia de hoje e pontos nos dias com estudo ou prazo, os próximos 3 itens e
+  **Agendar estudo**; **Suas disciplinas**; **Anotações**.
+- Cartões de recursos desligados não aparecem. Sem dados, o cartão diz para que serve em uma frase e
+  oferece um primeiro passo, sem mascote e sem números zerados ou gráficos vazios.
+- Com o menu lateral visível, **Nova transcrição** fica só no menu; em telas estreitas e no modo
+  foco, também ao lado da saudação. Em telas médias a coluna da direita vira um bloco de duas
+  colunas (calendário de um lado); no celular, tudo em uma coluna.
 
 **Busca global** (`GET /api/search`): títulos, enunciados de questões e transcrição, sem diferenciar
 acentos, com sugestões enquanto se digita. Resultados em abas (Aulas, Questões, Transcrições e, com

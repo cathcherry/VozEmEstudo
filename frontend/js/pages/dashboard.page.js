@@ -136,7 +136,7 @@ async function load() {
     if (last.length) for (const material of last) {
       continued.append(dashboardLesson(material));
     } else continued.append(emptyState(materials.length?'Nenhuma aula em andamento.':'Sua Biblioteca está vazia.',materials.length?'Acesse a Biblioteca para escolher uma aula.':'Envie uma aula para começar.',{href:materials.length?'./historico.html':'./nova-transcricao.html',action:materials.length?'Abrir Biblioteca':'Nova transcrição',mascot:materials.length?'reading':'laptop'}));
-    const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,4);
+    const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,6);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
     for (const material of recentMaterials) recent.append(dashboardLesson(material));
     const shelf=document.querySelector('[data-subject-list]'); shelf.replaceChildren();
@@ -150,7 +150,7 @@ async function load() {
     const topics=new Map();
     for(const m of materials) { const s=studyFor(m.id); if(!s.visits) continue; for(const tag of s.tags.length ? s.tags : [m.subject||'Sem disciplina']) topics.set(tag,(topics.get(tag)||0)+s.visits); }
     const list=document.querySelector('[data-topic-list]'); list.replaceChildren();
-    for(const [topic,visits] of [...topics].sort((a,b)=>b[1]-a[1]).slice(0,4)) { const li=document.createElement('li'), label=document.createElement('span'), count=document.createElement('small'); label.textContent=topic; count.textContent=`${visits} ${visits===1?'acesso':'acessos'}`; li.append(label,count); list.append(li); }
+    for(const [topic,visits] of [...topics].sort((a,b)=>b[1]-a[1]).slice(0,4)) { const li=document.createElement('li'), label=document.createElement('span'), count=document.createElement('small'); label.textContent=topic; count.textContent=String(visits); const unit=document.createElement('span'); unit.className='sr-only'; unit.textContent=visits===1?' acesso':' acessos'; count.append(unit); count.title=`${visits} ${visits===1?'acesso':'acessos'}`; li.append(label,count); list.append(li); }
     document.querySelector('[data-topics-section]').hidden = !topics.size;
   } catch(error) { overview.textContent='Biblioteca indisponível no momento.'; continued.replaceChildren(errorState(error.message,load)); }
   finally { container.setAttribute('aria-busy','false'); }

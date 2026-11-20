@@ -1,14 +1,14 @@
 // Início: an overview of what to study next. Every card reads a small summary from the API and
 // links to the page where that tool lives (Planejar or Revisar). A card for a tool that is
-// switched off never appears, and an empty card explains what the tool is for and how to start.
+// switched off never appears; an empty card says in one sentence what the tool is for and offers
+// one first step.
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { listCalendar, listAnnotations } from '../api/learning-tools.api.js';
 import { getPlanning } from '../api/planning.api.js';
 import { listFlashcards } from '../api/flashcard.api.js';
 import { getStudyOverview } from '../api/study.api.js';
-import { localDay } from '../utils/calendar-export.js';
+import { localDay, itemOnDay } from '../utils/calendar-export.js';
 import { sortedPlanningTasks, dateLabel } from '../utils/planning-view.js';
-import { ninoNote } from '../utils/material-ui.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -16,7 +16,7 @@ const make = (tag, text, className) => {
   if (className) node.className = className;
   return node;
 };
-const link = (text, href, className = 'text-action') => {
+const link = (text, href, className = 'secondary-action button-link') => {
   const node = make('a', text, className);
   node.href = href;
   return node;
@@ -56,34 +56,28 @@ export function upcomingAgenda(items, now = new Date(), limit = 4) {
 }
 
 export function initDashboardHome() {
-  const pulse = document.querySelector('[data-dash-pulse]');
-  const planSection = document.querySelector('[data-plan-section]');
-
-  function setPulse(key, value, label) {
-    const item = pulse.querySelector(`[data-pulse="${key}"]`);
-    item.hidden = value === null;
-    if (value !== null) {
-      item.querySelector('[data-pulse-value]').textContent = value;
-      item.querySelector('[data-pulse-label]').textContent = label;
-    }
-    pulse.hidden = ![...pulse.children].some((child) => !child.hidden);
+  const today = document.querySelector('[data-today]');
+  if (today) {
+    const text = new Date().toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    today.textContent = text.charAt(0).toUpperCase() + text.slice(1);
   }
+  const planSection = document.querySelector('[data-plan-section]');
   function show(widget) {
     widget.hidden = false;
     if (widget.closest('[data-plan-section]')) planSection.hidden = false;
   }
-  /** One primary action (or none) and at most one secondary link per card. */
-  function actions(host, primary, secondary) {
-    host.replaceChildren();
-    if (primary) host.append(link(primary[0], primary[1], 'secondary-action button-link'));
-    if (secondary) host.append(link(secondary[0], secondary[1]));
+  function count(selector, value) {
+    const badge = document.querySelector(selector);
+    badge.hidden = !value;
+    badge.textContent = value ? String(value) : '';
   }
-  const empty = (host, text, pose = 'rest') =>
-    host.replaceChildren(ninoNote(text, pose, { className: 'dash-empty' }));
+  const note = (text) => make('p', text, 'dash-card-note');
   const failed = (host, error, what) =>
-    host.replaceChildren(
-      make('p', error?.message || `Não foi possível carregar ${what}.`, 'dash-widget-note'),
-    );
+    host.replaceChildren(note(error?.message || `Não foi possível carregar ${what}.`));
 
   // ---- Planning ------------------------------------------------------------------------
   const tasksWidget = document.querySelector('[data-tasks-widget]');
@@ -95,71 +89,50 @@ export function initDashboardHome() {
       const data = await getPlanning();
       const goals = (data.goals || []).filter((goal) => goal.status !== 'archived');
       const pending = upcomingTasks(data, Infinity);
-      const today = localDay(new Date());
+      const todayKey = localDay(new Date());
+      count('[data-tasks-count]', pending.length);
       if (!goals.length) {
-        empty(
-          tasksPreview,
-          'Organize seus estudos: defina um objetivo e divida-o em tarefas.',
-          'reading',
+        tasksPreview.replaceChildren(
+          note('Organize seus estudos: defina um objetivo e divida-o em tarefas.'),
         );
-        actions(tasksActions, [
-          'Criar primeiro objetivo',
-          './planejar.html?criar=objetivo#tarefas',
-        ]);
-        setPulse('tasks', null);
+        tasksActions.replaceChildren(
+          link('Criar primeiro objetivo', './planejar.html?criar=objetivo#tarefas'),
+        );
         return;
       }
       if (!pending.length) {
-        empty(
-          tasksPreview,
-          'Nenhuma tarefa pendente. Adicione a próxima etapa de um objetivo.',
-          'celebrate',
+        tasksPreview.replaceChildren(
+          note('Nenhuma tarefa pendente. Adicione a próxima etapa de um objetivo.'),
         );
-        actions(
-          tasksActions,
-          ['Adicionar tarefa', './planejar.html?criar=tarefa#tarefas'],
-          ['Ver objetivos', './planejar.html#tarefas'],
+        tasksActions.replaceChildren(
+          link('Adicionar tarefa', './planejar.html?criar=tarefa#tarefas'),
         );
-        setPulse('tasks', null);
         return;
       }
       const list = make('ul', null, 'dash-task-list');
-      for (const task of pending.slice(0, 4)) {
+      for (const task of pending.slice(0, 3)) {
         const item = make('li');
-        const late = task.due_date && task.due_date < today;
+        const late = task.due_date && task.due_date < todayKey;
         if (late) item.classList.add('is-overdue');
         item.append(make('span', task.title, 'dash-task-title'));
         const meta = [task.goalTitle];
         if (task.due_date)
           meta.unshift(
-            late ? `Atrasada desde ${dateLabel(task.due_date)}` : `Até ${dateLabel(task.due_date)}`,
+            late
+              ? `Atrasada · ${dateLabel(task.due_date).slice(0, 5)}`
+              : `Até ${dateLabel(task.due_date).slice(0, 5)}`,
           );
         item.append(make('small', meta.filter(Boolean).join(' · ')));
         list.append(item);
       }
       tasksPreview.replaceChildren(list);
-      if (pending.length > 4)
-        tasksPreview.append(
-          make(
-            'p',
-            `E mais ${plural(pending.length - 4, 'tarefa', 'tarefas')}.`,
-            'dash-widget-note',
-          ),
-        );
-      actions(
-        tasksActions,
-        ['Ver todas as tarefas', './planejar.html#tarefas'],
-        ['Adicionar tarefa', './planejar.html?criar=tarefa#tarefas'],
-      );
-      const overdue = pending.filter((task) => task.due_date && task.due_date < today).length;
-      setPulse(
-        'tasks',
-        String(pending.length),
-        `${pending.length === 1 ? 'tarefa pendente' : 'tarefas pendentes'}${overdue ? ` (${overdue} ${overdue === 1 ? 'atrasada' : 'atrasadas'})` : ''}`,
+      if (pending.length > 3)
+        tasksPreview.append(note(`E mais ${plural(pending.length - 3, 'tarefa', 'tarefas')}.`));
+      tasksActions.replaceChildren(
+        link('Adicionar tarefa', './planejar.html?criar=tarefa#tarefas'),
       );
     } catch (error) {
       failed(tasksPreview, error, 'as tarefas');
-      actions(tasksActions, ['Abrir Planejar', './planejar.html#tarefas']);
     }
   }
 
@@ -174,70 +147,93 @@ export function initDashboardHome() {
         listFlashcards('due', {}),
         listFlashcards('all', { status: 'active' }),
       ]);
-      const count = Number(due.total) || 0;
-      if (!Number(all.total)) {
-        empty(
-          cardsPreview,
-          'Crie cartões a partir do resumo de uma aula para começar a revisar.',
-          'reading',
+      const dueCount = Number(due.total) || 0;
+      const total = Number(all.total) || 0;
+      count('[data-cards-count]', dueCount);
+      if (!total) {
+        cardsPreview.replaceChildren(
+          note('Crie cartões a partir do resumo de uma aula para começar a revisar.'),
         );
-        actions(
-          cardsActions,
-          ['Escolher uma aula', './historico.html'],
-          ['Criar cartão', './revisar.html?acao=criar#flashcards'],
-        );
-        setPulse('cards', null);
+        cardsActions.replaceChildren(link('Escolher uma aula', './historico.html'));
         return;
       }
       const figure = make('p', null, 'dash-figure');
       figure.append(
-        make('strong', String(count)),
-        ` ${count === 1 ? 'cartão para revisar hoje' : 'cartões para revisar hoje'}`,
+        make('strong', String(dueCount)),
+        dueCount === 1 ? ' cartão para hoje' : ' cartões para hoje',
       );
       cardsPreview.replaceChildren(figure);
-      if (count && due.cards?.[0]) {
+      if (dueCount && due.cards?.[0]) {
         const next = make('blockquote', null, 'dash-next-card');
         next.append(make('small', 'Primeiro da fila'), make('span', due.cards[0].front_text));
         cardsPreview.append(next);
-        actions(
-          cardsActions,
-          [
-            `Revisar ${plural(count, 'cartão', 'cartões')}`,
+        cardsActions.replaceChildren(
+          link(
+            `Revisar ${plural(dueCount, 'cartão', 'cartões')}`,
             './revisar.html?acao=revisar#flashcards',
-          ],
-          ['Ver todos os cartões', './revisar.html#flashcards'],
+          ),
         );
       } else {
         cardsPreview.append(
-          make(
-            'p',
-            `Tudo revisado por hoje. Você tem ${plural(Number(all.total), 'cartão', 'cartões')}; as próximas revisões aparecem aqui no dia certo.`,
-            'dash-widget-note',
+          note(
+            `Tudo revisado por hoje. As próximas revisões dos seus ${plural(total, 'cartão', 'cartões')} aparecem aqui no dia certo.`,
           ),
         );
-        actions(cardsActions, null, ['Ver todos os cartões', './revisar.html#flashcards']);
+        cardsActions.replaceChildren();
       }
-      setPulse(
-        'cards',
-        count ? String(count) : null,
-        count === 1 ? 'cartão para revisar' : 'cartões para revisar',
-      );
     } catch (error) {
       failed(cardsPreview, error, 'os flashcards');
-      actions(cardsActions, ['Abrir Revisar', './revisar.html#flashcards']);
     }
   }
 
-  // ---- Calendar ------------------------------------------------------------------------
+  // ---- Calendar: this month at a glance, then the next items ----------------------------
   const eventsWidget = document.querySelector('[data-events-widget]');
   const eventsPreview = document.querySelector('[data-events-preview]');
   const eventsActions = document.querySelector('[data-events-actions]');
+  const monthTitle = document.querySelector('[data-agenda-month]');
+  function miniMonth(now, items) {
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const days = new Date(year, month + 1, 0).getDate();
+    const todayKey = localDay(now);
+    let marked = 0;
+    // Visual summary only; the list below and the calendar page carry the details.
+    const grid = make('div', null, 'dash-mini-month');
+    grid.setAttribute('aria-hidden', 'true');
+    for (const label of ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'])
+      grid.append(make('span', label, 'dash-mini-weekday'));
+    for (let day = 1; day <= days; day++) {
+      const key = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const cell = make('span', String(day), 'dash-mini-day');
+      if (day === 1)
+        cell.style.gridColumnStart = String(((new Date(year, month, 1).getDay() + 6) % 7) + 1);
+      if (key === todayKey) cell.classList.add('is-today');
+      if (key < todayKey) cell.classList.add('is-past');
+      if (items.some((item) => itemOnDay(item, key))) {
+        cell.classList.add('has-items');
+        if (key >= todayKey) marked++;
+      }
+      grid.append(cell);
+    }
+    const summary = make(
+      'p',
+      marked
+        ? `${plural(marked, 'dia', 'dias')} com estudo ou prazo até o fim do mês.`
+        : 'Nenhum estudo agendado até o fim do mês.',
+      'sr-only',
+    );
+    return [grid, summary];
+  }
   async function loadAgenda() {
     show(eventsWidget);
     const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const end = new Date(start);
-    end.setDate(end.getDate() + 15);
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const twoWeeks = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 15);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const end = twoWeeks > monthEnd ? twoWeeks : monthEnd;
+    monthTitle.textContent = now
+      .toLocaleDateString('pt-BR', { month: 'long' })
+      .replace(/^./, (c) => c.toUpperCase());
     try {
       const page = await listCalendar({
         from: start.toISOString(),
@@ -246,49 +242,43 @@ export function initDashboardHome() {
         toDay: localDay(end),
         offset: 0,
       });
-      const items = upcomingAgenda(page.items || [], now);
-      if (!items.length) {
-        empty(
-          eventsPreview,
-          'Planeje quando você pretende estudar: reserve um horário na agenda.',
-          'rest',
-        );
-        actions(
-          eventsActions,
-          ['Agendar estudo', './planejar.html?criar=horario#calendario'],
-          ['Ver calendário', './planejar.html#calendario'],
-        );
-        return;
+      const items = page.items || [];
+      const upcoming = upcomingAgenda(items, now, 3);
+      eventsPreview.replaceChildren(...miniMonth(now, items));
+      if (!upcoming.length) {
+        eventsPreview.append(note('Planeje quando você pretende estudar.'));
+      } else {
+        const list = make('ul', null, 'dash-agenda-list');
+        for (const item of upcoming) {
+          const entry = make('li');
+          const date =
+            item.kind === 'task' ? new Date(`${item.date}T00:00:00`) : new Date(item.startsAt);
+          const when = make('time', null, 'dash-agenda-when');
+          when.dateTime = item.kind === 'task' ? item.date : item.startsAt;
+          when.append(
+            make('strong', String(date.getDate())),
+            make('span', WEEKDAYS[date.getDay()]),
+          );
+          const copy = make('span', null, 'dash-agenda-copy');
+          copy.append(
+            make('span', item.title, 'dash-agenda-title'),
+            make(
+              'small',
+              item.kind === 'task'
+                ? 'Prazo de tarefa'
+                : date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            ),
+          );
+          entry.append(when, copy);
+          list.append(entry);
+        }
+        eventsPreview.append(list);
       }
-      const list = make('ul', null, 'dash-agenda-list');
-      for (const item of items) {
-        const entry = make('li');
-        const when = make('time', null, 'dash-agenda-when');
-        const date =
-          item.kind === 'task' ? new Date(`${item.date}T00:00:00`) : new Date(item.startsAt);
-        when.dateTime = item.kind === 'task' ? item.date : item.startsAt;
-        when.append(make('span', WEEKDAYS[date.getDay()]), make('strong', String(date.getDate())));
-        entry.append(
-          when,
-          make('span', item.title, 'dash-agenda-title'),
-          make(
-            'small',
-            item.kind === 'task'
-              ? 'Prazo de tarefa'
-              : date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          ),
-        );
-        list.append(entry);
-      }
-      eventsPreview.replaceChildren(list);
-      actions(
-        eventsActions,
-        ['Ver calendário', './planejar.html#calendario'],
-        ['Agendar estudo', './planejar.html?criar=horario#calendario'],
+      eventsActions.replaceChildren(
+        link('Agendar estudo', './planejar.html?criar=horario#calendario'),
       );
     } catch (error) {
       failed(eventsPreview, error, 'a agenda');
-      actions(eventsActions, ['Abrir calendário', './planejar.html#calendario']);
     }
   }
 
@@ -301,30 +291,9 @@ export function initDashboardHome() {
       const data = await getStudyOverview();
       const minutes = Math.floor(Number(data.weekSeconds) / 60);
       const goal = Number(data.goalMinutes) || 0;
-      weekBody.replaceChildren();
-      if (!minutes) {
-        // No empty chart: explain what this measures and how to start.
-        weekBody.append(
-          ninoNote(
-            goal
-              ? `Meta da semana: ${goal} min. Use o cronômetro enquanto estuda para registrar seu tempo.`
-              : 'Use o cronômetro enquanto estuda para acompanhar seu tempo e definir uma meta semanal.',
-            'laptop',
-            { className: 'dash-empty' },
-          ),
-        );
-        weekBody.append(
-          link('Cronometrar uma sessão', './planejar.html#tempo', 'secondary-action button-link'),
-        );
-        setPulse('week', null);
-        return;
-      }
-      const figure = make('p', null, 'dash-week-figure');
-      figure.append(
-        make('strong', `${minutes} min`),
-        goal ? ` de ${goal} min nesta semana` : ' estudados nesta semana',
-      );
-      weekBody.append(figure);
+      const figure = make('p', null, 'dash-figure');
+      figure.append(make('strong', `${minutes}`), goal ? ` de ${goal} min` : ' min nesta semana');
+      weekBody.replaceChildren(figure);
       if (goal) {
         const progress = make('progress', null, 'dash-week-progress');
         progress.max = 100;
@@ -332,21 +301,29 @@ export function initDashboardHome() {
         progress.setAttribute('aria-label', `Meta semanal: ${minutes} de ${goal} minutos`);
         weekBody.append(progress);
       }
+      if (!minutes) {
+        // No empty chart: say what this measures.
+        weekBody.append(note('Use o cronômetro da aula enquanto estuda para registrar seu tempo.'));
+        return;
+      }
       const days = make('ol', null, 'dash-week-days');
       days.setAttribute('aria-label', 'Minutos de estudo por dia');
       const most = Math.max(1, ...(data.days || []).map((day) => Number(day.seconds) || 0));
-      const today = localDay(new Date());
+      const todayKey = localDay(new Date());
       for (const day of data.days || []) {
         const date = new Date(`${day.date}T00:00:00`);
         const item = make('li');
-        if (day.date === today) item.classList.add('is-today');
+        if (day.date === todayKey) item.classList.add('is-today');
         const bar = make('span', null, 'dash-day-bar');
         bar.style.setProperty(
           '--fill',
           String(Math.round(((Number(day.seconds) || 0) / most) * 100)),
         );
         bar.setAttribute('aria-hidden', 'true');
-        item.append(bar, make('span', WEEKDAYS[date.getDay()], 'dash-day-label'));
+        item.append(
+          bar,
+          make('span', WEEKDAYS[date.getDay()].charAt(0).toUpperCase(), 'dash-day-label'),
+        );
         item.setAttribute(
           'aria-label',
           `${WEEKDAYS[date.getDay()]} ${dateLabel(day.date).slice(0, 5)}: ${Math.floor(Number(day.seconds) / 60)} min`,
@@ -354,15 +331,8 @@ export function initDashboardHome() {
         days.append(item);
       }
       weekBody.append(days);
-      setPulse(
-        'week',
-        String(minutes),
-        goal ? `de ${goal} min na semana` : 'min estudados na semana',
-      );
     } catch (error) {
-      weekBody.replaceChildren(
-        make('p', error?.message || 'Tempo de estudo indisponível.', 'dash-widget-note'),
-      );
+      weekBody.replaceChildren(note(error?.message || 'Tempo de estudo indisponível.'));
     }
   }
 
@@ -377,8 +347,8 @@ export function initDashboardHome() {
       const total = Number(page.total) || 0;
       notesSummary.textContent = total
         ? `${plural(total, 'anotação salva', 'anotações salvas')} nas suas aulas.`
-        : 'Destaque trechos da transcrição de uma aula e escreva notas; elas ficam reunidas aqui.';
-      notesLink.textContent = total ? 'Ver anotações' : 'Como anotar';
+        : 'Destaque trechos da transcrição de uma aula; as notas ficam reunidas aqui.';
+      notesLink.textContent = total ? 'Ver todas' : 'Como anotar';
       notesLink.href = total ? './revisar.html#anotacoes' : './ajuda.html#anotacoes';
     } catch (error) {
       notesSummary.textContent = error?.message || 'Anotações indisponíveis.';

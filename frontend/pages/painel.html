@@ -12,49 +12,42 @@
 <div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
 <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg><span data-focus-toggle-label>Modo foco</span></button>
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
-<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1></div><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></header>
-<ul class="dash-pulse" data-dash-pulse aria-label="Para hoje" hidden>
-<li data-pulse="tasks" hidden><a href="./planejar.html#tarefas"><strong data-pulse-value></strong> <span data-pulse-label></span></a></li>
-<li data-pulse="cards" hidden><a href="./revisar.html?acao=revisar#flashcards"><strong data-pulse-value></strong> <span data-pulse-label></span></a></li>
-<li data-pulse="week" hidden><a href="./planejar.html#tempo"><strong data-pulse-value></strong> <span data-pulse-label></span></a></li>
-</ul>
+<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1><span class="dash-date" data-today></span></div><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></header>
 <div class="dash-home" data-dashboard-data aria-busy="true">
-<div class="dash-top">
-<section class="dash-continue" aria-labelledby="continue-heading"><div class="section-title-row"><h2 id="continue-heading">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action">Ver aulas em estudo</a></div><div data-continue-list></div></section>
-<section class="dash-week" data-week-widget hidden aria-labelledby="week-heading">
-<h2 id="week-heading">Sua semana</h2>
-<div class="dash-week-body" data-week-body></div>
-<a class="text-action dash-more" href="./planejar.html#tempo">Ver tempo de estudo e meta</a>
+<div class="dash-main">
+<section class="dash-continue" aria-labelledby="continue-heading"><div class="dash-card-head"><h2 id="continue-heading">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action">Aulas em estudo</a></div><div data-continue-list></div></section>
+<div class="dash-pair" data-plan-section hidden>
+<section class="dash-card" data-tasks-widget hidden aria-labelledby="tasks-heading">
+<div class="dash-card-head"><h2 id="tasks-heading">Próximas tarefas <span class="dash-count" data-tasks-count hidden></span></h2><a class="text-action" href="./planejar.html#tarefas">Ver todas</a></div>
+<div class="dash-card-body" data-tasks-preview></div>
+<div class="dash-card-foot" data-tasks-actions></div>
+</section>
+<section class="dash-card" data-cards-widget hidden aria-labelledby="cards-heading">
+<div class="dash-card-head"><h2 id="cards-heading">Flashcards <span class="dash-count" data-cards-count hidden></span></h2><a class="text-action" href="./revisar.html#flashcards">Ver todos</a></div>
+<div class="dash-card-body" data-cards-preview></div>
+<div class="dash-card-foot" data-cards-actions></div>
 </section>
 </div>
-<section class="dash-plan" data-plan-section hidden aria-labelledby="plan-heading">
-<h2 id="plan-heading" class="dash-section-title">Para estudar</h2>
-<div class="dash-plan-grid">
-<article class="dash-widget" data-tasks-widget hidden aria-labelledby="tasks-heading">
-<h3 id="tasks-heading">Próximas tarefas</h3>
-<div class="dash-widget-body" data-tasks-preview></div>
-<div class="dash-widget-actions" data-tasks-actions></div>
-</article>
-<article class="dash-widget" data-cards-widget hidden aria-labelledby="cards-heading">
-<h3 id="cards-heading">Flashcards</h3>
-<div class="dash-widget-body" data-cards-preview></div>
-<div class="dash-widget-actions" data-cards-actions></div>
-</article>
-<article class="dash-widget" data-events-widget hidden aria-labelledby="events-heading">
-<h3 id="events-heading">Próximos 14 dias</h3>
-<div class="dash-widget-body" data-events-preview></div>
-<div class="dash-widget-actions" data-events-actions></div>
-</article>
+<section class="dash-card dash-recent focus-secondary" data-recent-section aria-labelledby="recent-heading"><div class="dash-card-head"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Abrir Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div><div class="dash-topics" data-topics-section><h3>Mais revisitados</h3><ol class="studied-topics topic-list" data-topic-list></ol></div></section>
 </div>
+<aside class="dash-rail" aria-label="Semana, agenda e disciplinas">
+<section class="dash-card dash-rail-week" data-week-widget hidden aria-labelledby="week-heading">
+<div class="dash-card-head"><h2 id="week-heading">Sua semana</h2><a class="text-action" href="./planejar.html#tempo">Detalhes</a></div>
+<div class="dash-card-body" data-week-body></div>
 </section>
-<div class="library-dashboard">
-<div class="dashboard-main">
-<section class="study-section focus-secondary" data-recent-section aria-labelledby="recent-heading"><div class="section-title-row"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Ver todas na Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div></section>
-</div>
-<div class="dashboard-library-side focus-secondary">
-<section class="study-section" aria-labelledby="subjects-heading"><h2 id="subjects-heading">Suas disciplinas</h2><div class="subject-shelf" data-subject-list></div></section>
-<section class="study-section" data-topics-section aria-labelledby="topics-heading"><h2 id="topics-heading">Assuntos revisitados</h2><ol class="studied-topics topic-list" data-topic-list></ol></section>
-<section class="study-section dash-notes" data-notes-widget hidden aria-labelledby="notes-heading"><h2 id="notes-heading">Anotações e destaques</h2><p data-notes-summary></p><a class="secondary-action button-link" href="./revisar.html#anotacoes" data-notes-link>Ver anotações</a></section>
-</div></div>
+<section class="dash-card dash-rail-agenda" data-events-widget hidden aria-labelledby="events-heading">
+<div class="dash-card-head"><h2 id="events-heading" data-agenda-month>Agenda</h2><a class="text-action" href="./planejar.html#calendario">Calendário</a></div>
+<div class="dash-card-body" data-events-preview></div>
+<div class="dash-card-foot" data-events-actions></div>
+</section>
+<section class="dash-card dash-rail-subjects focus-secondary" aria-labelledby="subjects-heading">
+<div class="dash-card-head"><h2 id="subjects-heading">Suas disciplinas</h2></div>
+<div class="subject-shelf" data-subject-list></div>
+</section>
+<section class="dash-card dash-rail-notes focus-secondary" data-notes-widget hidden aria-labelledby="notes-heading">
+<div class="dash-card-head"><h2 id="notes-heading">Anotações</h2><a class="text-action" href="./revisar.html#anotacoes" data-notes-link>Ver todas</a></div>
+<p class="dash-note" data-notes-summary></p>
+</section>
+</aside>
 </div></main>
 <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>
