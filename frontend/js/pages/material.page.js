@@ -286,7 +286,9 @@ function jobLabel(job) {
 }
 function updateWaiting(job) {
   waitingSince ||= job.created_at || currentMaterial?.created_at || new Date().toISOString();
-  $('[data-processing-status]').textContent = jobLabel(job);
+  // Live heading polled every few seconds: write only on change to avoid repeated announcements.
+  const label = jobLabel(job);
+  if ($('[data-processing-status]').textContent !== label) $('[data-processing-status]').textContent = label;
   if (job.events) {
     const list = $('[data-processing-events]');
     list.replaceChildren();
@@ -872,6 +874,12 @@ function openRename({ title, label, value, save }) {
 $('[data-rename-summary]').addEventListener('click', () => {
   if (!displayedSummary) return;
   $('[data-summary-history]').open = false;
+  // The menu item is hidden now; return focus to the "Versões" button when the dialog closes.
+  $('[data-rename-dialog]')?.addEventListener(
+    'close',
+    () => $('[data-summary-history] > summary')?.focus(),
+    { once: true },
+  );
   const summary = displayedSummary;
   openRename({
     title: 'Renomear versão do resumo',

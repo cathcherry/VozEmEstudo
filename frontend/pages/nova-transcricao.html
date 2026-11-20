@@ -399,8 +399,9 @@
               <div class="upload-progress-head">
                 <span class="loading-indicator" aria-hidden="true"></span>
                 <div>
-                  <h2 data-upload-progress-title>Preparando o áudio…</h2>
+                  <h2 data-upload-progress-title aria-live="polite">Preparando o áudio…</h2>
                   <p data-upload-progress-note>Não feche esta página até o envio terminar.</p>
+                  <progress class="upload-progress-bar" data-upload-progress-bar max="100" value="0" aria-label="Progresso do envio" hidden></progress>
                 </div>
               </div>
               <ol class="progress-steps" aria-label="Etapas do envio">

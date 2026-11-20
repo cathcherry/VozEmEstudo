@@ -46,6 +46,18 @@ const openSubjects = new Set();
 const openUnits = new Set();
 window.addEventListener('folder-icons-updated',()=>{if(loaded)render();});
 const editDialog = document.querySelector('#metadata-dialog');
+/**
+ * Dialogs opened from a ⋯ menu: the item that opened them is hidden when the menu closes, so the
+ * browser cannot return focus to it. Send focus back to the menu button instead.
+ */
+function returnFocusOnClose(dialog, target) {
+  dialog.addEventListener('close', () => {
+    const element = typeof target === 'function' ? target() : target;
+    if (element?.isConnected) element.focus();
+  }, { once: true });
+}
+/** The ⋯ button of a subject, found again after the list is re-rendered. */
+const subjectMenuButton = (id) => document.querySelector(`.subject-menu[data-subject-id="${CSS.escape(String(id))}"] > summary`);
 const editForm = document.querySelector('[data-metadata-form]');
 const editMessage = document.querySelector('[data-metadata-message]');
 const nameField = document.querySelector('#metadata-name');
@@ -271,7 +283,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   organize.type = 'button';
   organize.textContent = 'Organizar';
   organize.dataset.icon = 'organize';
-  organize.addEventListener('click', () => { menu.open = false; edit(material); });
+  organize.addEventListener('click', () => { menu.open = false; returnFocusOnClose(editDialog, summary); edit(material); });
   const questions = document.createElement('a');
   questions.href = materialHref(material.id) + '#questoes';
   questions.textContent = 'Ver questões';
@@ -300,7 +312,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
     move.type = 'button';
     move.dataset.icon = 'folder';
     move.textContent = 'Mover para pasta';
-    move.addEventListener('click', () => { menu.open = false; openAssignDialog(material); });
+    move.addEventListener('click', () => { menu.open = false; returnFocusOnClose(assignDialog, summary); openAssignDialog(material); });
     options.append(move);
   }
   questions.dataset.icon = 'list';
@@ -398,6 +410,7 @@ function subjectMenu(group) {
   const menu = document.createElement('details');
   menu.className = 'row-menu subject-menu';
   menu.dataset.subjectMenu = '';
+  menu.dataset.subjectId = String(group.id);
   const summary = document.createElement('summary');
   summary.textContent = '⋯';
   summary.title = 'Opções da disciplina';
@@ -410,6 +423,7 @@ function subjectMenu(group) {
   editOption.append(menuIcon(SUBJECT_MENU_ICONS.edit));
   editOption.addEventListener('click', () => {
     menu.open = false;
+    returnFocusOnClose(subjectDialog, () => subjectMenuButton(group.id) || summary);
     openSubjectDialog({ id: group.id, name: group.name });
   });
   const remove = document.createElement('button');
@@ -419,7 +433,7 @@ function subjectMenu(group) {
   remove.append(menuIcon(SUBJECT_MENU_ICONS.remove));
   remove.addEventListener('click', () => {
     menu.open = false;
-    void removeSubject(group, remove);
+    void removeSubject(group, remove, summary);
   });
   options.append(editOption, remove);
   menu.append(summary, options);
@@ -429,14 +443,17 @@ function subjectMenu(group) {
   return menu;
 }
 
-async function removeSubject(group, button) {
+async function removeSubject(group, button, menuButton) {
   const lessons = materials.filter((material) => material.subject_id === group.id).length;
   const units = catalog.units.filter((unit) => unit.subject_id === group.id).length;
   const details = [
     lessons ? `${lessonCountLabel(lessons)} não ${lessons === 1 ? 'será apagada' : 'serão apagadas'}: ${lessons === 1 ? 'ela vai' : 'elas vão'} para “Sem disciplina”.` : 'A pasta está vazia.',
     units ? `${units === 1 ? 'A unidade desta disciplina também será removida' : `As ${units} unidades desta disciplina também serão removidas`}.` : '',
   ].filter(Boolean).join(' ');
-  if (!confirm(`Remover a disciplina “${group.name}”?\n\n${details}`)) return;
+  if (!confirm(`Remover a disciplina “${group.name}”?\n\n${details}`)) {
+    menuButton?.focus();
+    return;
+  }
   button.disabled = true;
   try {
     await deleteSubject(group.id);
@@ -450,8 +467,12 @@ async function removeSubject(group, button) {
     if (route.get('folder') === String(group.id)) navigateFolder();
     else render();
     setStatus(viewStatus, lessons ? `Disciplina removida. ${lessonCountLabel(lessons)} ${lessons === 1 ? 'foi' : 'foram'} para “Sem disciplina”.` : 'Disciplina removida.', 'success');
+    // The folder is gone: continue from the library's "Nova disciplina" button (or the status).
+    if (!newSubjectButton.hidden) newSubjectButton.focus();
+    else { viewStatus.tabIndex = -1; viewStatus.focus(); }
   } catch (error) {
     setStatus(viewStatus, error.message || 'Não foi possível remover a disciplina.', 'error');
+    (subjectMenuButton(group.id) || menuButton)?.focus();
   } finally {
     button.disabled = false;
   }

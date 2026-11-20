@@ -64,8 +64,24 @@ const STEP_STATE_LABELS = {
 };
 /** Marks one real client-side upload step; earlier visible steps become complete. */
 const percent = (fraction) => `${Math.floor(Math.min(1, Math.max(0, fraction)) * 100)}%`;
+/**
+ * Upload percentage on a native progress bar. The stage title is the live region; the percentage is
+ * not announced on every chunk (screen readers can read the bar on demand).
+ */
+function showPercent(fraction) {
+  const bar = document.querySelector('[data-upload-progress-bar]');
+  bar.hidden = false;
+  bar.value = Math.floor(Math.min(1, Math.max(0, fraction)) * 100);
+  bar.setAttribute('aria-valuetext', percent(fraction));
+}
 function progress(text, stepName) {
-  document.querySelector('[data-upload-progress-title]').textContent = text;
+  const title = document.querySelector('[data-upload-progress-title]');
+  if (title.textContent !== text) title.textContent = text;
+  const bar = document.querySelector('[data-upload-progress-bar]');
+  if (bar) {
+    bar.hidden = true;
+    bar.value = 0;
+  }
   if (!stepName) return;
   let reached = false;
   for (const item of document.querySelectorAll('[data-upload-step]')) {
@@ -449,7 +465,7 @@ async function startProcessing() {
       file: reviewedChoices.file,
       durationMs: reviewedChoices.sourceDurationMs,
       range: reviewedChoices.range,
-      onProgress: (fraction) => progress(`Guardando o vídeo original… ${percent(fraction)}`),
+      onProgress: showPercent,
     });
   }
   progress('Iniciando a transcrição…', 'start');
@@ -581,7 +597,7 @@ form.addEventListener('submit', async (event) => {
       ...fields,
       file: clip.file,
       durationMs: clip.durationMs,
-      onProgress: (fraction) => progress(`Enviando o áudio… ${percent(fraction)}`),
+      onProgress: showPercent,
     });
     saveTags(createdMaterial.id, fields.tags);
     await startProcessing();

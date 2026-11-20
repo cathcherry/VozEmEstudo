@@ -188,6 +188,7 @@ export function renderQuestionLists({
       (feedback ? `&feedback=${encodeURIComponent(feedback)}` : '');
     link.setAttribute('aria-label', `${link.textContent}: ${name}`);
     const menu = el('details', null, 'row-menu');
+    menu.dataset.batchId = String(batch.id);
     const summary = el('summary', '⋯');
     summary.setAttribute('aria-label', `Ações da lista ${name}`);
     summary.title = 'Ações da lista';
@@ -198,6 +199,20 @@ export function renderQuestionLists({
       button.addEventListener('click', () => {
         menu.open = false;
         handler();
+        // The clicked item is hidden with the menu, so the browser cannot restore focus to it:
+        // when the dialog it opened closes, focus returns to this list's ⋯ button (found again by
+        // id, because renaming re-renders the lists).
+        const opened = [...document.querySelectorAll('dialog[open]')].at(-1);
+        opened?.addEventListener(
+          'close',
+          () => {
+            const target =
+              document.querySelector(`.row-menu[data-batch-id="${CSS.escape(String(batch.id))}"] > summary`) ||
+              summary;
+            if (target.isConnected) target.focus();
+          },
+          { once: true },
+        );
       });
       options.append(button);
     };

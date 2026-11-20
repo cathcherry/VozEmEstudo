@@ -886,3 +886,4 @@ body.app-page[data-page='transcription'] .form-section .recording-language-field
   box-shadow: var(--ue-recessed);
   font-size: 0.92rem;
 }
+.upload-progress-bar { display:block; width:100%; max-width:22rem; height:8px; margin-top:8px; accent-color:var(--accent); }

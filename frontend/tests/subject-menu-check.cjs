@@ -165,6 +165,63 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     await toolbarMenu.locator('summary').click();
     await page.screenshot({ path: path.join(output, 'subject-menu-folder-page.png') });
 
+    // Keyboard only: open the ⋯ menu, open Editar, Escape closes the dialog and focus returns
+    // to the menu button (no keyboard trap, predictable focus).
+    await page.goto(base + '/historico.html');
+    const kbTrigger = page.locator('.library-folder-group .subject-menu > summary').first();
+    await kbTrigger.focus();
+    await page.keyboard.press('Enter');
+    const kbMenu = page.locator('.subject-menu[open] .row-menu-content');
+    await kbMenu.waitFor();
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.textContent.trim()), 'Editar');
+    await page.keyboard.press('Enter');
+    await page.locator('[data-subject-dialog][open]').waitFor();
+    assert(
+      await page.evaluate(() => document.querySelector('[data-subject-dialog]').contains(document.activeElement)),
+      'focus moves into the dialog',
+    );
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('[data-subject-dialog]').open);
+    assert(
+      await page.evaluate(() => document.activeElement?.matches('.subject-menu > summary')),
+      'focus returns to the ⋯ button after closing',
+    );
+    // Saving re-renders the list; focus still lands on the same subject's ⋯ button.
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await page.locator('[data-subject-dialog][open]').waitFor();
+    await page.keyboard.type(' 2');
+    await page.keyboard.press('Enter');
+    await page.waitForFunction(() => !document.querySelector('[data-subject-dialog]').open);
+    assert.match(
+      await page.evaluate(() => document.activeElement?.getAttribute('aria-label') || ''),
+      /^Opções da disciplina .* 2$/,
+      'focus returns to the renamed subject menu',
+    );
+    // Escape closes an open menu and keeps focus on its button.
+    await page.keyboard.press('Enter');
+    await page.locator('.subject-menu[open]').waitFor();
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.subject-menu[open]').count(), 0, 'Escape closes the menu');
+    assert(await page.evaluate(() => document.activeElement?.matches('.subject-menu > summary')));
+
+    // Lesson row ⋯ › Organizar: closing the dialog returns focus to that row's ⋯ button.
+    await page.goto(base + '/historico.html?folder=' + HIS);
+    const rowMenu = page.locator('.material-row-actions .row-menu > summary').first();
+    await rowMenu.focus();
+    await page.keyboard.press('Enter');
+    await page.locator('.material-row-actions .row-menu[open] button', { hasText: 'Organizar' }).focus();
+    await page.keyboard.press('Enter');
+    await page.locator('#metadata-dialog[open]').waitFor();
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#metadata-dialog').open);
+    assert(
+      await page.evaluate(() => document.activeElement?.matches('.material-row-actions .row-menu > summary')),
+      'focus returns to the lesson ⋯ button',
+    );
+
     // Phone width: no horizontal scroll, menu still reachable.
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(base + '/historico.html');
@@ -175,7 +232,7 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     assert(open.x >= 0 && open.x + open.width <= 390, 'menu stays on screen');
     await page.screenshot({ path: path.join(output, 'subject-menu-phone.png') });
     assert.deepEqual(errors, []);
-    console.log('PASS subject menu: Editar/Remover, confirmation, folder page, phone');
+    console.log('PASS subject menu: Editar/Remover, confirmation, folder page, keyboard focus return, phone');
   } finally {
     await browser.close();
     server.close();
