@@ -336,7 +336,10 @@ function renderAchievements(materials, reviewed, answered, minutes = 0) {
   const hint = document.createElement('p'); hint.textContent = (100-next.xp%100) + ' XP para o próximo nível';
   const copy=document.createElement('div');copy.className='journey-copy';copy.append(title,caption);
   const banner=document.createElement('div');banner.className='journey-banner';banner.append(emblem,copy);
-  level.append(banner,progress,hint);
+  // Provisional: computed in this browser from local study data; the server does not verify it.
+  const note = document.createElement('p'); note.className = 'journey-note';
+  note.textContent = 'Pontos e conquistas são calculados neste navegador a partir do seu uso e servem como incentivo; ainda não são verificados pelo servidor.';
+  level.append(banner,progress,hint,note);
 }
 function renderMilestoneCards() {
   const container = document.querySelector('[data-achievements]'); container.replaceChildren();

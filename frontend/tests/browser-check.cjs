@@ -1272,6 +1272,8 @@ async function main() {
     await avatarButtons.nth(7).waitFor({ state: 'attached' });
     assert.equal(await page.locator('[data-earned-avatars]').count(), 1);
     assert.equal(await avatarButtons.count(), 8);
+    // XP and milestones are browser-derived incentives and the page says so.
+    await page.getByText('ainda não são verificados pelo servidor', { exact: false }).waitFor();
     assert((await page.locator('.account-link img').getAttribute('src')).includes('reading.png'));
     await page.getByRole('button', { name: 'Editar perfil', exact: true }).click();
     const profileDialog = page.getByRole('dialog', { name: 'Personalizar perfil' });

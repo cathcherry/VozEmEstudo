@@ -243,3 +243,4 @@ body[data-page="account"] .sidebar-settings a { white-space:nowrap; font-size:.9
 @media (max-width:680px) { .account-heading { align-items:center; } body[data-page="account"] .sidebar-settings a { white-space:nowrap; font-size:.9rem; } .achievement-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 body[data-page="account"] .sidebar-settings a { white-space: nowrap; font-size: .9rem; }
 body[data-page="account"] .sidebar-settings a span { white-space: nowrap; }
+.journey-note { margin:10px 0 0; color:var(--muted); font-size:.74rem; line-height:1.5; }
