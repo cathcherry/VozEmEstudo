@@ -7,6 +7,14 @@ const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '..');
 const express = require(path.resolve(root, '../backend/node_modules/express'));
 const output = path.join(__dirname, 'artifacts');
+/** The dialog 'close' event runs after `open` is cleared: wait for focus instead of sampling once. */
+async function focusSettles(page, predicate, message) {
+  try {
+    await page.waitForFunction(predicate, null, { timeout: 2000 });
+  } catch {
+    assert.fail(message);
+  }
+}
 const user = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', email: 'aluno@example.test', user_metadata: {} };
 const sdk = `export function createClient(){const user=${JSON.stringify(user)};return {auth:{
 getSession:async()=>({data:{session:{user,access_token:'mock-token'}},error:null}),
@@ -183,8 +191,9 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     );
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('[data-subject-dialog]').open);
-    assert(
-      await page.evaluate(() => document.activeElement?.matches('.subject-menu > summary')),
+    await focusSettles(
+      page,
+      () => document.activeElement?.matches('.subject-menu > summary'),
       'focus returns to the ⋯ button after closing',
     );
     // Saving re-renders the list; focus still lands on the same subject's ⋯ button.
@@ -195,9 +204,9 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     await page.keyboard.type(' 2');
     await page.keyboard.press('Enter');
     await page.waitForFunction(() => !document.querySelector('[data-subject-dialog]').open);
-    assert.match(
-      await page.evaluate(() => document.activeElement?.getAttribute('aria-label') || ''),
-      /^Opções da disciplina .* 2$/,
+    await focusSettles(
+      page,
+      () => /^Opções da disciplina .* 2$/.test(document.activeElement?.getAttribute('aria-label') || ''),
       'focus returns to the renamed subject menu',
     );
     // Escape closes an open menu and keeps focus on its button.
@@ -217,8 +226,9 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     await page.locator('#metadata-dialog[open]').waitFor();
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('#metadata-dialog').open);
-    assert(
-      await page.evaluate(() => document.activeElement?.matches('.material-row-actions .row-menu > summary')),
+    await focusSettles(
+      page,
+      () => document.activeElement?.matches('.material-row-actions .row-menu > summary'),
       'focus returns to the lesson ⋯ button',
     );
 

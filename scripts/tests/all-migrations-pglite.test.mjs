@@ -20,7 +20,19 @@ test('all candidate migrations coexist, preserve legacy rows and support E10→E
     for (const file of migrations) {
       await db.exec(await readFile(new URL(`../../database/migrations/${file}`, import.meta.url), 'utf8'));
     }
-    assert.deepEqual(await snapshot(), before, 'legacy content and media references must survive every migration');
+    // Additive migrations may add columns (with defaults); every pre-existing column and value of
+    // every legacy row must be unchanged.
+    const after = await snapshot();
+    const previousColumns = (table, rows) =>
+      rows.map((row, index) =>
+        Object.fromEntries(Object.keys(before[table][index] || row).map((key) => [key, row[key]])),
+      );
+    for (const table of legacyTables) assert.equal(after[table].length, before[table].length, table);
+    assert.deepEqual(
+      Object.fromEntries(legacyTables.map((table) => [table, previousColumns(table, after[table])])),
+      before,
+      'legacy content and media references must survive every migration',
+    );
     // The manifest used by startup must match the actual combined SQL schema.
     for (const entry of Object.values(featureSchema)) {
       for (const [table, columns] of Object.entries(entry.tables)) await db.query(`select ${columns} from public.${table} limit 0`);
