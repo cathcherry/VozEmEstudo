@@ -147,9 +147,18 @@ dificuldades, foco, lista de evitar); senão o v1 (5/10/20). Uma geração por p
 Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, `/css`, `/js` e
 `/assets`; `/` redireciona para `/index.html`.
 
-## Upload direto ao Storage
+## Envio de mídia: o que passa pelo backend e o que vai direto ao Storage
 
-O arquivo de áudio **não passa pelo backend**: o navegador envia direto ao Supabase Storage pelo
-protocolo TUS (`/storage/v1/upload/resumable`, blocos de 6 MB, `x-upsert: false`), no caminho
-`temp/{userId}/{materialId}/…`, e só depois chama `POST /api/materials`. As políticas do bucket
-`audios` só permitem gravar no próprio prefixo.
+1. **Backend**: o arquivo original vai para `POST /api/media/inspect` e `POST /api/media/convert`
+   (corpo binário, até 100 MB). O FFmpeg trabalha numa pasta temporária, apagada ao final; nada é
+   guardado. A resposta de `convert?output=speech` é o trecho em MP3.
+2. **Direto ao Storage**: o navegador envia esse MP3 ao Supabase Storage pelo protocolo TUS
+   (`/storage/v1/upload/resumable`, blocos de 6 MB, `x-upsert: false`) em
+   `temp/{userId}/{materialId}/…`. As políticas do bucket `audios` só permitem gravar no próprio
+   prefixo. Se a conexão cair, o envio consulta quanto o servidor já recebeu e continua dali.
+3. **Backend**: `POST /api/materials` registra a aula (o `id` é gerado no navegador e reaproveitado
+   em novas tentativas; se a aula já existir com os mesmos dados, ela é devolvida em vez de
+   duplicada) e `POST /:id/process` enfileira a transcrição (uma tarefa ativa por aula).
+4. O MP4 original, quando guardado, segue o mesmo caminho direto (bucket `study-videos`,
+   `original/{userId}/{materialId}/source.mp4`) e depois é vinculado por `POST /:id/video`.
+5. Depois da transcrição, o worker apaga o áudio ou o move para `retained/…`, conforme a escolha.

@@ -8,8 +8,9 @@ acessibilidade. Projeto de TCC.
 gravação → recorte → transcrição automática → conferência humana → resumos, questões e cartões → estudo
 ```
 
-Nada é gerado antes de a pessoa **conferir e confirmar** a transcrição, e tudo o que é gerado guarda
-a versão exata da transcrição de origem.
+Depois da transcrição automática, o sistema só gera **avisos de conteúdo** (para ajudar na
+conferência). **Resumos, listas de questões e flashcards gerados por IA exigem que a pessoa confirme
+uma versão específica da transcrição**, e cada resultado guarda essa versão de origem.
 
 ## O que o app faz
 
@@ -27,7 +28,9 @@ a versão exata da transcrição de origem.
 - **Exportação** em PDF, Markdown, TXT e CSV (flashcards).
 - **Acessibilidade**: modo para leitores de tela, leitura em voz alta, modo foco, fontes para
   dislexia, régua de leitura, temas de alto contraste e temas personalizados.
-- **Perfil** com marcos de estudo e o mascote Nino.
+- **Perfil** com marcos de estudo e o mascote Nino (pontos e conquistas calculados no navegador,
+  provisórios; a versão verificada pelo servidor está planejada em
+  [docs/GAMIFICACAO_2_0_DESIGN.md](docs/GAMIFICACAO_2_0_DESIGN.md)).
 - Recursos prontos no código e aguardando migrations no banco de produção: planejamento,
   tentativas e diagnóstico de questões, flashcards com revisão espaçada, tempo de estudo,
   anotações, calendário e cópias de leitura de materiais.
@@ -88,20 +91,26 @@ automaticamente: ver [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md).
 
 ## Documentação
 
-| Documento                                          | Para quê                                                                     |
-| -------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [docs/README.md](docs/README.md)                   | Índice de toda a documentação                                                |
-| [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) | Tudo o que o app faz, página por página, e o que está disponível em produção |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)       | Arquitetura e fluxo de processamento                                         |
-| [docs/API.md](docs/API.md)                         | Rotas HTTP                                                                   |
-| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)   | Tabelas, migrations, segurança e situação da produção                        |
-| [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)       | Variáveis de ambiente e flags                                                |
-| [docs/AI_PROVIDERS.md](docs/AI_PROVIDERS.md)       | Provedores de transcrição e texto                                            |
-| [docs/TESTING.md](docs/TESTING.md)                 | Como rodar os testes                                                         |
+| Documento                                              | Para quê                                                                     |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| [docs/README.md](docs/README.md)                       | Índice de toda a documentação                                                |
+| [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md)     | Tudo o que o app faz, página por página, e o que está disponível em produção |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)           | Arquitetura e fluxo de processamento                                         |
+| [docs/API.md](docs/API.md)                             | Rotas HTTP                                                                   |
+| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)       | Tabelas, migrations, segurança e situação da produção                        |
+| [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)           | Variáveis de ambiente e flags                                                |
+| [docs/AI_PROVIDERS.md](docs/AI_PROVIDERS.md)           | Provedores de transcrição e texto                                            |
+| [docs/ATIVACAO_RECURSOS.md](docs/ATIVACAO_RECURSOS.md) | Situação de cada flag e roteiro para ligar o que falta                       |
+| [docs/ROADMAP.md](docs/ROADMAP.md)                     | O que está pronto, o que falta ativar e as dívidas técnicas                  |
+| [docs/TESTING.md](docs/TESTING.md)                     | Como rodar os testes                                                         |
 
 ## Segurança
 
 - **Nunca publique `backend/.env`** nem chaves, mesmo em repositório privado. Ver
   [PUBLICAR_NO_GITHUB.md](PUBLICAR_NO_GITHUB.md).
-- O navegador não escreve no banco: tudo passa pela API, que confere o dono de cada dado.
+- Aulas, transcrições e tudo o que é gerado passam pela API, que confere o dono de cada dado.
+  O navegador grava diretamente só duas coisas, ambas limitadas à própria conta pelas regras do
+  Supabase (RLS): o estado do perfil e das preferências (`profile_state`) e os arquivos enviados
+  ao Storage (áudio do trecho, MP4 original e imagens do perfil). Detalhes em
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#acesso-a-dados).
 - Links de compartilhamento guardam só o hash do token, expiram e podem ser revogados.

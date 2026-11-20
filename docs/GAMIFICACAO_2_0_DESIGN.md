@@ -5,13 +5,13 @@ Escrito em 20/11/2026 a partir da auditoria do sistema atual.
 
 ## Situação atual (o que existe e o quanto é confiável)
 
-| Item | Origem | Confiável? |
-|---|---|---|
-| Número de aulas | `GET /api/materials` (servidor) | Sim |
-| Revisões concluídas, questões respondidas, minutos ouvidos | `study-store` no navegador (localStorage + `profile_state`) | Não: derivado no navegador |
-| Marcos, XP e nível | `frontend/js/utils/gamification.js`, calculados no navegador | Não: provisório |
-| Estado dos marcos | `profile_state` chave `milestones` (gravável pelo próprio usuário) | Não |
-| Avatares do Nino desbloqueados | derivados dos marcos | Cosméticos; a escolha fica em `user_metadata` do Auth, que o próprio usuário edita |
+| Item                                                       | Origem                                                             | Confiável?                                                                         |
+| ---------------------------------------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Número de aulas                                            | `GET /api/materials` (servidor)                                    | Sim                                                                                |
+| Revisões concluídas, questões respondidas, minutos ouvidos | `study-store` no navegador (localStorage + `profile_state`)        | Não: derivado no navegador                                                         |
+| Marcos, XP e nível                                         | `frontend/js/utils/gamification.js`, calculados no navegador       | Não: provisório                                                                    |
+| Estado dos marcos                                          | `profile_state` chave `milestones` (gravável pelo próprio usuário) | Não                                                                                |
+| Avatares do Nino desbloqueados                             | derivados dos marcos                                               | Cosméticos; a escolha fica em `user_metadata` do Auth, que o próprio usuário edita |
 
 Garantias atuais (verificadas na auditoria):
 
@@ -30,14 +30,14 @@ duplicidade, sem depender de números enviados pelo navegador, e sem quebrar o h
 
 Só contam eventos que o servidor já registra por conta própria:
 
-| Evento | Fonte no servidor | Pré-requisito |
-|---|---|---|
-| `lesson_uploaded` | `materials` criado com declaração de permissão | E02 (produção) |
-| `transcript_confirmed` | `transcription_confirmations` | E02 (produção) |
-| `question_answered` / `attempt_finished` | `quiz_session_answers`, `quiz_sessions` | E10 |
-| `wrong_answers_reviewed` | sessões de revisão | E12 |
-| `flashcard_reviewed` | `study_flashcard_reviews` | E13 |
-| `study_minutes_credited` | `study_time_credits` | E08/E09 |
+| Evento                                   | Fonte no servidor                              | Pré-requisito  |
+| ---------------------------------------- | ---------------------------------------------- | -------------- |
+| `lesson_uploaded`                        | `materials` criado com declaração de permissão | E02 (produção) |
+| `transcript_confirmed`                   | `transcription_confirmations`                  | E02 (produção) |
+| `question_answered` / `attempt_finished` | `quiz_session_answers`, `quiz_sessions`        | E10            |
+| `wrong_answers_reviewed`                 | sessões de revisão                             | E12            |
+| `flashcard_reviewed`                     | `study_flashcard_reviews`                      | E13            |
+| `study_minutes_credited`                 | `study_time_credits`                           | E08/E09        |
 
 Minutos ouvidos e "revisão concluída" hoje vivem no navegador. Eles só passam a contar quando vierem
 de E08/E09 (`study_sessions`/`study_time_credits`), que já têm limites de tempo no servidor.

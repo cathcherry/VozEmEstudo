@@ -14,6 +14,9 @@ Comece por aqui. Os documentos de **referência** descrevem o sistema como ele �
 | [CONFIGURACAO.md](CONFIGURACAO.md)                       | Variáveis de ambiente, flags e ajustes no painel do Supabase                                       |
 | [AI_PROVIDERS.md](AI_PROVIDERS.md)                       | Provedores de transcrição e de texto, como trocar e o que cada um exige                            |
 | [FLUXO_MATERIAL.md](FLUXO_MATERIAL.md)                   | Do envio à geração, do ponto de vista do material                                                  |
+| [ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md)             | Situação de cada flag (código, banco, validação) e roteiro para ligar o que falta                  |
+| [ROADMAP.md](ROADMAP.md)                                 | Pronto, não ativado, migrations pendentes, validação incompleta, dívidas técnicas                  |
+| [GAMIFICACAO_2_0_DESIGN.md](GAMIFICACAO_2_0_DESIGN.md)   | Desenho da gamificação verificada pelo servidor (planejado)                                        |
 | [TESTING.md](TESTING.md)                                 | Comandos de teste e o que cada um comprova                                                         |
 | [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md) | Login com Google e GitHub                                                                          |
 | [CODING_STANDARDS.md](CODING_STANDARDS.md)               | Padrões de código                                                                                  |

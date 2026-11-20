@@ -56,14 +56,14 @@ na fila.
 
 ## Worker
 
-| Variável                                       | Padrão           | Uso                                       |
-| ---------------------------------------------- | ---------------- | ----------------------------------------- |
-| `WORKER_ID`                                    | `worker-<pid>`   | Identificação nos registros               |
-| `WORKER_POLL_MS`                               | `2000`           | Intervalo de busca de tarefas             |
-| `WORKER_CONCURRENCY`                           | `1`              | Tarefas ao mesmo tempo                    |
-| `WORKER_STALE_LEASE_SECONDS`                   | `0`              | ≥ 60 retoma tarefas de um worker que caiu |
-| `JOB_MAX_ATTEMPTS`                             | `3`              | Tentativas por tarefa                     |
-| `JOB_RETRY_DELAY_1_MS`, `JOB_RETRY_DELAY_2_MS` | `15000`, `60000` | Espera entre tentativas                   |
+| Variável                                       | Padrão           | Uso                                                                                                                                                                                                                                                                        |
+| ---------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WORKER_ID`                                    | `worker-<pid>`   | Identificação nos registros                                                                                                                                                                                                                                                |
+| `WORKER_POLL_MS`                               | `2000`           | Intervalo de busca de tarefas                                                                                                                                                                                                                                              |
+| `WORKER_CONCURRENCY`                           | `1`              | Tarefas ao mesmo tempo                                                                                                                                                                                                                                                     |
+| `WORKER_STALE_LEASE_SECONDS`                   | `600`            | Retoma uma tarefa cujo worker parou no meio (janela em segundos; mínimo 60; `0` desliga). Enquanto roda, a tarefa renova a reserva a cada minuto. **Se o seu `.env` tem `0` (modelo antigo), troque por `600`.** Sem a migration de IA, o worker usa sozinho o modo antigo |
+| `JOB_MAX_ATTEMPTS`                             | `3`              | Tentativas por tarefa                                                                                                                                                                                                                                                      |
+| `JOB_RETRY_DELAY_1_MS`, `JOB_RETRY_DELAY_2_MS` | `15000`, `60000` | Espera entre tentativas                                                                                                                                                                                                                                                    |
 
 ## Flags de recurso
 
@@ -86,7 +86,8 @@ recebe o estado pelas `featureFlags` de `/api/config`.
 | `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                      | E18/E19                                       | Não                          |
 | `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                               | —                                             | —                            |
 
-Ligar uma flag sem a migration não quebra o restante do app: as rotas daquele recurso respondem
+Ao iniciar pelo `INICIAR.cmd`, uma flag ligada sem a migration (ou combinação inválida) **bloqueia a
+inicialização** com a lista do que falta. Se o servidor for iniciado de outro jeito, ligar uma flag sem a migration não quebra o restante do app: as rotas daquele recurso respondem
 `SCHEMA_UPGRADE_REQUIRED` e só aquela parte da interface mostra um erro.
 
 ## Supabase Dashboard (fora do código)
@@ -97,3 +98,5 @@ Ligar uma flag sem a migration não quebra o restante do app: as rotas daquele r
 - **URL Configuration**: incluir `…/auth-callback.html` e `…/recuperar-senha.html` nas URLs de
   redirecionamento permitidas.
 - **Login social**: [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md).
+
+Matriz completa de cada flag e roteiro de ativação: [ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md).

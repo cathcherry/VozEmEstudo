@@ -66,8 +66,21 @@ flowchart TD
    fixada na tarefa. Se a tarefa for repetida depois de gravar o resultado, o resultado existente é
    reaproveitado. A aula fica `PRONTO` quando há resumo e questões da versão atual.
 
-Falhas temporárias (rede, 429/5xx do provedor, saída inválida do modelo, banco indisponível) são
-repetidas até `JOB_MAX_ATTEMPTS` vezes; mensagens de erro são higienizadas antes de chegar ao usuário.
+### Repetições e recuperação
+
+| Situação                                                                                   | O que acontece                                                                                                                                                                                                                |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Falha temporária (rede, 429/5xx do provedor, saída inválida do modelo, banco indisponível) | Nova tentativa em 15 s e depois 60 s, até `JOB_MAX_ATTEMPTS` (3). A tarefa fica `AGUARDANDO_REPETICAO` **com** `error_code`; a tela mostra "Aguardando nova tentativa (n de 3)". Esgotadas, `FALHOU` com mensagem higienizada |
+| Espera da AssemblyAI                                                                       | `AGUARDANDO_REPETICAO` **sem** `error_code`, sem gastar tentativas; a tela mostra "Transcrevendo o áudio…". Limite total `ASR_MAX_WAIT_MS` (3 h)                                                                              |
+| Erro definitivo (permissão, schema ausente, entrada inválida)                              | Falha na hora, sem repetir                                                                                                                                                                                                    |
+| Worker fechado no meio de uma tarefa                                                       | A tarefa renova a reserva (`locked_at`) a cada minuto enquanto roda; sem renovação por `WORKER_STALE_LEASE_SECONDS` (600 s), outra execução a retoma. Se as tentativas já tinham acabado, vira `FALHOU` (`LEASE_EXPIRED`)     |
+| Falha ao registrar a própria falha                                                         | O worker continua; a tarefa é recuperada pela reserva vencida                                                                                                                                                                 |
+
+Para não pagar duas vezes: o envio à AssemblyAI é uma máquina de estados em `ai_job_executions`
+com transições condicionais, no máximo 3 envios por tarefa e busca do envio perdido antes de
+reenviar. Gerações já gravadas para uma tarefa não são refeitas numa repetição (chave por tarefa). O
+custo ainda pode se repetir em um caso: uma resposta do modelo de texto inválida é descartada e a
+geração inteira é repetida (até 3 vezes, cada uma com no máximo 3 chamadas).
 
 ## Geração de questões (`questions-v2.1`)
 
@@ -85,11 +98,28 @@ O trecho de apoio é localizado na transcrição de forma tolerante (o modelo co
 reticências ou trocar uma palavra) e gravado com as palavras reais da aula
 (`domain/evidence-match.js`). A lista registra um relatório de cobertura com os motivos de descarte.
 
+## Acesso a dados
+
+| Caminho                     | Quem                                                                 | Como é protegido                                                                |
+| --------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| API Express → Postgres      | Aulas, transcrições, gerações, tarefas, pastas, recursos com flag    | Chave secreta só no servidor; posse conferida em cada rota e nas RPCs `*_admin` |
+| Navegador → `profile_state` | Preferências, histórico de estudo, marcos, blocos e ícones do perfil | RLS (só as próprias linhas); gravação _compare-and-set_                         |
+| Navegador → Storage         | Áudio do trecho, MP4 original, imagens do perfil                     | Políticas por caminho e dono; sem sobrescrita                                   |
+| Navegador → Supabase Auth   | Login, cadastro, senha, `user_metadata`                              | Próprio usuário                                                                 |
+
+Sincronização de `profile_state` (`frontend/js/utils/profile-cloud.js`): cada gravação lê
+`updated_at` e só atualiza se ninguém gravou no meio (senão relê). Chaves com regra de combinação
+(histórico de estudo por aula, marcos, ícones de pasta) unem as duas versões; as demais mantêm a
+edição mais recente pela hora da edição, de modo que uma edição antiga feita sem conexão não apaga
+uma mais nova de outro aparelho. Falhas ficam pendentes no navegador e são reenviadas. As chaves de
+aparência são compartilhadas por todas as contas do navegador, então o app lembra a qual conta elas
+pertencem e não envia mudanças de uma conta para outra.
+
 ## Segurança
 
 - **Dono primeiro**: a aula é a raiz de posse. Toda rota confere `user_id`; as RPCs `*_admin`
   recebem o usuário do token e conferem no SQL. Ver [BANCO_DE_DADOS.md](BANCO_DE_DADOS.md).
-- **Navegador sem acesso de escrita** ao banco; só lê `profile_state` próprio e envia arquivos ao
+- **Navegador com escrita mínima**: só grava o próprio `profile_state` e envia arquivos ao
   próprio prefixo do Storage.
 - **Chaves**: só a chave publicável vai para o navegador; a API recusa expor uma chave secreta.
 - **Caminhos de Storage** validados contra `..`, codificações e prefixos de outra conta.

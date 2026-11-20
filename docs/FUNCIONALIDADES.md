@@ -43,9 +43,19 @@ Gravação (áudio ou vídeo)
   → estudo: responder, revisar, exportar, compartilhar
 ```
 
-Princípio central: **nada é gerado sem a transcrição confirmada pela pessoa**. Resumos, questões e
-cartões guardam a revisão de origem; se a transcrição muda depois, eles aparecem como
-"desatualizados" em vez de sumirem.
+### Fronteira da confirmação humana
+
+| Etapa                                                                          | Precisa de confirmação? | Observação                                                                                                                                            |
+| ------------------------------------------------------------------------------ | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Transcrição automática                                                         | Não                     | Gera a versão 1 (imutável)                                                                                                                            |
+| **Avisos de conteúdo** (adequação, relação com a disciplina, suspeita factual) | **Não**                 | Gerados logo após a transcrição para **ajudar** na conferência; ficam presos à versão analisada e podem ser refeitos ("Analisar novamente")           |
+| Edição e restauração                                                           | Não                     | Cada mudança cria uma nova versão; a confirmação anterior deixa de valer para a versão atual                                                          |
+| **Resumos e listas de questões**                                               | **Sim**                 | Só a versão **atual e confirmada**; o banco recusa outra (`TRANSCRIPTION_CONFIRMATION_REQUIRED` / `REVISION_CONFLICT`), mesmo em chamada direta à API |
+| **Flashcards gerados por IA**                                                  | **Sim**                 | A prévia exige a versão atual confirmada; salvar cartões gerados exige que aquela versão tenha sido confirmada                                        |
+| Cartões criados à mão                                                          | Não                     | Não usam IA                                                                                                                                           |
+
+Cada resultado guarda a versão de origem. Se a transcrição muda depois, os resultados antigos não
+mudam: aparecem como "desatualizados". Repetir uma tarefa já concluída não duplica o resultado.
 
 ## 2. Conta e acesso
 
@@ -119,9 +129,14 @@ Página: `nova-transcricao.html`. Três etapas: **Gravação & recorte → Ident
    - **Declaração de permissão** obrigatória (a pessoa declara que pode usar a gravação). Se o
      texto da declaração mudar, é preciso confirmar de novo.
 3. **Revisar envio → Enviar e transcrever**
-   - O trecho é convertido em **MP3 mono compacto** (~0,5 MB/min) e enviado ao Supabase Storage por
-     **upload retomável**: blocos de 6 MB; se a conexão cair, o envio continua de onde parou.
-   - O progresso aparece em porcentagem; se a conexão não voltar, a mensagem explica e nada é perdido.
+   - **No servidor (backend)**: o arquivo escolhido é enviado à API para inspeção e recorte; o FFmpeg
+     devolve o trecho em **MP3 mono compacto** (~0,5 MB/min). Nada é guardado no servidor nessa etapa
+     (pasta temporária apagada em seguida).
+   - **Direto ao Storage**: o navegador envia esse MP3 ao Supabase Storage por **upload retomável**
+     (blocos de 6 MB; se a conexão cair, continua de onde parou) e só então a API registra a aula.
+   - O mesmo identificador da aula é reaproveitado em novas tentativas: um envio repetido reutiliza
+     o arquivo já enviado em vez de duplicá-lo.
+   - O progresso aparece numa barra; se a conexão não voltar, a mensagem explica e nada é perdido.
 
 ## 6. Processamento
 
@@ -129,10 +144,17 @@ Página: `processando.html`.
 
 - Acompanha a tarefa: Envio concluído → Na fila → Transcrição do áudio → Pronta para revisão.
 - Pode-se sair da página; a aula aparece na Biblioteca quando terminar.
-- Ao final, o áudio é **apagado** ou **guardado** conforme a escolha do envio, e são gerados três
-  **avisos de conteúdo** (adequação educacional, relação com a disciplina, suspeita factual).
-- Falhas temporárias são repetidas automaticamente (3 tentativas); a página mostra
-  **Tentar novamente** quando necessário.
+- Ao final, o áudio é **apagado** ou **guardado** conforme a escolha do envio, e são gerados os três
+  **avisos de conteúdo** (antes da confirmação, para ajudar na conferência).
+- Com a AssemblyAI, a tarefa espera o serviço externo entre consultas (a cada ~15 s). A página mostra
+  "Transcrevendo o áudio…" durante essa espera; **não é uma falha**.
+- Falhas temporárias (rede, serviço indisponível, resposta inválida) são repetidas automaticamente,
+  até 3 tentativas; a página mostra "Aguardando nova tentativa (tentativa n de 3)". Esgotadas, mostra
+  o erro e **Tentar novamente**.
+- Se o worker for fechado no meio de uma tarefa, ela é retomada depois de 10 minutos
+  (`WORKER_STALE_LEASE_SECONDS`).
+- O envio à AssemblyAI é registrado antes de acontecer: uma repetição continua a mesma transcrição
+  em vez de pagar outra.
 
 ## 7. Biblioteca
 
@@ -252,6 +274,10 @@ Página: `conta.html`.
   YouTube ou Spotify).
 - **Meu percurso / Marcos de estudo**: conquistas como "Primeira aula", com XP e níveis; alguns
   avatares do Nino são desbloqueados pelos marcos.
+  - **Provisório**: pontos e conquistas são calculados **no navegador**, a partir do número de aulas
+    (vindo do servidor) e de dados de estudo locais (revisões, respostas, minutos). O servidor não os
+    verifica nem os usa para liberar nada; a própria página avisa isso. Marcos de aparelhos
+    diferentes são combinados. Desenho da versão verificada: [GAMIFICACAO_2_0_DESIGN.md](GAMIFICACAO_2_0_DESIGN.md).
 
 ## 11. Configurações e aparência
 
@@ -279,8 +305,20 @@ Página: `conta.html`.
 - Navegação completa por teclado (abas, menus ⋯, player, recorte, diálogos); Esc fecha menus.
 - Legendas configuráveis, fontes para dislexia, régua de leitura, contraste reforçado e movimento
   reduzido.
-- Auditorias automáticas com axe-core fazem parte dos testes de navegador. Não há validação com
-  leitores de tela reais registrada além de [accessibility-integrated-test.md](accessibility-integrated-test.md).
+- Diálogos nativos (`<dialog>`): o resto da página fica inerte; Esc fecha. Diálogos abertos a partir
+  de um menu ⋯ devolvem o foco ao botão do menu ao fechar.
+- Arrastar aulas para pastas tem alternativa por teclado ("Mover para pasta" no menu ⋯).
+- Regiões de aviso (`aria-live`) só anunciam mudanças reais: o estado do processamento não se repete
+  a cada consulta, o percentual do envio fica numa barra de progresso (não anunciada a cada bloco) e
+  as legendas palavra a palavra não são anunciadas.
+- A leitura em voz alta do app é independente dos leitores de tela; no modo para leitores de tela
+  os controles dela ficam ocultos.
+
+**Como foi validado**: auditorias automáticas com axe-core (WCAG A/AA) nas páginas e diálogos
+principais, percursos por teclado nos testes de navegador e testes de DOM. **Não houve teste com
+leitores de tela reais (NVDA, VoiceOver, TalkBack)** nesta auditoria; o registro anterior está em
+[accessibility-integrated-test.md](accessibility-integrated-test.md). Pendências em
+[ROADMAP.md](ROADMAP.md#4-validação-incompleta).
 
 ## 13. Compartilhamento público
 
@@ -300,42 +338,57 @@ Página: `compartilhado.html` (não exige login).
 
 ## 15. Onde cada dado fica salvo
 
-| Dado                                                        | Onde                                                                                                           |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Aulas, transcrições, versões, resumos, questões, avisos     | Banco Supabase (servidor)                                                                                      |
-| Áudio do trecho                                             | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
-| Vídeo MP4 original                                          | Storage `study-videos` (se guardado)                                                                           |
-| Preferências de aparência e leitura                         | Navegador + tabela `profile_state` (sincronizadas)                                                             |
-| Histórico de estudo (posição, respostas, revisão concluída) | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
-| Foto e capa do perfil                                       | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
-| Tags extras da Biblioteca                                   | Somente no navegador                                                                                           |
-| Ícones de pasta                                             | `profile-media` + `profile_state`                                                                              |
+| Dado                                                            | Onde                                                                                                           |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Aulas, transcrições, versões, resumos, questões, avisos         | Banco Supabase (servidor)                                                                                      |
+| Áudio do trecho                                                 | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
+| Vídeo MP4 original                                              | Storage `study-videos` (se guardado)                                                                           |
+| Preferências de aparência e leitura                             | Navegador + tabela `profile_state` (sincronizadas)                                                             |
+| Histórico de estudo (posição, respostas, revisão concluída)     | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
+| Foto e capa do perfil                                           | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
+| Tags extras da Biblioteca (no histórico de estudo de cada aula) | Navegador + `profile_state` (sincronizadas)                                                                    |
+| Ícones de pasta                                                 | `profile-media` + `profile_state`                                                                              |
+
+Regras da sincronização (`profile_state`):
+
+- Cada conta só lê e grava as próprias linhas (RLS do Supabase, testado com duas contas).
+- Uma gravação nunca sobrescreve às cegas uma versão mais nova da conta: o histórico de estudo, os
+  marcos e os ícones de pasta são **combinados** (nada de outro aparelho se perde); as demais chaves
+  ficam com a **edição mais recente** (pela hora da edição, não do envio).
+- Sem conexão, a mudança fica pendente neste navegador e é enviada depois.
+- Ao trocar de conta no mesmo navegador, as preferências não salvas da conta anterior esperam por ela
+  e não vão para a nova conta.
+- A cópia local continua no navegador depois de sair da conta (em computadores compartilhados, use uma
+  janela anônima).
 
 ---
 
 ## Disponibilidade por recurso
 
-Situação do banco de produção `audioestudo` conferida em 20/11/2026. "Pronto" = as tabelas
-necessárias existem; basta a flag no `backend/.env`. "Falta migration" = ligar a flag sem aplicar a
-migration faz as rotas responderem `SCHEMA_UPGRADE_REQUIRED`.
+Situação do banco de produção `audioestudo` conferida em 20/11/2026. "Banco pronto" quer dizer
+apenas que **as tabelas existem**: o recurso ainda precisa da flag no `backend/.env` e de um teste
+manual. "Falta migration": com a flag ligada, o `INICIAR.cmd` recusa iniciar e lista o que falta (e,
+se o servidor for iniciado de outro jeito, só as rotas daquele recurso respondem `503`). Matriz
+completa (código, banco, dependências, validação e limitações) e roteiro de ativação em
+[ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md).
 
-| Recurso                                                     | Flag                           | Migration necessária                                   | Produção        |
-| ----------------------------------------------------------- | ------------------------------ | ------------------------------------------------------ | --------------- |
-| Envio, transcrição, revisão, resumo, questões (base)        | —                              | 001 + E02                                              | Pronto          |
-| Busca global                                                | —                              | 001 + E02                                              | Pronto          |
-| Transcrição assíncrona (AssemblyAI), legendas por palavra   | `ASR_PROVIDER=assemblyai`      | `ai_executions`                                        | Pronto          |
-| Pastas (disciplinas e unidades), Editar/Remover disciplina  | `catalog_units`                | E03                                                    | Pronto          |
-| Guardar MP4 original, player de vídeo                       | `mp4_retention`                | E07 (`material_videos_table` + correção das políticas) | Pronto          |
-| Listas nomeadas, resumos nomeados, quantidade personalizada | `study_authoring`              | `study_authoring`                                      | Pronto          |
-| Compartilhar lista de questões                              | `sharing` + `study_authoring`  | `study_authoring`                                      | Pronto          |
-| Compartilhar cópia do material                              | `sharing`                      | E18/E19 (`calendar_sharing`)                           | Falta migration |
-| Planejamento                                                | `planning`                     | E05                                                    | Falta migration |
-| Tentativas e diagnóstico de questões                        | `quiz_v2`, `quiz_review`       | E10, E12                                               | Falta migration |
-| Flashcards e conjuntos                                      | `flashcards`, `flashcard_sets` | E13, `flashcard_sets`                                  | Falta migration |
-| Tempo e progresso de estudo                                 | `study_tracking`               | E08/E09                                                | Falta migration |
-| Anotações                                                   | `annotations`                  | E14/E15                                                | Falta migration |
-| Calendário                                                  | `calendar`                     | E18/E19                                                | Falta migration |
-| Perfil, marcos, preferências sincronizadas                  | —                              | `profile_state` (proposta aplicada)                    | Pronto          |
+| Recurso                                                     | Flag                           | Migration necessária                                   | Banco de produção |
+| ----------------------------------------------------------- | ------------------------------ | ------------------------------------------------------ | ----------------- |
+| Envio, transcrição, revisão, resumo, questões (base)        | —                              | 001 + E02                                              | Banco pronto      |
+| Busca global                                                | —                              | 001 + E02                                              | Banco pronto      |
+| Transcrição assíncrona (AssemblyAI), legendas por palavra   | `ASR_PROVIDER=assemblyai`      | `ai_executions`                                        | Banco pronto      |
+| Pastas (disciplinas e unidades), Editar/Remover disciplina  | `catalog_units`                | E03                                                    | Banco pronto      |
+| Guardar MP4 original, player de vídeo                       | `mp4_retention`                | E07 (`material_videos_table` + correção das políticas) | Banco pronto      |
+| Listas nomeadas, resumos nomeados, quantidade personalizada | `study_authoring`              | `study_authoring`                                      | Banco pronto      |
+| Compartilhar lista de questões                              | `sharing` + `study_authoring`  | `study_authoring`                                      | Banco pronto      |
+| Compartilhar cópia do material                              | `sharing`                      | E18/E19 (`calendar_sharing`)                           | Falta migration   |
+| Planejamento                                                | `planning`                     | E05                                                    | Falta migration   |
+| Tentativas e diagnóstico de questões                        | `quiz_v2`, `quiz_review`       | E10, E12                                               | Falta migration   |
+| Flashcards e conjuntos                                      | `flashcards`, `flashcard_sets` | E13, `flashcard_sets`                                  | Falta migration   |
+| Tempo e progresso de estudo                                 | `study_tracking`               | E08/E09                                                | Falta migration   |
+| Anotações                                                   | `annotations`                  | E14/E15                                                | Falta migration   |
+| Calendário                                                  | `calendar`                     | E18/E19                                                | Falta migration   |
+| Perfil, marcos, preferências sincronizadas                  | —                              | `profile_state` (proposta aplicada)                    | Banco pronto      |
 
 Ordem de pré-requisitos e riscos de cada migration: [BANCO_DE_DADOS.md](BANCO_DE_DADOS.md).
 
