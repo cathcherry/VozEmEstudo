@@ -16,11 +16,7 @@ import { initQuestionDialog, renderQuestionLists } from './question-lists.js';
 import { initExportPanel } from './export-panel.js';
 import { initListShare } from './list-share.js';
 import { initFlashcardAuthoring } from './flashcard-authoring.js';
-import {
-  normalizeSummaryOptions,
-  summaryName,
-  summaryDetails,
-} from '../utils/authoring.js';
+import { normalizeSummaryOptions, summaryName, summaryDetails } from '../utils/authoring.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState, ninoNote } from '../utils/material-ui.js';
 import { pollJob } from '../api/job.api.js';
@@ -35,6 +31,9 @@ import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
 import { renderMarkdown } from '../utils/markdown.js';
+import { lessonProgress, renderLessonSteps } from '../utils/lesson-steps.js';
+import { listFlashcardSets } from '../api/flashcard.api.js';
+import { listQuizSessions } from '../api/quiz-session.api.js';
 
 await initAuthenticatedShell();
 const $ = (selector) => document.querySelector(selector);
@@ -221,6 +220,7 @@ function layout() {
   $('.material-tabs').hidden = !showContent || !ready();
   $('[data-material-actions]').hidden = !showContent;
   $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
+  $('.lesson-tools').hidden = !showContent;
   for (const name of ['transcription', 'summary', 'questions']) {
     const tab = $(`[data-material-tab="${name}"]`);
     tab.setAttribute('aria-selected', String(activeTab === name));
@@ -241,6 +241,102 @@ function layout() {
   status.hidden = !label;
   status.dataset.state = !transcript ? 'processing' : 'review';
   if (mode === 'editing') updateEditStatus();
+  updateLessonSteps();
+}
+
+// ---- Study path of this lesson ----------------------------------------------------------
+// Flashcard sets and question attempts live outside the material, so they load once on demand.
+let lessonExtras = { sets: null, attempted: false };
+let lessonExtrasLoaded = false;
+async function loadLessonExtras() {
+  lessonExtrasLoaded = true;
+  const [sets, sessions] = await Promise.all([
+    flags.flashcards && flags.flashcard_sets
+      ? listFlashcardSets(materialId).catch(() => null)
+      : null,
+    flags.quiz_v2 ? listQuizSessions().catch(() => []) : [],
+  ]);
+  lessonExtras = {
+    sets: Array.isArray(sets) ? sets.length : null,
+    attempted: sessions.some((session) => session.material_id === materialId),
+  };
+  updateLessonSteps();
+}
+function updateLessonSteps() {
+  const container = $('[data-lesson-steps]');
+  if (!container) return;
+  if (!currentMaterial?.transcription) {
+    container.hidden = true;
+    return;
+  }
+  if (!lessonExtrasLoaded && ready()) void loadLessonExtras();
+  const batches = currentMaterial.questionBatches || [];
+  const questionIds = new Set(batches.flatMap((batch) => (batch.questions || []).map((q) => q.id)));
+  const answers = studyFor(materialId).answers || {};
+  const progress = lessonProgress({
+    ready: ready(),
+    summaries: (currentMaterial.summaries || []).length,
+    lists: batches.length,
+    answered: lessonExtras.attempted || Object.keys(answers).some((id) => questionIds.has(id)),
+    flashcards: flags.flashcards && flags.flashcard_sets ? Boolean(lessonExtras.sets) : null,
+  });
+  // Before confirmation the page already offers "Conferir transcrição" / "Confirmar e continuar".
+  if (!ready()) progress.next = null;
+  let done = null;
+  if (ready() && !progress.next) {
+    done = document.createElement('p');
+    done.className = 'lesson-next-copy';
+    const title = document.createElement('strong');
+    title.textContent = 'Aula estudada';
+    const text = document.createElement('span');
+    text.textContent = 'Revise os cartões e os erros nos próximos dias. ';
+    done.append(title, text);
+    if (flags.flashcards || flags.quiz_v2) {
+      const link = document.createElement('a');
+      link.href = './revisar.html';
+      link.textContent = 'Ir para Revisar';
+      text.append(link);
+    }
+  }
+  renderLessonSteps(container, progress, { onStep: runLessonStep, done });
+}
+function runLessonStep(id) {
+  const open = (tab, selector) => {
+    selectTab(tab, true);
+    if (selector) $(selector)?.click();
+  };
+  switch (id) {
+    case 'view:transcription':
+    case 'transcription':
+      if (!ready() && !$('[data-review-welcome]').hidden) $('[data-check-transcription]').click();
+      else selectTab('transcription', ready());
+      break;
+    case 'view:summary':
+      open('summary');
+      break;
+    case 'summary':
+      open('summary', '[data-regenerate-summary]');
+      break;
+    case 'view:questions':
+      open('questions');
+      break;
+    case 'questions':
+      open('questions', '[data-open-questions]');
+      break;
+    case 'answer': {
+      const link = $('[data-question-batches] a[href*="responder.html"]');
+      if (link) location.href = link.href;
+      else open('questions');
+      break;
+    }
+    case 'view:flashcards':
+      if (lessonExtras.sets) location.href = './revisar.html#flashcards';
+      else open('summary');
+      break;
+    case 'flashcards':
+      open('summary', '[data-open-flashcards]');
+      break;
+  }
 }
 function selectTab(name, focus = false) {
   if (!ready() && name !== 'transcription') return;
@@ -288,7 +384,8 @@ function updateWaiting(job) {
   waitingSince ||= job.created_at || currentMaterial?.created_at || new Date().toISOString();
   // Live heading polled every few seconds: write only on change to avoid repeated announcements.
   const label = jobLabel(job);
-  if ($('[data-processing-status]').textContent !== label) $('[data-processing-status]').textContent = label;
+  if ($('[data-processing-status]').textContent !== label)
+    $('[data-processing-status]').textContent = label;
   if (job.events) {
     const list = $('[data-processing-events]');
     list.replaceChildren();
@@ -559,7 +656,9 @@ function renderSummary(summary) {
   const emptySummary = $('[data-summary-empty]');
   emptySummary.hidden = Boolean(summary);
   if (!summary && !emptySummary.childElementCount)
-    emptySummary.append(ninoNote('Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.', 'rest'));
+    emptySummary.append(
+      ninoNote('Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.', 'rest'),
+    );
   if (summarySpeech) summarySpeech.element.hidden = !summary;
   const name = $('[data-summary-name]');
   name.textContent = summary ? summaryName(summary) : '';
@@ -577,7 +676,10 @@ function renderSummary(summary) {
         .join(' · ')
     : 'Ainda não há resumo desta aula.';
   for (const button of document.querySelectorAll('[data-summary-version-list] button'))
-    button.setAttribute('aria-current', String(Boolean(summary) && button.dataset.summaryKey === summaryKey(summary)));
+    button.setAttribute(
+      'aria-current',
+      String(Boolean(summary) && button.dataset.summaryKey === summaryKey(summary)),
+    );
 }
 function render(material) {
   currentMaterial = material;
@@ -629,17 +731,19 @@ function render(material) {
         notesEnabled = tools.notesEnabled;
       })
       .catch((error) => {
-      const panel = $('[data-material-tools]');
-      panel.hidden = false;
-      panel.textContent = error.message || 'Ferramentas indisponíveis.';
-    });
+        const panel = $('[data-material-tools]');
+        panel.hidden = false;
+        panel.textContent = error.message || 'Ferramentas indisponíveis.';
+      });
   }
   const summaries = material.summaries || [];
   const summary =
     (displayedSummary && summaries.find((s) => summaryKey(s) === summaryKey(displayedSummary))) ||
     summaries.find((s) => s.is_current) ||
     summaries[0];
-  $('[data-regenerate-summary]').textContent = summaries.length ? 'Gerar novo resumo' : 'Gerar resumo';
+  $('[data-regenerate-summary]').textContent = summaries.length
+    ? 'Gerar novo resumo'
+    : 'Gerar resumo';
   // The menu also holds "Renomear esta versão", so with names enabled it shows for one version too.
   $('[data-summary-history]').hidden = summaries.length < (flags.study_authoring ? 1 : 2);
   $('[data-summary-version-list]').replaceChildren();
@@ -651,7 +755,11 @@ function render(material) {
     const title = document.createElement('span');
     title.textContent = summaryName(s);
     const meta = document.createElement('small');
-    meta.textContent = [s.label ? `Versão ${s.version}` : '', s.created_at ? formatDate(s.created_at) : '', s.is_current ? 'mais recente' : '']
+    meta.textContent = [
+      s.label ? `Versão ${s.version}` : '',
+      s.created_at ? formatDate(s.created_at) : '',
+      s.is_current ? 'mais recente' : '',
+    ]
       .filter(Boolean)
       .join(' · ');
     b.append(title, meta);
@@ -665,8 +773,8 @@ function render(material) {
   renderQuestionBatches(material.questionBatches || []);
   $('[data-complete-review]').setAttribute('aria-pressed', String(studyFor(materialId).completed));
   $('[data-complete-review]').textContent = studyFor(materialId).completed
-    ? 'Revisão concluída · desfazer'
-    : 'Marcar revisão concluída';
+    ? 'Aula estudada · desfazer'
+    : 'Marcar aula como estudada';
   if (material.initial_question_count && !$('#more-question-count').dataset.initialized) {
     $('#more-question-count').value = String(material.initial_question_count);
     $('#more-question-count').dataset.initialized = 'true';
@@ -692,7 +800,9 @@ function renderQuestionBatches(batches) {
     flags,
     actions: {
       export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
-      ...(flags.study_authoring && flags.sharing ? { share: (batch, name) => listShare.open(batch, name) } : {}),
+      ...(flags.study_authoring && flags.sharing
+        ? { share: (batch, name) => listShare.open(batch, name) }
+        : {}),
       rename: (batch, name) =>
         openRename({
           title: 'Renomear lista',
@@ -802,7 +912,13 @@ async function generate(kind, options) {
     const job =
       kind === 'summary'
         ? await regenerateSummary(materialId, source, pending.get(operation), options)
-        : await generateQuestions(materialId, options.count, source, pending.get(operation), options.config);
+        : await generateQuestions(
+            materialId,
+            options.count,
+            source,
+            pending.get(operation),
+            options.config,
+          );
     const result = await pollJob(job.jobId, {
       onUpdate: (state) => setStatus(message, jobLabel(state)),
     });
@@ -904,7 +1020,9 @@ $('[data-more-questions-form]').addEventListener('submit', (e) => {
 });
 // Flashcards 2.0 needs the flashcards feature and the sets migration.
 const flashcardSets = flags.flashcards && flags.flashcard_sets;
-const flashcardAuthoring = flashcardSets ? initFlashcardAuthoring({ material: () => currentMaterial }) : null;
+const flashcardAuthoring = flashcardSets
+  ? initFlashcardAuthoring({ material: () => currentMaterial })
+  : null;
 $('[data-open-flashcards]').addEventListener('click', () => void flashcardAuthoring?.open());
 const exportPanel = initExportPanel({
   material: () => currentMaterial,
@@ -936,11 +1054,15 @@ await reload().catch((e) => {
   $('[data-material-meta]').textContent = e.message;
   // Dead end: explain and offer the way back instead of an empty page.
   $('.material-header').after(
-    emptyState('Esta aula não está disponível.', 'Ela pode ter sido excluída ou pertencer a outra conta.', {
-      href: './historico.html',
-      action: 'Voltar à Biblioteca',
-      mascot: 'curious',
-    }),
+    emptyState(
+      'Esta aula não está disponível.',
+      'Ela pode ter sido excluída ou pertencer a outra conta.',
+      {
+        href: './historico.html',
+        action: 'Voltar à Biblioteca',
+        mascot: 'curious',
+      },
+    ),
   );
 });
 // Arriving from the dashboard search: the term is searched, bolded and its passage scrolled to.

@@ -273,7 +273,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   // Three distinct intents: open, correct the transcript text, organize metadata.
   const open = document.createElement('a');
   open.href = materialHref(material.id);
-  open.textContent = 'Abrir material';
+  open.textContent = 'Abrir aula';
   open.dataset.icon = 'open';
   const editTranscript = document.createElement('a');
   editTranscript.href = materialHref(material.id) + '&edit=transcricao#transcricao';
@@ -281,7 +281,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   editTranscript.dataset.icon = 'edit';
   const organize = document.createElement('button');
   organize.type = 'button';
-  organize.textContent = 'Organizar';
+  organize.textContent = 'Editar informações';
   organize.dataset.icon = 'organize';
   organize.addEventListener('click', () => { menu.open = false; returnFocusOnClose(editDialog, summary); edit(material); });
   const questions = document.createElement('a');
