@@ -458,6 +458,20 @@ async function main() {
     record(
       `Painel com todos os recursos: resumo real de tarefas, cartões, semana, agenda e anotações; nenhum formulário aberto (altura ${desktopHeight}px)`,
     );
+    // Hovering the hero (and its progress bar) must not move or hide its content.
+    const hero = page.locator('.dash-continue .dashboard-lesson-card');
+    const before = await hero.locator('.dashboard-lesson-percent').boundingBox();
+    for (const target of [hero.locator('.dashboard-lesson-title'), hero.locator('.dashboard-lesson-playback progress')]) {
+      await target.hover();
+      await page.waitForTimeout(250);
+      const after = await hero.locator('.dashboard-lesson-percent').boundingBox();
+      const card = await hero.boundingBox();
+      assert(Math.abs(after.x - before.x) < 1 && Math.abs(after.y - before.y) < 1, 'progress text stays in place on hover');
+      assert(after.x >= card.x, 'progress text stays inside the card');
+      assert.equal(await hero.locator('.dashboard-lesson-cue').evaluate((n) => getComputedStyle(n).opacity), '1');
+    }
+    await page.mouse.move(0, 0);
+    record('Continuar estudando: passar o mouse não desloca nem esconde o progresso e o botão');
     await axeCheck(page, 'body', 'dashboard');
     record('Painel sem violações automáticas WCAG A/AA (axe-core)');
     await page.screenshot({ path: path.join(output, 'painel-1440.png'), fullPage: true });

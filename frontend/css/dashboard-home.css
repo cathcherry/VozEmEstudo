@@ -979,3 +979,21 @@ body[data-page='dashboard'] .dash-next-card span {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* The hero shows progress and its button permanently, so the list cards' hover effects
+   (tooltip that follows the pointer, cue that fades out over the progress bar) must not apply.
+   Selectors match the specificity of those hover rules in dashboard-refinement.css. */
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card .dashboard-lesson-playback .dashboard-lesson-tooltip,
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-playback .dashboard-lesson-tooltip,
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card .dashboard-lesson-playback:is(:hover, :focus-within) .dashboard-lesson-tooltip {
+  position: static;
+  left: auto;
+  opacity: 1;
+  transform: none;
+}
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible, :has(.dashboard-lesson-playback:hover)) .dashboard-lesson-cue {
+  opacity: 1;
+  transform: none;
+}
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-topics { max-height: none; padding: 0; }
+body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-title { text-decoration: underline; text-underline-offset: 4px; }
