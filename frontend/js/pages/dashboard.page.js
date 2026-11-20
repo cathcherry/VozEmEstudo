@@ -5,27 +5,19 @@ import { studyFor, listeningPercent } from '../utils/study-store.js';
 import { materialHref, playbackAtEnd } from '../utils/library-ui.js';
 import { formatDate, formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
-import { initPlanningPanel } from './planning-panel.js';
-import { initFlashcardsPanel } from './flashcards-panel.js';
-import { initStudyTrackingPanel } from './study-tracking-panel.js';
-import { initDashboardTools } from './dashboard-tools.js';
 import { initGlobalSearch } from './global-search.js';
 import { initDashboardHome } from './dashboard-home.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { listAnnotations } from '../api/learning-tools.api.js';
 
 const session=await initAuthenticatedShell();
-// Widgets listen to the study tools, so they must be ready before any tool starts loading.
-const home=initDashboardHome();
+// Summary cards for the study tools (each links to Revisar or Planejar).
+initDashboardHome();
 // Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.
 const searchForm=document.querySelector('.topbar-search');
 if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading'),
   notes:async(q)=>(await isFeatureEnabled('annotations').catch(()=>false))?listAnnotations({q,offset:0}):null,
-  openNotes:(q)=>{home.openWorkspace('notes');document.dispatchEvent(new CustomEvent('voz:notes-command',{detail:{action:'search',q}}));}});
-let planningInitialized = false;
-let flashcardsInitialized = false;
-let trackingInitialized = false;
-let dashboardToolsInitialized=false;
+  openNotes:(q)=>{location.href=`./revisar.html?busca=${encodeURIComponent(q)}#anotacoes`;}});
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
@@ -40,7 +32,7 @@ function dashboardLesson(material) {
   card.href = materialHref(material.id);
   card.dataset.materialId = material.id;
   const atEnd = playbackAtEnd(material);
-  const action = study.completed || atEnd ? 'Revisar' : study.openedAt ? 'Continuar' : 'Abrir';
+  const action = study.completed || atEnd ? 'Rever' : study.openedAt ? 'Continuar' : 'Abrir';
   card.setAttribute('aria-label', `${action} ${material.title}`);
 
   const copy = document.createElement('span');
@@ -131,37 +123,11 @@ async function load() {
   container.setAttribute('aria-busy','true');
   try {
     const materials=await listMaterials();
-    if(!dashboardToolsInitialized){dashboardToolsInitialized=true;void initDashboardTools({materials});}
-    if(!trackingInitialized) {
-      trackingInitialized=true;
-      void initStudyTrackingPanel({materials}).catch((error)=>{
-        const panel=document.querySelector('[data-study-tracking-panel]');
-        if(panel&&!panel.hidden)panel.textContent=error.message||'Progresso indisponível.';
-      });
-    }
-    // E13 is entirely optional: failing to load cards must not break the dashboard.
-    if (!flashcardsInitialized) {
-      flashcardsInitialized = true;
-      void initFlashcardsPanel({ materials }).catch((error) => {
-        const notice = document.querySelector('[data-flashcard-review-status]');
-        if (notice) notice.textContent = error.message || 'Flashcards indisponíveis.';
-      });
-    }
-
-    // Optional module: a planning failure must never break the existing dashboard.
-    if (!planningInitialized) {
-      planningInitialized = true;
-      try { await initPlanningPanel({ materials }); }
-      catch (error) {
-        const notice = document.querySelector('[data-planning-status]');
-        if (notice) notice.textContent = error.message || 'Planejamento indisponível.';
-      }
-    }
     const active=materials.filter((m)=>studyFor(m.id).openedAt && !studyFor(m.id).completed);
     const completed=materials.filter((m)=>studyFor(m.id).completed);
     const pending=materials.filter((m)=>materialState(m)==='processing');
     overview.replaceChildren();
-    for(const [value,label] of [[materials.length,`${materials.length===1?'aula':'aulas'} no acervo`],[active.length,'em estudo'],[completed.length,completed.length===1?'revisão concluída':'revisões concluídas'],...(pending.length?[[pending.length,'em processamento']]:[])]) {
+    for(const [value,label] of [[materials.length,`${materials.length===1?'aula':'aulas'} no acervo`],[active.length,'em estudo'],[completed.length,completed.length===1?'aula estudada':'aulas estudadas'],...(pending.length?[[pending.length,'em processamento']]:[])]) {
       const item=document.createElement('span'), number=document.createElement('strong');
       number.textContent=value; item.append(number,' '+label); overview.append(item,' ');
     }
@@ -178,7 +144,7 @@ async function load() {
     for(const [subject,items] of [...subjects].sort((a,b)=>a[0].localeCompare(b[0],'pt-BR'))) {
       const link=document.createElement('a'); link.className='subject-folder'; link.href='./historico.html?subject='+encodeURIComponent(subject);
       const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.textContent='📁'; icon.setAttribute('aria-hidden','true');
-      const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=`${items.length} ${items.length===1?'aula':'aulas'}${reviewed?' · '+reviewed+' '+(reviewed===1?'revisão concluída':'revisões concluídas'):''}`; copy.append(title,detail); link.append(icon,copy); shelf.append(link);
+      const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=`${items.length} ${items.length===1?'aula':'aulas'}${reviewed?' · '+reviewed+' '+(reviewed===1?'estudada':'estudadas'):''}`; copy.append(title,detail); link.append(icon,copy); shelf.append(link);
     }
     if (!subjects.size) { const p=document.createElement('p'); p.className='quiet-empty'; p.textContent='Nenhuma disciplina atribuída.'; shelf.append(p); }
     const topics=new Map();

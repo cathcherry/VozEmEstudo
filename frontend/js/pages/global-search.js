@@ -21,7 +21,12 @@ export const SCOPES = Object.freeze({
   questions: 'nas questões',
   transcripts: 'nas transcrições',
 });
-const TAB_LABELS = { lessons: 'Aulas', questions: 'Questões', transcripts: 'Transcrições', notes: 'Anotações' };
+const TAB_LABELS = {
+  lessons: 'Aulas',
+  questions: 'Questões',
+  transcripts: 'Transcrições',
+  notes: 'Anotações',
+};
 
 /** Text with the searched words in bold (<mark>), built from text nodes only. */
 export function markedText(tag, text, query, className) {
@@ -269,7 +274,7 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
     const title = el('h2', `Resultados para “${q}”`);
     title.id = 'global-search-title';
     title.tabIndex = -1;
-    const back = el('button', 'Voltar ao painel', 'text-action');
+    const back = el('button', 'Voltar ao início', 'text-action');
     back.type = 'button';
     back.addEventListener('click', clear);
     const head = el('div', null, 'search-results-head');
@@ -311,9 +316,12 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
         );
       panel.append(list);
       if (group.key === 'notes' && openNotes) {
-        const all = el('button', `Ver ${group.count === 1 ? 'a anotação' : `as ${group.count} anotações`} com busca e páginas`, 'text-action');
+        const all = el(
+          'button',
+          `Ver ${group.count === 1 ? 'a anotação' : `as ${group.count} anotações`} em Revisar`,
+          'text-action',
+        );
         all.type = 'button';
-        all.setAttribute('aria-haspopup', 'dialog');
         all.addEventListener('click', () => openNotes(q));
         panel.append(all);
       }
@@ -384,7 +392,9 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
       if (version !== request) return;
       if (notePage?.notes?.length) {
         const titles = new Map((await loadMaterials()).map((m) => [m.id, m.title]));
-        result.notes = notePage.notes.slice(0, 20).map((note) => ({ ...note, lessonTitle: titles.get(note.material_id) }));
+        result.notes = notePage.notes
+          .slice(0, 20)
+          .map((note) => ({ ...note, lessonTitle: titles.get(note.material_id) }));
         result.notesTotal = notePage.total;
       }
       // Tags live in this browser, so lessons found by tag are added here.
