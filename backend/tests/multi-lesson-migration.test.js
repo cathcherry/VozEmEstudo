@@ -371,3 +371,32 @@ test('the integrated record and its queue work without the cache table', async (
     await f.db.close();
   }
 });
+
+test('limits: at most 12 sources per material; the worker reads the frozen sources of its own lease only', async () => {
+  const f = await library();
+  try {
+    for (let i = 0; i < 13; i += 1)
+      await addLesson(f, a, { title: `Aula ${i + 1}`, segments: SEG(`parte ${i + 1}`), subjectId: f.physics.subjectId, unitId: f.optics });
+    const resolved = await f.call('multi_lesson_resolve_admin', [a.id, 'unit', [f.optics]]);
+    assert.equal(resolved.included.length, 14, 'resolution lists everything; the limit is enforced on request');
+    const sources = resolved.included.map((item) => item.revisionId);
+    const begun = await f.call('begin_generation_admin', [a.id, 'e'.repeat(64), 'user', a.id, 'multi_lesson', sources, 'multi-lesson-v1', 'groq:test', null, false, 30]);
+    await assert.rejects(
+      f.call('multi_lesson_attach_admin', [a.id, randomUUID(), randomUUID(), 'Óptica', 'unit', [f.optics], ['summary'], '{}', begun.generation.id, 'start', 2]),
+      /MULTI_LESSON_TOO_MANY_SOURCES/,
+    );
+    const { record } = await requester(f)();
+    const job = await f.call('multi_lesson_claim_job_admin', ['w1', 600]);
+    await assert.rejects(f.call('multi_lesson_job_sources_admin', [job.id, 'w2']), /MULTI_LESSON_LEASE_LOST/);
+    const read = await f.call('multi_lesson_job_sources_admin', [job.id, 'w1']);
+    assert.deepEqual(read.map((s) => s.materialId), record.sources.map((s) => s.materialId));
+    assert.equal(read[0].segments[0].position, 0);
+    assert.match(read[0].segments[0].text, /onda/);
+    // A later edit does not change what the worker reads: the snapshot revision stays.
+    await editLesson(f, a, f.l1.id, 'Texto totalmente novo que não estava na revisão usada pelo pedido.');
+    const again = await f.call('multi_lesson_job_sources_admin', [job.id, 'w1']);
+    assert.deepEqual(again[0].segments, read[0].segments);
+  } finally {
+    await f.db.close();
+  }
+});

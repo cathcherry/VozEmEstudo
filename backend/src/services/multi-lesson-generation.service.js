@@ -146,7 +146,7 @@ export function mockMultiLessonCompletion({ messages }) {
         : [];
     return { data: { concepts, relations }, model: 'mock' };
   }
-  let lessons = [];
+  let lessons;
   try {
     lessons = JSON.parse(user);
   } catch {
