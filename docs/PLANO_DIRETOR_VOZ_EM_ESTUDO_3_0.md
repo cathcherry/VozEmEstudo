@@ -182,7 +182,7 @@ Pendente:
 
 - ranking explícito de importância pedagógica (hoje o prompt orienta a priorizar o central);
 - evidências em vários fragmentos;
-- reportar, editar ou rejeitar uma questão;
+- ~~reportar uma questão~~: "Reportar problema" na página de responder e nas listas da aula. Motivos: resposta errada, enunciado confuso, não está na aula, repetida ou outro, com detalhe opcional. Fica em `question-reports` (`profile_state`), unido por questão entre aparelhos; a remoção vira uma marca datada que não volta. Editar ou rejeitar a questão para todos ainda precisa de tabela;
 - medição com provedor real (custo e validade) — ainda não feita.
 
 ## 7. Anotações 3.0 e caderno da aula

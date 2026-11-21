@@ -1039,3 +1039,18 @@ html:is([data-low-stimulation='true'], [data-screen-reader-mode='true']) .page-s
 .sticker-option .sticker { width: 36px; height: 36px; filter: drop-shadow(0 1px 1.5px rgb(40 30 60 / 20%)); }
 .sticker-option[aria-pressed='true'] { border-color: var(--accent-strong); background: var(--accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-strong) 22%, transparent); }
 .sticker-option:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+
+/* ---- "Reportar problema" on questions (own flags, synced per account) --------------------- */
+.question-report { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 14px; font-size: .88rem; }
+.question-report.is-compact { margin-top: 4px; font-size: .82rem; }
+.question-report-flag { color: var(--text); font-weight: 600; }
+.question-report-icon { color: var(--danger, #b3261e); }
+.question-report .text-action { min-height: 32px; }
+.report-dialog { width: min(520px, calc(100vw - 32px)); }
+.report-reasons { display: grid; gap: 2px; margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 12px; }
+.report-reasons legend { padding: 0 6px; font-weight: 700; }
+.app-dialog .report-reason { display: flex; align-items: center; gap: 10px; min-height: 40px; font-weight: 500; }
+.app-dialog .report-reason input { width: 20px; height: 20px; min-height: 0; padding: 0; flex: none; accent-color: var(--accent-strong); }
+.report-dialog textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font: inherit; font-weight: 400; resize: vertical; }
+.report-error { margin: 8px 0 0; color: var(--danger); }
+.report-error:empty { display: none; }

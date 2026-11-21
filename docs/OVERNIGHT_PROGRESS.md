@@ -123,3 +123,4 @@ Nenhuma migration foi criada ou aplicada.
 | Adesivos originais ao lado do título (até 3, preferências sincronizadas) | `21b0fc1` |
 | Calendário › Semana: grade de horários, mover sem arrastar | `e3c3e4a` |
 | Aula muito longa: busca na transcrição sem travar (pausa, cache, fatias) + jornada de 2.200 trechos | `8e22974` |
+| Questões: "Reportar problema" (marca própria, sincronizada, desfazer) + Aparência na página de responder | (este commit) |

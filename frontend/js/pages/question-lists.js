@@ -1,4 +1,5 @@
 import { formatDate } from '../utils/format.js';
+import { reportControl } from '../utils/question-report-ui.js';
 import {
   listName,
   listDetails,
@@ -331,6 +332,7 @@ export function renderQuestionLists({
             'question-result',
           ),
         );
+        if (q.id) item.append(reportControl({ questionId: q.id, materialId, batchId: batch.id, compact: true }));
         list.append(item);
       });
       const listen = actions.listen?.(card);

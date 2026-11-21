@@ -88,6 +88,48 @@ async function main() {
     data.calendarPageSize = 0;
     record('Calendário: exportação ICS percorre todas as páginas, mesmo sem "limit" na resposta');
 
+    // ---------- Questions: "Reportar problema" (own flag, saved in the account, undo) ----------
+    {
+      const q = state();
+      q.lessonStage = { 'l-foto': 'questions' };
+      q.profileState = [];
+      const view = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.goto(base + '/material.html?id=l-foto#questoes');
+      const list = p.locator('details.list-questions').first();
+      await list.locator('summary').click();
+      const open = list.getByRole('button', { name: 'Reportar problema' });
+      await open.click();
+      const dialog = p.getByRole('dialog', { name: 'Reportar problema na questão' });
+      await dialog.waitFor();
+      await settle(p);
+      await axeCheck(p, 'dialog[open]', 'Reportar problema');
+      await dialog.getByLabel('Não está na aula').check();
+      await dialog.getByLabel('Detalhe (opcional)').fill('Ribossomo não foi citado.');
+      await dialog.getByRole('button', { name: 'Marcar problema' }).click();
+      await list.locator('.question-report-flag', { hasText: 'Você marcou: Não está na aula' }).waitFor();
+      await p.waitForFunction(() => document.activeElement?.textContent === 'Editar', null, { timeout: 3000 });
+      await p.waitForTimeout(600);
+      const saved = q.profileState.find((row) => row.key === 'question-reports').data.q1;
+      assert.deepEqual(
+        { reason: saved.reason, note: saved.note, materialId: saved.materialId, batchId: saved.batchId },
+        { reason: 'not_in_lesson', note: 'Ribossomo não foi citado.', materialId: 'l-foto', batchId: 'b1' },
+      );
+      // Another device (fresh browser, same account) sees the flag; undo keeps a dated removal.
+      const other = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
+      await other.page.goto(base + '/material.html?id=l-foto#questoes');
+      const otherList = other.page.locator('details.list-questions').first();
+      await otherList.locator('summary').click();
+      await otherList.locator('.question-report-flag', { hasText: 'Não está na aula' }).waitFor();
+      await otherList.getByRole('button', { name: 'Desfazer a marcação desta questão' }).click();
+      await otherList.getByRole('button', { name: 'Reportar problema' }).waitFor();
+      await other.page.waitForTimeout(600);
+      assert.equal(q.profileState.find((row) => row.key === 'question-reports').data.q1.removed, true);
+      await other.context.close();
+      await view.context.close();
+      record('Questões: "Reportar problema" com motivo e detalhe, salvo na conta, visto em outro aparelho e desfeito sem voltar');
+    }
+
     // ---------- A very long lesson (3 h, 2 200 segments): renders, searches without freezing ---
     {
       const long = state();
