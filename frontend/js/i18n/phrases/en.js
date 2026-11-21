@@ -191,6 +191,7 @@ export default {
   "Arredondada": "Rounded",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "This account's copies on this browser will be deleted and you will be signed out. Everything already saved in your account stays there.",
   "As disciplinas que você mais revisita.": "The subjects you revisit most.",
+  "As etapas desta aula e o próximo passo sugerido.": "This lesson's steps and the suggested next step.",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "Your answers will be saved to your account. When you finish, you can review your mistakes.",
   "As senhas não coincidem.": "Passwords don't match.",
   "As últimas aulas que você abriu.": "The last lessons you opened.",
@@ -217,6 +218,7 @@ export default {
   "Aula estudada · desfazer": "Lesson studied · undo",
   "Aula organizada na pasta.": "Lesson organized in the folder.",
   "Aula para gerar cartões": "Lesson to generate cards from",
+  "Aula pronta para estudar": "Lesson ready to study",
   "Aula relacionada": "Related lesson",
   "Aula relacionada (opcional)": "Related lesson (optional)",
   "Aulas": "Lessons",
@@ -370,6 +372,7 @@ export default {
   "Confira o envio": "Check the upload",
   "Confira o horário no fuso deste aparelho.": "Check the time in this device's time zone.",
   "Confira o texto": "Check the text",
+  "Confira o texto reconhecido, corrija o que estiver errado e confirme. Resumo, questões e flashcards usam a versão confirmada.": "Check the recognised text, fix what is wrong and confirm. Summaries, questions and flashcards use the confirmed version.",
   "Confira os avisos desta transcrição": "Check the notices for this transcript",
   "Confirmar e continuar": "Confirm and continue",
   "Confirmar nova senha": "Confirm new password",
@@ -737,6 +740,7 @@ export default {
   "Guardar o áudio conserva o som do trecho escolhido. Guardar o vídeo conserva o arquivo MP4 original inteiro, inclusive as partes fora do recorte. Sem conservação, o arquivo é removido após a transcrição, mas os textos permanecem disponíveis.": "Keeping the audio saves the sound of the chosen clip. Keeping the video saves the entire original MP4 file, including the parts outside the clip. Without keeping either, the file is removed after transcription, but the texts remain available.",
   "Guardar o áudio do trecho": "Keep the clip's audio",
   "Guardar o vídeo": "Keep the video",
+  "Guia da aula": "Lesson guide",
   "Guia de leitura": "Reading guide",
   "Há andamento local aguardando sincronização.": "There's local progress waiting to sync.",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "There's a conflict between devices. Choose below which progress to keep.",
@@ -1126,6 +1130,7 @@ export default {
   "Oculta o menu lateral e o rodapé; a navegação fica na barra inferior, que aparece pela alça na base da tela. Alt+F liga e desliga.": "Hides the side menu and footer; navigation moves to the bottom bar, which appears from the handle at the bottom of the screen. Alt+F turns it on and off.",
   "Ocultar": "Hide",
   "Ocultar do perfil": "Hide from profile",
+  "Ocultar guia": "Hide guide",
   "Ocultar senha": "Hide password",
   "Oculto": "Hidden",
   "Olá": "Hello",
@@ -1251,6 +1256,7 @@ export default {
   "Preparando material": "Preparing material",
   "Preparando o áudio…": "Preparing the audio…",
   "Preparar o áudio": "Prepare the audio",
+  "Prepare esta aula": "Prepare this lesson",
   "Preto, branco e links destacados.": "Black, white and highlighted links.",
   "Prévia": "Preview",
   "Prévia da leitura": "Reading preview",
@@ -1598,6 +1604,7 @@ export default {
   "Tópicos": "Bullet points",
   "Transcrevendo o áudio…": "Transcribing the audio…",
   "Transcrição": "Transcript",
+  "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcript confirmed. Generate a summary, questions or flashcards — or start studying right away.",
   "Transcrição do áudio": "Audio transcription",
   "Transcrição pronta": "Transcript ready",
   "Transcrições": "Transcripts",
@@ -1732,6 +1739,10 @@ export default {
    "Times in this device's time zone: {0}. Task due dates appear as all-day events. Exporting ICS doesn't send invitations or change other calendars."
   ],
   [
+   "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",
+   "{0} of {1} were generated: some had no supporting passage in the lesson and were discarded; generate more to complete the list."
+  ],
+  [
    "Excluir o conjunto “{0}”, seus {1} cartões e o histórico de revisões deles? Esta ação não pode ser desfeita.",
    "Delete the set “{0}”, its {1} cards and their review history? This can't be undone."
   ],
@@ -1748,8 +1759,20 @@ export default {
    "The transcribed text is sent to {0} for preliminary warnings and, after you confirm, the summary and questions."
   ],
   [
+   "Foram geradas {0} de {1}: o modelo não respondeu todas as posições pedidas; gere mais para completar.",
+   "{0} of {1} were generated: the model did not fill every requested slot; generate more to complete the list."
+  ],
+  [
    "Atenção: ainda não foram enviados para a conta: {0}. Se apagar agora, essas mudanças serão perdidas.",
    "Warning: not sent to your account yet: {0}. If you delete now, these changes will be lost."
+  ],
+  [
+   "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
+   "{0} of {1} were generated: the model returned some in an invalid format; generate more to complete the list."
+  ],
+  [
+   "Foram geradas {0} de {1}: algumas saíram repetidas e foram descartadas; gere mais para completar.",
+   "{0} of {1} were generated: some were repeats and were discarded; generate more to complete the list."
   ],
   [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
@@ -1758,6 +1781,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Times in this device's time zone ({0}). Task deadlines show as all-day."
+  ],
+  [
+   "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
+   "{0} of {1} were generated: the lesson is too short for more distinct questions."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",

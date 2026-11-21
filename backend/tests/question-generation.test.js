@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { distributeLevels, planCoverage } from '../src/domain/question-plan.js';
+import { readFileSync } from 'node:fs';
 import { compareQuestions, filterRedundant } from '../src/domain/question-redundancy.js';
 import {
   validateQuestionConfig,
@@ -10,6 +11,7 @@ import {
 import {
   buildQuestionGenerator,
   mockQuestionCompletion,
+  shortfallReason,
   sourceReferences,
   MAX_MODEL_CALLS,
 } from '../src/services/question-generation.service.js';
@@ -80,7 +82,7 @@ test('mixed difficulty is distributed evenly; easier levels take the remainder',
   ]);
 });
 
-test('coverage plan pairs distinct concept+skill and is capped by the content', () => {
+test('coverage plan pairs concept, skill and facet and is bounded by the source', () => {
   const concepts = ['a', 'b', 'c'].map((key) => ({ key, label: key.toUpperCase(), evidence: 'x' }));
   const plan = planCoverage({
     count: 20,
@@ -97,11 +99,29 @@ test('coverage plan pairs distinct concept+skill and is capped by the content', 
   for (const key of ['a', 'b', 'c'])
     assert.equal(plan.filter((s) => s.concept.key === key).length, 2);
   assert.deepEqual(plan.map((s) => s.difficulty).slice(0, 2), ['basic', 'advanced']);
-  // One skill: a concept is never asked twice.
-  assert.equal(
-    planCoverage({ count: 10, concepts, config: config({ skills: ['recall'] }) }).length,
-    3,
+  // One skill: a concept is revisited with a different facet instead of capping the list.
+  const single = planCoverage({ count: 10, concepts, config: config({ skills: ['recall'] }) });
+  assert.equal(single.length, 6);
+  assert.equal(new Set(single.map((slot) => `${slot.concept.key}:${slot.facet}`)).size, 6);
+  // With the transcript size known, the source (not the concept list) bounds the plan.
+  const long = planCoverage({
+    count: 10,
+    concepts,
+    config: config({ skills: ['recall'] }),
+    words: 1000,
+  });
+  assert.equal(long.length, 10);
+  assert(
+    long.filter((slot) => slot.concept.key === 'a').length >= 3,
+    'broad concepts are revisited',
   );
+  const short = planCoverage({
+    count: 10,
+    concepts,
+    config: config({ skills: ['recall'] }),
+    words: 60,
+  });
+  assert.equal(short.length, 3, 'a tiny transcript is not padded');
   const progressive = planCoverage({
     count: 6,
     concepts,
@@ -429,4 +449,191 @@ test('mock completion yields source-quoting questions that pass the real pipelin
     ),
     [3, 4],
   );
+});
+
+// ---- Questions 3.0 regression: a 10-minute lesson must yield five meaningful questions ------
+const LESSON = readFileSync(new URL('./fixtures/aula-10min-solos.txt', import.meta.url), 'utf8');
+const lessonSource = { full_text: LESSON, segments_snapshot: [] };
+const BROAD = {
+  concepts: [
+    {
+      label: 'Formação do solo',
+      evidence: 'O processo que transforma a rocha em solo se chama intemperismo.',
+    },
+    {
+      label: 'Horizontes do solo',
+      evidence:
+        'Quando a gente faz um corte vertical no terreno, que se chama perfil do solo, aparecem camadas diferentes, os horizontes.',
+    },
+    // A paraphrased quote: the concept is real, so it is kept (its questions still need a quote).
+    {
+      label: 'Erosão e conservação do solo',
+      evidence: 'A erosão acontece quando o solo fica sem proteção e a água o leva.',
+    },
+  ],
+};
+// What a good model answers for each concept and facet, quoting the lesson.
+const BANK = {
+  'Formação do solo': {
+    definition: [
+      'O que é intemperismo, segundo a aula?',
+      'Transformação da rocha em solo',
+      'O processo que transforma a rocha em solo se chama intemperismo.',
+    ],
+    mechanism: [
+      'Por que os solos tropicais costumam ser profundos?',
+      'Calor e umidade aceleram o intemperismo químico',
+      'Por isso os solos tropicais costumam ser profundos.',
+    ],
+    relation: [
+      'Como o clima se relaciona com o tipo de intemperismo?',
+      'O clima controla qual intemperismo predomina',
+      'o clima controla qual intemperismo predomina',
+    ],
+  },
+  'Horizontes do solo': {
+    definition: [
+      'Qual horizonte é o mais fértil?',
+      'O horizonte A, rico em húmus',
+      'Logo abaixo vem o horizonte A, a camada mais fértil, escura, rica em húmus',
+    ],
+    mechanism: [
+      'Por que o horizonte A é mais escuro?',
+      'Porque tem húmus',
+      'Porque ele tem húmus, que é a matéria orgânica decomposta',
+    ],
+    relation: [
+      'O que diferencia o horizonte C da rocha matriz?',
+      'O C é rocha alterada; a matriz deu origem ao solo',
+      'O horizonte C é a rocha alterada, parcialmente decomposta.',
+    ],
+  },
+  'Erosão e conservação do solo': {
+    definition: [
+      'O que é erosão, segundo a aula?',
+      'Desgaste e transporte do solo',
+      'Erosão é o desgaste e o transporte do solo pela água, pelo vento ou pela ação humana.',
+    ],
+    mechanism: [
+      'Como o plantio em curvas de nível reduz a erosão?',
+      'Cada fileira segura a água e reduz a enxurrada',
+      'faz com que cada fileira de plantas segure a água da chuva, diminuindo a velocidade da enxurrada',
+    ],
+    relation: [
+      'Qual a relação entre erosão e enchentes?',
+      'O assoreamento deixa os rios mais rasos',
+      'deixando ele mais raso e aumentando as enchentes',
+    ],
+  },
+};
+const answerSlots = ({ messages }, { skip = () => false } = {}) => ({
+  questions: JSON.parse(messages[1].content)
+    .plan.filter((slot) => !skip(slot))
+    .map((slot) => {
+      const [statement, answer, evidence] = BANK[slot.concept]?.[slot.facet] || [];
+      if (!statement) return null;
+      return {
+        slot: slot.slot,
+        statement,
+        options: [
+          answer,
+          `Distrator A ${slot.slot}`,
+          `Distrator B ${slot.slot}`,
+          `Distrator C ${slot.slot}`,
+        ],
+        correctIndex: 0,
+        explanation: 'Conforme a aula.',
+        evidence,
+      };
+    })
+    .filter(Boolean),
+});
+
+test('Questions 3.0: a 10-minute lesson with three broad concepts yields five questions', async () => {
+  for (const skills of [['recall'], ['recall', 'understanding']]) {
+    const fake = scripted({
+      concepts: BROAD,
+      questions: (args) => answerSlots(args),
+      replacement: (args) => answerSlots(args),
+    });
+    const result = await buildQuestionGenerator(fake)({
+      source: lessonSource,
+      count: 5,
+      config: config({ skills }),
+    });
+    assert.equal(result.questions.length, 5, `five questions with skills ${skills}`);
+    assert.equal(result.coverage.shortfall, null);
+    assert.equal(result.coverage.distinctConcepts, 3, 'the paraphrased concept is kept');
+    assert.equal(result.coverage.conceptsWithoutQuote, 1);
+    assert(result.coverage.capacity >= 15, 'a 1,000-word lesson supports many more than five');
+    assert.equal(
+      new Set(result.questions.map((q) => q.metadata.concept)).size,
+      3,
+      'every concept covered',
+    );
+    const pairs = result.questions.map(
+      (q) => `${q.metadata.concept}:${q.metadata.skill}:${q.metadata.facet}`,
+    );
+    assert.equal(new Set(pairs).size, 5, 'no two questions share concept, skill and facet');
+    assert(fake.calls.length <= MAX_MODEL_CALLS);
+  }
+});
+
+test('Questions 3.0: a short list names the real cause instead of blaming the lesson', async () => {
+  // The model skips two slots: the spare slots absorb it without another call.
+  const fewSkips = scripted({
+    concepts: BROAD,
+    questions: (args) => answerSlots(args, { skip: (slot) => ['s2', 's4'].includes(slot.slot) }),
+  });
+  const absorbed = await buildQuestionGenerator(fewSkips)({
+    source: lessonSource,
+    count: 5,
+    config: config({ skills: ['recall'] }),
+  });
+  assert.equal(absorbed.questions.length, 5);
+  assert.equal(fewSkips.calls.length, 2, 'spares filled the gaps');
+  // It skips more than the spares cover: one bounded replacement round recovers the rest.
+  const manySkips = scripted({
+    concepts: BROAD,
+    questions: (args) =>
+      answerSlots(args, { skip: (slot) => ['s1', 's2', 's3'].includes(slot.slot) }),
+    replacement: (args) => answerSlots(args),
+  });
+  const recovered = await buildQuestionGenerator(manySkips)({
+    source: lessonSource,
+    count: 5,
+    config: config({ skills: ['recall'] }),
+  });
+  assert.equal(recovered.questions.length, 5);
+  assert.equal(manySkips.calls.length, 3, 'one bounded replacement round');
+  // Quotes that are not in the lesson: "unsupported", never "insufficient content".
+  const invented = scripted({
+    concepts: BROAD,
+    questions: (args) => ({
+      questions: answerSlots(args).questions.map((q, i) =>
+        i < 2 ? q : { ...q, evidence: 'Frase que a professora nunca disse em momento algum.' },
+      ),
+    }),
+    replacement: () => ({ questions: [] }),
+  });
+  const result = await buildQuestionGenerator(invented)({
+    source: lessonSource,
+    count: 5,
+    config: config({ skills: ['recall'] }),
+  });
+  assert.equal(result.questions.length, 2);
+  assert.equal(result.coverage.shortfall, 'unsupported');
+  assert.equal(
+    shortfallReason({ generated: 3, count: 5, planned: 5, rejected: {} }),
+    'model_omitted',
+  );
+  assert.equal(
+    shortfallReason({ generated: 3, count: 5, planned: 5, rejected: { same_knowledge: 2 } }),
+    'redundancy',
+  );
+  assert.equal(
+    shortfallReason({ generated: 2, count: 5, planned: 2, rejected: {} }),
+    'insufficient_content',
+  );
+  assert.equal(shortfallReason({ generated: 5, count: 5, planned: 5 }), null);
 });

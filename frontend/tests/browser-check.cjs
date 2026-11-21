@@ -2169,7 +2169,7 @@ async function main() {
     });
     const newRow = page.locator('.question-batch-row').first();
     assert.match(await newRow.textContent(), /5 de 7 questões pedidas/);
-    assert.match(await newRow.textContent(), /a aula não sustenta mais questões distintas/);
+    assert.match(await newRow.textContent(), /a aula é curta demais para mais questões distintas/);
     assert.deepEqual(await newRow.locator('.list-tags li').allTextContents(), [
       'Intermediário', 'Avançado', 'Recordação', 'Compreensão conceitual', 'Aplicação',
     ]);

@@ -191,6 +191,7 @@ export default {
   "Arredondada": "圆体",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "此账户在本浏览器中的副本将被删除，你也会退出登录。已保存到账户中的内容仍会保留。",
   "As disciplinas que você mais revisita.": "你最常回顾的科目。",
+  "As etapas desta aula e o próximo passo sugerido.": "本课的步骤和建议的下一步。",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "答案将保存到你的账户。完成后可以复习错题。",
   "As senhas não coincidem.": "两次输入的密码不一致。",
   "As últimas aulas que você abriu.": "你最近打开的课程。",
@@ -217,6 +218,7 @@ export default {
   "Aula estudada · desfazer": "已学习 · 撤销",
   "Aula organizada na pasta.": "课程已整理到文件夹。",
   "Aula para gerar cartões": "用于生成卡片的课程",
+  "Aula pronta para estudar": "课程已可学习",
   "Aula relacionada": "相关课程",
   "Aula relacionada (opcional)": "相关课程（可选）",
   "Aulas": "课程",
@@ -370,6 +372,7 @@ export default {
   "Confira o envio": "核对上传内容",
   "Confira o horário no fuso deste aparelho.": "请按本设备时区核对时间。",
   "Confira o texto": "核对文本",
+  "Confira o texto reconhecido, corrija o que estiver errado e confirme. Resumo, questões e flashcards usam a versão confirmada.": "检查识别出的文本，改正错误并确认。摘要、题目和抽认卡都使用已确认的版本。",
   "Confira os avisos desta transcrição": "查看此转写的提示",
   "Confirmar e continuar": "确认并继续",
   "Confirmar nova senha": "确认新密码",
@@ -737,6 +740,7 @@ export default {
   "Guardar o áudio conserva o som do trecho escolhido. Guardar o vídeo conserva o arquivo MP4 original inteiro, inclusive as partes fora do recorte. Sem conservação, o arquivo é removido após a transcrição, mas os textos permanecem disponíveis.": "保留音频会保存所选片段的声音。保留视频会保存完整的原始 MP4 文件，包括片段以外的部分。若都不保留，文件会在转写后删除，但文本仍可使用。",
   "Guardar o áudio do trecho": "保留片段音频",
   "Guardar o vídeo": "保留视频",
+  "Guia da aula": "课程指南",
   "Guia de leitura": "阅读辅助",
   "Há andamento local aguardando sincronização.": "有本地进度等待同步。",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "设备之间存在冲突，请在下方选择保留哪份进度。",
@@ -1126,6 +1130,7 @@ export default {
   "Oculta o menu lateral e o rodapé; a navegação fica na barra inferior, que aparece pela alça na base da tela. Alt+F liga e desliga.": "隐藏侧边菜单和页脚；导航移至底部栏，可通过屏幕底部的拉手呼出。按 Alt+F 开启或关闭。",
   "Ocultar": "隐藏",
   "Ocultar do perfil": "从个人资料中隐藏",
+  "Ocultar guia": "隐藏指南",
   "Ocultar senha": "隐藏密码",
   "Oculto": "已隐藏",
   "Olá": "你好",
@@ -1251,6 +1256,7 @@ export default {
   "Preparando material": "正在准备资料",
   "Preparando o áudio…": "正在准备音频…",
   "Preparar o áudio": "准备音频",
+  "Prepare esta aula": "准备这节课",
   "Preto, branco e links destacados.": "黑底白字，链接醒目。",
   "Prévia": "预览",
   "Prévia da leitura": "阅读预览",
@@ -1598,6 +1604,7 @@ export default {
   "Tópicos": "要点",
   "Transcrevendo o áudio…": "正在转写音频…",
   "Transcrição": "转写",
+  "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "转写已确认。可以生成摘要、题目或抽认卡，也可以直接开始学习。",
   "Transcrição do áudio": "音频转写",
   "Transcrição pronta": "转写已完成",
   "Transcrições": "转写",
@@ -1732,6 +1739,10 @@ export default {
    "时间按本设备时区显示：{0}。任务截止日期显示为全天日程。导出 ICS 不会发送邀请，也不会更改其他日历。"
   ],
   [
+   "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",
+   "生成了 {0}/{1}：部分题目在课程中找不到依据已被丢弃；再生成一些以补足。"
+  ],
+  [
    "Excluir o conjunto “{0}”, seus {1} cartões e o histórico de revisões deles? Esta ação não pode ser desfeita.",
    "删除卡组“{0}”、其中的 {1} 张卡片及其复习记录？此操作无法撤销。"
   ],
@@ -1748,8 +1759,20 @@ export default {
    "转写文本会发送给 {0}，用于初步提示，并在你确认后生成摘要和题目。"
   ],
   [
+   "Foram geradas {0} de {1}: o modelo não respondeu todas as posições pedidas; gere mais para completar.",
+   "生成了 {0}/{1}：模型没有填满所有请求的位置；再生成一些以补足。"
+  ],
+  [
    "Atenção: ainda não foram enviados para a conta: {0}. Se apagar agora, essas mudanças serão perdidas.",
    "注意：以下内容尚未上传到账户：{0}。如果现在删除，这些更改将会丢失。"
+  ],
+  [
+   "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
+   "生成了 {0}/{1}：模型返回的部分题目格式无效；再生成一些以补足。"
+  ],
+  [
+   "Foram geradas {0} de {1}: algumas saíram repetidas e foram descartadas; gere mais para completar.",
+   "生成了 {0}/{1}：部分题目重复已被丢弃；再生成一些以补足。"
   ],
   [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
@@ -1758,6 +1781,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "时间按此设备的时区显示（{0}）。任务截止日期显示为全天。"
+  ],
+  [
+   "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
+   "生成了 {0}/{1}：这节课太短，无法生成更多不同的题目。"
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",

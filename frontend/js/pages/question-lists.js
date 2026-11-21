@@ -130,9 +130,14 @@ export function initQuestionDialog({ flags, maxCount, material }) {
   };
 }
 
+// Why a list came out shorter. Only "insufficient_content" blames the lesson; the others are
+// generation problems that another attempt (Gerar mais questões) usually solves.
 const COVERAGE_NOTES = {
-  insufficient_content: 'a aula não sustenta mais questões distintas',
-  redundancy: 'questões repetidas ou sem fonte foram descartadas',
+  insufficient_content: 'a aula é curta demais para mais questões distintas',
+  redundancy: 'algumas saíram repetidas e foram descartadas; gere mais para completar',
+  unsupported: 'algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar',
+  invalid: 'o modelo devolveu algumas em formato inválido; gere mais para completar',
+  model_omitted: 'o modelo não respondeu todas as posições pedidas; gere mais para completar',
 };
 
 /** Compact list rows; questions and results stay one click away. */

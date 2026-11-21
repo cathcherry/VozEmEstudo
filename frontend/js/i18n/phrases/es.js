@@ -191,6 +191,7 @@ export default {
   "Arredondada": "Redondeada",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "Se borrarán las copias de esta cuenta en este navegador y se cerrará tu sesión. Lo que ya está guardado en la cuenta sigue allí.",
   "As disciplinas que você mais revisita.": "Las asignaturas que más repasas.",
+  "As etapas desta aula e o próximo passo sugerido.": "Las etapas de esta clase y el siguiente paso sugerido.",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "Las respuestas se guardarán en tu cuenta. Al terminar, podrás repasar tus fallos.",
   "As senhas não coincidem.": "Las contraseñas no coinciden.",
   "As últimas aulas que você abriu.": "Las últimas clases que abriste.",
@@ -217,6 +218,7 @@ export default {
   "Aula estudada · desfazer": "Clase estudiada · deshacer",
   "Aula organizada na pasta.": "Clase organizada en la carpeta.",
   "Aula para gerar cartões": "Clase para generar tarjetas",
+  "Aula pronta para estudar": "Clase lista para estudiar",
   "Aula relacionada": "Clase relacionada",
   "Aula relacionada (opcional)": "Clase relacionada (opcional)",
   "Aulas": "Clases",
@@ -370,6 +372,7 @@ export default {
   "Confira o envio": "Revisa la subida",
   "Confira o horário no fuso deste aparelho.": "Revisa la hora en la zona horaria de este dispositivo.",
   "Confira o texto": "Revisa el texto",
+  "Confira o texto reconhecido, corrija o que estiver errado e confirme. Resumo, questões e flashcards usam a versão confirmada.": "Revisa el texto reconocido, corrige lo que esté mal y confirma. Resúmenes, preguntas y flashcards usan la versión confirmada.",
   "Confira os avisos desta transcrição": "Revisa los avisos de esta transcripción",
   "Confirmar e continuar": "Confirmar y continuar",
   "Confirmar nova senha": "Confirmar nueva contraseña",
@@ -737,6 +740,7 @@ export default {
   "Guardar o áudio conserva o som do trecho escolhido. Guardar o vídeo conserva o arquivo MP4 original inteiro, inclusive as partes fora do recorte. Sem conservação, o arquivo é removido após a transcrição, mas os textos permanecem disponíveis.": "Guardar el audio conserva el sonido del fragmento elegido. Guardar el video conserva el archivo MP4 original completo, incluidas las partes fuera del recorte. Sin conservación, el archivo se elimina después de la transcripción, pero los textos siguen disponibles.",
   "Guardar o áudio do trecho": "Guardar el audio del fragmento",
   "Guardar o vídeo": "Guardar el video",
+  "Guia da aula": "Guía de la clase",
   "Guia de leitura": "Guía de lectura",
   "Há andamento local aguardando sincronização.": "Hay progreso local esperando sincronización.",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "Hay un conflicto entre dispositivos. Elige abajo qué progreso conservar.",
@@ -1126,6 +1130,7 @@ export default {
   "Oculta o menu lateral e o rodapé; a navegação fica na barra inferior, que aparece pela alça na base da tela. Alt+F liga e desliga.": "Oculta el menú lateral y el pie de página; la navegación pasa a la barra inferior, que aparece desde la pestaña en la base de la pantalla. Alt+F lo activa y desactiva.",
   "Ocultar": "Ocultar",
   "Ocultar do perfil": "Ocultar del perfil",
+  "Ocultar guia": "Ocultar guía",
   "Ocultar senha": "Ocultar contraseña",
   "Oculto": "Oculto",
   "Olá": "Hola",
@@ -1251,6 +1256,7 @@ export default {
   "Preparando material": "Preparando material",
   "Preparando o áudio…": "Preparando el audio…",
   "Preparar o áudio": "Preparar el audio",
+  "Prepare esta aula": "Prepara esta clase",
   "Preto, branco e links destacados.": "Negro, blanco y enlaces destacados.",
   "Prévia": "Vista previa",
   "Prévia da leitura": "Vista previa de lectura",
@@ -1598,6 +1604,7 @@ export default {
   "Tópicos": "Puntos clave",
   "Transcrevendo o áudio…": "Transcribiendo el audio…",
   "Transcrição": "Transcripción",
+  "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcripción confirmada. Genera un resumen, preguntas o flashcards, o empieza a estudiar directamente.",
   "Transcrição do áudio": "Transcripción del audio",
   "Transcrição pronta": "Transcripción lista",
   "Transcrições": "Transcripciones",
@@ -1732,6 +1739,10 @@ export default {
    "Horarios en la zona horaria de este dispositivo: {0}. Las fechas límite de tareas aparecen como eventos de día completo. Exportar ICS no envía invitaciones ni modifica otros calendarios."
   ],
   [
+   "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",
+   "Se generaron {0} de {1}: algunas no tenían un fragmento de la clase que las respaldara y se descartaron; genera más para completar."
+  ],
+  [
    "Excluir o conjunto “{0}”, seus {1} cartões e o histórico de revisões deles? Esta ação não pode ser desfeita.",
    "¿Eliminar el conjunto “{0}”, sus {1} tarjetas y su historial de repasos? Esta acción no se puede deshacer."
   ],
@@ -1748,8 +1759,20 @@ export default {
    "El texto transcrito se envía a {0} para avisos preliminares y, tras tu confirmación, el resumen y las preguntas."
   ],
   [
+   "Foram geradas {0} de {1}: o modelo não respondeu todas as posições pedidas; gere mais para completar.",
+   "Se generaron {0} de {1}: el modelo no completó todas las posiciones pedidas; genera más para completar."
+  ],
+  [
    "Atenção: ainda não foram enviados para a conta: {0}. Se apagar agora, essas mudanças serão perdidas.",
    "Atención: aún no se enviaron a la cuenta: {0}. Si borras ahora, esos cambios se perderán."
+  ],
+  [
+   "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
+   "Se generaron {0} de {1}: el modelo devolvió algunas en formato inválido; genera más para completar."
+  ],
+  [
+   "Foram geradas {0} de {1}: algumas saíram repetidas e foram descartadas; gere mais para completar.",
+   "Se generaron {0} de {1}: algunas salieron repetidas y se descartaron; genera más para completar."
   ],
   [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
@@ -1758,6 +1781,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Horarios en la zona horaria de este dispositivo ({0}). Los plazos de tareas aparecen como día completo."
+  ],
+  [
+   "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
+   "Se generaron {0} de {1}: la clase es demasiado corta para más preguntas distintas."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
