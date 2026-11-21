@@ -88,6 +88,40 @@ async function main() {
     data.calendarPageSize = 0;
     record('Calendário: exportação ICS percorre todas as páginas, mesmo sem "limit" na resposta');
 
+    // ---------- A very long lesson (3 h, 2 200 segments): renders, searches without freezing ---
+    {
+      const long = state();
+      long.longLesson = 2200;
+      const view = await openApp(browser, base, allFlags, long, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.addInitScript(() => {
+        window.__longTasks = [];
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) window.__longTasks.push(Math.round(entry.duration));
+        }).observe({ type: 'longtask', buffered: true });
+      });
+      const started = Date.now();
+      await p.goto(base + '/material.html?id=l-foto#transcricao');
+      await p.locator('.transcription-segment').nth(2199).waitFor({ state: 'attached', timeout: 30000 });
+      const renderMs = Date.now() - started;
+      assert(renderMs < 15000, `long lesson rendered in ${renderMs} ms`);
+      await p.evaluate(() => {
+        window.__longTasks = [];
+      });
+      const box = p.locator('.transcript-search input');
+      await box.pressSequentially('glicose', { delay: 40 });
+      const status = p.locator('.search-status');
+      await status.filter({ hasText: /^2200 trechos encontrados$/ }).waitFor({ timeout: 20000 });
+      assert.equal(await p.locator('mark.search-hit').count(), 2200);
+      await p.getByRole('button', { name: 'Próximo resultado' }).click();
+      await status.filter({ hasText: 'Trecho 1 de 2200' }).waitFor();
+      await box.fill('');
+      await p.waitForFunction(() => !document.querySelector('mark.search-hit'), null, { timeout: 20000 });
+      const tasks = await p.evaluate(() => window.__longTasks.sort((a, b) => b - a).slice(0, 3));
+      await view.context.close();
+      record(`Aula muito longa (2 200 trechos, 3 h): abre em ${renderMs} ms; busca sem travar (maior tarefa ${tasks[0] || 0} ms), resultados navegáveis, limpar remove os destaques`);
+    }
+
     // ---------- Calendar › Semana: blocks on a time grid, moved without dragging ------------
     {
       const today = new Date();

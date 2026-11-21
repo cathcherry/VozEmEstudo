@@ -59,6 +59,8 @@ function markMatches(paragraph, query) {
   paragraph.replaceChildren(...parts);
 }
 
+const LONG_TRANSCRIPT = 300;
+
 export function initTranscriptPlayer({ container, toolbar, player, onActiveChange }) {
   // Compact search: one field with previous/next, a result count, and an optional follow switch.
   const label = document.createElement('label');
@@ -119,18 +121,58 @@ export function initTranscriptPlayer({ container, toolbar, player, onActiveChang
       onActiveChange?.(active);
     }
   }
-  function find() {
-    const query = normalize(search.value.trim());
-    matches = [];
-    segments.forEach((segment) => {
-      const field = segment.element.querySelector('textarea');
-      const text = field ? field.value : segment.element.textContent;
-      const match = Boolean(query) && normalize(text).includes(query);
+  // Long lessons (thousands of segments): the normalized text is cached per segment and only
+  // segments whose highlight changes are rewritten.
+  function plainOf(segment) {
+    if (segment.norm === undefined) {
+      segment.field ??= segment.element.querySelector('textarea');
+      segment.paragraph ??= segment.element.querySelector('.segment-text');
+      const text = segment.field
+        ? segment.field.value
+        : (segment.paragraph?.dataset.plain ?? segment.element.textContent);
+      segment.norm = normalize(text);
+    }
+    return segment.norm;
+  }
+  function apply(segment, query, shown) {
+    const match = Boolean(query) && plainOf(segment).includes(query);
+    const marked = match ? shown : '';
+    if (segment.marked !== marked) {
       segment.element.classList.toggle('search-match', match);
       // Reading mode shows the searched words in bold; edit fields keep plain text.
-      markMatches(segment.element.querySelector('.segment-text'), match ? search.value : '');
-      if (match) matches.push(segment);
-    });
+      segment.paragraph ??= segment.element.querySelector('.segment-text');
+      markMatches(segment.paragraph, marked);
+      segment.marked = marked;
+    }
+    return match;
+  }
+  let run = 0;
+  /** Typing: the transcript is searched in slices between frames, so the page never freezes. */
+  function findSoon() {
+    const mine = ++run;
+    const query = normalize(search.value.trim());
+    const shown = query ? search.value : '';
+    const found = [];
+    let index = 0;
+    previous.disabled = next.disabled = true;
+    const step = () => {
+      if (mine !== run) return;
+      const stop = Math.min(segments.length, index + 250);
+      for (; index < stop; index += 1) if (apply(segments[index], query, shown)) found.push(segments[index]);
+      if (index < segments.length) return void requestAnimationFrame(step);
+      matches = found;
+      selected = -1;
+      previous.disabled = next.disabled = !matches.length;
+      status.textContent = query ? `${matches.length} trechos encontrados` : '';
+    };
+    step();
+  }
+  function find() {
+    clearTimeout(pending);
+    run += 1; // cancels a search still running in slices
+    const query = normalize(search.value.trim());
+    const shown = query ? search.value : '';
+    matches = segments.filter((segment) => apply(segment, query, shown));
     selected = -1;
     previous.disabled = next.disabled = !matches.length;
     status.textContent = query ? `${matches.length} trechos encontrados` : '';
@@ -146,8 +188,19 @@ export function initTranscriptPlayer({ container, toolbar, player, onActiveChang
   }
   previous.addEventListener('click', () => navigate(selected < 0 ? matches.length : -1));
   next.addEventListener('click', () => navigate(1));
-  search.addEventListener('input', find);
-  const onEdit = () => {
+  let pending;
+  // Typing waits for a short pause, so a long transcript is searched once, not per letter.
+  search.addEventListener('input', () => {
+    clearTimeout(pending);
+    // Normal lessons search on every letter; long ones (300+ segments) wait for a pause and
+    // search in slices. Clearing is always immediate.
+    if (!search.value.trim() || segments.length < LONG_TRANSCRIPT) find();
+    else pending = setTimeout(findSoon, 120);
+  });
+  const onEdit = (event) => {
+    const edited = event.target.closest?.('.transcription-segment');
+    const segment = edited && segments.find((item) => item.element === edited);
+    if (segment) segment.norm = undefined;
     if (search.value.trim()) find();
   };
   container.addEventListener('input', onEdit);

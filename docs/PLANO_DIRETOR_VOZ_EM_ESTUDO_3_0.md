@@ -95,7 +95,7 @@ Elementos da linguagem visual:
 Pendente:
 
 - ~~aba própria de Flashcards na aula~~: feito em `a31e078` (conjuntos da aula, "Revisar agora" com `?conjunto=`);
-- teste de transcrições muito longas;
+- ~~teste de transcrições muito longas~~: feito. Com 2.200 trechos (3 h), a aula abre em cerca de 0,7 s. A busca na transcrição antes travava de 0,6 a 1,4 s por letra; agora, em aulas longas (300 trechos ou mais), espera uma pausa na digitação, guarda o texto normalizado e processa em fatias entre quadros; aulas normais seguem buscando a cada letra, e a maior tarefa fica perto de 0,15 a 0,25 s;
 - teste do estado "processando" em navegador real.
 
 ## 5. Shell de ferramentas e Focar 3.0

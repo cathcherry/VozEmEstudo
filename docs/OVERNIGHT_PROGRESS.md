@@ -122,3 +122,4 @@ Nenhuma migration foi criada ou aplicada.
 | "Seu ritmo": 12 semanas contra a meta, aulas mais estudadas e mapa do ano (`GET /api/study/history`, sem tabela nova) | `0296300` |
 | Adesivos originais ao lado do título (até 3, preferências sincronizadas) | `21b0fc1` |
 | Calendário › Semana: grade de horários, mover sem arrastar | `e3c3e4a` |
+| Aula muito longa: busca na transcrição sem travar (pausa, cache, fatias) + jornada de 2.200 trechos | (este commit) |

@@ -357,10 +357,20 @@ async function setup(context, base, flags, data, options = {}) {
     if (p === '/api/materials' && method === 'GET') return json(materials);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
-      return json({
-        ...lessonDetail(m, data.lessonStage?.[m.id] || 'summary'),
-        signedAudioUrl: `${base}/__fixture.wav`,
-      });
+      const detail = lessonDetail(m, data.lessonStage?.[m.id] || 'summary');
+      // `data.longLesson = n`: a very long transcript (n segments of ~25 words, 5 s each).
+      if (data.longLesson) {
+        const words = 'a energia luminosa é captada pela clorofila e convertida em energia química armazenada na glicose durante a fase clara e a fase escura do processo'.split(' ');
+        detail.transcription.transcription_segments = Array.from({ length: data.longLesson }, (_, i) => ({
+          id: `seg-${i}`,
+          position: i,
+          start_ms: i * 5000,
+          end_ms: i * 5000 + 4800,
+          current_text: `${i + 1}. ${Array.from({ length: 25 }, (__, w) => words[(i + w) % words.length]).join(' ')}.`,
+        }));
+        detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
+      }
+      return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
     if (p.endsWith('/playback'))
