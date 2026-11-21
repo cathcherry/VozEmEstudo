@@ -410,7 +410,7 @@ servidores com IA real foram desligados depois do teste.
 ### Merge da 3.4
 
 - **PR #12 mergeado na `main`** em 21/11/2026: commit de merge **`ab42441da389948d233cd60369895d90d3751a4e`**, cabeça `4d3dae7`, com os dois checks `local-quality` verdes antes do merge.
-- CI da `main` em `ab42441`: workflow Quality, run 399 (resultado registrado na seção 3.4.1).
+- CI da `main` em `ab42441`: workflow Quality, run 399, **sucesso** (concluído às 18:44 UTC).
 
 ## Voz em Estudo 3.4.1: endurecimento e preparação da release (branch `feat/3.4.1-hardening`)
 
