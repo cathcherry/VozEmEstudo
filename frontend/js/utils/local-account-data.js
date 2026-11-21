@@ -18,6 +18,9 @@ const accountKeys = (owner) => [
   `voz-focus-v1:${owner}`,
   `voz-utility-v1:${owner}`,
   `voz-ambient-v1:${owner}`,
+  // Sons ambientes 3.5: the mix and the mini-player heartbeat.
+  `voz-soundscape-v1:${owner}`,
+  `voz-soundscape-mini-v1:${owner}`,
 ];
 const PROFILE_DB = 'voz-profile-local-v1';
 const PROFILE_STORE = 'media';

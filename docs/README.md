@@ -18,6 +18,7 @@ Comece por aqui. Os documentos de **referência** descrevem o sistema como ele �
 | [ROADMAP.md](ROADMAP.md)                                 | Pronto, não ativado, migrations pendentes, validação incompleta, dívidas técnicas                  |
 | [GAMIFICACAO_2_0_DESIGN.md](GAMIFICACAO_2_0_DESIGN.md)   | Desenho da gamificação verificada pelo servidor (planejado)                                        |
 | [TESTING.md](TESTING.md)                                 | Comandos de teste e o que cada um comprova                                                         |
+| [AUDIO_E_MUSICA.md](AUDIO_E_MUSICA.md)                   | Sons ambientes gerados no navegador, mixer, retomada entre páginas, mini-player e música (YouTube/Spotify) |
 | [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md) | Login com Google e GitHub                                                                          |
 | [CODING_STANDARDS.md](CODING_STANDARDS.md)               | Padrões de código                                                                                  |
 | [CSS_GUIDE.md](CSS_GUIDE.md)                             | Organização do CSS                                                                                 |

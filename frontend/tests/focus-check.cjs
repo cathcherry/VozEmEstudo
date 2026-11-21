@@ -129,41 +129,25 @@ async function main() {
     await panel.locator('.utility-stop').click();
     record('Esconder a cápsula não para o cronômetro; retomar e encerrar pelo painel');
 
-    // ---------- Ambient sound: a second tool of the same panel, with ducking ----------------
+    // ---------- Sons ambientes follow focus blocks when asked (mixer: soundscape-check.cjs) ---
     await page.goto(base + '/material.html?id=l-foto');
-    await page.locator('[data-utility-trigger]').waitFor();
+    await page.locator('[data-soundscape-trigger]').click();
+    await page.getByLabel('Tocar junto com o foco').check();
+    await page.keyboard.press('Escape');
     if (await page.locator('#utility-panel').isHidden()) await page.locator('[data-utility-trigger]').click();
-    await page.locator('[data-utility-tool="sound"]').click();
-    await page.locator('#utility-panel-title', { hasText: 'Som ambiente' }).waitFor();
-    await page.locator('.utility-sound-option', { hasText: 'Chuva suave' }).click();
-    await page.locator('.utility-sound-toggle').click();
-    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
-    await settle(page);
-    await axeCheck(page, '#utility-panel', 'Painel › Som ambiente');
-    // The lesson recording plays: the sound goes down; it pauses: the sound comes back.
-    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('play')));
-    await page.locator('#utility-panel[data-sound="ducked"]').waitFor();
-    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('pause')));
-    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
-    const saved = await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-ambient-v1:'))?.[1]);
-    assert.equal(JSON.parse(saved).kind, 'rain');
-    await page.reload();
-    await page.locator('.app-toast:not([hidden])', { hasText: 'O som ambiente parou ao trocar de página.' }).waitFor();
-    await page.getByRole('button', { name: 'Retomar som' }).click();
-    await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
-    // "Tocar junto com o foco": the sound follows focus blocks.
-    await page.locator('.utility-sound-toggle', { hasText: 'Pausar som' }).click();
-    await page.locator('#utility-panel[data-sound="off"]').waitFor({ state: 'attached' });
-    await page.getByLabel('Tocar junto com o foco (pausa nas pausas)').check();
-    await page.locator('[data-utility-tool="focus"]').click();
     const soundPanel = page.locator('#utility-panel');
+    const mixerState = (value) =>
+      page.locator(`#soundscape-popover .soundscape-mixer[data-state="${value}"]`).waitFor({ state: 'attached' });
     await soundPanel.locator('[data-focus-primary]', { hasText: 'Iniciar foco' }).click();
-    await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
+    await mixerState('playing');
     await soundPanel.locator('[data-focus-primary]', { hasText: 'Pausar' }).click();
-    await page.locator('#utility-panel[data-sound="off"]').waitFor({ state: 'attached' });
-    assert.equal(JSON.parse(await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-ambient-v1:'))?.[1])).withFocus, true);
+    await mixerState('off');
+    assert.equal(
+      JSON.parse(await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-soundscape-v1:'))?.[1])).withFocus,
+      true,
+    );
     await soundPanel.locator('.utility-stop').click();
-    record('Som ambiente (gerado no navegador): outra ferramenta do mesmo painel; abaixa durante a gravação da aula; oferece "Retomar som" após trocar de página; opção de tocar junto com o foco');
+    record('Sons ambientes: opção de tocar junto com o foco (começa no bloco de foco, pausa na pausa)');
 
     // ---------- Início: one click starts focusing ------------------------------------------
     await page.goto(base + '/painel.html');

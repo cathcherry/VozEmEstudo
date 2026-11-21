@@ -4,6 +4,7 @@ import { setStudyUser } from './study-store.js';
 import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
 import { initUtilityShell } from './utility-shell.js';
+import { initSoundscape } from './soundscape-ui.js';
 import { initWallpaperImage } from './wallpaper-image.js';
 import { initPageStickers } from './page-stickers.js';
 import { initQuestionReports } from './question-reports.js';
@@ -58,6 +59,8 @@ export async function initAuthenticatedShell() {
   void initWallpaperImage(session.user.id).catch(() => { /* decoration only */ });
   try { initPageStickers(); } catch { /* decoration only */ }
   void initQuestionReports(session.user.id);
+  // Sons ambientes (3.5): top-bar mixer for every signed-in page; never plays before a click.
+  try { initSoundscape({ userId: session.user.id }); } catch { /* optional tool */ }
   // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);
