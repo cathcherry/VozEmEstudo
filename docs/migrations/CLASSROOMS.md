@@ -147,6 +147,26 @@ qualquer estado não final ──(aluno)──▶ withdrawn            rejected 
 - Tabelas com RLS ativa e sem permissão para `anon`/`authenticated`; funções sem `EXECUTE` para
   esses papéis. O navegador só chega às turmas pela API.
 
+## Contribuições revisadas e materiais integrados (3.4)
+
+A migration aditiva `20261122090000_classroom_contributions.sql` (sub-recurso opcional das turmas)
+acrescenta, sem alterar nada desta:
+
+- **fila de revisão**: o conjunto de flashcards que um aluno oferece fica pendente até o professor
+  ou monitor aprovar (com recado opcional) ou recusar (com motivo opcional, que o aluno lê);
+  professor e monitor continuam compartilhando na hora;
+- **materiais integrados** (Marco C) prontos e próprios podem ser compartilhados com a turma, com
+  as mesmas regras; os membros leem só o conteúdo gerado, sem ids, configurações ou relatório;
+- gatilhos que encerram as contribuições de quem sai ou é removido e acompanham a revogação de
+  `classroom_shared_items`.
+
+Na interface, Envios mostra a etapa de cada gravação (1 a 5), o que ela significa para o aluno ou
+para quem revisa, o recado do professor e o histórico ("Ver andamento"); aprovar para processar
+também aceita um recado. Aulas e materiais integrados têm links diretos (`?turma=…&aula=…`,
+`&material=…`). Sem a migration, as seções novas ficam ocultas e as rotas novas respondem
+`503 CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED`. Detalhes, permissões e rollback em
+[CLASSROOM_CONTRIBUTIONS.md](CLASSROOM_CONTRIBUTIONS.md).
+
 ## Leitura para "juntar baralhos de colegas" (recurso futuro)
 
 - `GET /api/classrooms/:id/flashcard-sets` → conjuntos visíveis com `sharedId`, `name`,
