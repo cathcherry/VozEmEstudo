@@ -134,11 +134,10 @@ async function main() {
     await page.keyboard.press('Escape');
     assert(await dialog.isHidden(), 'Escape cancels');
     assert.equal(data.sets[0].name, 'Biologia 1');
-    assert.equal(
-      await page.evaluate(() => document.activeElement.textContent),
-      'Renomear',
-      'focus back',
-    );
+    // Focus returns on the next tick, after the panel re-enables its button.
+    await page.waitForFunction(() => document.activeElement?.textContent === 'Renomear', null, {
+      timeout: 3000,
+    });
     await rename.click();
     await field.fill('Biologia — revisão');
     await page.keyboard.press('Enter');
