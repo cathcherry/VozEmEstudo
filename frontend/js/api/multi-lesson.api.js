@@ -11,3 +11,13 @@ export const listMultiLessons = () => apiFetch('/api/multi-lesson');
 export const getMultiLesson = (id) => apiFetch(`/api/multi-lesson/${encodeURIComponent(id)}`);
 export const deleteMultiLesson = (id) =>
   apiFetch(`/api/multi-lesson/${encodeURIComponent(id)}`, { method: 'DELETE' });
+
+// 3.4: what a ready integrated material became (question list, personal flashcard set).
+export const listMultiLessonExports = (id) =>
+  apiFetch(`/api/multi-lesson/${encodeURIComponent(id)}/exports`);
+/** body = { requestId, title? } — idempotent; a second call returns the same list. */
+export const exportMultiLessonQuestions = (id, body) =>
+  apiFetch(`/api/multi-lesson/${encodeURIComponent(id)}/question-list`, json('POST', body));
+/** body = { requestId, name? } — idempotent; a second call returns the same set. */
+export const exportMultiLessonFlashcards = (id, body) =>
+  apiFetch(`/api/multi-lesson/${encodeURIComponent(id)}/flashcard-set`, json('POST', body));

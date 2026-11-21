@@ -1,5 +1,6 @@
 // Biblioteca entry points of the integrated material (Milestone C): "Material integrado" in the
-// multiple-selection bar and "Estudar a unidade inteira" / "Estudar a disciplina" in a folder.
+// multiple-selection bar, "Estudar a unidade inteira" / "Estudar a disciplina" in a folder and
+// (3.4) "Estudar várias unidades", where the student ticks several units in the dialog itself.
 // The dialog shows which lessons go in (confirmed current revision) and which stay out and why,
 // before anything is generated. Lesson titles are user content and are never translated.
 import { createMultiLesson, previewMultiLesson } from '../api/multi-lesson.api.js';
@@ -24,13 +25,21 @@ function el(tag, attributes = {}, ...children) {
 }
 const own = (tag, text) => el(tag, { translate: 'no', text });
 
+export const MAX_UNITS = 20;
+
 /**
  * Opens the dialog for a selection. `title` is the suggested name (a unit or subject name, or a
- * neutral one); `opener` gets the focus back when the dialog closes.
+ * neutral one); `opener` gets the focus back when the dialog closes. With `unitChoices`
+ * ([{subjectId, subjectName, units:[{id, title}]}]) the student picks the units in the dialog
+ * (selection kind `units`) and the preview follows each change.
  * @param {{kind:string, ids:string[]}} selection
  */
-export function openMultiLessonDialog(selection, { title = 'Material integrado', opener = document.activeElement } = {}) {
+export function openMultiLessonDialog(
+  selection,
+  { title = 'Material integrado', opener = document.activeElement, unitChoices = null } = {},
+) {
   const id = `multi-lesson-dialog-${++counter}`;
+  const picking = Array.isArray(unitChoices);
   const dialog = el('dialog', { className: 'app-dialog multi-lesson-dialog', 'aria-labelledby': `${id}-title` });
   const form = el('form', { method: 'dialog', novalidate: true });
   const heading = el('h2', { id: `${id}-title`, text: 'Material integrado' });
@@ -38,7 +47,22 @@ export function openMultiLessonDialog(selection, { title = 'Material integrado',
     className: 'app-dialog-hint',
     text: 'Um resumo e questões que relacionam as aulas escolhidas. Só entram aulas com a transcrição atual conferida e confirmada; cada item cita o trecho da aula que o sustenta.',
   });
-  const status = el('p', { className: 'multi-lesson-status', role: 'status', 'aria-live': 'polite', text: 'Conferindo as aulas…' });
+  const status = el('p', { className: 'multi-lesson-status', role: 'status', 'aria-live': 'polite', text: picking ? 'Escolha as unidades que vão entrar no material.' : 'Conferindo as aulas…' });
+  // Unit picker (3.4): one group per subject; subject and unit names are user content.
+  let unitPicker = null;
+  if (picking) {
+    unitPicker = el('fieldset', { className: 'multi-lesson-units' }, el('legend', { text: 'Unidades' }));
+    for (const group of unitChoices) {
+      const subject = el('fieldset', { className: 'multi-lesson-unit-group' }, el('legend', { translate: 'no', text: group.subjectName }));
+      for (const unit of group.units) {
+        const inputId = `${id}-unit-${unit.id}`;
+        const input = el('input', { type: 'checkbox', name: 'units', value: unit.id, id: inputId });
+        input.checked = selection.ids.includes(unit.id);
+        subject.append(el('label', { for: inputId }, input, own('span', unit.title)));
+      }
+      unitPicker.append(subject);
+    }
+  }
   const preview = el('div', { className: 'multi-lesson-preview' });
   const nameLabel = el('label', { for: `${id}-name`, text: 'Nome do material' });
   const name = el('input', { id: `${id}-name`, name: 'title', required: true, maxlength: '160', autocomplete: 'off' });
@@ -65,7 +89,7 @@ export function openMultiLessonDialog(selection, { title = 'Material integrado',
   const cancel = el('button', { type: 'button', className: 'secondary-action', text: 'Cancelar' });
   const submit = el('button', { type: 'submit', className: 'primary-action', text: 'Gerar material integrado' });
   submit.disabled = true;
-  form.append(heading, intro, status, preview, nameLabel, outputs, countLabel, reuse, error, el('div', { className: 'form-actions' }, cancel, submit));
+  form.append(heading, intro, ...(unitPicker ? [unitPicker] : []), status, preview, nameLabel, outputs, countLabel, reuse, error, el('div', { className: 'form-actions' }, cancel, submit));
   nameLabel.append(name);
   countLabel.append(count);
   dialog.append(form);
@@ -77,43 +101,87 @@ export function openMultiLessonDialog(selection, { title = 'Material integrado',
   });
 
   let resolved = null;
-  previewMultiLesson(selection)
-    .then((result) => {
-      resolved = result;
+  let sequence = 0;
+  const currentSelection = () =>
+    picking ? { kind: 'units', ids: [...unitPicker.querySelectorAll('input:checked')].map((input) => input.value) } : selection;
+  const fail = (text) => {
+    status.textContent = text;
+    status.dataset.state = 'error';
+  };
+  /** Shows which lessons go in and which stay out. Only the latest answer counts. */
+  function refreshPreview() {
+    const wanted = currentSelection();
+    const mine = ++sequence;
+    resolved = null;
+    submit.disabled = true;
+    if (!wanted.ids.length) {
       preview.replaceChildren();
-      const included = result.included || [];
-      const excluded = result.excluded || [];
-      if (included.length) {
-        preview.append(el('h3', { text: `Aulas incluídas (${included.length})` }));
-        const list = el('ul', { className: 'multi-lesson-sources' });
-        for (const item of included) list.append(el('li', {}, own('span', item.title)));
-        preview.append(list);
-      }
-      if (excluded.length) {
-        preview.append(el('h3', { text: `Fora deste material (${excluded.length})` }));
-        const list = el('ul', { className: 'multi-lesson-excluded' });
-        for (const item of excluded)
-          list.append(el('li', {}, own('span', item.title), document.createTextNode(' — '), el('span', { className: 'multi-lesson-reason', text: REASON[item.reason] || 'indisponível' })));
-        preview.append(list);
-      }
-      if (result.missing)
-        preview.append(el('p', { className: 'app-dialog-hint', text: result.missing === 1 ? '1 aula não está mais disponível e foi ignorada.' : `${result.missing} aulas não estão mais disponíveis e foram ignoradas.` }));
-      if (!included.length) {
-        status.textContent = 'Nenhuma aula desta seleção tem a transcrição confirmada. Confira e confirme as transcrições para estudá-las juntas.';
-        status.dataset.state = 'error';
-      } else if (included.length > (result.limit || 12)) {
-        status.textContent = `São ${included.length} aulas confirmadas; escolha no máximo ${result.limit || 12} por material integrado.`;
-        status.dataset.state = 'error';
-      } else {
-        status.textContent = included.length === 1 ? '1 aula pronta para estudar.' : `${included.length} aulas prontas para estudar juntas.`;
-        status.dataset.state = 'success';
-        submit.disabled = false;
-      }
-    })
-    .catch((failure) => {
-      status.textContent = failure.message || 'Não foi possível conferir as aulas agora.';
-      status.dataset.state = 'error';
-    });
+      status.textContent = 'Escolha pelo menos uma unidade.';
+      status.dataset.state = 'info';
+      return Promise.resolve();
+    }
+    if (wanted.ids.length > MAX_UNITS) {
+      preview.replaceChildren();
+      fail(`Escolha no máximo ${MAX_UNITS} unidades.`);
+      return Promise.resolve();
+    }
+    status.textContent = 'Conferindo as aulas…';
+    status.dataset.state = 'info';
+    preview.setAttribute('aria-busy', 'true');
+    return previewMultiLesson(wanted)
+      .then((result) => {
+        if (mine !== sequence) return;
+        preview.replaceChildren();
+        const included = result.included || [];
+        const excluded = result.excluded || [];
+        if (included.length) {
+          preview.append(el('h3', { text: `Aulas incluídas (${included.length})` }));
+          const list = el('ul', { className: 'multi-lesson-sources' });
+          for (const item of included) list.append(el('li', {}, own('span', item.title)));
+          preview.append(list);
+        }
+        if (excluded.length) {
+          preview.append(el('h3', { text: `Fora deste material (${excluded.length})` }));
+          const list = el('ul', { className: 'multi-lesson-excluded' });
+          for (const item of excluded)
+            list.append(el('li', {}, own('span', item.title), document.createTextNode(' — '), el('span', { className: 'multi-lesson-reason', text: REASON[item.reason] || 'indisponível' })));
+          preview.append(list);
+        }
+        if (result.missing)
+          preview.append(el('p', { className: 'app-dialog-hint', text: result.missing === 1 ? '1 aula não está mais disponível e foi ignorada.' : `${result.missing} aulas não estão mais disponíveis e foram ignoradas.` }));
+        if (!included.length) {
+          fail(
+            picking && !excluded.length
+              ? 'As unidades escolhidas ainda não têm aulas.'
+              : 'Nenhuma aula desta seleção tem a transcrição confirmada. Confira e confirme as transcrições para estudá-las juntas.',
+          );
+        } else if (included.length > (result.limit || 12)) {
+          fail(`São ${included.length} aulas confirmadas; escolha no máximo ${result.limit || 12} por material integrado.`);
+        } else {
+          resolved = { ...result, selection: wanted };
+          status.textContent = included.length === 1 ? '1 aula pronta para estudar.' : `${included.length} aulas prontas para estudar juntas.`;
+          status.dataset.state = 'success';
+          submit.disabled = false;
+        }
+      })
+      .catch((failure) => {
+        if (mine !== sequence) return;
+        preview.replaceChildren();
+        fail(failure.message || 'Não foi possível conferir as aulas agora.');
+      })
+      .finally(() => {
+        if (mine === sequence) preview.removeAttribute('aria-busy');
+      });
+  }
+  let pending = null;
+  unitPicker?.addEventListener('change', () => {
+    clearTimeout(pending);
+    error.textContent = '';
+    resolved = null;
+    submit.disabled = true;
+    pending = setTimeout(refreshPreview, 200);
+  });
+  refreshPreview();
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -138,7 +206,7 @@ export function openMultiLessonDialog(selection, { title = 'Material integrado',
         id: crypto.randomUUID(),
         requestId: crypto.randomUUID(),
         title: name.value.trim(),
-        selection,
+        selection: resolved.selection,
         outputs: chosen,
         settings,
         expectedRevisionIds: resolved.included.map((item) => item.revisionId),
@@ -146,12 +214,19 @@ export function openMultiLessonDialog(selection, { title = 'Material integrado',
       });
       location.href = `${MULTI_LESSON_PAGE}?id=${encodeURIComponent(created.multiLesson.id)}`;
     } catch (failure) {
+      if (failure.code === 'MULTI_LESSON_SOURCES_CHANGED') {
+        // A lesson was confirmed, edited or moved after the preview: show the new list and let
+        // the student confirm again, instead of generating something they did not see.
+        await refreshPreview();
+        error.textContent = 'As aulas da seleção mudaram desde a prévia. Confira a lista atualizada e confirme de novo.';
+        return;
+      }
       error.textContent = failure.message || 'Não foi possível pedir o material integrado.';
       submit.disabled = false;
     }
   });
   dialog.showModal();
-  name.focus();
+  (unitPicker?.querySelector('input') || name).focus();
   return dialog;
 }
 
@@ -178,5 +253,33 @@ export function folderButton({ subjectId, unitId, name }) {
   button.addEventListener('click', () =>
     openMultiLessonDialog(unit ? { kind: 'unit', ids: [unitId] } : { kind: 'subject', ids: [subjectId] }, { title: name, opener: button }),
   );
+  return button;
+}
+
+/**
+ * "Estudar várias unidades": the dialog lists every unit, grouped by subject (the current subject
+ * first), and the student ticks the ones to study together.
+ * @param {() => {subjects:{id:string,name:string}[], units:{id:string,title:string,subject_id:string}[], currentSubjectId?:string|null}} getCatalog
+ */
+export function unitsButton(getCatalog) {
+  const button = el('button', {
+    type: 'button',
+    className: 'secondary-action multi-lesson-folder-action',
+    'data-multi-lesson-units': true,
+    'aria-haspopup': 'dialog',
+    text: 'Estudar várias unidades',
+  });
+  button.addEventListener('click', () => {
+    const { subjects, units, currentSubjectId = null } = getCatalog();
+    const groups = subjects
+      .map((subject) => ({
+        subjectId: subject.id,
+        subjectName: subject.name,
+        units: units.filter((unit) => unit.subject_id === subject.id).map((unit) => ({ id: unit.id, title: unit.title })),
+      }))
+      .filter((group) => group.units.length)
+      .sort((a, b) => (b.subjectId === currentSubjectId) - (a.subjectId === currentSubjectId));
+    openMultiLessonDialog({ kind: 'units', ids: [] }, { title: 'Material integrado', opener: button, unitChoices: groups });
+  });
   return button;
 }

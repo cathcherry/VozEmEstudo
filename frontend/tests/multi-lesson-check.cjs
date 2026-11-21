@@ -35,6 +35,7 @@ function sample() {
   data.extraMaterials = [
     { ...lesson('l-resp', 'Respiração celular', 'Biologia', 2, 1600000), subject_id: 'sub-bio', unit_id: 'unit-energia' },
     { ...lesson('l-cloro', 'Cloroplastos (rascunho)', 'Biologia', 4, 900000), subject_id: 'sub-bio', unit_id: 'unit-energia' },
+    { ...lesson('l-membrana', 'Membrana plasmática', 'Biologia', 6, 1200000), subject_id: 'sub-bio', unit_id: 'unit-celula' },
   ];
   data.unconfirmedLessons = ['l-cloro', 'l-rev'];
   return data;
@@ -121,6 +122,47 @@ async function main() {
     await page.goBack();
     record('Página do material integrado (API simulada): resumo, questões e flashcards com citações; cada citação abre a aula no trecho exato (#transcricao, busca e trecho); itens descartados são informados');
 
+    // ---------- 3.4: questions → an answerable list; cards → a personal set --------------------
+    const integratedUrl = page.url();
+    await page.locator('[data-multi-lesson-status]', { hasText: 'Material pronto.' }).waitFor();
+    const questionsBox = page.locator('[data-multi-lesson-export="questions"]');
+    const makeList = questionsBox.getByRole('button', { name: 'Transformar em lista de questões' });
+    await makeList.focus();
+    await page.keyboard.press('Enter');
+    await questionsBox.locator('.multi-lesson-export-status', { hasText: 'Lista de questões pronta.' }).waitFor();
+    assert.match(await questionsBox.locator('.multi-lesson-export-status').textContent(), /Guardada na aula “Fotossíntese e respiração celular”/);
+    const answerLink = questionsBox.getByRole('link', { name: 'Responder a lista' });
+    assert.equal(await answerLink.evaluate((node) => node === document.activeElement), true, 'focus moves to the new link');
+    assert.match(await answerLink.getAttribute('href'), /^\.\/responder\.html\?material=l-foto&batch=batch-/);
+    assert.equal(await questionsBox.getByRole('button').count(), 0, 'no second button: nothing to duplicate');
+    const exportRequests = data.multiLessonExportRequests;
+    assert.equal(exportRequests.length, 1);
+    assert.match(exportRequests[0].requestId, /^[0-9a-f-]{36}$/);
+    // Cards: a temporary failure is explained and the same request can be sent again.
+    data.failNextExport = true;
+    const cardsBox = page.locator('[data-multi-lesson-export="flashcards"]');
+    await cardsBox.getByRole('button', { name: 'Salvar como conjunto de flashcards' }).click();
+    await cardsBox.locator('[role="alert"]', { hasText: 'temporariamente indisponível' }).waitFor();
+    assert.equal(await cardsBox.getByRole('button', { name: 'Salvar como conjunto de flashcards' }).isDisabled(), false);
+    await cardsBox.getByRole('button', { name: 'Salvar como conjunto de flashcards' }).click();
+    await cardsBox.locator('.multi-lesson-export-status', { hasText: 'Conjunto de flashcards salvo.' }).waitFor();
+    assert.equal(await cardsBox.locator('[role="alert"]').textContent(), '');
+    assert.match(await cardsBox.getByRole('link', { name: 'Abrir o conjunto' }).getAttribute('href'), /^\.\/revisar\.html\?conjunto=set-.+#flashcards$/);
+    await settle(page);
+    await axeCheck(page, 'main', 'Material integrado com lista e conjunto salvos');
+    await noHorizontalScroll(page, 'material integrado salvo 1280');
+    await shot(page, 'material-integrado-salvo');
+    // Coming back: what exists is shown directly, no new request.
+    await page.goto(integratedUrl);
+    await questionsBox.getByRole('link', { name: 'Responder a lista' }).waitFor();
+    await cardsBox.getByRole('link', { name: 'Abrir o conjunto' }).waitFor();
+    assert.equal(data.multiLessonExportRequests.length, 2);
+    // The list opens in the usual quiz page of the lesson.
+    await questionsBox.getByRole('link', { name: 'Responder a lista' }).click();
+    await page.waitForURL(/responder\.html\?material=l-foto&batch=batch-/);
+    await page.locator('main', { hasText: /Começar|Iniciar|O que relaciona a fotossíntese/ }).first().waitFor();
+    record('Material pronto (API simulada): "Transformar em lista de questões" cria a lista (guardada na primeira aula) e leva a responder.html; "Salvar como conjunto de flashcards" cria o conjunto; falha temporária explicada; ao voltar, os links aparecem sem novo pedido');
+
     // ---------- From the selection bar: several lessons ---------------------------------------
     await page.goto(base + '/historico.html?folder=sub-bio&unit=unit-energia');
     await page.getByRole('button', { name: 'Selecionar' }).click();
@@ -145,6 +187,46 @@ async function main() {
     await dialog.getByRole('button', { name: 'Cancelar' }).click();
     record('Barra de seleção (API simulada): "Material integrado" exige duas aulas; a prévia mostra o que fica de fora e impede pedir sem aula confirmada');
 
+    // ---------- 3.4: several units picked in the dialog -----------------------------------------
+    data.unconfirmedLessons = ['l-cloro', 'l-rev'];
+    await page.goto(base + '/historico.html?folder=sub-bio');
+    const unitsButton = page.getByRole('button', { name: 'Estudar várias unidades' });
+    await unitsButton.click();
+    const unitsDialog = page.locator('dialog[open].multi-lesson-dialog');
+    await unitsDialog.locator('.multi-lesson-status', { hasText: 'Escolha pelo menos uma unidade.' }).waitFor();
+    assert.equal(await unitsDialog.getByRole('button', { name: 'Gerar material integrado' }).isDisabled(), true);
+    assert.equal(await page.evaluate(() => document.activeElement?.name), 'units', 'focus starts on the first unit');
+    await unitsDialog.getByRole('group', { name: 'Biologia' }).waitFor();
+    await page.keyboard.press('Space');
+    await unitsDialog.locator('.multi-lesson-status', { hasText: '2 aulas prontas para estudar juntas.' }).waitFor();
+    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Cloroplastos \(rascunho\) — transcrição ainda não confirmada/);
+    await unitsDialog.getByRole('checkbox', { name: 'Célula' }).check();
+    await unitsDialog.locator('.multi-lesson-status', { hasText: '3 aulas prontas para estudar juntas.' }).waitFor();
+    assert.deepEqual(await unitsDialog.locator('.multi-lesson-sources li').allTextContents(), ['Fotossíntese e respiração celular', 'Respiração celular', 'Membrana plasmática']);
+    await settle(page);
+    await axeCheck(page, 'dialog[open]', 'Diálogo de várias unidades');
+    await shot(page, 'dialogo-unidades', false);
+    // The selection changes between the preview and the request: refused, the new list is shown.
+    data.unconfirmedLessons.push('l-membrana');
+    await unitsDialog.getByRole('button', { name: 'Gerar material integrado' }).click();
+    await unitsDialog.locator('[role="alert"]', { hasText: 'As aulas da seleção mudaram desde a prévia' }).waitFor();
+    await unitsDialog.locator('.multi-lesson-status', { hasText: '2 aulas prontas para estudar juntas.' }).waitFor();
+    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Membrana plasmática — transcrição ainda não confirmada/);
+    await unitsDialog.getByRole('button', { name: 'Gerar material integrado' }).click();
+    await page.waitForURL(/integrado\.html\?id=/);
+    const unitsRequest = data.multiLessonRequests.at(-1);
+    assert.deepEqual(unitsRequest.selection, { kind: 'units', ids: ['unit-energia', 'unit-celula'] });
+    assert.deepEqual(unitsRequest.expectedRevisionIds, ['rev-l-foto', 'rev-l-resp']);
+    record('Várias unidades (API simulada): "Estudar várias unidades" lista as unidades por disciplina; cada marcação atualiza a prévia; se as aulas mudam antes do pedido (409), a lista nova aparece e o estudante confirma de novo');
+
+    // ---------- Exports unavailable (migration missing): the material still shows -------------
+    data.multiLessonExportsUnavailable = true;
+    await page.goto(integratedUrl);
+    await page.locator('#multi-lesson-questions-title').waitFor();
+    assert.equal(await page.locator('[data-multi-lesson-export]').count(), 0);
+    data.multiLessonExportsUnavailable = false;
+    record('Sem a migration de exportação (API simulada, 503): o material aparece normalmente, sem os botões de salvar');
+
     // ---------- Phone width: list and detail without horizontal scroll ------------------------
     const phone = await openApp(browser, base, flags, data, { width: 390, height: 844 });
     await phone.page.goto(base + '/integrado.html');
@@ -164,6 +246,15 @@ async function main() {
     await axeCheck(phone.page, 'dialog[open]', 'Diálogo 390');
     await noHorizontalScroll(phone.page, 'diálogo 390');
     await shot(phone.page, 'material-390', false);
+    await phone.page.keyboard.press('Escape');
+    await phone.page.goto(base + '/historico.html?folder=sub-bio');
+    await phone.page.getByRole('button', { name: 'Estudar várias unidades' }).click();
+    await phone.page.locator('dialog[open] .multi-lesson-units').waitFor();
+    await phone.page.locator('dialog[open]').getByRole('checkbox', { name: 'Célula' }).check();
+    await phone.page.locator('dialog[open] .multi-lesson-status', { hasText: /pronta|Nenhuma/ }).waitFor();
+    await settle(phone.page);
+    await axeCheck(phone.page, 'dialog[open]', 'Diálogo de várias unidades 390');
+    await noHorizontalScroll(phone.page, 'diálogo de unidades 390');
     await phone.context.close();
     record('390 px (API simulada): lista, material e diálogo sem rolagem horizontal e sem violações do axe');
     await context.close();

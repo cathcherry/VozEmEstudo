@@ -373,6 +373,8 @@ async function setup(context, base, flags, data, options = {}) {
       // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
       if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
       if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
+      // Lists created elsewhere for this lesson (e.g. from an integrated material, mock-multi-lesson.cjs).
+      if (data.extraBatches?.[m.id]) detail.questionBatches = [...data.extraBatches[m.id], ...detail.questionBatches];
       return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
