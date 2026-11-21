@@ -114,6 +114,13 @@ Visão geral em duas colunas que terminam juntas; nada é editado aqui.
 - Com o menu lateral visível, **Nova transcrição** fica só no menu; em telas estreitas e no modo
   foco, também ao lado da saudação. Em telas médias a coluna da direita vira um bloco de duas
   colunas (calendário de um lado); no celular, tudo em uma coluna.
+- **Personalizar** (ao lado da saudação) abre uma folha lateral: mostrar ou ocultar cada cartão
+  opcional (tarefas, flashcards, aulas recentes, semana, agenda, disciplinas, anotações), mover os
+  blocos dentro da coluna com ↑/↓, escolher o **espaçamento dos cartões** (confortável/compacto) e
+  **Restaurar padrão**. Tudo vale na hora e fica salvo na conta (`profile_state`, chave
+  `dashboard-layout`); sem conexão, vale neste aparelho e sincroniza depois. "Continuar
+  estudando", o menu e a conta nunca podem ser ocultados. Uma conta nova (ou outra conta no mesmo
+  navegador) vê o layout padrão.
 
 **Busca global** (`GET /api/search`): títulos, enunciados de questões e transcrição, sem diferenciar
 acentos, com sugestões enquanto se digita. Resultados em abas (Aulas, Questões, Transcrições e, com
@@ -323,8 +330,17 @@ Página: `conta.html`.
 
 - Avatar (8 poses do Nino, foto ou GIF até 8 MB), capa, nome exibido, instituição, curso, objetivo
   e "sobre mim".
-- **Meus cards**: blocos personalizáveis (templates, texto, código, HTML/CSS próprio, incorporação de
-  YouTube ou Spotify).
+- **Visualização e edição**: a página abre limpa, sem alças, menus ou botões de arrumação, e sem os
+  blocos e seções ocultos. **Personalizar perfil** liga o modo de edição, com uma barra fixa
+  (Adicionar bloco, Mostrar tudo, Concluir; Esc também sai).
+- **Meus cards**: blocos personalizáveis (templates, texto, código, HTML/CSS próprio sem scripts,
+  incorporação de YouTube ou Spotify) e **Seus dados**: blocos com dados reais — aulas recentes,
+  disciplinas favoritas (por acessos), objetivos ativos com tarefas feitas (`planning`) e minutos da
+  semana com a meta (`study_tracking`). Sem dados, o bloco diz isso; nada é inventado.
+- No modo de edição, o menu ⋯ de cada bloco tem Editar, Duplicar, Ocultar/Mostrar, Mover para
+  cima/baixo, quatro larguras e Remover (com confirmação) — tudo por teclado; arrastar e
+  redimensionar continuam para mouse e toque. **Sobre mim**, **Meu percurso** e **Marcos de estudo**
+  podem ser ocultados (chave `profile-layout`).
 - **Meu percurso / Marcos de estudo**: conquistas como "Primeira aula", com XP e níveis; alguns
   avatares do Nino são desbloqueados pelos marcos.
   - **Provisório**: pontos e conquistas são calculados **no navegador**, a partir do número de aulas
@@ -337,6 +353,12 @@ Página: `conta.html`.
 - `configuracoes.html`: dados da conta, forma de acesso, atalhos para Aparência, Privacidade e Ajuda,
   e **Enviar link para trocar a senha**.
 - `aparencia.html`:
+  - **Modos de estudo**: Leitura confortável, Foco profundo e Revisão rápida aplicam várias
+    preferências de uma vez; depois, cada uma pode ser ajustada. Um modo nunca diminui o texto nem
+    desliga movimento reduzido, contraste reforçado, modo para leitores de tela ou leitura em voz alta.
+  - **Idioma** da interface: português (padrão), inglês, espanhol ou chinês simplificado. Só muda a
+    interface; conteúdo das aulas e o que a pessoa escreveu ficam como estão. Cobertura em
+    [IDIOMAS.md](IDIOMAS.md) — os outros idiomas ainda não traduzem todas as telas, e a página avisa.
   - **Temas prontos**: Claro, Lavanda, Sálvia, Oceano, Vinho, Areia, Escuro, Contraste claro,
     Contraste escuro.
   - **Personalizar**: cores de fundo, detalhes e letras, e fonte; o contraste é corrigido
@@ -345,7 +367,7 @@ Página: `conta.html`.
   - **Leitura e foco**: modo para leitores de tela, modo foco, barra lateral ou inferior, menos
     estímulos visuais, movimento reduzido, contraste reforçado, fonte de leitura (Verdana, Atkinson
     Hyperlegible, Lexend, OpenDyslexic), tamanho do texto (90–200%), espaçamento, guia de leitura
-    (régua ou foco no trecho) e comprimento das linhas.
+    (régua ou foco no trecho), comprimento das linhas e espaçamento dos cartões.
   - **Leitura em voz alta**: desligada, ícones discretos ou em todo o site; velocidade da voz.
 - As preferências são aplicadas antes da página aparecer (sem "piscar") e sincronizadas com a conta.
 
@@ -391,16 +413,18 @@ Página: `compartilhado.html` (não exige login).
 
 ## 15. Onde cada dado fica salvo
 
-| Dado                                                            | Onde                                                                                                           |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Aulas, transcrições, versões, resumos, questões, avisos         | Banco Supabase (servidor)                                                                                      |
-| Áudio do trecho                                                 | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
-| Vídeo MP4 original                                              | Storage `study-videos` (se guardado)                                                                           |
-| Preferências de aparência e leitura                             | Navegador + tabela `profile_state` (sincronizadas)                                                             |
-| Histórico de estudo (posição, respostas, revisão concluída)     | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
-| Foto e capa do perfil                                           | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
-| Tags extras da Biblioteca (no histórico de estudo de cada aula) | Navegador + `profile_state` (sincronizadas)                                                                    |
-| Ícones de pasta                                                 | `profile-media` + `profile_state`                                                                              |
+| Dado                                                                        | Onde                                                                                                           |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Aulas, transcrições, versões, resumos, questões, avisos                     | Banco Supabase (servidor)                                                                                      |
+| Áudio do trecho                                                             | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
+| Vídeo MP4 original                                                          | Storage `study-videos` (se guardado)                                                                           |
+| Preferências de aparência e leitura                                         | Navegador + tabela `profile_state` (sincronizadas)                                                             |
+| Histórico de estudo (posição, respostas, revisão concluída)                 | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
+| Foto e capa do perfil                                                       | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
+| Tags extras da Biblioteca (no histórico de estudo de cada aula)             | Navegador + `profile_state` (sincronizadas)                                                                    |
+| Ícones de pasta                                                             | `profile-media` + `profile_state`                                                                              |
+| Layout do Início (`dashboard-layout`) e seções do perfil (`profile-layout`) | `profile_state` + cópia no navegador (sincronizados, edição mais recente)                                      |
+| Idioma da interface e espaçamento dos cartões                               | Junto das preferências de aparência (`profile_state`, chave `preferences`)                                     |
 
 Regras da sincronização (`profile_state`):
 

@@ -1,5 +1,15 @@
 # Testes e checks
 
+> **Atualização de 21/11/2026.** `npm test` também roda `test:personalization` (layout do Início,
+> blocos do perfil, modos de estudo, resumos do Início e idiomas). `npm run test:browser` roda
+> ainda `dashboard-home-check.cjs`, `navigation-check.cjs` (links, página atual, menu da conta,
+> busca, voltar/avançar), `personalization-check.cjs` (Personalizar o Início, perfil em edição,
+> modos de estudo, idioma, temas) e `feature-validation-check.cjs` (planejamento, ICS, anotações,
+> falha de uma ferramenta). As verificações de navegador compartilham a API simulada de
+> `frontend/tests/support/mock-app.cjs`, que inclui uma tabela `profile_state` em memória (troca de
+> conta, falha de rede, cópia mais nova de outro aparelho). Matriz de validação dos recursos:
+> [VALIDACAO_RECURSOS.md](VALIDACAO_RECURSOS.md).
+
 > **Situação em 20/11/2026.** `npm test` roda backend (PGlite + fixtures), DOM, interfaces de cada
 > recurso (`test:catalog-ui`, `test:planning-ui`, `test:quiz-v2-ui`, `test:flashcards-ui`,
 > `test:player-v2`, `test:study-tracking`, `test:learning-tools`, `test:study-authoring`,

@@ -1,7 +1,7 @@
 # Roadmap e situação
 
 O que está pronto, o que falta ativar, o que falta validar e as dívidas técnicas conhecidas.
-Atualizado em 20/11/2026, após a auditoria da branch `fix/runtime-docs-consistency`.
+Atualizado em 21/11/2026 (Personalização 2.0, idiomas e validação dos recursos ativados).
 
 Legenda de validação: **automático** = testes com Postgres em memória (PGlite), API com Supabase
 simulado e navegador (Playwright + axe); **manual** = usado de verdade em produção.
@@ -48,6 +48,9 @@ limite de chaves). Para desfazer a ativação: `database/rollback/20261120_featu
 
 ## 4. Validação incompleta
 
+- Matriz atualizada em 21/11/2026, com o que cada teste cobre e o que falta testar à mão:
+  [VALIDACAO_RECURSOS.md](VALIDACAO_RECURSOS.md).
+
 - **Leitores de tela reais** (NVDA, VoiceOver, TalkBack): não testados nesta auditoria. A interface
   passa no axe (WCAG A/AA) e em percursos por teclado, o que não comprova uso com leitor de tela.
 - Recursos da seção 2: testes automáticos e teste integrado das funções em produção; falta teste
@@ -56,7 +59,16 @@ limite de chaves). Para desfazer a ativação: `database/rollback/20261120_featu
 - Transcrição pelo Hugging Face (Whisper): mantida como alternativa, sem uso recente.
 - Testes de carga e de várias abas/aparelhos ao mesmo tempo com dados reais.
 
-## 5. Personalização 2.0 (Prompt 3) — pendências de persistência
+## 5. Personalização 2.0
+
+**Feito em 21/11/2026** (branch `feat/personalization-2-0`, testes automáticos; falta uso real):
+Personalizar o Início (mostrar/ocultar, ordem, densidade, restaurar), perfil com modos de
+visualização e edição (menu por teclado, duplicar, ocultar, larguras, blocos com dados reais,
+seções ocultáveis), modos de estudo em Aparência e idioma da interface (pt-BR, en, es, zh-CN, com
+cobertura parcial descrita em [IDIOMAS.md](IDIOMAS.md)). Tudo pela `profile_state` existente, sem
+migration. Detalhes: [SESSAO_DESENVOLVIMENTO.md](SESSAO_DESENVOLVIMENTO.md).
+
+### Pendências de persistência (continuam abertas)
 
 Requisitos levantados na auditoria (sem implementar aqui, para não criar duas fontes de verdade):
 
