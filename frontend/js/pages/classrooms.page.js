@@ -252,6 +252,16 @@ if (!flags.classrooms) {
 }
 
 // ---------------------------------------------------------------- list of classes -------------
+function plural(count, one, many) {
+  return `${count} ${count === 1 ? one : many}`;
+}
+/** A stable cover colour per class (the same tones as the Biblioteca's folders). */
+function classroomTone(id) {
+  const tones = ['lavender', 'matcha', 'honey', 'mist', 'rose'];
+  let hash = 0;
+  for (const char of String(id)) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return tones[hash % tones.length];
+}
 async function showHome() {
   const home = $('[data-classrooms-home]');
   home.hidden = false;
@@ -270,15 +280,17 @@ async function showHome() {
               {
                 className: 'classroom-card',
                 href: `./turmas.html?turma=${encodeURIComponent(room.id)}`,
+                'data-tone': classroomTone(room.id),
               },
               own('strong', room.name, 'classroom-card-name'),
+              room.description ? own('span', room.description, 'classroom-card-description') : null,
               el(
                 'span',
                 { className: 'classroom-card-meta' },
                 chip(ROLE[room.role], room.role),
                 room.status === 'archived' ? chip('Arquivada', 'archived') : null,
-                el('span', { text: `${room.memberCount} membros` }),
-                el('span', { text: `${room.lessonCount} aulas` }),
+                el('span', { text: plural(room.memberCount, 'membro', 'membros') }),
+                el('span', { text: plural(room.lessonCount, 'aula', 'aulas') }),
               ),
             ),
           ),
@@ -292,7 +304,7 @@ async function showHome() {
             emptyState(
               'Nenhuma turma ainda',
               'Crie uma turma ou entre com o código que o professor enviou.',
-              { href: null, mascot: 'rest' },
+              { href: null, mascot: 'rest', artId: 'empty.classrooms' },
             ),
           ),
         );
@@ -393,6 +405,8 @@ async function showClassroom(id) {
   }
   const detail = $('[data-classroom-detail]');
   detail.hidden = false;
+  // The class becomes the page's subject: "Turmas" steps back to a breadcrumb (CSS).
+  detail.closest('main').dataset.view = 'classroom';
   const manager = room.canManage;
   const teacher = room.role === 'teacher';
   document.title = `Voz em Estudo | ${room.name}`;
@@ -402,7 +416,7 @@ async function showClassroom(id) {
     ...[
       chip(ROLE[room.role], room.role),
       room.status === 'archived' ? chip('Arquivada', 'archived') : null,
-      el('span', { text: `${room.memberCount} membros` }),
+      el('span', { text: plural(room.memberCount, 'membro', 'membros') }),
       room.teacherName
         ? el(
             'span',
@@ -533,6 +547,7 @@ async function renderLessons(id, manager) {
                   },
                   event.currentTarget,
                 ),
+                'text-action',
               )
             : null,
         ),

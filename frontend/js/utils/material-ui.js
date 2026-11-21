@@ -26,13 +26,15 @@ export function ninoImage(pose = 'reading', size = 90) {
   img.dataset.nino = pose;
   return img;
 }
-export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true, pose = 'reading', size = 90 } = {}) {
+export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true, pose = 'reading', size = 90, artId = '' } = {}) {
   const card = document.createElement('div'); card.className = 'empty-state-card';
   // Art mount point: the art system (js/art) may replace the illustration in this slot.
   if (mascot) {
     const art = document.createElement('span');
     art.className = 'empty-state-art';
     art.dataset.artSlot = 'empty';
+    // With an art id (`empty.planner`…), the art system draws that scene; Nino is the fallback.
+    if (artId) art.dataset.artId = artId;
     art.append(ninoImage(typeof mascot === 'string' ? mascot : pose, size));
     card.appendChild(art);
   }
@@ -47,7 +49,7 @@ export function emptyState(title, description, { href = './nova-transcricao.html
  * Empty state for lists inside panels and tabs: Nino and the text share one card, with an
  * optional title and a single action (the next step), so Nino never floats beside loose text.
  */
-export function ninoNote(text, pose = 'rest', { className = '', title = '', action = null } = {}) {
+export function ninoNote(text, pose = 'rest', { className = '', title = '', action = null, artId = '' } = {}) {
   const note = document.createElement('div');
   note.className = `nino-note ${className}`.trim();
   const body = document.createElement('div');
@@ -72,6 +74,10 @@ export function ninoNote(text, pose = 'rest', { className = '', title = '', acti
   const figure = document.createElement('span');
   figure.className = 'nino-note-figure';
   figure.dataset.artSlot = 'empty';
+  if (artId) {
+    figure.dataset.artId = artId;
+    note.classList.add('has-art');
+  }
   figure.append(ninoImage(pose, 56));
   note.append(figure, body);
   return note;

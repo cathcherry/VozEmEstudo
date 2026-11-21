@@ -288,3 +288,281 @@
   .stats-bar, .stats-cell[data-level]:not([data-level='0']) { background: Highlight; forced-color-adjust: none; }
 }
 }
+
+/* ==== Focar 3.5 (Milestone 8) ==============================================================
+ * The session is the page: one panel with the ring and the single primary action. Beside it,
+ * the week is written in the margin (no second card competing for height). "Seu ritmo" is one
+ * panel: four figures on a ruled line, the chart, then the lessons and the year as its footer.
+ * Recent blocks are ruled rows. */
+@layer pages {
+  body.app-page .focus-page .study-tracking-panel {
+    margin: var(--space-6) 0 0;
+  }
+  body.app-page .focus-page .focus-layout {
+    gap: var(--space-6) var(--space-7);
+  }
+  @container (min-width: 820px) {
+    body.app-page .focus-page .focus-layout {
+      grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+    }
+  }
+
+  /* ---- The session ------------------------------------------------------------------------- */
+  body.app-page .focus-page .focus-card {
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6) var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-window);
+    background:
+      radial-gradient(70% 55% at 50% 38%, color-mix(in srgb, var(--lavender) 10%, transparent), transparent 70%),
+      var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .focus-page :is(.focus-heading, .week-head h2, .study-stats > h2, .focus-history > h2) {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+    letter-spacing: -0.005em;
+  }
+  /* Modes: the system's segmented control (a recessed track, the chosen key raised). */
+  body.app-page .focus-page .focus-modes {
+    gap: 2px;
+    padding: 3px;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+    box-shadow: var(--recessed);
+  }
+  body.app-page .focus-page .focus-mode {
+    min-height: 2.25rem;
+    padding: 0 var(--space-4);
+    border-radius: 6px;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .focus-mode[aria-checked='true'] {
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .focus-page .focus-dial {
+    width: min(100% - 2rem, 16.5rem);
+    margin-block: var(--space-5) 0;
+  }
+  body.app-page .focus-page .focus-ring-track {
+    stroke: color-mix(in srgb, var(--lavender) 22%, var(--paper-sunken));
+  }
+  body.app-page .focus-page .focus-ring-fill {
+    stroke: var(--brand-ink);
+  }
+  body.app-page .focus-page .focus-time {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 400;
+  }
+  body.app-page .focus-page .focus-caption,
+  body.app-page .focus-page .focus-cycles {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .focus-cycle {
+    border-color: var(--brand-ink);
+  }
+  body.app-page .focus-page .focus-cycle.is-done {
+    background: var(--brand-ink);
+  }
+  body.app-page .focus-page .study-tracking-panel .focus-primary {
+    min-width: 13rem;
+    min-height: 3rem;
+    border-radius: var(--radius-control);
+    font-size: var(--step-0);
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .focus-page .focus-hint {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* ---- The week, written in the margin ----------------------------------------------------- */
+  body.app-page .focus-page .week-card {
+    align-self: start;
+    gap: var(--space-4);
+    padding: var(--space-2) 0 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.app-page .focus-page .week-settings {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .focus-page .week-total strong {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-3);
+  }
+  body.app-page .focus-page .week-total {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .week-goal {
+    height: 6px;
+  }
+  body.app-page .focus-page .week-goal::-webkit-progress-value {
+    background: var(--matcha);
+  }
+  body.app-page .focus-page .week-goal::-moz-progress-bar {
+    background: var(--matcha);
+  }
+  body.app-page .focus-page .study-day-list.week-columns {
+    height: 9.5rem;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .focus-page .week-columns .study-day-bar {
+    width: min(100%, 1.75rem);
+    border-radius: 6px;
+    background: var(--paper-sunken);
+  }
+  body.app-page .focus-page .week-columns .study-day-bar::after {
+    border-radius: 6px;
+    background: var(--brand-ink);
+  }
+  body.app-page .focus-page .week-columns li.is-today .week-day {
+    color: var(--brand-ink);
+  }
+  body.app-page .focus-page .week-note {
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* ---- Seu ritmo: one panel ------------------------------------------------------------------ */
+  body.app-page .focus-page .study-stats {
+    margin-top: var(--space-7);
+    padding: var(--space-5) var(--space-6) var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .focus-page .stats-intro {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .stats-tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: var(--space-4) 0 var(--space-5);
+    border-block: 1px solid var(--line);
+  }
+  body.app-page .focus-page .stats-tile {
+    padding: var(--space-3) var(--space-4);
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page .focus-page .stats-tile + .stats-tile {
+    border-left: 1px solid var(--line);
+  }
+  body.app-page .focus-page .stats-tile:first-child {
+    padding-left: 0;
+  }
+  body.app-page .focus-page .stats-tile dt {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .focus-page .stats-tile dd {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+  }
+  body.app-page .focus-page .stats-chart {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page .focus-page .stats-chart figcaption {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .focus-page .stats-bar {
+    background: var(--brand-ink);
+  }
+  body.app-page .focus-page .stats-bars li:not(.is-goal) .stats-bar {
+    background: color-mix(in srgb, var(--lavender) 55%, var(--paper-raised));
+  }
+  body.app-page .focus-page .stats-table {
+    margin-top: var(--space-4);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .focus-page .stats-table summary {
+    padding-left: 0;
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .stats-lessons {
+    margin-top: var(--space-4);
+  }
+  body.app-page .focus-page .stats-lessons h3 {
+    font-size: var(--step-ui);
+    font-weight: 650;
+  }
+  body.app-page .focus-page .stats-lessons li {
+    font-size: var(--step-ui);
+  }
+  body.app-page .focus-page .stats-year-toggle {
+    margin-top: var(--space-4);
+  }
+
+  /* ---- Recent blocks ---------------------------------------------------------------------------- */
+  body.app-page .focus-page .focus-history {
+    margin-top: var(--space-7);
+  }
+  body.app-page .focus-page .focus-history-list {
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .focus-page .focus-history-list li {
+    padding: var(--space-2) 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    font-size: var(--step-ui);
+  }
+
+  @media (max-width: 760px) {
+    body.app-page .focus-page .focus-card {
+      padding: var(--space-4) var(--space-4) var(--space-5);
+    }
+    body.app-page .focus-page .focus-modes {
+      max-width: 100%;
+    }
+    body.app-page .focus-page .focus-mode {
+      padding: 0 var(--space-3);
+    }
+    body.app-page .focus-page .study-stats {
+      padding: var(--space-4);
+    }
+    body.app-page .focus-page .stats-tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    body.app-page .focus-page .stats-tile:nth-child(odd) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    body.app-page .focus-page .stats-tile:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+}

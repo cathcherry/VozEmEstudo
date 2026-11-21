@@ -45,6 +45,12 @@ function selectField(labelText, items, value, placeholder) {
   return { label, select };
 }
 
+/** Today as YYYY-MM-DD in this device's time zone (task due dates are calendar days). */
+function localIsoDay(date = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 export async function initPlanningPanel({ materials }) {
   const panel = document.querySelector('[data-planning-panel]');
   if (!panel || !(await isFeatureEnabled('planning'))) return;
@@ -368,8 +374,12 @@ export async function initPlanningPanel({ materials }) {
     }
     const ul = document.createElement('ul');
     ul.className = 'planning-tasks';
+    const today = localIsoDay();
     for (const task of visible) {
       const li = document.createElement('li');
+      li.className = 'planning-task';
+      if (task.completed_at) li.classList.add('is-done');
+      else if (task.due_date && String(task.due_date).slice(0, 10) < today) li.classList.add('is-overdue');
       const label = document.createElement('label');
       const check = document.createElement('input');
       check.type = 'checkbox';
@@ -452,6 +462,7 @@ export async function initPlanningPanel({ materials }) {
     if (!goals.length) {
       list.append(ninoNote('Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar.', 'reading', {
         className: 'planning-empty planning-start',
+        artId: 'empty.planner',
         title: 'Nenhum objetivo criado ainda',
         action: toolbar ? { label: 'Criar primeiro objetivo', onClick: (button) => showForm('goal', { from: button }) } : null,
       }));
@@ -478,7 +489,13 @@ export async function initPlanningPanel({ materials }) {
       details.className = 'planning-meta';
       const statuses = { active: 'Em andamento', completed: 'Concluído', archived: 'Arquivado' };
       details.textContent = `${progress.completed} de ${progress.total} tarefas concluídas · ${statuses[goal.status] || 'Em andamento'}${goal.target_date ? ' · Meta: ' + dateLabel(goal.target_date) : ''}`;
-      section.append(details);
+      // A quiet bar under the title says the same as the sentence (which stays for screen readers).
+      const bar = document.createElement('span');
+      bar.className = 'planning-progress';
+      bar.setAttribute('aria-hidden', 'true');
+      bar.style.setProperty('--done', String(progress.total ? progress.completed / progress.total : 0));
+      section.dataset.status = goal.status || 'active';
+      section.append(details, bar);
       if (goal.description) {
         const description = document.createElement('p');
         description.textContent = goal.description;

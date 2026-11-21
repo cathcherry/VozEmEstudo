@@ -274,3 +274,268 @@
   background: var(--accent-soft);
 }
 }
+
+/* ==== Turmas 3.5 (Milestone 8) =============================================================
+ * The list: "Minhas turmas" with its two actions on the same line (one primary), each class a
+ * cover with a coloured spine (the Biblioteca's folder tones), the name in Fraunces and the
+ * counts underneath. A class page: "Turmas" steps back to a breadcrumb and the class name is the
+ * title; every list is one panel of ruled rows (never a stack of cards); on wide screens the
+ * lessons take the main column and the support materials sit beside them. */
+@layer pages {
+  body.app-page .classrooms-page {
+    --class-tone: var(--lavender);
+    --class-tone-ink: var(--lavender-ink);
+  }
+  body.app-page .classrooms-page .classrooms-home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    margin-top: var(--space-6);
+  }
+  body.app-page .classrooms-page .classrooms-home > h2 {
+    grid-row: 1;
+    grid-column: 1;
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 480;
+  }
+  body.app-page .classrooms-page .classrooms-home > .classrooms-toolbar {
+    grid-row: 1;
+    grid-column: 2;
+    margin: 0;
+  }
+  body.app-page .classrooms-page .classrooms-home > .classrooms-list {
+    grid-column: 1 / -1;
+  }
+  body.app-page .classrooms-page .classrooms-toolbar {
+    gap: var(--space-2);
+  }
+
+  /* ---- A class: a cover with a spine ------------------------------------------------------------ */
+  body.app-page .classrooms-page .classrooms-list {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
+    margin: 0;
+  }
+  body.app-page .classrooms-page .classroom-card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    min-height: 9.5rem;
+    padding: var(--space-4) var(--space-5) var(--space-4) calc(var(--space-5) + 10px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background:
+      linear-gradient(to right, var(--class-tone) 0 10px, color-mix(in srgb, var(--class-tone-ink) 30%, transparent) 10px 11px, transparent 11px),
+      var(--paper-raised);
+    box-shadow: var(--elev-1);
+    color: var(--ink);
+    transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  body.app-page .classrooms-page .classroom-card:hover {
+    border-color: color-mix(in srgb, var(--class-tone-ink) 45%, var(--line));
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .classrooms-page .classroom-card:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  body.app-page .classrooms-page .classroom-card[data-tone='matcha'] { --class-tone: var(--matcha); --class-tone-ink: var(--matcha-ink); }
+  body.app-page .classrooms-page .classroom-card[data-tone='honey'] { --class-tone: var(--honey); --class-tone-ink: var(--honey-ink); }
+  body.app-page .classrooms-page .classroom-card[data-tone='mist'] { --class-tone: var(--mist); --class-tone-ink: var(--mist-ink); }
+  body.app-page .classrooms-page .classroom-card[data-tone='rose'] { --class-tone: var(--rose); --class-tone-ink: var(--rose-ink); }
+  body.app-page .classrooms-page .classroom-card-name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+    line-height: 1.2;
+  }
+  body.app-page .classrooms-page .classroom-card-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    line-height: 1.4;
+  }
+  body.app-page .classrooms-page .classroom-card-meta {
+    align-self: end;
+    margin-top: auto;
+    padding-top: var(--space-2);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  /* The role sits in the cover's corner; the counts read as one line. */
+  body.app-page .classrooms-page .classroom-card > .classroom-card-name {
+    padding-right: 5.5rem;
+  }
+  body.app-page .classrooms-page .classroom-card-meta .classroom-chip {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+  body.app-page .classrooms-page .classroom-card-meta .classroom-chip + .classroom-chip {
+    top: calc(var(--space-4) + 1.75rem);
+  }
+  body.app-page .classrooms-page .classroom-card-meta {
+    gap: var(--space-1) var(--space-3);
+  }
+  body.app-page .classrooms-page .classrooms-list > li:only-child:has(.empty-state-card) {
+    grid-column: 1 / -1;
+    max-width: 40rem;
+  }
+
+  /* ---- A class page ------------------------------------------------------------------------------ */
+  body.app-page .classrooms-page[data-view='classroom'] .tool-intro {
+    display: none;
+  }
+  body.app-page .classrooms-page[data-view='classroom'] .tool-heading {
+    margin-bottom: 0;
+  }
+  /* "Turmas" stays the page's h1 for assistive tech; the back link says it visually. */
+  body.app-page .classrooms-page[data-view='classroom'] .tool-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body.app-page .classrooms-page[data-view='classroom'] .classroom-back {
+    margin: var(--space-1) 0 var(--space-2);
+    font-size: var(--step-ui);
+  }
+  body.app-page .classrooms-page .classroom-header {
+    align-items: flex-start;
+    margin-bottom: var(--space-5);
+  }
+  body.app-page .classrooms-page .classroom-title {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-4);
+    font-weight: 480;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+  body.app-page .classrooms-page .classroom-meta {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .classrooms-page .classroom-description {
+    margin: var(--space-3) 0 0;
+    color: var(--ink-muted);
+  }
+
+  /* Every list on the class page: one panel, ruled rows. */
+  body.app-page .classrooms-page .classroom-items {
+    gap: 0;
+    margin: 0 0 var(--space-6);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .classrooms-page .classroom-items:not(:has(> li)) {
+    display: none;
+  }
+  body.app-page .classrooms-page .classroom-items > .classroom-item {
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.app-page .classrooms-page .classroom-items > li:not(:first-child) {
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .classrooms-page .classroom-item-copy strong {
+    font-size: var(--step-0);
+    font-weight: 600;
+  }
+  body.app-page .classrooms-page .classroom-item-copy small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .classrooms-page .classroom-item-actions {
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+  body.app-page .classrooms-page .classroom-item-actions :is(.secondary-action, .text-action) {
+    min-height: 2.25rem;
+    font-size: var(--step-ui);
+  }
+  body.app-page .classrooms-page .classroom-items > .classroom-empty {
+    padding: var(--space-4);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .classrooms-page .tool-section h3 {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body.app-page .classrooms-page .tool-section .tool-hint {
+    max-width: 62ch;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* Lessons in the main column, support materials beside them (wide screens). */
+  @media (min-width: 1100px) {
+    body.app-page .classrooms-page #aulas:not([hidden]) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+      align-items: start;
+      gap: 0 var(--space-7);
+    }
+    /* A shared material opened for reading needs the whole width. */
+    body.app-page .classrooms-page #aulas:has([data-integrated-reader]:not([hidden])) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page .classrooms-page .classroom-aside {
+      padding-left: var(--space-6);
+      border-left: 1px solid var(--line);
+    }
+    body.app-page .classrooms-page .classroom-aside .classroom-items {
+      background: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      border-top: 1px solid var(--line);
+    }
+    body.app-page .classrooms-page .classroom-aside .classroom-items > li {
+      padding-inline: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    body.app-page .classrooms-page .classrooms-home {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page .classrooms-page .classrooms-home > .classrooms-toolbar {
+      grid-row: auto;
+      grid-column: 1;
+    }
+    body.app-page .classrooms-page .classroom-title {
+      font-size: var(--step-3);
+    }
+    body.app-page .classrooms-page .classroom-card {
+      min-height: 0;
+    }
+    body.app-page .classrooms-page .classroom-header {
+      flex-direction: column;
+    }
+  }
+}
