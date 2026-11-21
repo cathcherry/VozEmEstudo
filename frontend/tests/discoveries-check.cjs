@@ -53,12 +53,12 @@ function sample() {
 /** Selects [from, to) code points of a segment's text, as a person dragging the mouse would. */
 const selectInSegment = (page, position, from, to) =>
   page.evaluate(
-    ({ position, from, to }) => {
-      const text = document.querySelector(`.transcription-segment[data-segment-position="${position}"] .segment-text`).firstChild;
+    (args) => {
+      const text = document.querySelector(`.transcription-segment[data-segment-position="${args.position}"] .segment-text`).firstChild;
       const units = (n) => [...text.data].slice(0, n).join('').length;
       const range = document.createRange();
-      range.setStart(text, units(from));
-      range.setEnd(text, units(to));
+      range.setStart(text, units(args.from));
+      range.setEnd(text, units(args.to));
       const selection = getSelection();
       selection.removeAllRanges();
       selection.addRange(range);
