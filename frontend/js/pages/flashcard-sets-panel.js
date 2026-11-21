@@ -68,22 +68,28 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
     document.dispatchEvent(new CustomEvent('voz:flashcards-sets-changed'));
   }
   const v3 = () => isFeatureEnabled('flashcards_v3').catch(() => false);
-  /** Keeps the button busy while the sets (and the classes' shared decks) are being read. */
+  /**
+   * Keeps the button busy while the sets (and the classes' shared decks) are being read. It is
+   * released before the dialog opens, so focus can come back to it when the dialog closes.
+   */
   const whileBusy = async (button, work) => {
-    if (button.disabled) return;
+    if (button.getAttribute('aria-busy') === 'true') return;
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
+    const release = () => {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    };
     try {
-      await work();
+      await work(release);
     } catch (error) {
       result.replaceChildren(make('p', error.message || 'Não foi possível abrir agora. Tente de novo.', 'deck-error'));
     } finally {
-      button.disabled = false;
-      button.removeAttribute('aria-busy');
+      release();
     }
   };
   mergeButton.addEventListener('click', () =>
-    whileBusy(mergeButton, async () => {
+    whileBusy(mergeButton, async (release) => {
       result.replaceChildren();
       const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
       const typed = await v3();
@@ -115,13 +121,16 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
         );
         return;
       }
+      release();
       await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton, v3: typed }));
     }),
   );
   importButton.addEventListener('click', () =>
-    whileBusy(importButton, async () => {
+    whileBusy(importButton, async (release) => {
       result.replaceChildren();
-      await afterTool(await openImportDialog({ opener: importButton, v3: await v3() }));
+      const typed = await v3();
+      release();
+      await afterTool(await openImportDialog({ opener: importButton, v3: typed }));
     }),
   );
   section.append(
