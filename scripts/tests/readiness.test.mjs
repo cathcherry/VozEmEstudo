@@ -60,3 +60,14 @@ test('newer modules are probed: study_authoring, flashcard_sets and AssemblyAI t
   const plain = createReadinessChecks(db, {}, 'audios', 'test-version', { asrProvider: 'huggingface' });
   assert(!plain.some((check) => check.label.includes('ai_job_executions')));
 });
+
+test('classrooms: tables are probed and the flag needs flashcard sets', async () => {
+  const { db } = fixture({ missing: 'classroom_members' });
+  const flags = { flashcards: true, flashcard_sets: true, classrooms: true };
+  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
+  for (const name of ['classrooms', 'classroom_invites', 'classroom_submissions', 'classroom_lessons', 'classroom_shared_items'])
+    assert(results.some((r) => r.ok && r.label.includes(`: ${name} `)), name);
+  assert(results.some((r) => !r.ok && r.label.includes('classroom_members')));
+  assert.deepEqual(readinessFlagErrors(flags), []);
+  assert.match(readinessFlagErrors({ classrooms: true }).join(' '), /FEATURE_CLASSROOMS exige FEATURE_FLASHCARD_SETS/);
+});

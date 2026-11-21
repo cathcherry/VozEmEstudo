@@ -1,0 +1,213 @@
+/* Turmas (private classrooms). Uses the shared tokens and the tool-page / app-dialog patterns. */
+.classrooms-page .classrooms-status:empty {
+  display: none;
+}
+.classrooms-page .classrooms-status[data-state='error'] {
+  color: var(--danger);
+}
+.classrooms-page .classrooms-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+}
+.classrooms-page .classrooms-list,
+.classrooms-page .classroom-items {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.classrooms-page .classrooms-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+.classrooms-page .classroom-card {
+  display: grid;
+  gap: 10px;
+  min-height: 100%;
+  padding: 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--tool-radius-small, 14px);
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+.classrooms-page .classroom-card:hover {
+  border-color: var(--accent-strong);
+}
+.classrooms-page .classroom-card-name {
+  overflow-wrap: anywhere;
+  font-size: 1.12rem;
+}
+.classrooms-page .classroom-card-meta,
+.classrooms-page .classroom-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.classrooms-page .classroom-chip[data-state='teacher'],
+.classrooms-page .classroom-chip[data-state='published'],
+.classrooms-page .classroom-chip[data-state='active'] {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+.classrooms-page .classroom-chip[data-state='rejected'],
+.classrooms-page .classroom-chip[data-state='revoked'] {
+  color: var(--danger);
+}
+.classrooms-page .classroom-back {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.classrooms-page .classroom-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 18px;
+}
+.classrooms-page .classroom-header > div {
+  min-width: 0;
+}
+.classrooms-page .classroom-title {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.classrooms-page .classroom-description {
+  max-width: 68ch;
+  color: var(--muted);
+}
+.classrooms-page .classroom-description:empty {
+  display: none;
+}
+.classrooms-page .classroom-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--tool-radius-small, 14px);
+  background: var(--surface);
+}
+.classrooms-page .classroom-item-copy {
+  display: grid;
+  flex: 1 1 220px;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.classrooms-page .classroom-item-copy small {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+.classrooms-page .classroom-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.classrooms-page .classroom-empty {
+  color: var(--muted);
+}
+.classrooms-page .classroom-cards {
+  display: grid;
+  flex-basis: 100%;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.classrooms-page .classroom-cards[hidden] {
+  display: none;
+}
+.classrooms-page .classroom-cards li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-alt);
+  overflow-wrap: anywhere;
+}
+.classrooms-page .classroom-reader {
+  margin: 0 0 24px;
+  padding: 20px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--tool-radius-small, 14px);
+  background: var(--surface);
+}
+.classrooms-page .classroom-reader[hidden] {
+  display: none;
+}
+.classrooms-page .classroom-reader-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.classrooms-page .classroom-reader-header h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.classrooms-page .classroom-reader-text {
+  max-width: 72ch;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.classroom-dialog {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+.classroom-dialog :is(select, textarea) {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 400;
+}
+.classroom-dialog label + label,
+.classroom-dialog label,
+.classroom-dialog fieldset {
+  margin-top: 12px;
+}
+.classroom-dialog input {
+  width: 100%;
+}
+.classroom-dialog .classroom-checks label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+.classroom-dialog .classroom-checks input {
+  width: auto;
+  min-height: 0;
+}
+.classroom-dialog .classroom-dialog-error {
+  color: var(--danger);
+}
+.classroom-dialog .classroom-dialog-error:empty {
+  display: none;
+}
+.classroom-dialog .classroom-review-text {
+  max-height: 40vh;
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.classroom-dialog .classroom-invite-code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+}

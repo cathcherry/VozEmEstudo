@@ -12,7 +12,7 @@
     "lint:python": "python -m ruff check asr-space scripts",
     "format": "prettier --write . && python -m ruff format asr-space scripts",
     "format:check": "node scripts/format-check.mjs && python -m ruff format --check asr-space scripts",
-    "test": "npm run test:backend && npm run test:dom && npm run test:auth-css && npm run test:catalog-ui && npm run test:planning-ui && npm run test:quiz-v2-ui && npm run test:quiz-diagnostic-ui && npm run test:flashcards-ui && npm run test:player-v2 && npm run test:study-tracking && npm run test:learning-tools && npm run test:study-authoring && npm run test:personalization && npm run test:python && npm run test:quality",
+    "test": "npm run test:backend && npm run test:dom && npm run test:auth-css && npm run test:catalog-ui && npm run test:planning-ui && npm run test:quiz-v2-ui && npm run test:quiz-diagnostic-ui && npm run test:flashcards-ui && npm run test:player-v2 && npm run test:study-tracking && npm run test:learning-tools && npm run test:study-authoring && npm run test:personalization && npm run test:classrooms-ui && npm run test:python && npm run test:quality",
     "test:backend": "npm --prefix backend test -- --test-concurrency=1",
     "test:dom": "npm --prefix frontend run test:dom",
     "test:browser": "npm --prefix frontend run test:browser",
@@ -36,6 +36,7 @@
     "test:study-tracking": "node --test frontend/tests/study-tracking.test.mjs frontend/tests/study-panel.test.mjs frontend/tests/focus-session.test.mjs frontend/tests/ambient-sound.test.mjs frontend/tests/study-stats.test.mjs",
     "test:learning-tools": "node --test frontend/tests/learning-tools.test.mjs frontend/tests/learning-panels.test.mjs",
     "test:personalization": "node --test frontend/tests/dashboard-layout.test.mjs frontend/tests/dashboard-home.test.mjs frontend/tests/profile-editor.test.mjs frontend/tests/study-presets.test.mjs frontend/tests/i18n.test.mjs frontend/tests/i18n-phrases.test.mjs frontend/tests/stickers.test.mjs",
+    "test:classrooms-ui": "node --test frontend/tests/classrooms-ui.test.mjs",
     "test:study-authoring": "node --test frontend/tests/study-authoring.test.mjs frontend/tests/study-document.test.mjs frontend/tests/resumable-upload.test.mjs"
   },
   "devDependencies": {

@@ -48,6 +48,7 @@ const EXPECT = {
     'h1',
     { 'pt-BR': 'Aparência', en: 'Appearance', es: 'Apariencia', 'zh-CN': '外观' },
   ],
+  'turmas.html': ['h1', { 'pt-BR': 'Turmas', en: 'Classes', es: 'Clases', 'zh-CN': '班级' }],
   'nova-transcricao.html': ['h1', null],
   'ajuda.html': ['h1', null],
 };
@@ -134,7 +135,7 @@ async function main() {
       }
     }
     record(
-      'Quatro idiomas em 10 páginas (390 e 1280 px): lang do documento, títulos e menu traduzidos, título da aula intacto, todo controle com nome, sem rolagem lateral, axe na aula',
+      'Quatro idiomas em 11 páginas (390 e 1280 px): lang do documento, títulos e menu traduzidos, título da aula intacto, todo controle com nome, sem rolagem lateral, axe na aula',
     );
   } finally {
     await browser.close();

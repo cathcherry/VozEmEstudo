@@ -14,6 +14,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'flashcard_sets',
   'flashcards_v3',
   'generation_reuse',
+  'classrooms',
 ]);
 
 /** Deployment flags expose no credentials and never grant resource access. */

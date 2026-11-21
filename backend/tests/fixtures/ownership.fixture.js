@@ -2,6 +2,10 @@
 export const identities = {
   a: { id: '11111111-1111-4111-8111-111111111111', token: 'e00-fixture-user-a' },
   b: { id: '22222222-2222-4222-8222-222222222222', token: 'e00-fixture-user-b' },
+  // Extra accounts for the classroom tests (second student, assistant, outsider).
+  c: { id: '99999999-9999-4999-8999-999999999991', token: 'e00-fixture-user-c' },
+  d: { id: '99999999-9999-4999-8999-999999999992', token: 'e00-fixture-user-d' },
+  e: { id: '99999999-9999-4999-8999-999999999993', token: 'e00-fixture-user-e' },
 };
 
 export const resourceIds = {
