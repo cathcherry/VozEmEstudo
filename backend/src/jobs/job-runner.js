@@ -8,6 +8,7 @@ import { setMaterialState } from '../repositories/material.repository.js';
 import { getByMaterial as getTranscription } from '../repositories/transcription.repository.js';
 import { nextRetryDelayMs, shouldRetry } from './retry-policy.js';
 import { runJob } from '../services/processing.service.js';
+import { failGeneration } from '../services/generation-reuse.service.js';
 
 /** Renews the lease while the job runs, at a third of the stale window (at most every minute). */
 function startHeartbeat(job) {
@@ -72,6 +73,8 @@ async function recordFailure(job, error) {
     return;
   }
 
+  // 3.3: a final failure frees the generation key, so the next equivalent request starts again.
+  await failGeneration(job, safeCode);
   await updateJob(job.id, {
     status: JOB_STATUS.FAILED,
     current_stage: null,

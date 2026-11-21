@@ -1,4 +1,5 @@
 import { JOB_STATUS, JOB_TYPE, MATERIAL_STATUS, PROCESSING_STAGE } from '../config/constants.js';
+import { completeGeneration } from './generation-reuse.service.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { logger } from '../utils/logger.js';
 import {
@@ -273,4 +274,6 @@ async function runGeneration(job, kind) {
   }
   await recomputeMaterialStatus(job.material_id);
   await finishJob(job, kind === 'summary' ? 'Resumo atualizado.' : 'Novo lote de questões gerado.');
+  // 3.3: the equivalent generation is now ready for joins and authorised reuse.
+  await completeGeneration(job, { jobId: job.id, kind });
 }

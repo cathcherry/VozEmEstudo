@@ -11,7 +11,8 @@ import * as materials from '../repositories/material.repository.js';
 import { getByMaterial as getTranscription } from '../repositories/transcription.repository.js';
 import { listSummaries } from '../repositories/summary.repository.js';
 import { listBatches } from '../repositories/question.repository.js';
-import { createJob, createQuestionListJob } from '../repositories/job.repository.js';
+import { createJob, createQuestionListJob, getOwnedJob } from '../repositories/job.repository.js';
+import { generationReuseEnabled, beginGeneration, attachGenerationJob } from './generation-reuse.service.js';
 import { createAudioSignedUrl } from './audio.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { videoService } from './video.service.js';
@@ -103,19 +104,56 @@ export async function enqueueInitial(userId, materialId, input = {}) {
   });
 }
 
-export async function enqueueSummary(userId, materialId, input) {
+export async function enqueueSummary(userId, materialId, rawInput) {
   await materials.getOwnedMaterial(userId, materialId);
+  // `reuse` (3.3) accepts an equivalent finished result instead of a new AI call.
+  const { reuse, ...input } = rawInput || {};
   const { selection, options } = validateSummaryGeneration(input);
   // Preserve params for legacy callers (including retries of already queued jobs).
   const params = input.options === undefined ? {} : { summaryOptions: options };
+  if (generationReuseEnabled())
+    return queueGeneration(userId, materialId, 'summary', params, selection, reuse === true, (p) =>
+      createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, p, selection));
   return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, params, selection);
 }
-export async function enqueueQuestions(userId, materialId, count, input, config) {
+export async function enqueueQuestions(userId, materialId, count, rawInput, config) {
   await materials.getOwnedMaterial(userId, materialId);
+  const { reuse, ...input } = rawInput || {};
   const selection = validateGeneration(input);
   // Without a config the request keeps its legacy params shape (and idempotency comparison).
   const params = config === undefined ? { count } : { count, config };
+  if (generationReuseEnabled())
+    return queueGeneration(userId, materialId, 'questions', params, selection, reuse === true, (p) =>
+      isFeatureEnabled('study_authoring')
+        ? createQuestionListJob(userId, materialId, p, selection)
+        : createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, p, selection));
   if (isFeatureEnabled('study_authoring'))
     return createQuestionListJob(userId, materialId, params, selection);
   return createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, params, selection);
+}
+
+/**
+ * Generation reuse (3.3): the same job response shape is returned in every case, so the client
+ * keeps polling a job. `reuse` → the finished job of the equivalent result; `join` → the job that
+ * is already running; `start` → a new job tagged with its generation id.
+ */
+async function queueGeneration(userId, materialId, kind, params, selection, allowReuse, queue) {
+  const outcome = await beginGeneration({
+    userId,
+    materialId,
+    kind,
+    sourceRevisionId: selection.sourceRevisionId,
+    params,
+    allowReuse,
+  });
+  const generation = outcome.generation;
+  if (outcome.decision !== 'start') {
+    const jobId = generation.job_id || generation.result?.jobId;
+    const job = jobId ? await getOwnedJob(userId, jobId).catch(() => null) : null;
+    return { ...(job || { status: 'PENDENTE', material_id: materialId }), generation: { id: generation.id, decision: outcome.decision } };
+  }
+  // A retry with the same idempotency key keeps the original params (and generation) of its job.
+  const job = await queue({ ...params, generationId: generation.id });
+  if (job.params?.generationId === generation.id) await attachGenerationJob(generation.id, job.id);
+  return { ...job, generation: { id: generation.id, decision: 'start' } };
 }

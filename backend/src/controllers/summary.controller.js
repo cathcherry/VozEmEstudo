@@ -15,7 +15,8 @@ export async function list(req, res, next) {
 export async function regenerate(req, res, next) {
   try {
     const job = await enqueueSummary(req.user.id, req.params.materialId, req.body);
-    res.status(202).json({ jobId: job.id, materialId: job.material_id });
+    // 3.3: with generation reuse the job may be an equivalent one that is running or finished.
+    res.status(202).json({ jobId: job.id, materialId: job.material_id, ...(job.generation ? { generation: job.generation } : {}) });
   } catch (e) {
     next(e);
   }
