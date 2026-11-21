@@ -168,6 +168,35 @@ async function main() {
     }
     record('Planejar, Focar e Turmas (lista e turma): sem rolagem horizontal a 390 px; axe a 390 e 1440 px; estados vazios com empty.planner e empty.classrooms');
 
+    // ---------- 2b. Descobertas and Gabinete ----------------------------------------------------
+    for (const width of [390, 1440]) {
+      const data = state();
+      data.seedDiscoveries = [
+        { id: '0b1c2d3e-0000-4000-8000-000000000001', materialId: 'l-rev', title: 'De onde vinha a energia das fábricas?', explanation: 'O carvão guardava energia química.', quote: 'máquina a vapor', createdAt: new Date().toISOString() },
+      ];
+      data.seedUnlocks = [{ id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString(), lessonTitle: 'Revolução Industrial' }];
+      const { context, page } = await openApp(browser, base, { ...flags, discoveries: true }, data, { width, height: width < 700 ? 844 : 1000 });
+      await page.goto(base + '/descobertas.html');
+      await page.locator('.discovery-page-card .discovery-page-day').first().waitFor();
+      await noHorizontalScroll(page, `Descobertas ${width}`);
+      await axeCheck(page, 'main', `Descobertas ${width}`);
+      await page.goto(base + '/gabinete.html');
+      await page.locator('.cabinet-drawer > summary').first().waitFor();
+      assert.equal(await page.locator('.cabinet-item[data-state="locked"]').first().evaluate((n) => getComputedStyle(n.querySelector('[data-art-slot]')).filter), 'grayscale(1)', 'locked items are outlines');
+      await noHorizontalScroll(page, `Gabinete ${width}`);
+      await axeCheck(page, 'main', `Gabinete ${width}`);
+      await context.close();
+    }
+    {
+      const data = state();
+      data.seedUnlocks = [];
+      const { context, page } = await openApp(browser, base, { ...flags, discoveries: true }, data);
+      await page.goto(base + '/descobertas.html');
+      await page.locator('[data-art-slot="empty"][data-art-id="empty.discoveries"] img.art-empty').waitFor();
+      await context.close();
+    }
+    record('Descobertas (caderno pautado com data na margem) e Gabinete (gavetas com compartimentos): sem rolagem horizontal a 390 px, axe a 390 e 1440 px, estado vazio com empty.discoveries');
+
     // ---------- 3. Selection toolbar ------------------------------------------------------------
     for (const discoveries of [true, false]) {
       const data = state();
