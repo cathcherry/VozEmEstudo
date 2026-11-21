@@ -29,10 +29,14 @@
     // translucent "glass" cards. Decoration only: content stays on readable surfaces.
     wallpaper: 'none',
     surfaces: 'solid',
+    // Flashcards 3.0: how review cards look. Appearance only — never the card's content, source
+    // or review history; changing it never asks the server or the AI for anything.
+    cardTemplate: 'classic',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
   const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars'];
   const SURFACES = ['solid', 'glass'];
+  const CARD_TEMPLATES = ['classic', 'notebook', 'sticky', 'window', 'polaroid'];
   // Pages that may have their own wallpaper (file name → key).
   const WALLPAPER_PAGES = {
     'painel.html': 'dashboard',
@@ -263,6 +267,11 @@
     if (DENSITIES.includes(value?.density)) result.density = value.density;
     if (WALLPAPERS.includes(value?.wallpaper)) result.wallpaper = value.wallpaper;
     if (SURFACES.includes(value?.surfaces)) result.surfaces = value.surfaces;
+    if (CARD_TEMPLATES.includes(value?.cardTemplate)) result.cardTemplate = value.cardTemplate;
+    // Per-set card template (ids are opaque strings, kept short).
+    result.setTemplates = {};
+    for (const [id, template] of Object.entries(value?.setTemplates || {}).slice(0, 200))
+      if (/^[\w-]{1,64}$/.test(id) && CARD_TEMPLATES.includes(template)) result.setTemplates[id] = template;
     // Per-page wallpapers: only known pages and known wallpapers survive.
     result.pageWallpapers = {};
     for (const [page, wallpaper] of Object.entries(value?.pageWallpapers || {}))

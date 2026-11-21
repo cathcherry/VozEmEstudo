@@ -183,3 +183,78 @@ body:is([data-page='plan'],[data-page='review']) .flashcard-create-done:not(:emp
 .flashcard-dialog .flashcard-form { display: grid; gap: 12px; }
 .flashcard-dialog .flashcard-form label { display: grid; gap: 6px; font-weight: 600; }
 .flashcard-dialog .flashcard-form [type='submit'] { justify-self: end; }
+
+/* ==== Flashcards 3.0 — card templates (appearance only) ==================================== */
+body:is([data-page='plan'],[data-page='review']) .flashcard-looks { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 12px; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-looks label { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: .85rem; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-looks label[hidden] { display: none; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-looks select { min-height: 38px; padding-block: 4px; font-size: .9rem; }
+.flashcard-review-card[data-card-template='notebook'] {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border-light)) !important;
+  background:
+    linear-gradient(90deg, transparent 38px, color-mix(in srgb, #e46a6a 55%, transparent) 38px 40px, transparent 40px),
+    repeating-linear-gradient(transparent 0 31px, color-mix(in srgb, var(--accent) 22%, transparent) 31px 32px),
+    var(--surface) !important;
+  padding-left: 56px !important;
+}
+.flashcard-review-card[data-card-template='notebook'] .flashcard-content { line-height: 32px; }
+.flashcard-review-card[data-card-template='sticky'] {
+  position: relative;
+  border: 0 !important;
+  border-radius: 4px !important;
+  background: color-mix(in srgb, #ffe58a 78%, var(--surface)) !important;
+  color: #2d2a1e;
+  box-shadow: 0 12px 24px rgb(80 60 0 / 16%) !important;
+  transform: rotate(-0.6deg);
+}
+.flashcard-review-card[data-card-template='sticky']::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 90px;
+  height: 22px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent-soft) 80%, white);
+  opacity: .9;
+  transform: translateX(-50%) rotate(2deg);
+}
+.flashcard-review-card[data-card-template='sticky'] :is(h3, h4, .flashcard-muted, a) { color: #4a4430; }
+.flashcard-review-card[data-card-template='window'] {
+  position: relative;
+  padding-top: 52px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 80%) inset, 0 14px 30px rgb(20 40 80 / 14%) !important;
+}
+.flashcard-review-card[data-card-template='window']::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 34px;
+  border-bottom: 1px solid var(--border-light);
+  border-radius: 14px 14px 0 0;
+  background:
+    radial-gradient(circle at 18px 17px, #ff6b5e 0 5px, transparent 6px),
+    radial-gradient(circle at 36px 17px, #ffbd2e 0 5px, transparent 6px),
+    radial-gradient(circle at 54px 17px, #28c840 0 5px, transparent 6px),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-alt) 60%, white), var(--surface-alt));
+}
+.flashcard-review-card[data-card-template='polaroid'] {
+  padding: 18px 18px 46px !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: 6px !important;
+  background: #fffefa !important;
+  color: #262626;
+  box-shadow: 0 10px 26px rgb(0 0 0 / 14%) !important;
+  transform: rotate(0.5deg);
+}
+.flashcard-review-card[data-card-template='polaroid'] .flashcard-content:first-of-type {
+  padding: 26px 18px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--accent-soft) 70%, #fffefa);
+  font-family: var(--ue-serif, Georgia, serif);
+  font-size: 1.25rem;
+}
+.flashcard-review-card[data-card-template='polaroid'] :is(h3, h4, .flashcard-muted, a) { color: #464646; }
+@media (prefers-reduced-motion: reduce) { .flashcard-review-card[data-card-template] { transform: none !important; } }
+html[data-reduced-motion='true'] .flashcard-review-card[data-card-template] { transform: none !important; }

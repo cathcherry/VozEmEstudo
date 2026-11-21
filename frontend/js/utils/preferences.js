@@ -107,8 +107,13 @@ function saveUi(next) {
   return saved;
 }
 /** The visible control already reflects the change; only a failed save needs a message. */
+/** For page modules: change one appearance preference (saved, synced and applied). */
+export function setUiPreference(key, value) {
+  updateUiPreference(key, value);
+}
+export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
-  if (!(key in appearance.defaults) && key !== 'pageWallpapers') return;
+  if (!(key in appearance.defaults) && key !== 'pageWallpapers' && key !== 'setTemplates') return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
   if (key === 'language') reloadIfLanguageChanged();

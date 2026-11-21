@@ -11,6 +11,8 @@ import {
 
 import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
 import { ninoNote } from '../utils/material-ui.js';
+import { CARD_TEMPLATES, templateFor } from '../utils/card-templates.js';
+import { setUiPreference, getUiPreferences } from '../utils/preferences.js';
 
 // Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
 const signal = (name, detail) => {
@@ -207,6 +209,51 @@ export async function initFlashcardsPanel({ materials }) {
     materialInput.closest('label').after(createSetLabel);
     manager.querySelector('[type="submit"]').after(deleteCardButton);
   }
+  // Flashcards 3.0: card appearance, kept apart from content. Favourite for every card, or a
+  // different look for the set being reviewed.
+  const looks = make('div', null, 'flashcard-looks');
+  const lookLabel = make('label', 'Aparência dos cartões');
+  const look = make('select');
+  look.dataset.cardTemplatePicker = '';
+  for (const [value, label] of CARD_TEMPLATES) look.append(new Option(label, value));
+  lookLabel.append(look);
+  const setLookLabel = make('label', 'Neste conjunto');
+  const setLook = make('select');
+  setLook.dataset.setTemplatePicker = '';
+  setLook.append(new Option('Igual à favorita', ''));
+  for (const [value, label] of CARD_TEMPLATES) setLook.append(new Option(label, value));
+  setLookLabel.append(setLook);
+  looks.append(lookLabel, setLookLabel);
+  const syncLooks = () => {
+    const prefs = typeof getUiPreferences === 'function' ? getUiPreferences() : {};
+    look.value = prefs.cardTemplate || 'classic';
+    const setId = setsEnabled ? setFilter.value : '';
+    setLookLabel.hidden = !setId;
+    setLook.value = (setId && prefs.setTemplates?.[setId]) || '';
+  };
+  const restyle = () => {
+    const card = dueArea.querySelector('.flashcard-review-card');
+    if (card)
+      card.dataset.cardTemplate = templateFor({
+        setId: setsEnabled && setFilter.value ? setFilter.value : null,
+        preferences: getUiPreferences(),
+      });
+  };
+  look.addEventListener('change', () => {
+    setUiPreference('cardTemplate', look.value);
+    restyle();
+  });
+  setLook.addEventListener('change', () => {
+    const next = { ...(getUiPreferences().setTemplates || {}) };
+    if (setLook.value) next[setFilter.value] = setLook.value;
+    else delete next[setFilter.value];
+    setUiPreference('setTemplates', next);
+    restyle();
+  });
+  if (typeof setUiPreference === 'function') {
+    panel.querySelector('.flashcard-review-column')?.prepend(looks);
+    syncLooks();
+  }
   function fillSetOptions(sets) {
     for (const select of [setFilter, createSet]) {
       const previous = select.value;
@@ -265,6 +312,11 @@ export async function initFlashcardsPanel({ materials }) {
       return;
     }
     const article = make('article', null, 'flashcard-review-card');
+    // Appearance only: the template never changes what the card says.
+    article.dataset.cardTemplate = templateFor({
+      setId: setsEnabled && setFilter.value ? setFilter.value : null,
+      preferences: typeof getUiPreferences === 'function' ? getUiPreferences() : {},
+    });
     const frontTitle = make('h3', 'Frente do cartão');
     const front = make('p', card.front_text, 'flashcard-content');
     article.append(frontTitle, front);
@@ -423,7 +475,10 @@ export async function initFlashcardsPanel({ materials }) {
     });
   }
   lessonFilter.addEventListener('change', () => changeView(0));
-  setFilter.addEventListener('change', () => changeView(0));
+  setFilter.addEventListener('change', () => {
+    if (typeof syncLooks === 'function') syncLooks();
+    changeView(0);
+  });
   statusFilter.addEventListener('change', () => changeView(0));
   previousPage.addEventListener('click', () => changeView(Math.max(0, offset - pageLimit)));
   nextPage.addEventListener('click', () => changeView(offset + pageLimit));
