@@ -817,6 +817,9 @@ async function setup(context, base, flags, data, options = {}) {
     // Integrated material of several lessons (Milestone C): ./mock-multi-lesson.cjs.
     if (p.startsWith('/api/multi-lesson'))
       return require('./mock-multi-lesson.cjs').handleMultiLesson({ request, p, method, json, data, materials });
+    // 3.5 Milestone 6: investigations, discoveries and the collection (./mock-discoveries.cjs).
+    if (/^\/api\/(investigations|discoveries|collection)(\/|$)/.test(p))
+      return require('./mock-discoveries.cjs').handleDiscoveries({ request, p, method, json, data, materials });
     return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
   });
   await context.addInitScript(
@@ -922,6 +925,8 @@ const allFlags = {
   flashcards_v3: false,
   // Milestone C, off by default; multi-lesson-check.cjs turns it on.
   multi_lesson: false,
+  // 3.5 Milestone 6, off by default; discoveries-check.cjs turns it on.
+  discoveries: false,
 };
 
 /** Serves the static front end on a free local port. */

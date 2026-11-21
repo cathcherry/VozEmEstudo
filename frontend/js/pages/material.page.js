@@ -215,6 +215,10 @@ function layout() {
   const showContent = transcript && (ready() || reviewOpened);
   $('.material-tabs').hidden = !showContent || !ready();
   $('[data-material-actions]').hidden = !showContent;
+  // 3.5 Milestone 6: an investigation reads only a confirmed revision of the lesson.
+  const investigate = $('[data-start-investigation]');
+  investigate.hidden = !(flags.discoveries && ready());
+  investigate.href = `./investigar.html?aula=${encodeURIComponent(currentMaterial.id)}`;
   $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
   $('[data-material-tab="notes"]').hidden = !notesEnabled;
   if (activeTab === 'notes' && !notesEnabled) activeTab = 'transcription';

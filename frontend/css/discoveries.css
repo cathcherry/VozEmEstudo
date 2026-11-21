@@ -1,0 +1,503 @@
+/* 3.5 Milestone 6: Investigação, Arquivo de Descobertas and Gabinete.
+ * Page compositions only (system.css owns tokens, base, controls and the shell). Markup is
+ * semantic so the visual system can restyle it; art renders into [data-art-slot] by id. */
+@layer pages {
+  /* ---- Experience modes: same data, more or less game interface -------------------------- */
+  :root[data-experience-mode='quiet'] [data-game-ui] {
+    display: none;
+  }
+  :root:not([data-experience-mode='adventure']) [data-adventure-only] {
+    display: none;
+  }
+
+  .investigation-page,
+  .discoveries-page,
+  .cabinet-page {
+    overflow-wrap: anywhere;
+  }
+  .investigation-heading,
+  .discoveries-page .tool-heading,
+  .cabinet-page .tool-heading {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-5);
+    align-items: center;
+    justify-content: space-between;
+  }
+  .investigation-lesson {
+    margin: var(--space-1) 0 0;
+    color: var(--ink-muted);
+  }
+  .investigation-status:empty,
+  .discoveries-status:empty,
+  .cabinet-status:empty,
+  .investigation-counter:empty,
+  .investigation-missing:empty {
+    display: none;
+  }
+  [data-state='error'].investigation-status,
+  [data-state='error'].discoveries-status,
+  [data-state='error'].cabinet-status {
+    color: var(--error);
+  }
+  .investigation-field {
+    display: block;
+    margin: var(--space-4) 0 var(--space-1);
+    font-weight: 600;
+  }
+  .investigation-page textarea,
+  .investigation-page input[type='text'],
+  .investigation-page input[type='search'],
+  .discoveries-page textarea,
+  .discoveries-page input[type='text'],
+  .discoveries-page select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .investigation-page .form-actions,
+  .discoveries-page .form-actions,
+  .cabinet-page .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    align-items: center;
+    margin-top: var(--space-3);
+  }
+
+  /* ---- Investigation: a notebook page with a rail of steps ------------------------------- */
+  .investigation-layout {
+    display: grid;
+    grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+    gap: var(--space-5);
+    align-items: start;
+    margin-top: var(--space-5);
+  }
+  .investigation-rail {
+    position: sticky;
+    top: calc(var(--topbar-height) + var(--space-4));
+  }
+  .investigation-rail ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-1);
+    border-left: 2px solid var(--line);
+  }
+  .investigation-rail button {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-2);
+    align-items: baseline;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 44px;
+    margin-left: -2px;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    border-left: 2px solid transparent;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .investigation-rail button[aria-current='step'] {
+    border-left-color: var(--brand-ink);
+    font-weight: 650;
+    background: var(--brand-wash);
+  }
+  .investigation-rail button:disabled {
+    color: var(--ink-muted);
+    cursor: default;
+  }
+  .investigation-rail .step-number {
+    font-family: var(--font-display);
+    color: var(--brand-ink);
+  }
+  .investigation-rail .step-optional,
+  .investigation-rail .step-state {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+  .investigation-rail li[data-done='true'] .step-state {
+    color: var(--matcha-ink);
+  }
+  .investigation-sheet {
+    min-width: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  .investigation-step h2,
+  .investigation-done h2 {
+    margin-top: 0;
+    font-family: var(--font-display);
+  }
+  .investigation-question-text,
+  .discovery-explanation {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.45;
+    white-space: pre-line;
+  }
+  .investigation-prompt-list,
+  .investigation-previous ul {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-2) 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .investigation-prompt {
+    min-height: 44px;
+    text-align: left;
+  }
+  .investigation-transcript {
+    margin-top: var(--space-5);
+  }
+  .investigation-segments {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .investigation-segment-row {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border-left: 3px solid var(--line);
+  }
+  .investigation-segment-row .transcription-segment {
+    display: block;
+    width: auto;
+    max-width: none;
+    grid-template-columns: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .investigation-segment-row .segment-text {
+    display: block;
+    width: auto;
+    max-width: none;
+    grid-column: auto;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .investigation-segments:not([data-mode='evidence']) .evidence-whole {
+    display: none;
+  }
+  .evidence-whole {
+    justify-self: start;
+    min-height: 32px;
+  }
+  .investigation-selection {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+  }
+  .investigation-selection-preview {
+    margin: 0;
+  }
+  .evidence-list {
+    padding-left: 1.4em;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .evidence-quote {
+    margin: 0;
+    padding: var(--space-1) 0 var(--space-1) var(--space-3);
+    border-left: 3px solid var(--honey);
+    font-style: italic;
+    white-space: pre-line;
+  }
+  .evidence-note,
+  .evidence-source {
+    margin: var(--space-1) 0 0;
+  }
+  .evidence-source,
+  .discovery-meta,
+  .cabinet-origin {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  .evidence-source a,
+  .discovery-meta a,
+  .cabinet-origin a,
+  .discovery-detail .text-action {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .link-group ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .link-option {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+  }
+  .link-option button[aria-pressed='true'] {
+    background: var(--brand-tint);
+  }
+  .investigation-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px dashed var(--line-strong);
+  }
+  .investigation-missing {
+    margin: 0;
+  }
+  .investigation-done {
+    margin-top: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-panel);
+    background: var(--brand-tint);
+  }
+  .investigation-unlocks {
+    margin: var(--space-3) 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-panel);
+    background: color-mix(in srgb, var(--honey) 16%, var(--paper-raised));
+  }
+  .unlock-line {
+    margin: 0;
+  }
+
+  /* ---- Stamps (art by id; the label stays readable without art) ------------------------- */
+  .stamp-row {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-2) 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .stamp {
+    display: inline-flex;
+    gap: var(--space-1);
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border: 1px dashed var(--honey-ink);
+    border-radius: var(--radius-pill);
+    color: var(--honey-ink);
+    font-size: var(--step-ui);
+  }
+
+  /* ---- Arquivo de Descobertas ----------------------------------------------------------- */
+  .discovery-notebook {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .discovery-page-card {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--lavender);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+  }
+  .discovery-page-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+  }
+  .discovery-page-card p {
+    margin: var(--space-1) 0 0;
+  }
+  .discovery-heading h2 {
+    font-family: var(--font-display);
+    margin-bottom: var(--space-1);
+  }
+  .discovery-block {
+    margin-top: var(--space-6);
+  }
+  .discovery-block h3 {
+    font-family: var(--font-display);
+  }
+  .discovery-links,
+  .discovery-connections,
+  .discovery-revisits {
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .discovery-connection[data-across='true'] {
+    list-style-type: '↔ ';
+  }
+  .discovery-connection-note {
+    margin: var(--space-1) 0 0;
+  }
+  .discovery-reflections {
+    padding-left: 1.4em;
+  }
+  .discovery-reflections p,
+  .discovery-history p {
+    margin: var(--space-1) 0;
+    white-space: pre-line;
+  }
+  .discovery-edit,
+  .discovery-history {
+    margin-top: var(--space-3);
+  }
+  .discovery-edit summary,
+  .discovery-history summary,
+  .cabinet-drawer summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  /* ---- Gabinete ------------------------------------------------------------------------- */
+  .experience-mode {
+    margin: var(--space-4) 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    min-width: 0;
+  }
+  .experience-mode legend {
+    font-weight: 650;
+    padding: 0 var(--space-1);
+  }
+  .experience-mode .segmented-control {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .experience-mode label {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+  .experience-mode label:has(input:checked) {
+    border-color: var(--brand-ink);
+    background: var(--brand-wash);
+  }
+  .cabinet-drawers {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .cabinet-drawer {
+    padding: var(--space-2) var(--space-4) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  .cabinet-drawer summary {
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+  }
+  .cabinet-count {
+    font-family: var(--font-ui);
+    font-size: var(--step-ui);
+    color: var(--ink-muted);
+  }
+  .cabinet-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-3);
+  }
+  .cabinet-item {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+  }
+  .cabinet-item p {
+    margin: var(--space-1) 0 0;
+  }
+  .cabinet-item[data-state='locked'] {
+    background: none;
+    border: 1px dashed var(--line-strong);
+    color: var(--ink-muted);
+  }
+  .cabinet-item[data-state='locked'] strong {
+    color: var(--ink);
+  }
+  .desk-section {
+    margin-top: var(--space-6);
+  }
+  .desk-preview {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: var(--space-2);
+  }
+  .desk-slot {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-control);
+  }
+  .desk-slot[data-filled='true'] {
+    border-style: solid;
+    background: var(--brand-wash);
+  }
+  .desk-slot-name {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+  .desk-choices {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .desk-choice {
+    display: grid;
+    gap: var(--space-1);
+  }
+  .desk-choice label {
+    font-weight: 600;
+  }
+
+  @media (max-width: 760px) {
+    .investigation-layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
+    }
+    .investigation-rail {
+      position: static;
+    }
+    .investigation-rail ol {
+      border-left: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .investigation-rail button {
+      margin-left: 0;
+      border-left: 0;
+      border-bottom: 2px solid transparent;
+    }
+    .investigation-rail button[aria-current='step'] {
+      border-bottom-color: var(--brand-ink);
+    }
+    .investigation-sheet {
+      padding: var(--space-4);
+    }
+  }
+}
