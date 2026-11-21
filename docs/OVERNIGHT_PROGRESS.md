@@ -77,7 +77,7 @@ Nenhuma migration foi criada ou aplicada.
 ## Testes (contêiner, API simulada)
 
 - Backend: suíte completa verde. Inclui `question-generation` (11) e `study-authoring-http` (7).
-- Front end, unidade: `test:dom`, `test:study-tracking` (com `focus-session` 8/8), `test:planning-ui`, `test:personalization`, `test:study-authoring`, `test:flashcards-ui`, `test:learning-tools` e `test:quality`.
+- Front end, unidade: `test:dom`, `test:study-tracking` (correção: os testes de `focus-session` só passaram a fazer parte deste script em `6439743`; antes eram rodados à mão), `test:planning-ui`, `test:personalization`, `test:study-authoring`, `test:flashcards-ui`, `test:learning-tools` e `test:quality`.
 - Navegador:
   - `browser-check` (57);
   - `dashboard-home` (9);
@@ -96,3 +96,15 @@ Nenhuma migration foi criada ou aplicada.
 2. Plano diretor 3.0 (`docs/PLANO_DIRETOR_VOZ_EM_ESTUDO_3_0.md`).
 3. Flashcards 3.0: separação entre conteúdo e template (fundação).
 4. Revisar o CI do PR #8 e, com tudo verde, decidir o merge.
+
+## Continuação — branch `feat/voz-3-1` (PR #9)
+
+| Marco | Commit |
+| --- | --- |
+| Durações do Focar na conta (`focusSettings`) | `f494ef4` |
+| Biblioteca em lista estilo Finder; "+ Nova disciplina"; catálogo no simulador | `7263872` |
+| Aba Flashcards na aula + `?conjunto=` em Revisar | `a31e078` |
+| Blocos do Focar ligados à aula; notificação do sistema (opcional) | `4c6052f` |
+| Imagem ou GIF próprio como fundo | `fd83fee` |
+| Tipografia dos títulos | `4f35699` |
+| Som ambiente gerado no navegador (ruído marrom, chuva, ondas) com ducking | `6439743` |

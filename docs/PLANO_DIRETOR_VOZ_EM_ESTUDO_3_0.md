@@ -94,7 +94,7 @@ Elementos da linguagem visual:
 
 Pendente:
 
-- aba própria de Flashcards na aula (hoje a criação fica no Resumo e a revisão em Revisar);
+- ~~aba própria de Flashcards na aula~~: feito em `a31e078` (conjuntos da aula, "Revisar agora" com `?conjunto=`);
 - teste de transcrições muito longas;
 - teste do estado "processando" em navegador real.
 
@@ -349,7 +349,9 @@ Já existe:
 
 ## 12. Música
 
-**Desenho**.
+**Primeira fatia implementada (`6439743`):** sons ambientes gerados no navegador (Web Audio: ruído marrom, chuva suave e ondas), sem gravações nem licenças, como a ferramenta "Som" do mesmo painel do Focar. Inclui volume e redução automática (ducking) enquanto a gravação da aula toca, e oferece "Retomar som" depois de trocar de página.
+
+**Ainda em desenho:** faixas licenciadas, playlists, Spotify e YouTube.
 
 - O player é uma ferramenta do mesmo shell do Focar: cápsula, painel e página Focar.
 - Música e foco são independentes.
@@ -385,7 +387,7 @@ Desenho:
 | Fase | Conteúdo | Depende de |
 | --- | --- | --- |
 | 3.0-a (esta sessão) | Material, Focar, Questões, Estúdio visual, destaques no texto | — |
-| 3.0-b | Cadernos ricos + âncoras multissegmento (migrations §7); aba Flashcards na aula | aprovação das migrations |
+| 3.0-b | Cadernos ricos + âncoras multissegmento (migrations §7) | aprovação das migrations |
 | 3.0-c | Flashcards 3.0: tipos, templates, mescla, Anki | 3.0-b (compartilhamento) |
 | 3.0-d | Multiaula / mapa de conhecimento | Questões 3.0 |
 | 3.0-e | Turmas privadas, envios aprovados, `generation_key` | 3.0-c, 3.0-d |
