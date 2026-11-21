@@ -424,3 +424,10 @@ servidores com IA real foram desligados depois do teste.
 | Pacote da release | `database/release/3.4/manifest.json` (ordem, SHA-256, dependências, checks, reversão) e `scripts/release/verify-release.mjs`, com teste |
 
 Produção: **nada aplicado, nenhuma flag ligada**. Aguarda autorização explícita.
+
+### Merge da 3.4.1
+
+- **PR #13 mergeado na `main`** em 21/11/2026: commit de merge **`6310133ad03df616bb922a087b68cf41b167b04b`**. A cabeça era `abad57b`, com os dois checks `local-quality` verdes antes do merge.
+- Esse merge incluiu também: seletor de aparência na importação de texto e de `.apkg`; tentativas repetidas da mescla e da importação antigas (flag `flashcards_v3` desligada) já não duplicam o conjunto; o mock de testes serve um WAV silencioso quando o arquivo de teste ainda não existe (sem ENOENT).
+- CI da `main` em `6310133`: workflow Quality, run 406, **sucesso** (19:39 UTC).
+- Produção: **nada aplicado, nenhuma flag ligada.**
