@@ -16,6 +16,8 @@ A adaptação integra a cor persistente, tipografia local, foco, navegação e r
 
 Plus Jakarta Sans e Inter, distribuídas sob SIL Open Font License. Arquivos WOFF2 locais em `frontend/assets/fonts/`. Licenças: `JAKARTA-OFL.txt` e `INTER-OFL.txt`.
 
+No 3.5, a interface usa Fraunces (títulos, variável com eixo SOFT) e Instrument Sans (interface), ambas SIL Open Font License, copiadas de `@fontsource-variable/fraunces` e `@fontsource-variable/instrument-sans` 5.3.0 (subconjunto latino). Licenças: `FRAUNCES-OFL.txt` e `INSTRUMENT-SANS-OFL.txt`.
+
 ## Marca e referências
 
 Logo, favicon e mascotes reaproveitados dos arquivos do projeto fornecido. As quatro imagens enviadas pela usuária foram usadas como referência de composição; não foram incorporadas como páginas prontas.

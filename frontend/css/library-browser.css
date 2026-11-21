@@ -867,3 +867,9 @@ body[data-page='history'].library-selecting .library-material { padding-left: 52
     position: relative;
   }
 }
+/* Selection mode: room for the checkbox at the start of each row. */
+@layer pages {
+  body[data-page='history'].library-selecting .library-material {
+    padding-left: 3.25rem;
+  }
+}

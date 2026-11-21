@@ -291,11 +291,13 @@
     min-width: 1.75rem;
     height: 1.75rem;
     border-radius: 6px;
-    background: var(--brand-wash);
-    color: var(--brand-ink);
+    background: var(--paper-sunken);
+    color: var(--ink);
     font-size: var(--step--1);
   }
   body.app-page :is(.check-row, .setting-select-row) {
+    flex-wrap: wrap;
+    min-width: 0;
     gap: var(--space-3);
     border-top: 1px solid var(--line);
   }
@@ -308,7 +310,8 @@
   }
   body.app-page .setting-select-row select {
     width: auto;
-    min-width: 11rem;
+    min-width: min(11rem, 100%);
+    max-width: 100%;
     min-height: 2.25rem;
     margin-left: auto;
     font-size: var(--step-ui);
