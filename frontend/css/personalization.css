@@ -293,3 +293,184 @@ html[data-density='compact'] body.app-page :is(.study-section, .tool-section > s
     border: 1px solid CanvasText;
   }
 }
+
+/* ---- Profile: viewing and editing modes -------------------------------------------------- */
+.account-page [data-user-hidden] {
+  display: none !important;
+}
+/* Viewing mode: the profile reads cleanly, without arrangement tools. */
+body:not([data-profile-editing])
+  .account-page
+  :is(.block-drag-handle, .card-resize-handle, .profile-block-actions, [data-block-open]) {
+  display: none;
+}
+.account-page .account-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.account-page .profile-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.account-page .profile-heading-actions button {
+  min-height: 44px;
+}
+.account-page .profile-edit-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-light));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+  box-shadow: 0 8px 24px rgb(20 24 32 / 10%);
+}
+.account-page .profile-edit-bar[hidden] {
+  display: none;
+}
+.account-page .profile-edit-bar p {
+  flex: 1 1 320px;
+  margin: 0;
+  line-height: 1.45;
+}
+.account-page .profile-edit-bar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+body[data-profile-editing] .account-page .profile-block-grid > .profile-block {
+  outline: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 3px;
+}
+.account-page .is-hidden-block,
+.account-page .is-hidden-section {
+  opacity: 0.6;
+}
+.account-page .is-hidden-section {
+  border-style: dashed !important;
+}
+.account-page .profile-hidden-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+.account-page .profile-section-toggle {
+  display: block;
+  width: fit-content;
+  min-height: 36px;
+  margin: 0 0 10px auto;
+  padding: 4px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.account-page .profile-section-toggle[hidden] {
+  display: none;
+}
+.account-page .profile-section-toggle:hover {
+  border-color: var(--accent);
+}
+/* Block menu: actions, then a row of widths. */
+.account-page .block-action-menu {
+  min-width: 200px;
+}
+.account-page .block-size-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin: 4px 0;
+  padding: 6px 0;
+  border-block: 1px solid var(--border-light);
+}
+.account-page .block-size-options [aria-pressed='true'] {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+  font-weight: 700;
+}
+
+/* ---- Profile data blocks ----------------------------------------------------------------- */
+.account-page .profile-data-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.account-page .profile-data-list li {
+  display: grid;
+  gap: 2px;
+}
+.account-page .profile-data-list small,
+.account-page .profile-data-empty {
+  color: var(--muted);
+}
+.account-page .profile-data-list progress,
+.account-page .profile-data-week progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--accent-strong);
+}
+.account-page .profile-data-week strong {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.2rem;
+}
+.account-page .profile-data-empty {
+  margin: 0 0 8px;
+}
+.block-data-sources {
+  display: grid;
+  gap: 10px;
+}
+.block-data-sources[hidden] {
+  display: none;
+}
+.block-data-sources > p {
+  margin: 0;
+  color: var(--muted);
+}
+.block-data-source {
+  display: grid;
+  gap: 2px;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.block-data-source:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.block-data-source span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.block-data-source:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

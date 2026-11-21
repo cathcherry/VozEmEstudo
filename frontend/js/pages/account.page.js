@@ -1,5 +1,7 @@
 import { enhanceCard } from '../utils/card-layout.js';
-import { loadCloudState, saveCloudState, registerCloudMerge } from '../utils/profile-cloud.js';
+import { loadCloudState, saveCloudState, registerCloudMerge, cachedCloudState } from '../utils/profile-cloud.js';
+import { PROFILE_LAYOUT_KEY, PROFILE_SECTIONS, BLOCK_SIZES, DATA_BLOCKS, normalizeProfileLayout, newDataBlock, duplicateBlock, moveBlock as movedBlocks, renderDataBlock } from './profile-editor.js';
+import { getFeatureFlags } from '../utils/feature-flags.js';
 import { milestones, evaluateMilestones, orderedMilestones, unlockedAvatars, mergeMilestoneStates } from '../utils/gamification.js';
 import { widgetDocument, blockTemplates, templateFields, compileTemplate } from '../utils/profile-widgets.js';
 import '../utils/preferences.js';
@@ -24,6 +26,43 @@ window.addEventListener('profile-sync-status', (event) => { const node=document.
 const syncedBlocks = await loadCloudState(userId,'profile-blocks',loadBlocks());
 if (Array.isArray(syncedBlocks)) localStorage.setItem(profileBlocksKey(userId),JSON.stringify(syncedBlocks));
 let gameState = await loadCloudState(userId,'milestones',{}) || {};
+// Viewing mode by default; "Personalizar perfil" turns on the editing tools.
+let editing = false;
+let profileLayout = normalizeProfileLayout(cachedCloudState(userId, PROFILE_LAYOUT_KEY));
+const profileStatus = document.querySelector('[data-profile-edit-status]');
+function announce(text) { if (profileStatus) profileStatus.textContent = text; }
+function applySections() {
+  for (const section of PROFILE_SECTIONS) {
+    const node = document.querySelector(section.selector);
+    if (!node) continue;
+    const hidden = profileLayout.hiddenSections.includes(section.id);
+    node.classList.toggle('is-hidden-section', hidden);
+    node.toggleAttribute('data-user-hidden', hidden && !editing);
+    let toggle = node.querySelector(':scope > [data-section-toggle], .section-heading [data-section-toggle], h2 + [data-section-toggle]');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'profile-section-toggle';
+      toggle.dataset.sectionToggle = section.id;
+      toggle.addEventListener('click', () => {
+        const hide = !profileLayout.hiddenSections.includes(section.id);
+        profileLayout = normalizeProfileLayout({ hiddenSections: hide ? [...profileLayout.hiddenSections, section.id] : profileLayout.hiddenSections.filter((id) => id !== section.id) });
+        void saveCloudState(userId, PROFILE_LAYOUT_KEY, profileLayout);
+        applySections();
+        announce(hide ? `${section.label} oculto no seu perfil.` : `${section.label} voltou ao seu perfil.`);
+        toggle.focus();
+      });
+      node.prepend(toggle);
+    }
+    toggle.hidden = !editing;
+    toggle.textContent = hidden ? `Mostrar ${section.label}` : `Ocultar ${section.label}`;
+    toggle.setAttribute('aria-pressed', String(hidden));
+  }
+}
+applySections();
+void loadCloudState(userId, PROFILE_LAYOUT_KEY, null).then((remote) => {
+  if (remote) { profileLayout = normalizeProfileLayout(remote); applySections(); }
+});
 let milestoneFilter = 'all';
 const form = document.querySelector('[data-account-form]');
 const message = document.querySelector('[data-account-message]');
@@ -170,14 +209,22 @@ function renderProfileBlocks() {
   const container = document.querySelector('[data-profile-blocks]');
   for (const node of container.querySelectorAll('[data-custom-block]')) node.remove();
   const blocks = loadBlocks();
-  for (const block of blocks) {
+  const shown = editing ? blocks : blocks.filter((block) => !block.hidden);
+  for (const block of shown) {
+    const position = blocks.findIndex((item) => item.id === block.id);
     const card = document.createElement('article');
-    card.className = `profile-block profile-block-${block.type}`;
+    card.className = `profile-block profile-block-${block.type}${block.hidden ? ' is-hidden-block' : ''}`;
     card.dataset.customBlock = block.id;
     const heading = document.createElement('div');
     heading.className = 'profile-block-heading';
     const title = document.createElement('h3');
     title.textContent = block.title;
+    if (block.hidden) {
+      const badge = document.createElement('span');
+      badge.className = 'profile-hidden-badge';
+      badge.textContent = 'Oculto';
+      title.append(' ', badge);
+    }
     const actions = document.createElement('details');
     actions.className = 'profile-block-actions';
     const toggle = document.createElement('summary');
@@ -198,21 +245,50 @@ function renderProfileBlocks() {
         document.querySelector('[data-custom-block="' + block.id + '"] .block-drag-handle')?.focus();
       }
     });
-
-    const edit = document.createElement('button');
-    edit.type = 'button';
-    edit.className = 'icon-action';
-    edit.textContent = 'Editar';
-    edit.addEventListener('click', () => openBlockEditor(block));
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'icon-action';
-    remove.textContent = 'Remover';
-    remove.addEventListener('click', () => {
+    const action = (label, run, options = {}) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'icon-action';
+      button.textContent = label;
+      if (options.pressed !== undefined) button.setAttribute('aria-pressed', String(options.pressed));
+      if (options.disabled) button.disabled = true;
+      button.addEventListener('click', () => { actions.open = false; run(); });
+      menu.append(button);
+      return button;
+    };
+    // Every arrangement has a keyboard path here (drag and resize remain for pointers).
+    const update = (blocksNext, notice, focusId = block.id) => {
+      saveBlocks(blocksNext); renderProfileBlocks(); announce(notice);
+      document.querySelector(`[data-custom-block="${CSS.escape(focusId)}"] summary`)?.focus();
+    };
+    if (block.type !== 'data') action('Editar', () => openBlockEditor(block));
+    action('Duplicar', () => {
+      const next = duplicateBlock(loadBlocks(), block.id);
+      const copy = next[next.findIndex((item) => item.id === block.id) + 1];
+      update(next, `Cópia de ${block.title} criada.`, copy.id);
+    });
+    action(block.hidden ? 'Mostrar no perfil' : 'Ocultar do perfil', () => {
+      update(loadBlocks().map((item) => item.id === block.id ? { ...item, hidden: !block.hidden } : item),
+        block.hidden ? `${block.title} voltou ao perfil.` : `${block.title} oculto. Ele continua aqui no modo de edição.`);
+    });
+    action('Mover para cima', () => update(movedBlocks(loadBlocks(), block.id, -1), `${block.title} movido para cima.`), { disabled: position <= 0 });
+    action('Mover para baixo', () => update(movedBlocks(loadBlocks(), block.id, 1), `${block.title} movido para baixo.`), { disabled: position >= blocks.length - 1 });
+    const sizes = document.createElement('div');
+    sizes.className = 'block-size-options';
+    sizes.setAttribute('role', 'group');
+    sizes.setAttribute('aria-label', 'Largura de ' + block.title);
+    menu.append(sizes);
+    for (const [label, columns] of BLOCK_SIZES) {
+      const button = action(label, () => update(loadBlocks().map((item) => item.id === block.id ? { ...item, layout: { ...item.layout, columns } } : item), `${block.title}: largura ${label.toLowerCase()}.`), { pressed: (block.layout?.columns || 4) === columns });
+      sizes.append(button);
+    }
+    action('Remover', () => {
+      if (!confirm(`Remover o bloco "${block.title}"? Esta ação não pode ser desfeita.`)) return;
       saveBlocks(loadBlocks().filter((item) => item.id !== block.id));
       renderProfileBlocks();
+      announce(`${block.title} removido.`);
+      document.querySelector('[data-block-open]')?.focus();
     });
-    menu.append(edit, remove);
     heading.append(handle, title, actions);
     card.append(heading);
     if (block.templateId === 'checklist') {
@@ -242,6 +318,13 @@ function renderProfileBlocks() {
       codeText.textContent = block.content;
       code.append(codeText);
       card.append(code);
+    } else if (block.type === 'data') {
+      const slot = document.createElement('div');
+      slot.className = 'profile-data-slot';
+      slot.setAttribute('aria-busy', 'true');
+      slot.textContent = 'Carregando…';
+      card.append(slot);
+      void renderDataBlock(block.source).then((node) => { slot.replaceChildren(node); slot.setAttribute('aria-busy', 'false'); });
     } else if (block.type === 'embed') {
       const frame = document.createElement('iframe');
       frame.src = block.url;
@@ -265,8 +348,40 @@ function renderProfileBlocks() {
       saveOrder(ids){const items=loadBlocks();saveBlocks(ids.map(id=>items.find(item=>item.id===id)).filter(Boolean));}
     }));
   }
-  document.querySelector('[data-profile-empty]').hidden = blocks.length > 0 || container.querySelector('[data-about-block]');
+  document.querySelector('[data-profile-empty]').hidden = shown.length > 0 || container.querySelector('[data-about-block]');
+  // In viewing mode an empty "Meus cards" section is not shown at all.
+  document.querySelector('.profile-content-section').toggleAttribute('data-user-hidden', !editing && !shown.length);
 }
+
+function setEditing(next) {
+  editing = next;
+  document.body.toggleAttribute('data-profile-editing', editing);
+  const toggle = document.querySelector('[data-profile-edit-toggle]');
+  toggle?.setAttribute('aria-pressed', String(editing));
+  if (toggle) toggle.querySelector('span').textContent = editing ? 'Concluir edição' : 'Personalizar perfil';
+  document.querySelector('[data-profile-edit-bar]').hidden = !editing;
+  renderProfileBlocks();
+  applySections();
+  announce(editing ? 'Modo de edição: reorganize, oculte ou adicione blocos. As mudanças são salvas na hora.' : 'Edição concluída.');
+}
+document.querySelector('[data-profile-edit-toggle]')?.addEventListener('click', () => setEditing(!editing));
+document.querySelector('[data-profile-edit-done]')?.addEventListener('click', () => {
+  setEditing(false);
+  document.querySelector('[data-profile-edit-toggle]')?.focus();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && editing && !document.querySelector('dialog[open]')) {
+    setEditing(false);
+    document.querySelector('[data-profile-edit-toggle]')?.focus();
+  }
+});
+document.querySelector('[data-profile-show-all]')?.addEventListener('click', () => {
+  saveBlocks(loadBlocks().map((block) => ({ ...block, hidden: false })));
+  profileLayout = normalizeProfileLayout({ hiddenSections: [] });
+  void saveCloudState(userId, PROFILE_LAYOUT_KEY, profileLayout);
+  renderProfileBlocks(); applySections();
+  announce('Todos os blocos e seções voltaram a aparecer.');
+});
 
 function moveBlock(index, direction) {
   const blocks = loadBlocks();
@@ -314,6 +429,17 @@ function syncBlockFields() {
   document.querySelector('.block-templates').hidden = !isTemplate;
   document.querySelector('[data-template-fields]').hidden = !isTemplate;
   document.querySelector('[data-block-kind-label]').hidden = blockMode !== 'raw';
+  // "Seus dados": choosing a source adds the block at once; the other fields do not apply.
+  const isData = blockMode === 'data';
+  document.querySelector('[data-block-data-sources]').hidden = !isData;
+  document.querySelector('#block-title').closest('label').hidden = isData;
+  document.querySelector('#block-title').required = !isData;
+  document.querySelector('#block-dialog .form-actions').hidden = isData;
+  if (isData) {
+    for (const selector of ['[data-block-content-label]', '[data-block-url-label]', '[data-block-css-label]', '[data-widget-preview-button]', '.block-templates', '[data-template-fields]', '[data-block-kind-label]']) document.querySelector(selector).hidden = true;
+    document.querySelector('#block-content').required = false;
+    document.querySelector('#block-url').required = false;
+  }
   for (const button of document.querySelectorAll('[data-block-mode]')) button.setAttribute('aria-pressed', String(button.dataset.blockMode === blockMode));
   for (const button of document.querySelectorAll('[data-template]')) button.setAttribute('aria-pressed', String(button.dataset.template === activeTemplate));
   document.querySelector('#block-content').placeholder = type === 'widget'
@@ -571,13 +697,39 @@ blockForm.addEventListener('submit', (event) => {
     syncBlockFields();
     editingBlockId = null;
     document.querySelector('#block-dialog').close();
-    setStatus(status, 'Bloco salvo neste navegador.', 'success');
+    setStatus(status, 'Bloco salvo.', 'success');
   } catch (error) {
     setStatus(status, error.message || 'Não foi possível salvar o bloco.', 'error');
   }
 });
 
 document.querySelector('.profile-content-section [data-block-open]').addEventListener('click', () => openBlockEditor());
+document.querySelector('[data-block-open-bar]')?.addEventListener('click', () => openBlockEditor());
+// Data sources for "Seus dados" (a tool switched off on this server is offered but disabled).
+void getFeatureFlags().catch(() => ({})).then((flags) => {
+  const host = document.querySelector('[data-block-data-sources]');
+  for (const [source, spec] of Object.entries(DATA_BLOCKS)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'block-data-source';
+    button.dataset.dataSource = source;
+    const label = document.createElement('strong');
+    label.textContent = spec.title;
+    const detail = document.createElement('span');
+    detail.textContent = spec.flag && !flags[spec.flag] ? 'Recurso desligado neste servidor' : spec.description;
+    button.append(label, detail);
+    button.disabled = Boolean(spec.flag && !flags[spec.flag]);
+    button.addEventListener('click', () => {
+      const block = newDataBlock(source);
+      saveBlocks([...loadBlocks(), block]);
+      renderProfileBlocks();
+      document.querySelector('#block-dialog').close();
+      announce(`${spec.title} adicionado ao perfil.`);
+      document.querySelector(`[data-custom-block="${CSS.escape(block.id)}"] summary`)?.focus();
+    });
+    host.append(button);
+  }
+});
 renderProfileBlocks();
 renderStudySummary();
 loadMedia();

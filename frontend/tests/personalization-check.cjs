@@ -41,6 +41,18 @@ const units = (page, column) =>
   );
 const row = (data, owner, key) =>
   data.profileState.find((item) => item.user_id === owner && item.key === key);
+/** Waits until the simulated account copy satisfies `check` (saves are asynchronous). */
+async function until(check, label) {
+  for (let i = 0; i < 50; i++) {
+    try {
+      if (check()) return;
+    } catch {
+      /* not there yet */
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  assert.fail(`timed out: ${label}`);
+}
 async function openSheet(page) {
   await page.locator('[data-dashboard-customize]:visible').click();
   await page.locator('[data-dashboard-customize-dialog][open]').waitFor();
@@ -177,6 +189,161 @@ async function main() {
       'Falha de sincronização: a mudança vale na hora, fica pendente e chega à conta depois; cópia mais nova de outro aparelho prevalece',
     );
     await context.close();
+
+    // ---------- Profile: viewing mode, editing mode and keyboard arrangement ---------------
+    {
+      const profileData = state();
+      profileData.profileState = [
+        {
+          user_id: 'user-dashboard',
+          key: 'profile-blocks',
+          updated_at: new Date(Date.now() - 60000).toISOString(),
+          data: [
+            {
+              id: 'b1',
+              title: 'O que estou estudando',
+              type: 'text',
+              content: 'Biologia celular.',
+            },
+            { id: 'b2', title: 'Rascunho', type: 'text', content: 'Ainda não.', hidden: true },
+            // An older block with fields this version does not know keeps working.
+            {
+              id: 'b3',
+              title: 'Passos',
+              type: 'text',
+              content: 'Um passo.',
+              layout: { columns: 4 },
+              extra: 1,
+            },
+          ],
+        },
+      ];
+      const owner = (key) => row(profileData, 'user-dashboard', key)?.data;
+      const profile = await openApp(browser, base, allFlags, profileData);
+      const p = profile.page;
+      await p.goto(base + '/conta.html');
+      await p.locator('[data-custom-block="b1"]').waitFor();
+      assert.equal(
+        await p.locator('[data-custom-block="b2"]').count(),
+        0,
+        'hidden block not shown',
+      );
+      assert.equal(
+        await p
+          .locator(
+            '.block-drag-handle:visible, .card-resize-handle:visible, .profile-block-actions:visible',
+          )
+          .count(),
+        0,
+        'no editing tools while viewing',
+      );
+      await settle(p);
+      await axeCheck(p, 'main', 'Perfil (visualização)');
+      await shot(p, 'perfil-visualizacao-1440');
+      await p.locator('[data-profile-edit-toggle]').click();
+      assert.equal(
+        await p.locator('[data-profile-edit-toggle]').getAttribute('aria-pressed'),
+        'true',
+      );
+      await p.locator('[data-custom-block="b2"].is-hidden-block').waitFor();
+      // Keyboard: open the block menu, duplicate, move, resize, show.
+      await p.locator('[data-custom-block="b1"] summary').focus();
+      await p.keyboard.press('Enter');
+      await p.getByRole('button', { name: 'Duplicar', exact: true }).click();
+      await until(
+        () =>
+          owner('profile-blocks')
+            .map((b) => b.title)
+            .join('|') === 'O que estou estudando|O que estou estudando (cópia)|Rascunho|Passos',
+        'duplicate saved',
+      );
+      const copyId = owner('profile-blocks')[1].id;
+      assert.equal(
+        await p.evaluate(
+          () => document.activeElement.closest('[data-custom-block]')?.dataset.customBlock,
+        ),
+        copyId,
+        'focus on the copy',
+      );
+      await p.keyboard.press('Enter');
+      await p
+        .locator(`[data-custom-block="${copyId}"]`)
+        .getByRole('button', { name: 'Mover para baixo' })
+        .click();
+      await until(() => owner('profile-blocks')[2].id === copyId, 'move saved');
+      await p.locator(`[data-custom-block="${copyId}"] summary`).click();
+      await p
+        .locator(`[data-custom-block="${copyId}"]`)
+        .getByRole('button', { name: 'Linha inteira' })
+        .click();
+      await until(() => owner('profile-blocks')[2].layout.columns === 12, 'width saved');
+      await p.locator('[data-custom-block="b2"] summary').click();
+      await p
+        .locator('[data-custom-block="b2"]')
+        .getByRole('button', { name: 'Mostrar no perfil' })
+        .click();
+      await until(
+        () => owner('profile-blocks').find((b) => b.id === 'b2').hidden === false,
+        'shown',
+      );
+      // Removing asks first.
+      p.once('dialog', (d) => void d.dismiss());
+      await p.locator(`[data-custom-block="${copyId}"] summary`).click();
+      await p
+        .locator(`[data-custom-block="${copyId}"]`)
+        .getByRole('button', { name: 'Remover' })
+        .click();
+      assert.equal(owner('profile-blocks').length, 4, 'cancel keeps the block');
+      p.once('dialog', (d) => void d.accept());
+      await p.locator(`[data-custom-block="${copyId}"] summary`).click();
+      await p
+        .locator(`[data-custom-block="${copyId}"]`)
+        .getByRole('button', { name: 'Remover' })
+        .click();
+      await until(() => owner('profile-blocks').length === 3, 'removed');
+      assert.equal(
+        owner('profile-blocks').find((b) => b.id === 'b3').extra,
+        1,
+        'unknown fields kept',
+      );
+      // A block with real data, then hide a fixed section.
+      await p.locator('[data-block-open-bar]').click();
+      await p.locator('[data-block-mode="data"]').click();
+      await p.locator('[data-data-source="recent"]').click();
+      const recent = p.locator('.profile-block-data').last();
+      await recent.getByRole('link', { name: 'Fotossíntese e respiração celular' }).waitFor();
+      await p.locator('[data-section-toggle="achievements"]').click();
+      await until(
+        () => owner('profile-layout').hiddenSections.join() === 'achievements',
+        'section hidden',
+      );
+      await settle(p);
+      await axeCheck(p, 'main', 'Perfil (edição)');
+      await shot(p, 'perfil-edicao-1440');
+      await p.keyboard.press('Escape');
+      assert.equal(
+        await p.locator('[data-profile-edit-toggle]').getAttribute('aria-pressed'),
+        'false',
+      );
+      assert(
+        await p.locator('.achievements-section').isHidden(),
+        'hidden section gone while viewing',
+      );
+      await p.reload();
+      await p.locator('[data-custom-block="b2"]').waitFor();
+      assert(await p.locator('.achievements-section').isHidden(), 'layout kept after reload');
+      assert.equal(await p.locator('.profile-block-data').count(), 1);
+      // Another account in the same browser sees none of it.
+      profileData.user = OTHER;
+      await p.reload();
+      await p.locator('[data-profile-name]', { hasText: 'Rafa Lima' }).waitFor();
+      assert.equal(await p.locator('[data-custom-block]').count(), 0);
+      assert(await p.locator('.achievements-section').isVisible());
+      await profile.context.close();
+      record(
+        'Perfil: visualização limpa sem ferramentas; edição com menu por teclado (duplicar, mover, largura, mostrar, remover com confirmação), bloco com dados reais, seção oculta, salvo por conta',
+      );
+    }
 
     // ---------- Phone: the sheet fits and the essential card stays -------------------------
     const phone = await openApp(browser, base, allFlags, state(), { width: 390, height: 844 });
