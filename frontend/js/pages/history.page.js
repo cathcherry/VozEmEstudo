@@ -9,6 +9,7 @@ import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initLibraryViewSwitcher } from './library-views.js';
+import { folderButton as multiLessonFolderButton, selectionButton as multiLessonSelectionButton } from './multi-lesson-entry.js';
 
 const session = await initAuthenticatedShell();
 const folderIcons = createFolderIcons(session.user.id);
@@ -512,6 +513,7 @@ function renderFolderGroups(visible, _needle) {
   for(const old of folderToolbar.querySelectorAll('.library-breadcrumb'))if(old!==breadcrumb)old.remove();
   folderToolbar.querySelector('[data-create-unit-shortcut]')?.remove();
   folderToolbar.querySelector('[data-subject-menu]')?.remove();
+  folderToolbar.querySelector('[data-multi-lesson-folder]')?.remove();
   let groupIndex = 0;
   for (const group of folderGroups) {
     if(selected && String(group.id||group.name)!==selected)continue;
@@ -607,6 +609,9 @@ function renderFolderGroups(visible, _needle) {
     // Discreet "⋯" with Editar/Remover: on the card in the grid, in the toolbar on the folder page.
     const subjectActions = catalogEnabled && group.id ? subjectMenu(group) : null;
     if (subjectActions && selected) folderToolbar.append(subjectActions);
+    // Milestone C: study the whole unit or subject as one integrated material.
+    if (multiLessonEnabled && group.id && selected)
+      folderToolbar.append(multiLessonFolderButton({ subjectId: group.id, unitId: currentUnit?.id || null, name: currentUnit?.title || group.name }));
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
     if(selected){section.classList.add('library-folder-page');section.append(content);}else section.append(folder);
@@ -725,7 +730,11 @@ const cancelSelection = document.createElement('button');
 cancelSelection.type = 'button';
 cancelSelection.className = 'secondary-action';
 cancelSelection.textContent = 'Cancelar';
-selectionBar.append(selectionCount, moveSelected, cancelSelection);
+// Milestone C: several selected lessons become one integrated material (flag multi_lesson).
+let multiLessonEnabled = false;
+const integrateSelected = multiLessonSelectionButton(() => materials.filter((material) => selected.has(material.id)).map((material) => material.id));
+integrateSelected.hidden = true;
+selectionBar.append(selectionCount, moveSelected, integrateSelected, cancelSelection);
 document.body.append(selectionBar);
 const selectToggle = document.createElement('button');
 selectToggle.type = 'button';
@@ -751,6 +760,8 @@ function updateSelectionBar() {
     ? `${selected.size} ${selected.size === 1 ? 'aula selecionada' : 'aulas selecionadas'}`
     : 'Toque nas aulas para selecionar';
   moveSelected.disabled = !selected.size;
+  integrateSelected.hidden = !multiLessonEnabled;
+  integrateSelected.disabled = selected.size < 2;
 }
 function decorateSelection() {
   // The toggle lives in the folder toolbar, next to the path.
@@ -958,6 +969,7 @@ async function load() {
         try { treeResources=await getLibraryResources(); } catch { treeResources={}; }
         await folderIcons.load(catalog);
         libraryViews ??= initLibraryViewSwitcher({ onChange: render });
+        multiLessonEnabled = await isFeatureEnabled('multi_lesson');
       }
     } catch (error) {
       catalogEnabled = false;
