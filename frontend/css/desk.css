@@ -632,6 +632,12 @@
       left: var(--desk-bleed);
     }
   }
+  /* The page padding becomes a fixed --space-4 here (system.css): the room bleeds exactly that. */
+  @media (max-width: 760px) {
+    body[data-page='dashboard'] {
+      --desk-bleed: var(--space-4);
+    }
+  }
   @media (max-width: 700px) {
     body[data-page='dashboard'] {
       --desk-depth: 2.75rem;

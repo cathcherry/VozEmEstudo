@@ -176,7 +176,7 @@ async function main() {
     await complete.click();
     await page.locator('[data-investigation-done]:not([hidden])').waitFor();
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.investigationDone !== undefined), true, 'focus moves to the result');
-    const stamps = await page.locator('[data-done-stamps] [data-art-id]').evaluateAll((nodes) => nodes.map((n) => n.dataset.artId).sort());
+    const stamps = await page.locator('[data-done-stamps] [data-art-slot][data-art-id]').evaluateAll((nodes) => nodes.map((n) => n.dataset.artId).sort());
     assert.deepEqual(stamps, ['stamp.first-evidence', 'stamp.first-investigation', 'stamp.first-reflection', 'stamp.own-explanation']);
     await settle(page);
     await axeCheck(page, 'main', 'Investigação: descoberta registrada');

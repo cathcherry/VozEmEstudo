@@ -222,6 +222,8 @@ coluna "Movimento", "estático" significa sem animação.
 | `wallpaper.cozy-winter`                 | `wallpapers/cozy-winter.svg`                  | 1600 × 1000 | estático                                 | Fundo da atmosfera de mesmo nome                                   | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
 | `wallpaper.ocean-study`                 | `wallpapers/ocean-study.svg`                  | 1600 × 1000 | estático                                 | Fundo da atmosfera de mesmo nome                                   | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
 | `wallpaper.night-garden`                | `wallpapers/night-garden.svg`                 | 1600 × 1000 | estático                                 | Fundo da atmosfera de mesmo nome                                   | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
+| `wallpaper.old-notebook`                | `wallpapers/old-notebook.svg`                 | 1600 × 1000 | estático                                 | Fundo da atmosfera de mesmo nome (3.5 M5)                          | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
+| `wallpaper.dreamy-pastel`               | `wallpapers/dreamy-pastel.svg`                | 1600 × 1000 | estático                                 | Fundo da atmosfera de mesmo nome (3.5 M5)                          | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
 | `empty.library`                         | `empty/library.svg`                           | 320 × 240   | estático                                 | Acervo sem aulas (`data-art-slot="empty"`)                         | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
 | `empty.discoveries`                     | `empty/discoveries.svg`                       | 320 × 240   | estático                                 | Caderno de descobertas vazio (`data-art-slot="empty"`)             | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
 | `empty.flashcards`                      | `empty/flashcards.svg`                        | 320 × 240   | estático                                 | Revisar sem cartões (`data-art-slot="empty"`)                      | original, Voz em Estudo | mesmo arquivo e tamanho, ou `src` no manifesto (9.1, 9.2)                |
@@ -242,8 +244,12 @@ coluna "Movimento", "estático" significa sem animação.
 | `icon.connection`                       | `icons/connection.svg`                        | 24 × 24     | estático                                 | Ícones do mundo de estudo (máscara CSS, cor do texto)              | original, Voz em Estudo | SVG 24 × 24 de traço; só a forma conta (máscara)                         |
 | `icon.question`                         | `icons/question.svg`                          | 24 × 24     | estático                                 | Ícones do mundo de estudo (máscara CSS, cor do texto)              | original, Voz em Estudo | SVG 24 × 24 de traço; só a forma conta (máscara)                         |
 
-Total: 61 peças (6 estados da Lume, 4 trajes, 12 selos, 8 objetos, 6 capas, 6 papéis de parede, 5
-estados vazios e 14 ícones).
+Total: 65 peças no manifesto (6 estados da Lume, 4 trajes, 13 selos, 9 objetos, 6 capas, 8 papéis de
+parede, 5 estados vazios e 14 ícones). O Marco 5 (personalização) acrescentou os papéis de parede de
+"Caderno acadêmico antigo" (folha pautada com margem, fita marcadora e folhas prensadas, só nas
+bordas) e "Pastel sonhador" (céu lilás, nuvens, lua e um arco-íris claro), para que as oito
+atmosferas tenham a sua paisagem. Os papéis de parede aparecem **só na janela da escrivaninha** do
+Início e nas prévias da Aparência, nunca sob texto de leitura.
 
 ## 8. Capturas de revisão
 

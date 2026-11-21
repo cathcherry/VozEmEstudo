@@ -175,12 +175,47 @@ preferências do visitante, nunca as de quem compartilhou) e não carrega o sist
 - i18n: novas frases ("Não guardar", "Guardar", nomes e descrições dos temas) em en/es/zh-CN via
   `node scripts/i18n/build-phrases.mjs scripts/i18n/design-3-5.json`.
 
-## 5. O que fica para depois
+## 5. Marco 5 — personalização: a escrivaninha, o estúdio e as atmosferas
+
+A crítica depois dos Marcos 2 e 3 apontou três coisas: o Início ainda parecia uma página de cartões
+brancos; no celular ele era muito longo (a coluna da direita virava uma pilha no fim); e a janela
+da Biblioteca tinha uma área branca vazia enorme. A Aparência ainda tinha caixas de seleção.
+
+| Antes | Depois | Capturas |
+| --- | --- | --- |
+| O Início começava com a saudação solta no papel e o primeiro cartão branco. | Uma **escrivaninha**: parede com a janela da atmosfera e uma prateleira, a mesa, os objetos e a Lume. A folha "Continuar estudando" repousa sobre a borda da mesa e continua sendo a ação mais visível. As colunas da cena são as colunas da página (a saudação alinha com a folha; a janela, com as notas da margem). | `escrivaninha-1440/390`, `escrivaninha-biblioteca-chuvosa-*`, `escrivaninha-inverno-*`, `escrivaninha-jardim-noturno-*`, `escrivaninha-caderno-antigo-1440`, `escrivaninha-pastel-1440`, `escrivaninha-beira-mar-1440` |
+| A Lume ficava num slot vazio dentro do cartão (o sistema de arte não era carregado nas páginas). | `art.js` passa a ser carregado em toda página com sessão; a Lume mora na mesa e reage ao estudo (lendo, feliz, dormindo à noite; nunca triste). | idem |
+| — | **Arrumar a mesa**: gaveta com os objetos; arrastar até um lugar ou escolher objeto → lugar pelo teclado ou toque; o objeto cai e se acomoda. | `escrivaninha-arrumando-1440/390` |
+| 390 px: semana, mês, disciplinas e anotações empilhados no fim (página de ~3.200 px). | As notas da margem viram **um painel com abas**; três aulas recentes; a cena encolhe numa faixa. A página fica com ~2.300 px. | `escrivaninha-inicio-completo-390` |
+| Silencioso escondia selos só nas páginas de descobertas. | **Estudo silencioso** tira a cena, a Lume e "Arrumar a mesa" em todo lugar, mantendo a saudação, a próxima ação e cada função; **aventura** mostra as investigações sob a aula. | `escrivaninha-silencioso-*`, `escrivaninha-matcha-aventura-1440` |
+| Aparência: temas em lista, caixas de seleção em "Leitura e foco". | **"Seu espaço de estudo"** no topo: modo de experiência (três escolhas que dizem o que muda), modo **Simples** (oito prévias, cada uma desenhada nas cores da própria atmosfera: parede, janela, mesa, folha, botão) e modo **Estúdio** (destaque, cores, papel, janela, movimento, decoração, roupa da Lume, capa do caderno) com prévia ao vivo. As cinco opções liga/desliga viraram controles segmentados ("Desativado / Ativado"). | `estudio-simples-1440/390`, `estudio-detalhes-1440/390` |
+| Biblioteca: janela com `min-height: 32rem` (branco vazio); pastas todas azuis. | A janela tem o tamanho do conteúdo (mínimo de 19rem); cada disciplina tem a sua cor de pasta (lavanda, matcha, mel, névoa, rosa, ou a cor guardada da disciplina), também nas pastinhas do Início. Identidade Finder mantida. | `biblioteca-pastas-coloridas-1440/390` |
+
+**Pequenos gestos** (120–460 ms, parados pelo movimento reduzido): o objeto que cai na mesa, o selo
+carimbado (novidade no Gabinete, linha de desbloqueio na investigação e no arquivo), a página que
+vira ao abrir uma descoberta, a gaveta do Gabinete que desliza ao abrir, a gaveta da mesa.
+
+**Composição.** Uma só coisa ousada: a sala. Tudo o mais continua quieto: a parede é um tom do
+papel da atmosfera, a madeira é dessaturada e os objetos têm a mesma linha e sombra de contato do
+sistema de arte. Sem gradientes decorativos, sem cartões novos.
+
+**Acessibilidade.** A cena é decorativa (`aria-hidden`), com um resumo para leitores de tela ("Na
+sua mesa: xícara de chá (mesa, à direita), …"). Arrumando, cada lugar é um botão com nome ("Colocar
+globo em prateleira, à direita"); status em `aria-live`. axe sem violações no Início (1440 e 390,
+com a gaveta aberta) e na Aparência (Simples e Estúdio, 1440 e 390); sem rolagem horizontal a 390 px
+(`frontend/tests/personal-space-check.cjs`).
+
+Capturas: `node frontend/tests/design-audit-capture.cjs after '^(escrivaninha|estudio|biblioteca-pastas)'`
+(fuso `America/Sao_Paulo`, para a Lume não aparecer sempre dormindo no relógio UTC do contêiner).
+
+## 6. O que fica para depois
 
 - Planejar (calendário), Focar e Turmas ainda usam composições antigas por dentro; receberam a
   moldura e os componentes, não um redesenho de geometria próprio.
-- A Aparência ainda tem caixas de seleção (preferências ligadas/desligadas) — trocar por controles
-  segmentados exige mudar `preferences.js` (hoje lê `checkbox.checked`).
+- ~~A Aparência ainda tem caixas de seleção~~ — feito no Marco 5 (rádios "true"/"false" convertidos
+  para booleano em `preferences.js`).
+- A escrivaninha poderia mostrar o papel de parede também atrás da página (hoje só na janela, por
+  decisão: nunca sob texto de leitura). Objetos de mesa ainda não têm variações por atmosfera.
 - O CSS legado continua grande: as regras antigas sobrescritas por `pages` podem ser apagadas
   arquivo por arquivo (próximos candidatos: `product.css`, `marque.css`, o início de
   `library.css` e as partes de `material-refinement.css` já cobertas).

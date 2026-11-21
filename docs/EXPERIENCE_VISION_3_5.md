@@ -98,6 +98,21 @@ táteis e brilho leve), sobre papel de caderno. Nada de cartões dentro de cart�
 
 Trocar de modo nunca apaga nada.
 
+**Implementado (Marco 5).** O modo é uma preferência **da conta**, guardada com as outras
+preferências de aparência (`audioestudo-ui-preferences.experience`, sincronizada como o tema e o
+idioma) e aplicada por `theme-init.js` em `<html data-experience>` antes da primeira pintura, em
+todas as páginas (sem piscar). O valor antigo, por aparelho, escolhido no Gabinete
+(`voz-experience-mode`), é migrado: vale até a pessoa escolher de novo. A escolha aparece em
+Aparência ("Seu espaço de estudo") e no Gabinete, sempre a mesma.
+
+- **Silencioso** esconde tudo o que tem `[data-game-ui]` (selos, celebrações, atalhos de jogo) e
+  `[data-decoration]` (a cena da escrivaninha, a Lume, a janela, "Arrumar a mesa", a capa do
+  caderno). Nenhuma função some: a próxima ação, as tarefas, Descobertas e Gabinete no menu
+  continuam. O modo para leitores de tela e o "Contraste reforçado" também tiram a decoração.
+- **Aventura** mostra `[data-adventure-only]`: no Início, "Suas investigações" logo abaixo da aula
+  (investigações concluídas e itens no Gabinete, com atalhos); no Gabinete, o caminho até os
+  próximos itens ("2 de 5").
+
 ## 6. Jogo com sentido (resumo; detalhes em `RPG_GAMIFICATION_3_5.md`)
 
 O ciclo é: Pergunta → Investigação → Entendimento → Descoberta pessoal → Novas ligações.
@@ -120,6 +135,63 @@ aconchegante, Estudo à beira-mar, Jardim noturno, Caderno acadêmico antigo e P
 Cada uma combina paleta, papel de parede ilustrado, objetos de mesa, traje da Lume, tratamento da
 interface e uma mistura sonora opcional. O som **nunca toca sozinho**. Tudo é ajustável depois de
 escolhido, e há "menos distrações" sem perder função.
+
+### Implementado (Marco 5)
+
+**Uma fonte de verdade:** [`frontend/js/utils/atmospheres.js`](../frontend/js/utils/atmospheres.js).
+A Aparência, a escrivaninha do Início, o caderno de descobertas e o som leem dali.
+
+| Atmosfera | Base | Paleta (fundo · texto · destaque) | Destaques à escolha | Janela | Lume | Som | Movimento na janela |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Biblioteca chuvosa | claro | `#f1f4f7` · `#24303c` · `#3d5f78` | azul de chuva, lavanda, musgo | `wallpaper.rainy-library` | capa de chuva | `rainy-library` | chuva |
+| Escrivaninha lavanda (padrão) | claro | `#f7f5fb` · `#2e2a3b` · `#5a4896` | lavanda, rosa antigo, névoa | `wallpaper.lavender-desk` | — | `lavender-desk` | poeira na luz |
+| Tarde de matcha | claro | `#f3f6ee` · `#25301f` · `#48683a` | matcha, mel, morango | `wallpaper.matcha-afternoon` | — | `matcha-afternoon` | folhas |
+| Inverno aconchegante | claro | `#f3f4f8` · `#2a2c3d` · `#8c3a4d` | lã vermelha, pinheiro, geada | `wallpaper.cozy-winter` | cachecol | `cozy-winter` | neve |
+| Estudo à beira-mar | claro | `#eff6f7` · `#1f3237` · `#1f626b` | turquesa, coral, areia | `wallpaper.ocean-study` | chapéu de explorador | `seaside` | brilho das ondas |
+| Jardim noturno | escuro | `#1b1924` · `#efebf7` · `#cbbff3` | luz de lavanda, vaga-lume, flor da lua | `wallpaper.night-garden` | — | `night-garden` | vaga-lumes |
+| Caderno acadêmico antigo | claro | `#eff0ea` · `#22283a` · `#2a4372` | tinta azul, lacre, verde garrafa | `wallpaper.old-notebook` (novo) | óculos de leitura | `old-notebook` | poeira na luz |
+| Pastel sonhador | claro | `#f8f4fa` · `#3a2e45` · `#874b81` | lilás, menta, pervinca | `wallpaper.dreamy-pastel` (novo) | — | `dreamy-pastel` | nuvens |
+
+- **Paleta:** só valores dos tokens que já existem (`--background`, `--surface`, `--text`, `--accent`…
+  e `--desk-wall/top/edge` da cena). O CSS é gerado em `system.css` por
+  `scripts/atmospheres/build-css.mjs` (um teste falha se ficar desatualizado), então a cor vale
+  antes da primeira pintura. Todo par texto/fundo, link e botão passa de 4,5:1 (teste unitário).
+- **Convivência com temas e acessibilidade:** a paleta só vale enquanto o tema é a base da
+  atmosfera (Escrivaninha lavanda ou Jardim noturno). Escolher um tema em "Temas prontos" mantém a
+  escrivaninha, a Lume e o som da atmosfera, mas devolve as cores ao tema. Os temas de contraste e
+  o "Contraste reforçado" sempre vencem; com eles e com o modo para leitores de tela, a decoração
+  some. "Movimento reduzido", "Menos estímulos visuais" e `prefers-reduced-motion` param o
+  movimento da janela e da Lume.
+- **Papel de parede:** só na janela da escrivaninha (e nas prévias). Nunca sob texto de leitura.
+- **Som:** a Aparência oferece "Ouvir a mistura sonora …" (um clique toca). Na primeira visita, o
+  mixer já começa na mistura da atmosfera da pessoa, em silêncio até ela apertar play.
+- **Depois de escolher** (Aparência › Estúdio): cor de destaque (três por atmosfera, todas AA),
+  cores da atmosfera ou do tema, papel (liso, pontilhado, quadriculado), janela com ou sem
+  paisagem, movimento ligado ou desligado, decoração (pouca, equilibrada, bastante), roupa da Lume
+  (da atmosfera, nenhuma ou uma das quatro — só as liberadas e as padrão) e capa do caderno de
+  descobertas (capas colecionáveis só depois de encontradas).
+- **Onde fica salvo:** tudo em `audioestudo-ui-preferences` (conta, sincronizado). Os objetos
+  iniciais da mesa ficam lá também (`deskStarters`); os objetos colecionáveis ficam no
+  `PUT /api/collection/layout` do servidor.
+
+### A escrivaninha (Início)
+
+O topo do Início é uma pequena sala: a parede com a janela da atmosfera e uma prateleira, a
+superfície da mesa e, nela, os objetos e a Lume. A folha da aula em curso **repousa sobre a
+mesa** (sobrepõe a borda) e continua sendo a coisa mais visível da página. As duas colunas da cena
+são as colunas da página, então a saudação alinha com a folha e a janela com as notas da margem.
+
+- **Lume** reage ao estudo, nunca à ausência: dorme à noite (22h–6h), fica feliz depois de uma
+  aula marcada como estudada hoje, lê enquanto há uma aula em andamento e, fora isso, descansa.
+- **Objetos:** quatro objetos do dia a dia para todos (xícara, tinteiro, cacto, ampulheta; não são
+  recompensa). Com a flag `discoveries`, os objetos desbloqueados no Gabinete entram na gaveta;
+  objetos bloqueados nunca aparecem. "Arrumar a mesa" abre a gaveta: arraste um objeto até um
+  lugar, ou escolha o objeto e depois o lugar (teclado ou toque); Esc cancela. Mover para um lugar
+  ocupado troca os dois. O objeto cai no lugar e se acomoda (420 ms).
+- **Novidade no Gabinete:** quando a coleção tem algo novo desde a última visita, um cartão
+  aparece na parede com o selo sendo carimbado.
+- **Celular:** a cena encolhe (janela, prateleira e mesa numa faixa) e as notas da margem (semana,
+  agenda, disciplinas, anotações) viram **um painel com abas**; as aulas recentes mostram três.
 
 ## 8. Som
 

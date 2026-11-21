@@ -1700,7 +1700,13 @@ async function main() {
         await page.waitForTimeout(350);
         // Audit the settled screen, not a card halfway through its entrance fade.
         await page.evaluate(() =>
-          Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))),
+          // Ambient loops (Lume breathing, rain in the desk window) never finish: skip them.
+          Promise.all(
+            document
+              .getAnimations()
+              .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
+              .map((a) => a.finished.catch(() => {})),
+          ),
         );
         await page.addScriptTag({ path: axePath });
         const found = await page.evaluate(async () =>

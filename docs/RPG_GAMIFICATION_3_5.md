@@ -67,8 +67,9 @@ registrados pelo servidor contam).
 | Estudo aconchegante (`cozy`, padrão) | selos nas descobertas, celebração breve ao desbloquear, gavetas com itens e o que os faz aparecer |
 | Estudo aventura (`adventure`) | como o aconchegante + progresso até os próximos itens no Gabinete ("2 de 5") |
 
-Hoje o modo é uma preferência **deste aparelho** (`localStorage`, `voz-experience-mode`), escolhida
-no Gabinete; a preferência global (Aparência, sincronizada) fica para o sistema visual.
+Desde o Marco 5, o modo é uma preferência **da conta** (Aparência e Gabinete mostram a mesma
+escolha), sincronizada com as outras preferências e aplicada antes da primeira pintura; o valor
+antigo deste aparelho (`voz-experience-mode`) é migrado. Ver `EXPERIENCE_VISION_3_5.md`, seção 5.
 
 ## 5. Implementado × futuro
 
@@ -85,4 +86,5 @@ Futuro:
 - **Ambientes desbloqueáveis** (papéis de parede, atmosferas, trajes da Lume) e a arte da mesa.
 - Lume reagindo ao estado (`celebrating` numa descoberta).
 - Sugestões de pergunta com IA (opcional, com citação obrigatória).
-- Modo sincronizado entre aparelhos.
+- ~~Modo sincronizado entre aparelhos.~~ Feito no Marco 5, junto com a escrivaninha do Início
+  (objetos desbloqueados colocados por arrastar ou pelo teclado) e as oito atmosferas.
