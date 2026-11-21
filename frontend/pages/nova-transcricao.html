@@ -8,17 +8,15 @@
     <script src="/js/utils/theme-init.js"></script>
     <link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3" />
     <link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3" />
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/system.css"><link rel="stylesheet" href="/css/style.css" />
     <script type="module" src="/js/utils/preferences.js"></script>
     <script type="module" src="/js/pages/home.page.js"></script>
     <link rel="stylesheet" href="/css/marque.css" />
     <link rel="stylesheet" href="/css/product.css" />
     <link rel="stylesheet" href="/css/library.css" />
     <link rel="stylesheet" href="/css/academic.css" />
-    <link rel="stylesheet" href="/css/voz-redesign.css" />
     <link rel="stylesheet" href="/css/workflow.css" />
     <link rel="stylesheet" href="/css/upload-flow.css" />
-    <script defer src="/js/utils/card-motion.js"></script>
   <link rel="stylesheet" href="/css/personalization.css" />
 </head>
   <body class="app-page" data-page="transcription">
@@ -315,25 +313,21 @@
               <section class="form-section" aria-labelledby="storage-heading">
                 <h2 class="form-section-title" id="storage-heading">Guardar após transcrever</h2>
                 <div class="settings-group">
-                  <label class="setting-row" for="keep-original-audio"
-                    ><span class="setting-text">Áudio do trecho</span
-                    ><input
-                      class="switch"
-                      id="keep-original-audio"
-                      name="keep-original-audio"
-                      type="checkbox"
-                      role="switch"
-                  /></label>
-                  <label class="setting-row" for="keep-original-video" data-video-retention-choice hidden
-                    ><span class="setting-text"
+                  <div class="setting-row" role="group" aria-labelledby="keep-original-audio-label"
+                    ><span class="setting-text" id="keep-original-audio-label">Áudio do trecho</span
+                    ><span class="segmented-control"
+                      ><label><input class="segment-input" type="radio" name="keep-original-audio" id="discard-original-audio" value="discard" checked /><span>Não guardar</span></label
+                      ><label><input class="segment-input" type="radio" name="keep-original-audio" id="keep-original-audio" value="keep" /><span>Guardar</span></label
+                    ></span
+                  ></div>
+                  <div class="setting-row" role="group" aria-labelledby="keep-original-video-label" data-video-retention-choice hidden
+                    ><span class="setting-text" id="keep-original-video-label"
                       >Vídeo MP4 original<small data-video-retention-note></small></span
-                    ><input
-                      class="switch"
-                      id="keep-original-video"
-                      name="keep-original-video"
-                      type="checkbox"
-                      role="switch"
-                  /></label>
+                    ><span class="segmented-control"
+                      ><label><input class="segment-input" type="radio" name="keep-original-video" id="discard-original-video" value="discard" checked /><span>Não guardar</span></label
+                      ><label><input class="segment-input" type="radio" name="keep-original-video" id="keep-original-video" value="keep" /><span>Guardar</span></label
+                    ></span
+                  ></div>
                 </div>
               </section>
               <section class="form-section" aria-label="Autorização">

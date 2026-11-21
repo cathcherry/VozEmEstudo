@@ -19,6 +19,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'classrooms',
   'notebooks',
   'multi_lesson',
+  'discoveries',
 ]);
 
 export function normalizeFeatureFlags(source = {}) {

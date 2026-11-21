@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* E13 - scoped to dashboard and enabled only with FEATURE_FLASHCARDS. */
 body:is([data-page='plan'],[data-page='review']) [data-flashcards-panel][hidden] { display: none; }
 body:is([data-page='plan'],[data-page='review']) .flashcards-panel {
@@ -346,3 +348,4 @@ html[data-reduced-motion='true'] .flashcard-review-card[data-card-template] { tr
 .app-dialog .card-template-check input { width: 20px; height: 20px; min-height: 0; padding: 0; }
 .card-template-preview { margin: 16px 0 4px !important; padding: 18px; border: 1px solid var(--border-light); border-radius: 8px; background: var(--surface); }
 .card-template-warning { min-height: 1.2em; margin: 6px 0 0; color: var(--danger); font-size: .88rem; }
+}

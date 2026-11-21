@@ -28,7 +28,14 @@ export function ninoImage(pose = 'reading', size = 90) {
 }
 export function emptyState(title, description, { href = './nova-transcricao.html', action = 'Nova transcrição', mascot = true, pose = 'reading', size = 90 } = {}) {
   const card = document.createElement('div'); card.className = 'empty-state-card';
-  if (mascot) card.appendChild(ninoImage(typeof mascot === 'string' ? mascot : pose, size));
+  // Art mount point: the art system (js/art) may replace the illustration in this slot.
+  if (mascot) {
+    const art = document.createElement('span');
+    art.className = 'empty-state-art';
+    art.dataset.artSlot = 'empty';
+    art.append(ninoImage(typeof mascot === 'string' ? mascot : pose, size));
+    card.appendChild(art);
+  }
   const content = document.createElement('div');
   const heading = document.createElement('strong'); heading.textContent = title;
   const paragraph = document.createElement('p'); paragraph.textContent = description;
@@ -64,6 +71,7 @@ export function ninoNote(text, pose = 'rest', { className = '', title = '', acti
   }
   const figure = document.createElement('span');
   figure.className = 'nino-note-figure';
+  figure.dataset.artSlot = 'empty';
   figure.append(ninoImage(pose, 56));
   note.append(figure, body);
   return note;

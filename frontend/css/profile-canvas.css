@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 .account-page {
   --profile-glass:color-mix(in srgb,var(--surface) 86%,transparent);
   --profile-rim:color-mix(in srgb,var(--surface) 90%,var(--border-light));
@@ -103,3 +105,4 @@ html[data-theme='contrast-dark'] .profile-progression-grid :is(.profile-stats-se
 }
 html[data-theme='contrast-dark'] .profile-progression-grid :is(.profile-stats-section,.achievements-section)::before { display:none; }
 .profile-progression-grid .profile-stat span { overflow-wrap:normal; word-break:normal; font-size:clamp(.65rem,1vw,.82rem); }
+}

@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Material integrado (Milestone C): dialog in the library and the integrated-material page. */
 .multi-lesson-dialog { width: min(560px, calc(100vw - 32px)); }
 .multi-lesson-dialog form { display: grid; gap: 10px; }
@@ -57,3 +59,4 @@
 .multi-lesson-export .form-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
 .multi-lesson-export-status { margin: 8px 0 0; }
 .multi-lesson-export-status:empty { display: none; }
+}

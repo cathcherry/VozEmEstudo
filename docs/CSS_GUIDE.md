@@ -13,7 +13,7 @@ Prevenir conflitos de aparência entre telas sem reescrever o design atual. O hi
 | `frontend/css/product.css` | Componentes visuais compartilhados do produto | Componentes reutilizáveis com classe específica, evitando seletores de elemento genéricos |
 | `frontend/css/library.css` | Componentes da biblioteca e organização de materiais | Elementos da biblioteca; escopo de página ao alterar aparência local |
 | `frontend/css/academic.css` | Upload, material e conferência acadêmica | Estilos acadêmicos sem interferir em autenticação |
-| `frontend/css/voz-redesign.css` | Ajustes visuais compartilhados da aplicação | Somente regras compartilhadas, preferindo `body.app-page` |
+| `frontend/css/system.css` | **3.5:** tokens, base, componentes e moldura; declara as camadas `legacy, system, pages, a11y` e carrega primeiro | Ver `docs/DESIGN_AUDIT_3_5.md`; arquivos antigos ficam em `@layer legacy`, composições novas em `@layer pages` |
 | `frontend/css/auth-pages.css` | Login, cadastro, recuperação, senha e notificações de autenticação | **Fonte de verdade de ajustes das três páginas**, com `body.auth-page`; carregada por último |
 
 ## Regras de alteração

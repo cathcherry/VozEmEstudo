@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Painel: busca em aulas, questões e transcrições (js/pages/global-search.js). */
 body[data-page='dashboard'] .topbar-search {
   position: relative;
@@ -175,4 +177,5 @@ main[data-searching='true'] > :not(.dashboard-heading):not([data-search-results]
   .global-search-results {
     padding: 14px;
   }
+}
 }
