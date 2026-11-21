@@ -1,13 +1,26 @@
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { initAnnotationsPanel } from './annotations-panel.js';
 import { initSharingPanel } from './sharing-panel.js';
+import { initLessonNotebook } from './lesson-notebook.js';
 
 /** Starts annotations and material sharing. Export lives in export-panel.js. */
 export async function initMaterialTools({ materialId, context, segments }) {
   const notesEnabled = await isFeatureEnabled('annotations').catch(() => false);
+  // Notes 3.0: the lesson notebook and highlights across segments (needs annotations too).
+  const notebooks = notesEnabled && (await isFeatureEnabled('notebooks').catch(() => false));
   const results = await Promise.allSettled([
     notesEnabled
-      ? initAnnotationsPanel({ panel: document.querySelector('[data-annotations-panel]'), materialId, context, segments })
+      ? initAnnotationsPanel({
+          panel: document.querySelector('[data-annotations-panel]'),
+          materialId,
+          context,
+          segments,
+          multiSegment: notebooks,
+          notebook: notebooks,
+        })
+      : Promise.resolve(),
+    notebooks
+      ? initLessonNotebook({ panel: document.querySelector('[data-lesson-notebook]'), materialId, context, segments })
       : Promise.resolve(),
     (async () => {
       if (await isFeatureEnabled('sharing')) {

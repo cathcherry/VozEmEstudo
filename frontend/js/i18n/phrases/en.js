@@ -70,6 +70,7 @@ export default {
   "A transcrição só pode ser exportada depois de conferida e confirmada.": "The transcript can only be exported after it is checked and confirmed.",
   "A transcrição tem poucos termos distintos para o intervalo usual desta duração.": "The transcript has few distinct terms for the usual range at this length.",
   "A turma volta a aceitar convites, envios e publicações.": "The class accepts invitations, submissions and publications again.",
+  "A versão deste aparelho foi mantida.": "This device's version was kept.",
   "Abra": "Open",
   "Abra a aula, confira e confirme a transcrição antes de gerar cartões.": "Open the lesson, check and confirm the transcript before generating cards.",
   "Abra a unidade ou arraste uma aula para movê-la": "Open the unit or drag a lesson to move it",
@@ -104,8 +105,10 @@ export default {
   "Adequação educacional": "Educational suitability",
   "Adesivos no título": "Stickers by the title",
   "Adicionar": "Add",
+  "Adicionar ao caderno:": "Add to notebook:",
   "Adicionar ao perfil": "Add to profile",
   "Adicionar bloco": "Add block",
+  "Adicionar item": "Add item",
   "Adicionar link": "Add link",
   "Adicionar subobjetivo": "Add subgoal",
   "Adicionar tag": "Add tag",
@@ -147,6 +150,7 @@ export default {
   "Alças do recorte: ← / →": "Clip handles: ← / →",
   "algo novo?": "something new?",
   "Algumas ferramentas estão indisponíveis. A exportação dos textos continua disponível.": "Some tools are unavailable. Exporting the texts is still available.",
+  "Alterações não salvas": "Unsaved changes",
   "Alterações salvas.": "Changes saved.",
   "Alternativas da questão": "Answer options",
   "Aluno(a)": "Student",
@@ -227,6 +231,7 @@ export default {
   "Arredondado": "Rounded",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "This account's copies on this browser will be deleted and you will be signed out. Everything already saved in your account stays there.",
   "As disciplinas que você mais revisita.": "The subjects you revisit most.",
+  "As duas versões foram mantidas no caderno.": "Both versions were kept in the notebook.",
   "As etapas desta aula e o próximo passo sugerido.": "This lesson's steps and the suggested next step.",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "Your answers will be saved to your account. When you finish, you can review your mistakes.",
   "As senhas não coincidem.": "Passwords don't match.",
@@ -309,6 +314,7 @@ export default {
   "Bloco salvo.": "Block saved.",
   "Blocos": "Blocks",
   "blocos de foco": "focus blocks",
+  "Blocos do caderno": "Notebook blocks",
   "blocos do perfil": "profile blocks",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube and Spotify blocks load content from those services. You can edit or remove the blocks in your profile. Your profile stays private.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Blocks that show your own study data and update automatically.",
@@ -341,6 +347,8 @@ export default {
   "Cada questão continua com uma única alternativa correta; as habilidades definem o tipo de raciocínio pedido.": "Each question still has a single correct option; the skills set the kind of reasoning asked for.",
   "Cadastro": "Sign up",
   "Caderno": "Notebook",
+  "Caderno atualizado com a versão do outro aparelho.": "Notebook updated with the other device's version.",
+  "Caderno da aula": "Lesson notebook",
   "Calendário": "Calendar",
   "Calendário de estudos": "Study calendar",
   "Caminho": "Breadcrumb",
@@ -349,9 +357,11 @@ export default {
   "Cancelado": "Canceled",
   "Cancelar": "Cancel",
   "Cantos arredondados": "Rounded corners",
+  "Carregando a versão salva pelo outro aparelho…": "Loading the version saved by the other device…",
   "Carregando histórico…": "Loading history…",
   "Carregando lista…": "Loading list…",
   "Carregando o ano…": "Loading the year…",
+  "Carregando o caderno…": "Loading the notebook…",
   "Carregando o diagnóstico…": "Loading the diagnosis…",
   "Carregando os recursos disponíveis…": "Loading available resources…",
   "Carregando questão...": "Loading question...",
@@ -382,6 +392,7 @@ export default {
   "Chuva suave": "Soft rain",
   "Ciano": "Cyan",
   "Citação": "Quote",
+  "Citar no caderno": "Cite in notebook",
   "Claro": "Light",
   "Claro · modo foco ativo": "Light · focus mode on",
   "Claro · navegação completa": "Light · full navigation",
@@ -403,7 +414,9 @@ export default {
   "Começar meu material de estudo": "Start my study material",
   "Começar o próximo bloco sozinho": "Start the next block automatically",
   "Começar tentativa": "Start attempt",
+  "Comece seu caderno: adicione um título, um parágrafo ou uma lista, ou cite um destaque da lista abaixo.": "Start your notebook: add a heading, a paragraph or a list, or cite a highlight from the list below.",
   "Comentar": "Comment",
+  "Comentário:": "Comment:",
   "Como as questões ajudam na revisão?": "How do the questions help with review?",
   "Como estudar": "How to study",
   "Como funciona": "How it works",
@@ -459,6 +472,7 @@ export default {
   "Confirmar registra que você conferiu esta revisão.": "Confirming records that you checked this version.",
   "Confirmar senha": "Confirm password",
   "Confirme a declaração de permissão antes de enviar.": "Confirm the permission declaration before uploading.",
+  "Confirme esta revisão da transcrição antes de destacar trechos dela.": "Confirm this transcript revision before highlighting passages from it.",
   "Confirme primeiro o envio anterior, repetindo os mesmos dados, ou recarregue a página para conferir o que foi salvo.": "Confirm the previous submission first by repeating the same details, or reload the page to check what was saved.",
   "Confirmo que conferi": "I confirm I checked it",
   "Conflitos resolvidos.": "Conflicts resolved.",
@@ -586,6 +600,7 @@ export default {
   "desativada": "off",
   "Desativar modo para leitores de tela": "Turn off screen reader mode",
   "Descartar alterações": "Discard changes",
+  "Descartar as alterações deste aparelho e usar a versão salva pelo outro aparelho?": "Discard this device's changes and use the version saved by the other device?",
   "Descartar as alterações não salvas?": "Discard unsaved changes?",
   "Descer": "Move down",
   "Descrição (opcional)": "Description (optional)",
@@ -599,6 +614,9 @@ export default {
   "Despublicar aula": "Unpublish lesson",
   "Destacada": "Lifted",
   "Destacar": "Highlight",
+  "Destaque citado": "Cited highlight",
+  "Destaque citado no caderno.": "Highlight cited in the notebook.",
+  "Destaque indisponível nesta aula.": "Highlight unavailable in this lesson.",
   "Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.": "Word highlighting unavailable: no valid word timings for this version.",
   "Destaque salvo no caderno da aula.": "Highlight saved in the lesson notebook.",
   "Desvincular tarefa": "Unlink task",
@@ -764,6 +782,7 @@ export default {
   "Esta tentativa não pertence ao material selecionado.": "This attempt doesn't belong to the selected material.",
   "Estatísticas indisponíveis agora.": "Stats unavailable right now.",
   "Este bloco não está disponível nesta versão.": "This block isn't available in this version.",
+  "Este caderno mudou em outro aparelho": "This notebook changed on another device",
   "Este cartão ainda não foi revisado.": "This card hasn't been reviewed yet.",
   "Este destaque pertence a outra revisão ou o trecho foi editado. O texto original está preservado acima.": "This highlight belongs to another version or the excerpt was edited. The original text is kept above.",
   "Este envio já existe com escolhas diferentes. Revise o formulário.": "This upload already exists with different choices. Review the form.",
@@ -992,6 +1011,7 @@ export default {
   "Ir para Revisar": "Go to Review",
   "Item A": "Item A",
   "Item B": "Item B",
+  "Itens, um por linha": "Items, one per line",
   "Já processei a gravação": "I have processed the recording",
   "Janela": "Window",
   "jeito de estudar.": "way of studying.",
@@ -1043,6 +1063,7 @@ export default {
   "Links desta lista": "Links for this list",
   "Liso": "Plain",
   "Lista": "List",
+  "Lista numerada": "Numbered list",
   "Lista:": "List:",
   "Listas de questões": "Question lists",
   "Literária": "Literary",
@@ -1060,6 +1081,8 @@ export default {
   "Mais recentes": "Most recent",
   "Mais revisitados": "Most revisited",
   "Mantenha esta aba visível e em foco para iniciar.": "Keep this tab visible and in focus to start.",
+  "Manter as duas versões": "Keep both versions",
+  "Manter só a deste aparelho": "Keep only this device's version",
   "Manter versão deste navegador em conflitos": "Keep this browser's version in conflicts",
   "Manuscrita": "Handwritten",
   "Mapa do ano (role para os lados)": "Year map (scroll sideways)",
@@ -1248,6 +1271,10 @@ export default {
   "Não foi possível salvar.": "Couldn't save.",
   "não guardar o vídeo": "don't keep the video",
   "Não informado": "Not provided",
+  "Não salvo": "Not saved",
+  "Não salvo — outro aparelho alterou este caderno": "Not saved — another device changed this notebook",
+  "Não salvo — tentar de novo": "Not saved — try again",
+  "Não salvo: use apenas texto, sem marcações HTML (como <b>).": "Not saved: use plain text only, without HTML markup (such as <b>).",
   "Não. A revisão é recomendada, mas não é obrigatória para continuar estudando. Como transcrições, resumos e questões podem conter imprecisões, recomendamos conferir as informações com a aula original, principalmente antes de usá-las em trabalhos ou avaliações.": "No. Reviewing is recommended, but it's not required to keep studying. Since transcripts, summaries and questions may contain inaccuracies, we recommend checking the information against the original lesson, especially before using it in assignments or exams.",
   "Não. A transcrição usa somente o áudio. Slides, imagens e fórmulas visuais não são analisados.": "No. Transcription uses only the audio. Slides, images and visual formulas are not analyzed.",
   "Narrativo": "Narrative",
@@ -1350,6 +1377,11 @@ export default {
   "O áudio está com o serviço de transcrição. Esta página atualiza sozinha.": "The audio is with the transcription service. This page updates on its own.",
   "O áudio guardado cobre só o trecho; o vídeo guardado é o MP4 original inteiro. Ambos ficam privados na sua conta.": "The kept audio covers only the clip; the kept video is the whole original MP4. Both stay private in your account.",
   "O botão “Modo foco” e o atalho Alt + F reduzem distrações. A barra lateral se recolhe automaticamente. Abra novamente pelo botão do menu quando precisar navegar. No foco, use A− e A+ no cabeçalho para ajustar o texto.": "The “Focus mode” button and the Alt + F shortcut reduce distractions. The sidebar collapses automatically. Open it again with the menu button when you need to navigate. In focus mode, use A− and A+ in the header to adjust the text.",
+  "O caderno chegou ao limite de 300 blocos.": "The notebook reached the limit of 300 blocks.",
+  "O caderno da aula ainda não foi habilitado no banco. As anotações continuam disponíveis.": "The lesson notebook has not been enabled in the database yet. Notes are still available.",
+  "O caderno passou do limite de tamanho. Divida o conteúdo em menos blocos ou remova trechos.": "The notebook exceeded the size limit. Split the content into fewer blocks or remove passages.",
+  "O caderno tem um bloco inválido ou marcação HTML. Use apenas texto.": "The notebook has an invalid block or HTML markup. Use plain text only.",
+  "O caderno tem um bloco inválido. Recarregue a página e tente de novo.": "The notebook has an invalid block. Reload the page and try again.",
   "O caminho principal é enviar uma aula, conferir a transcrição e seguir as etapas de estudo da aula; depois, revisar e planejar os próximos estudos.": "The main path is to upload a lesson, check the transcript and follow the lesson's study steps; then review and plan your next study sessions.",
   "O catálogo não está disponível.": "The catalog isn't available.",
   "O conteúdo gerado automaticamente pode conter erros. Compare-o com a transcrição e revise os trechos necessários.": "Automatically generated content may contain errors. Compare it with the transcript and revise the parts that need it.",
@@ -1357,6 +1389,7 @@ export default {
   "O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.": "The timer continues across pages; it stops if none stays open.",
   "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "The timer stopped because no Voz em Estudo page stayed open and visible.",
   "O cronômetro parou porque nenhuma página ficou aberta e visível.": "The timer stopped because no page stayed open and visible.",
+  "O destaque original foi excluído; o trecho citado continua guardado aqui.": "The original highlight was deleted; the cited passage is still kept here.",
   "O diagnóstico não corresponde à tentativa.": "The diagnosis doesn't match the attempt.",
   "O enunciado ou as alternativas estão confusos": "The question or the options are unclear",
   "O envio sai da fila e, se estiver publicado, deixa de aparecer para a turma.": "The submission leaves the queue and, if published, stops appearing to the class.",
@@ -1379,6 +1412,7 @@ export default {
   "O som ambiente parou ao trocar de página.": "The ambient sound stopped when you changed page.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "The transcribed text is sent to an external AI service for preliminary warnings and, after you confirm, the summary and questions.",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "Processing by providers follows their own policies. Deleting in the app does not guarantee deletion in those services' systems.",
+  "O trecho não foi encontrado no texto atual. A citação continua guardada aqui.": "The passage was not found in the current text. The quote is still kept here.",
   "O trecho pode ter até 54 minutos.": "The clip can be up to 54 minutes long.",
   "Objetivo": "Goal",
   "Objetivo atualizado.": "Goal updated.",
@@ -1465,6 +1499,7 @@ export default {
   "para mudar o tema e": "to change the theme and",
   "Para revisar": "To review",
   "para saber o que é salvo na conta ou neste dispositivo.": "to learn what is saved in your account or on this device.",
+  "Parágrafo": "Paragraph",
   "Parar": "Stop",
   "Parar de compartilhar": "Stop sharing",
   "Passe o mouse ✨": "Hover over me ✨",
@@ -1571,6 +1606,7 @@ export default {
   "Privacidade e armazenamento": "Privacy and storage",
   "Privacidade e dados": "Privacy and data",
   "Privacidade e uso de dados": "Privacy and data use",
+  "Privado: só você vê este caderno.": "Private: only you can see this notebook.",
   "Processamento": "Processing",
   "Processamento cancelado": "Processing canceled",
   "Processando": "Processing",
@@ -1641,6 +1677,7 @@ export default {
   "Recomendação de quantidade": "Recommended amount",
   "Recompensa de perfil": "Profile reward",
   "Recordação": "Recall",
+  "Recuperamos alterações deste aparelho que ainda não estavam salvas.": "We recovered changes from this device that had not been saved yet.",
   "Recuperar senha": "Reset password",
   "Recurso desligado neste servidor": "Feature turned off on this server",
   "Recursos": "Features",
@@ -1664,6 +1701,7 @@ export default {
   "Remover este horário do calendário?": "Remove this session from the calendar?",
   "Remover horário": "Remove session",
   "Remover imagem": "Remove image",
+  "Remover item": "Remove item",
   "Remover o vídeo guardado desta aula?": "Remove the stored video for this lesson?",
   "Remover seleção": "Clear selection",
   "Remover tag": "Remove tag",
@@ -1752,6 +1790,7 @@ export default {
   "Sair desta aba pausa a contagem; nada se perde.": "Leaving this tab pauses the count; nothing is lost.",
   "Salvando imagem…": "Saving image…",
   "Salvando perfil…": "Saving profile…",
+  "Salvando…": "Saving…",
   "Salvar": "Save",
   "Salvar ajustes": "Save settings",
   "Salvar alteração": "Save change",
@@ -1774,6 +1813,7 @@ export default {
   "Salvar tema": "Save theme",
   "Salve as alterações e confirme a revisão da transcrição antes de gerar materiais.": "Save your changes and confirm the transcript version before generating materials.",
   "Sálvia": "Sage",
+  "Salvo": "Saved",
   "Salvo na conta": "Saved to account",
   "Salvo neste dispositivo · sincronização pendente": "Saved on this device · sync pending",
   "Se esse endereço puder redefinir a senha, você receberá um link por e-mail.": "If this address can reset its password, you'll receive a link by email.",
@@ -1788,6 +1828,7 @@ export default {
   "Segurança": "Security",
   "Selecionar": "Select",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "Select “Upload and transcribe”. Only the audio of the chosen clip is sent for transcription; the lesson page shows the progress.",
+  "Selecione até 1.000 caracteres para destacar.": "Select up to 1,000 characters to highlight.",
   "Selecione de 1 a 1.000 caracteres para destacar.": "Select 1 to 1,000 characters to highlight.",
   "Selecione o link e copie.": "Select the link and copy it.",
   "Selecione pelo menos um conteúdo disponível.": "Select at least one available item.",
@@ -1800,6 +1841,7 @@ export default {
   "Selecione uma aula": "Select a lesson",
   "Sem aula": "No lesson",
   "Sem aula vinculada": "No linked lesson",
+  "Sem conexão — guardado neste aparelho. Tentaremos de novo.": "Offline — kept on this device. We will try again.",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "No connection: your changes are saved in this browser and will be sent when the connection returns.",
   "Sem conexão.": "No connection.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "No confirmation from the account. Progress stays in this browser and the submission will be retried with the same ID.",
@@ -1896,6 +1938,7 @@ export default {
   "Sua lista está pronta. Responda para ver o que já domina.": "Your list is ready. Answer it to see what you already know.",
   "Sua semana": "Your week",
   "Sua transcrição está pronta": "Your transcript is ready",
+  "Suas alterações deste aparelho estão guardadas. Escolha como continuar; nada é apagado sem confirmação.": "Your changes on this device are kept. Choose how to continue; nothing is deleted without confirmation.",
   "Suas aulas não puderam ser carregadas agora.": "Your lessons couldn't be loaded right now.",
   "Suas aulas vão aparecer aqui.": "Your lessons will show up here.",
   "Suas disciplinas": "Your subjects",
@@ -1906,6 +1949,8 @@ export default {
   "Subobjetivo (opcional)": "Subgoal (optional)",
   "Subobjetivo atualizado.": "Subgoal updated.",
   "Subobjetivo criado.": "Subgoal created.",
+  "Substituir a versão do outro aparelho pela deste aparelho?": "Replace the other device's version with this device's?",
+  "Subtítulo": "Subheading",
   "Sugestão copiada. Confira, edite e salve o cartão.": "Suggestion copied. Check, edit and save the card.",
   "Sugestão substituída.": "Suggestion replaced.",
   "Sugestões a partir da transcrição confirmada de uma aula.": "Suggestions from a lesson's confirmed transcript.",
@@ -1952,6 +1997,9 @@ export default {
   "Texto": "Text",
   "Texto (TXT)": "Text (TXT)",
   "Texto com lacunas: {{c1::resposta}}": "Text with blanks: {{c1::answer}}",
+  "Texto da citação": "Quote text",
+  "Texto do parágrafo": "Paragraph text",
+  "Texto do título": "Heading text",
   "Texto ou código": "Text or code",
   "Texto para expandir": "Text to expand",
   "Texto um pouco maior, linhas mais curtas e mais espaço entre elas.": "Slightly larger text, shorter lines and more space between them.",
@@ -1962,6 +2010,7 @@ export default {
   "Tipos de resultado": "Result types",
   "Título": "Title",
   "Título A–Z": "Title A–Z",
+  "Título do caderno (opcional)": "Notebook title (optional)",
   "Título do card": "Card title",
   "Título salvo. O navegador não permitiu salvar as tags.": "Title saved. The browser didn't allow saving the tags.",
   "Títulos": "Titles",
@@ -2012,9 +2061,11 @@ export default {
   "Turmas privadas: o professor publica aulas, os alunos enviam gravações para aprovação e compartilham flashcards. Só os membros veem o que foi publicado ou compartilhado, e o seu progresso, suas notas e revisões continuam só seus.": "Private classes: the teacher publishes lessons, students submit recordings for approval and share flashcards. Only members see what was published or shared, and your progress, notes and reviews stay yours alone.",
   "Turquesa e azul profundo.": "Turquoise and deep blue.",
   "Último acesso": "Last opened",
+  "um caderno de aula": "a lesson notebook",
   "Um cantinho para a sua curiosidade": "A little corner for your curiosity",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "One click adjusts several preferences at once. Then fine-tune each one in Reading and focus. Modes never make text smaller or turn off accessibility options you turned on.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "One timer for your whole account: it keeps going when you open a lesson, the Library or Review, and shows in a small capsule in the corner of the screen.",
+  "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "A cited highlight does not belong to this lesson or changed revision. Reload the notebook.",
   "Um espaço para descobrir.": "A space to discover.",
   "Um lembrete por linha": "One reminder per line",
   "Um número": "One number",
@@ -2038,6 +2089,7 @@ export default {
   "Usa a revisão confirmada. Revise, edite ou rejeite cada sugestão; nada é salvo antes de você confirmar. A revisão dos cartões acontece no Painel.": "Uses the confirmed version. Review, edit or reject each suggestion; nothing is saved until you confirm. Card review happens on Home.",
   "Usa somente a revisão confirmada da transcrição. Versões anteriores continuam salvas.": "Uses only the confirmed version of the transcript. Earlier versions stay saved.",
   "Usa somente as versões salvas. Alterações ainda não salvas na edição não entram no arquivo.": "Uses only saved versions. Unsaved edits are not included in the file.",
+  "Usar a versão do outro aparelho": "Use the other device's version",
   "Usar arquivo inteiro": "Use whole file",
   "Usar como base:": "Use as base:",
   "Usar como foto": "Use as photo",
@@ -2047,6 +2099,7 @@ export default {
   "Usar seleção da transcrição": "Use transcript selection",
   "Usar versão da conta em conflitos": "Use account version in conflicts",
   "Use": "Use",
+  "Use apenas texto no caderno: marcações HTML (como <b> ou <script>) não são aceitas.": "Use plain text in the notebook: HTML markup (such as <b> or <script>) is not accepted.",
   "Use o menu": "Use the menu",
   "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "Use a .txt, .tsv or .csv file: from Anki (File › Export › \"Notes in Plain Text\"), the CSV export from here, or a list with question and answer in two columns.",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Use a Spotify song, album, playlist, episode or show link.",
@@ -2143,6 +2196,10 @@ export default {
   [
    "Horários no fuso deste aparelho: {0}. Prazos de tarefas aparecem como eventos de dia inteiro. Exportar ICS não envia convites nem altera outros calendários.",
    "Times in this device's time zone: {0}. Task due dates appear as all-day events. Exporting ICS doesn't send invitations or change other calendars."
+  ],
+  [
+   "Revisão anterior: esta referência aponta para a revisão {0}; a aula está na revisão {1}. O trecho citado continua legível aqui.",
+   "Earlier revision: this reference points to revision {0}; the lesson is at revision {1}. The cited passage is still readable here."
   ],
   [
    "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",
@@ -2373,6 +2430,10 @@ export default {
    "{0} note skipped: unknown note type."
   ],
   [
+   "Não foi possível carregar a outra versão: {0}",
+   "Could not load the other version: {0}"
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} focus block today · {1} of {2} until the long break"
   ],
@@ -2477,6 +2538,10 @@ export default {
    "{0} line skipped: too long."
   ],
   [
+   "Abrange {0} trechos da transcrição",
+   "Spans {0} transcript passages"
+  ],
+  [
    "Revisão registrada. Próxima: {0}.",
    "Review recorded. Next: {0}."
   ],
@@ -2511,6 +2576,10 @@ export default {
   [
    "{0} já tem tarefa neste objetivo",
    "{0} already has a task in this goal"
+  ],
+  [
+   "Bloco movido para a posição {0}.",
+   "Block moved to position {0}."
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2593,6 +2662,14 @@ export default {
    "{0} set · {1} cards"
   ],
   [
+   "Mover bloco {0} para baixo",
+   "Move block {0} down"
+  ],
+  [
+   "{0} adicionado ao caderno.",
+   "{0} added to the notebook."
+  ],
+  [
    "Pelo menos {0} caracteres",
    "At least {0} characters"
   ],
@@ -2617,6 +2694,14 @@ export default {
    "{0} image will be imported"
   ],
   [
+   "Mover bloco {0} para cima",
+   "Move block {0} up"
+  ],
+  [
+   "Caderno indisponível: {0}",
+   "Notebook unavailable: {0}"
+  ],
+  [
    "Opções da disciplina {0}",
    "Options for subject {0}"
   ],
@@ -2637,6 +2722,10 @@ export default {
    "Undo the mark: {0}"
   ],
   [
+   "{0} removido do caderno.",
+   "{0} removed from the notebook."
+  ],
+  [
    "{0}% do áudio ouvido{1}",
    "{0}% of audio played{1}"
   ],
@@ -2655,6 +2744,10 @@ export default {
   [
    "{0} cartões encontrados",
    "{0} cards found"
+  ],
+  [
+   "Destaque da revisão {0}",
+   "Highlight from revision {0}"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2689,6 +2782,10 @@ export default {
    "{0} task will be created"
   ],
   [
+   "Checklist do bloco {0}",
+   "Checklist of block {0}"
+  ],
+  [
    "Resultados para “{0}”",
    "Results for “{0}”"
   ],
@@ -2707,6 +2804,10 @@ export default {
   [
    "Imagem do cartão: {0}",
    "Card image: {0}"
+  ],
+  [
+   "Item {0} da checklist",
+   "Checklist item {0}"
   ],
   [
    "Cópia de {0} criada.",
@@ -2771,6 +2872,10 @@ export default {
   [
    "{0} aula na unidade",
    "{0} lesson in the unit"
+  ],
+  [
+   "Concluído: item {0}",
+   "Done: item {0}"
   ],
   [
    "Ações da lista {0}",
@@ -2857,6 +2962,10 @@ export default {
    "{0} ({1} cards)"
   ],
   [
+   "Remover bloco {0}",
+   "Remove block {0}"
+  ],
+  [
    "Questão {0}. {1}",
    "Question {0}. {1}"
   ],
@@ -2893,6 +3002,10 @@ export default {
    "You marked: {0}"
   ],
   [
+   "Remover item {0}",
+   "Remove item {0}"
+  ],
+  [
    "Explicação: {0}",
    "Explanation: {0}"
   ],
@@ -2907,6 +3020,10 @@ export default {
   [
    "{0} de {1} usos",
    "{0} of {1} uses"
+  ],
+  [
+   "Bloco {0} · {1}",
+   "Block {0} · {1}"
   ],
   [
    "Salvar {0} {1}",
@@ -2939,6 +3056,10 @@ export default {
   [
    "Agendar em {0}",
    "Schedule on {0}"
+  ],
+  [
+   "Não salvo: {0}",
+   "Not saved: {0}"
   ],
   [
    "- Revisão {0}",

@@ -537,6 +537,130 @@ async function main() {
 
     await context.close();
 
+    // ---------- Notes 3.0: highlight across segments, lesson notebook, autosave, conflict ----------
+    // Simulated API (mock-app.cjs) with FEATURE_NOTEBOOKS on; no real backend or database.
+    {
+      const notesData = state();
+      notesData.segmentsFor = {
+        'l-foto': [
+          { id: 'seg-1', position: 0, start_ms: 0, end_ms: 1500, current_text: 'A fotossíntese converte energia luminosa.' },
+          { id: 'seg-2', position: 1, start_ms: 1500, end_ms: 3000, current_text: 'O oxigênio é liberado pelas folhas.' },
+          { id: 'seg-3', position: 2, start_ms: 3000, end_ms: 4500, current_text: 'A glicose armazena energia química.' },
+        ],
+      };
+      const notesFlags = { ...allFlags, notebooks: true };
+      const opened = await openApp(browser, base, notesFlags, notesData);
+      const notesPage = opened.page;
+      await notesPage.goto(base + '/material.html?id=l-foto');
+      const texts = notesPage.locator('.transcription-segment .segment-text');
+      await texts.nth(2).waitFor();
+      // Select from "energia luminosa." (segment 1) to "O oxigênio" (segment 2).
+      await notesPage.evaluate(() => {
+        const [first, second] = document.querySelectorAll('.transcription-segment .segment-text');
+        const range = document.createRange();
+        range.setStart(first.firstChild, first.textContent.indexOf('energia luminosa'));
+        range.setEnd(second.firstChild, 'O oxigênio'.length);
+        getSelection().removeAllRanges();
+        getSelection().addRange(range);
+        second.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      });
+      const notesPopover = notesPage.locator('.selection-popover:not([hidden])');
+      await notesPopover.getByRole('button', { name: 'Destacar' }).waitFor();
+      assert.equal(await notesPopover.locator('.selection-popover-note').isHidden(), true, 'no single-segment warning');
+      await notesPopover.getByRole('button', { name: 'Destacar' }).click();
+      await notesPage.waitForFunction(() => document.querySelector('[data-annotations-panel] [role=status]')?.textContent.includes('Destaque salvo'));
+      const ranged = notesData.savedNotes.at(-1).body;
+      assert.deepEqual(
+        [ranged.segmentPosition, ranged.startOffset, ranged.endSegmentPosition, ranged.endOffset],
+        [0, 'A fotossíntese converte '.length, 1, 'O oxigênio'.length],
+      );
+      assert.equal(ranged.quote, 'energia luminosa.\nO oxigênio');
+      record('Notes 3.0: seleção que atravessa dois trechos vira um destaque com início e fim em trechos diferentes');
+
+      // The lesson notebook in the Anotações tab.
+      await notesPage.locator('#tab-notes').click();
+      const notebook = notesPage.locator('[data-lesson-notebook]');
+      await notebook.getByRole('heading', { name: 'Caderno da aula' }).waitFor();
+      await notebook.getByText('Privado: só você vê este caderno.').waitFor();
+      const rangeCard = notesPage.locator('[data-annotations-panel] .annotation-card', { hasText: 'O oxigênio' }).first();
+      await rangeCard.getByText('Abrange 2 trechos da transcrição').waitFor();
+      // First save fails (unknown outcome): "Não salvo — tentar de novo", same request on retry.
+      notesData.notebookFailures = 1;
+      await notebook.getByRole('button', { name: 'Parágrafo' }).click();
+      const notebookParagraph = notebook.getByLabel('Texto do parágrafo');
+      assert.equal(await notesPage.evaluate(() => document.activeElement?.closest('.notebook-block') !== null), true, 'focus moves to the new block');
+      await notebookParagraph.fill('Fase clara: luz vira energia química.');
+      const status = notebook.locator('.notebook-status');
+      await status.filter({ hasText: 'Não salvo — tentar de novo' }).waitFor({ timeout: 5000 });
+      await settle(notesPage);
+      await axeCheck(notesPage, '[data-notes-section]', 'Caderno da aula (não salvo)');
+      await notebook.getByRole('button', { name: 'Tentar de novo' }).click();
+      await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
+      const [failed, retried] = notesData.notebookSaves;
+      assert.equal(retried.requestId, failed.requestId, 'retry reuses the request id (idempotent)');
+      assert.equal(notesData.notebooks['l-foto'].doc.blocks[0].text, 'Fase clara: luz vira energia química.');
+      record('Caderno: salvamento automático; falha mostra "Não salvo — tentar de novo" e o reenvio usa o mesmo pedido');
+
+      // Cite the multi-segment highlight: a reference that keeps its revision.
+      await rangeCard.getByRole('button', { name: 'Citar no caderno' }).click();
+      const reference = notebook.locator('.notebook-block-annotation_ref');
+      await reference.locator('blockquote', { hasText: 'O oxigênio' }).waitFor();
+      await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
+      const refBlock = notesData.notebooks['l-foto'].doc.blocks.find((b) => b.type === 'annotation_ref');
+      assert.equal(refBlock.sourceRevisionId, 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee');
+      assert.equal(refBlock.sourceRevision, 1);
+      // Keyboard: move the reference above the paragraph; focus stays on the moved block.
+      await reference.getByRole('button', { name: 'Mover bloco 2 para cima' }).focus();
+      await notesPage.keyboard.press('Enter');
+      await notesPage.waitForFunction(() => document.activeElement?.closest('.notebook-block')?.matches('.notebook-block-annotation_ref'));
+      assert.equal(await notebook.locator('.notebook-block').first().getAttribute('class'), 'notebook-block notebook-block-annotation_ref');
+      await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
+      record('Caderno: "Citar no caderno" cria uma referência ao destaque com a revisão; blocos movidos pelo teclado mantêm o foco');
+
+      // Another device saved meanwhile: conflict, both versions kept on request.
+      const savedNotebook = notesData.notebooks['l-foto'];
+      notesData.notebooks['l-foto'] = {
+        ...savedNotebook,
+        version: savedNotebook.version + 1,
+        last_request_id: 'other-device',
+        doc: { ...savedNotebook.doc, blocks: [...savedNotebook.doc.blocks, { id: 'other', type: 'paragraph', text: 'Escrito no celular.' }] },
+      };
+      await notebookParagraph.fill('Fase clara: a luz vira energia química (ATP).');
+      const conflictBox = notebook.locator('.notebook-conflict');
+      await conflictBox.getByRole('button', { name: 'Manter as duas versões' }).waitFor({ timeout: 5000 });
+      assert.match(await status.textContent(), /outro aparelho/);
+      await settle(notesPage);
+      await axeCheck(notesPage, '[data-lesson-notebook]', 'Conflito do caderno');
+      await conflictBox.getByRole('button', { name: 'Manter as duas versões' }).click();
+      await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
+      const merged = notesData.notebooks['l-foto'].doc.blocks.map((b) => b.text || b.type);
+      assert(merged.includes('Escrito no celular.'), 'the other device text is kept');
+      assert(merged.includes('Fase clara: a luz vira energia química (ATP).'), 'this device text is kept');
+      assert(merged.some((t) => /^Cópia deste aparelho/.test(t)), 'the copy is labelled');
+      record('Caderno: outro aparelho salvou antes → aviso de conflito; "Manter as duas versões" guarda os dois textos');
+
+      // The lesson moves to revision 2: the reference says it points to an older revision.
+      notesData.lessonRevision = { 'l-foto': 2 };
+      // Same URL as now (only the hash): reload to read the lesson again.
+      await notesPage.goto(base + '/material.html?id=l-foto#anotacoes');
+      await notesPage.reload();
+      await notebook.locator('.notebook-ref-older', { hasText: 'Revisão anterior' }).waitFor();
+      await notebook.locator('.notebook-ref-quote', { hasText: 'O oxigênio' }).waitFor();
+      await settle(notesPage);
+      await axeCheck(notesPage, '[data-notes-section]', 'Caderno com referência de revisão anterior');
+      record('Caderno: referência a uma revisão anterior continua legível e avisa "Revisão anterior"');
+      await shot(notesPage, 'caderno-da-aula-desktop');
+
+      // Phone width: no horizontal scroll, still accessible.
+      await notesPage.setViewportSize({ width: 390, height: 844 });
+      await settle(notesPage);
+      await noHorizontalScroll(notesPage, 'caderno da aula 390 px');
+      await axeCheck(notesPage, '[data-notes-section]', 'Caderno da aula (390 px)');
+      await shot(notesPage, 'caderno-da-aula-390');
+      record('Caderno da aula a 390 px: sem rolagem horizontal, axe sem violações');
+      await opened.context.close();
+    }
+
     // ---------- One tool fails: its tab says so, the others work -------------------------
     const broken = state();
     broken.failPlanning = true;

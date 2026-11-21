@@ -138,6 +138,39 @@ ligado responde `409 QUIZ_SESSION_REQUIRED` (usar tentativas).
 | `/api/calendar`      | `calendar`       | `GET /?from&to` (janela até 62 dias), `PUT /`                                                                                                                                                                                                                            |
 | `/api/sharing`       | `sharing`        | `GET /:materialId`, `POST /:materialId {token, sourceRevisionId, includeTranscript, includeSummary, days}`, `DELETE /:materialId/:shareId`                                                                                                                               |
 
+### Notes 3.0 — `/api/notebooks` (flag `notebooks`, exige `annotations`)
+
+Caderno da aula: um documento **privado** por aula e por conta. Migration
+`20261121130000_notes_3_0.sql` (ver `docs/migrations/NOTES_3_0.md`).
+
+- `GET /api/notebooks/:materialId` → `{ notebook | null, references[], currentRevision, currentRevisionId }`.
+  `notebook` = `{ id, material_id, title, doc, version, visibility: "private", scope: "material", … }`.
+  `references` traz cada destaque citado (mesmo excluído depois): `id, source_revision_id,
+  source_revision, segment_position, end_segment_position, start_offset, end_offset, quote,
+  note_text, color, deleted, start_ms`. Se `source_revision ≠ currentRevision`, a referência
+  aponta para uma revisão anterior (a citação continua legível).
+- `PUT /api/notebooks/:materialId` `{ version, requestId, title?, doc }` → mesma resposta + `replayed`.
+  `version` = 0 para criar; depois a versão atual. Mesmo `requestId` com o mesmo corpo devolve o
+  estado salvo (`replayed: true`); com outro corpo, `409 LEARNING_REQUEST_CONFLICT`. Versão
+  desatualizada → `409 LEARNING_VERSION_CONFLICT` (nunca sobrescreve em silêncio).
+- `doc` = `{ type: "doc", schemaVersion: 1, blocks: [...] }`, no máximo 300 blocos e 160 kB.
+  Blocos (campos estritos, `id` = `[A-Za-z0-9_-]{1,40}` único):
+  `heading {level 2|3, text ≤300}`, `paragraph {text ≤5000}`, `bullet_list`/`ordered_list {items ≤100 × ≤1000}`,
+  `checklist {items: [{text, checked}]}`, `quote {text ≤2000}`,
+  `annotation_ref {annotationId, sourceRevisionId, sourceRevision?}` (o destaque deve ser desta aula
+  e conta, na revisão indicada → senão `409 LEARNING_REFERENCE_INVALID`).
+  Só texto: qualquer texto com `<tag` é recusado (`400 NOTEBOOK_INVALID`); excesso →
+  `413 NOTEBOOK_TOO_LARGE`. Outra conta → `404`. Flag ligada sem a migration →
+  `503 NOTEBOOK_SCHEMA_REQUIRED` (o resto da aula continua funcionando).
+
+Com `notebooks` ligado, `PUT /api/annotations` aceita âncoras em vários trechos (até 50):
+`{ sourceRevisionId, segmentPosition, startOffset, endSegmentPosition, endOffset, quote }`, com
+`endOffset` contado dentro do trecho final e `quote` = pedaços unidos por `\n`. O servidor confere a
+citação contra `segments_snapshot` da revisão (`409 LEARNING_ANCHOR_CONFLICT`) e exige revisão
+confirmada pela conta para destaques (`409 LEARNING_REVISION_UNCONFIRMED`). As respostas e
+`GET /api/annotations` passam a trazer `end_segment_position`, `anchor_version` e `visibility`.
+Sem a flag, o contrato E14 (um trecho) continua idêntico.
+
 `/api/flashcards/preview`: com `flashcard_sets` e `config` usa o gerador v2 (1–50 cartões, estilos,
 dificuldades, foco, lista de evitar); senão o v1 (5/10/20). Uma geração por pessoa por vez
 (`429 GENERATION_BUSY`); fonte acima de 80 mil caracteres → `422 SOURCE_TOO_LARGE`.

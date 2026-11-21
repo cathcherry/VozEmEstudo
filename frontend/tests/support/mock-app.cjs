@@ -370,6 +370,9 @@ async function setup(context, base, flags, data, options = {}) {
         }));
         detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
       }
+      // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
+      if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
+      if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
       return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
@@ -620,6 +623,42 @@ async function setup(context, base, flags, data, options = {}) {
       return json({ id, subject_id: body.subjectId, unit_id: body.unitId, subject: subject?.name || null });
     }
     if (p === '/api/catalog/resources') return json({});
+    // Notes 3.0 lesson notebook: versions like the server (409 on a stale version, replay of the
+    // same request id). `data.notebookFailures` answers 503 to that many saves (unknown outcome).
+    if (/^\/api\/notebooks\/[^/]+$/.test(p)) {
+      const id = p.split('/')[3];
+      data.notebooks = data.notebooks || {};
+      const view = () => {
+        const notebook = data.notebooks[id] || null;
+        const cited = new Set((notebook?.doc.blocks || []).filter((b) => b.type === 'annotation_ref').map((b) => b.annotationId));
+        return {
+          notebook,
+          currentRevision: data.lessonRevision?.[id] || 1,
+          references: (data.notes || []).filter((n) => cited.has(n.id)).map((n) => ({ deleted: false, ...n })),
+        };
+      };
+      if (method === 'GET') return json(view());
+      const body = request.postDataJSON();
+      data.notebookSaves = [...(data.notebookSaves || []), body];
+      if (data.notebookFailures > 0) {
+        data.notebookFailures -= 1;
+        return json({ error: { code: 'DATABASE_TEMPORARY_ERROR', message: 'Banco indisponível.' } }, 503);
+      }
+      const current = data.notebooks[id];
+      if (current && current.last_request_id === body.requestId) return json({ ...view(), replayed: true });
+      if ((current?.version || 0) !== body.version)
+        return json({ error: { code: 'LEARNING_VERSION_CONFLICT', message: 'O registro mudou em outro aparelho. Atualize antes de editar.' } }, 409);
+      data.notebooks[id] = {
+        id: current?.id || `nb-${id}`,
+        material_id: id,
+        title: body.title || '',
+        doc: body.doc,
+        version: (current?.version || 0) + 1,
+        visibility: 'private',
+        last_request_id: body.requestId,
+      };
+      return json({ ...view(), replayed: false });
+    }
     if (p === '/api/annotations' && method === 'PUT') {
       const body = request.postDataJSON();
       data.savedNotes = [...(data.savedNotes || []), body];
@@ -629,7 +668,9 @@ async function setup(context, base, flags, data, options = {}) {
           id: body.id,
           material_id: body.materialId,
           source_revision: 1,
+          source_revision_id: body.body.sourceRevisionId,
           segment_position: body.body.segmentPosition ?? null,
+          end_segment_position: body.body.endSegmentPosition ?? body.body.segmentPosition ?? null,
           start_offset: body.body.startOffset ?? null,
           end_offset: body.body.endOffset ?? null,
           quote: body.body.quote || '',

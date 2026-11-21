@@ -849,7 +849,8 @@ function render(material) {
     })
       .then((tools) => {
         notesEnabled = tools.notesEnabled;
-        if (notesEnabled && !hashTab && studyFor(materialId).lastTab === 'notes' && ready()) activeTab = 'notes';
+        // #anotacoes (or the last tab) opens the notes once the tools say they exist.
+        if (notesEnabled && ready() && (hashTab === 'notes' || (!hashTab && studyFor(materialId).lastTab === 'notes'))) activeTab = 'notes';
         layout();
       })
       .catch((error) => {

@@ -1,10 +1,13 @@
 import * as repository from '../repositories/learning-tools.repository.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import { AppError } from '../domain/errors.js';
-import { learningId,validateAnnotation,validateNoteQuery,validateCalendarEvent,validateCalendarQuery,validateShare,validateSharePage,validatePublicToken } from '../validators/learning-tools.validator.js';
-export function buildLearningToolsService(store=repository,owned=getOwnedMaterial){return {
+import { isFeatureEnabled } from '../config/feature-flags.js';
+import { learningId,validateAnnotation,validateAnnotationRange,validateNoteQuery,validateCalendarEvent,validateCalendarQuery,validateShare,validateSharePage,validatePublicToken } from '../validators/learning-tools.validator.js';
+// With Notes 3.0 (FEATURE_NOTEBOOKS) annotations are saved through the range function: anchors may
+// span several segments. Without it the E14 function and validator stay in use unchanged.
+export function buildLearningToolsService(store=repository,owned=getOwnedMaterial,{ranges=isFeatureEnabled('notebooks')}={}){return {
   notes:(user,query)=>store.listNotes(user,validateNoteQuery(query)),
-  saveNote:(user,body)=>store.saveNote(user,validateAnnotation(body)),
+  saveNote:(user,body)=>ranges?store.saveNoteRange(user,validateAnnotationRange(body)):store.saveNote(user,validateAnnotation(body)),
   calendar:(user,query)=>store.calendarFeed(user,validateCalendarQuery(query)),
   saveEvent:(user,body)=>store.saveCalendar(user,validateCalendarEvent(body)),
   async createShare(user,id,body){const materialId=learningId(id);const data=validateShare(body);await owned(user,materialId);return store.createShare(user,materialId,data);},

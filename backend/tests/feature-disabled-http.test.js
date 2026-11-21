@@ -14,6 +14,7 @@ const FLAGGED = {
   calendar: '/api/calendar',
   catalog_units: '/api/catalog',
   classrooms: '/api/classrooms',
+  notebooks: '/api/notebooks/x',
 };
 
 function probe(env) {
