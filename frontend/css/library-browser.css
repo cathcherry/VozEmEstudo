@@ -146,3 +146,35 @@ body[data-page='history'] .subject-menu .row-menu-content { top:36px; width:180p
 body[data-page='history'] .subject-menu,
 body[data-page='history'] .subject-menu[open] { flex:0 0 32px; width:32px; }
 body[data-page='history'] .library-folder-toolbar .subject-menu > summary { opacity:1; }
+
+/* List view, Finder-like rows (Biblioteca 3.0). */
+.library-tree-files { gap: 0; }
+.library-tree-files a.library-tree-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto auto 6.5rem;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: .9rem;
+}
+.library-tree-row .library-doc-icon { display: grid; place-items: center; color: var(--accent-strong); }
+.library-tree-row .library-tree-title { font-weight: 600; overflow-wrap: anywhere; }
+.library-tree-row small { color: var(--muted); font-size: .78rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.library-tree-row .library-tree-progress { text-align: end; }
+.library-tree-files a.library-tree-part { min-height: 34px; margin-left: 46px; padding: 4px 10px; font-size: .8rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .library-tree-files a.library-tree-row { grid-template-columns: 22px minmax(0, 1fr) auto; row-gap: 2px; }
+  .library-tree-row .library-tree-date { grid-column: 2; grid-row: 2; }
+  .library-tree-row .library-tree-length { grid-column: 3; grid-row: 2; justify-self: end; }
+  .library-tree-row .library-tree-progress { grid-column: 3; grid-row: 1; }
+}
+/* Inside a folder page the content is the top level: no tree guides. */
+body[data-page='history'][data-library-layout='list'] .is-folder-page .library-folder-content,
+body[data-page='history'][data-library-layout='list'] .is-folder-page .library-unit-content { margin-left: 0; padding-left: 0; border-left: 0; }
+/* List rows: the ⋯ menu sits before the chevron instead of on top of it. */
+body[data-page='history'][data-library-layout='list'] .library-folder-group.has-subject-menu > details > summary { padding-right: 62px; }
+body[data-page='history'][data-library-layout='list'] .library-folder-group > .subject-menu { top: 29px; right: 16px; translate: 0 -50%; }
+/* The path already says where you are: the "Pastas" label is for screen readers only. */
+body[data-page='history'] .library-breadcrumb > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+body[data-page='history'] .library-new-folder { width: auto !important; padding-inline: 14px !important; white-space: nowrap; font-weight: 600; }

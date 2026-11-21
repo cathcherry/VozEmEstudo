@@ -17,6 +17,7 @@ const {
   allFlags,
   startServer,
   launchBrowser,
+  noHorizontalScroll,
 } = require('./support/mock-app.cjs');
 
 const output = path.join(__dirname, 'artifacts', 'feature-validation');
@@ -164,6 +165,20 @@ async function main() {
     assert.deepEqual(data.createdCards.map((c) => c.front), ['O que é a fase clara?']);
     await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
     record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
+
+    // ---------- Biblioteca: Finder-like list view inside a folder ----------------------------
+    await page.goto(base + '/historico.html?folder=sub-bio&unit=unit-energia');
+    await page.getByRole('button', { name: 'Lista' }).click();
+    const fileRow = page.locator('.library-tree-row', { hasText: 'Fotossíntese e respiração celular' });
+    await fileRow.waitFor();
+    assert.match(await fileRow.locator('.library-tree-length').textContent(), /30:20/);
+    assert.match(await fileRow.locator('.library-tree-progress').textContent(), /% ouvido|Estudada/);
+    await settle(page);
+    await axeCheck(page, 'main', 'Biblioteca em lista');
+    await noHorizontalScroll(page, 'biblioteca lista');
+    await page.goto(base + '/historico.html');
+    await page.getByRole('button', { name: '+ Nova disciplina' }).waitFor();
+    record('Biblioteca em lista: cada aula numa linha com ícone, data, duração e progresso; sem guias soltas na pasta');
 
     // ---------- Flashcards 3.0: the look changes, the content and the server do not ----------
     await page.goto(base + '/revisar.html#flashcards');

@@ -657,6 +657,7 @@ export default {
   "Estilo": "样式",
   "Estreito": "窄",
   "Estrelas": "星星",
+  "Estudada": "已学习",
   "Estúdio visual": "视觉工作室",
   "Estudo": "Estudo",
   "Estudo livre": "自由学习",
@@ -2399,6 +2400,10 @@ export default {
   [
    "{0} pausado",
    "{0}已暂停"
+  ],
+  [
+   "{0}% ouvido",
+   "已听 {0}%"
   ],
   [
    "Versão {0}",

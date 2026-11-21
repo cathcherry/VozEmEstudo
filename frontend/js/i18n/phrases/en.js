@@ -657,6 +657,7 @@ export default {
   "Estilo": "Style",
   "Estreito": "Narrow",
   "Estrelas": "Stars",
+  "Estudada": "Studied",
   "Estúdio visual": "Visual studio",
   "Estudo": "Estudo",
   "Estudo livre": "Free study",
@@ -2399,6 +2400,10 @@ export default {
   [
    "{0} pausado",
    "{0} paused"
+  ],
+  [
+   "{0}% ouvido",
+   "{0}% listened"
   ],
   [
    "Versão {0}",
