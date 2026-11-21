@@ -126,8 +126,19 @@ test('Flashcards 3.0 over HTTP: typed decks, templates, merge with decisions, An
         body: { name: 'X', base: 'classic', tokens: { css: 'body{display:none}' } },
       });
       assert.equal(hostile.status, 400, 'no free CSS in a template');
+      const twin = await request('/api/flashcards/templates/' + randomUUID(), 'PUT', {
+        version: 0,
+        requestId: randomUUID(),
+        body: { name: '  matcha ', base: 'classic' },
+      });
+      assert.equal(twin.status, 409, 'a second template with the same name (case and spaces aside) is refused');
+      assert.equal(twin.body.error.code, 'FLASHCARD_TEMPLATE_NAME_TAKEN');
+      const resave = await request('/api/flashcards/templates/' + templateId, 'PUT', { version: 1, requestId: randomUUID(), body: { name: 'Matcha', base: 'sticky' } });
+      assert.equal(resave.status, 200, 'the template itself keeps its name');
+      const otherAccount = await request('/api/flashcards/templates/' + randomUUID(), 'PUT', { version: 0, requestId: randomUUID(), body: { name: 'Matcha', base: 'classic' } }, 'b');
+      assert.equal(otherAccount.status, 200, 'names are unique per account only');
       assert.equal((await request('/api/flashcards/templates')).body.length, 1);
-      assert.equal((await request('/api/flashcards/templates', 'GET', null, 'b')).body.length, 0);
+      assert.equal((await request('/api/flashcards/templates', 'GET', null, 'b')).body.length, 1, 'b sees only its own template');
       const applied = await request(`/api/flashcards/sets/${deckA}/template`, 'PUT', { templateId });
       assert.equal(applied.body.template_id, templateId);
       assert.equal((await request(`/api/flashcards/sets/${deckA}/template`, 'PUT', { templateId }, 'b')).status, 404);

@@ -406,3 +406,21 @@ servidores com IA real foram desligados depois do teste.
   - Fora desse proxy, o login normal não é afetado.
 - **Upload ao Storage atrás do proxy.** Foi feito como service role, então as políticas RLS do bucket `audios` não foram exercitadas no staging (só nos testes PGlite).
 - **Auxiliar `qa` no staging.** A extensão `http` e o schema `qa` existem só no staging, para aplicar migrations direto do Git. Podem ser removidos quando não forem mais úteis.
+
+### Merge da 3.4
+
+- **PR #12 mergeado na `main`** em 21/11/2026: commit de merge **`ab42441da389948d233cd60369895d90d3751a4e`**, cabeça `4d3dae7`, com os dois checks `local-quality` verdes antes do merge.
+- CI da `main` em `ab42441`: workflow Quality, run 399 (resultado registrado na seção 3.4.1).
+
+## Voz em Estudo 3.4.1: endurecimento e preparação da release (branch `feat/3.4.1-hardening`)
+
+| Item | Situação |
+| --- | --- |
+| Nomes repetidos de modelo visual | o servidor também recusa (409 `FLASHCARD_TEMPLATE_NAME_TAKEN`), por conta, ignorando maiúsculas e espaços; teste HTTP |
+| Questões que diziam "descrita na transcrição" | regra nova nos prompts; versões `questions-v2.3` e `multi-lesson-v2`, o que invalida o reuso das gerações antigas (correto: o texto muda) |
+| Injeção de chave privilegiada pelo proxy | investigada: vem dos segredos de rede do ambiente de nuvem, não do produto. Novo teste `scripts/tests/key-hygiene.test.mjs`: nenhum arquivo servido cita chave privilegiada e há um único cliente Supabase no navegador, criado com a chave publicável. `docs/STAGING_BROWSER_AUTH.md` |
+| Login normal e uploads sem credencial privilegiada | `scripts/staging/browser-auth-storage-check.mjs`, que detecta a injeção e para como INCONCLUSIVE. **Rodado de verdade**: a sessão foi movida para um ambiente sem segredos, a API rodou sem chave do servidor, e os 10 passos passaram (login pelo formulário, upload no próprio prefixo, RLS negando o prefixo alheio, só chave publicável). Workflow manual `.github/workflows/staging-browser-auth.yml` para repetir no GitHub |
+| Auditoria de produção (somente leitura) | ver `docs/RUNBOOK_PRODUCAO_3_4.md`, "Auditoria". Postgres 17.11 (igual ao staging); nenhuma migration da 3.3/3.4 aplicada; 0 anotações e 0 flashcards (nada a transformar); modelo em uso **`openai/gpt-oss-120b`** (pelos registros, sem ler credenciais) |
+| Pacote da release | `database/release/3.4/manifest.json` (ordem, SHA-256, dependências, checks, reversão) e `scripts/release/verify-release.mjs`, com teste |
+
+Produção: **nada aplicado, nenhuma flag ligada**. Aguarda autorização explícita.

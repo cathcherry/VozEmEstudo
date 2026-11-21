@@ -9,6 +9,39 @@
 
 **Só execute com autorização explícita da responsável e com um backup verificado (seção 2).**
 
+## Auditoria de produção (21/11/2026, somente leitura)
+
+Consultas de leitura no projeto `audioestudo`, sem alterar nada e sem expor credenciais:
+
+| Verificação | Resultado |
+| --- | --- |
+| Estado do projeto | `ACTIVE_HEALTHY`, **Postgres 17.11**; o staging, onde as 8 migrations já rodaram, também é 17.11 |
+| `production-state-3-4.sql` | as 8 migrations com `aplicada = false`; pré-requisitos das etapas 1, 2, 3 e 6 presentes. É o estado esperado: as etapas 4, 5, 7 e 8 dependem das anteriores |
+| Pré-requisitos dos preflights 1 a 3 | E14 (`study_save_annotation_admin`), unicidade `(id, user_id)` em `materials`, listas nomeadas, `catalog_units` e `commit_question_list_admin` presentes; bucket `flashcard-media` ainda não existe (a migration 3 cria) |
+| Volume de dados | 22 aulas, 25 revisões, 19 listas de questões, 4 contas; **0 anotações e 0 flashcards**: as duas migrations que transformam dados (1 e 3) hoje não têm nada a transformar |
+| Modelo de IA em uso (pelas gerações registradas, sem ler variáveis) | **`openai/gpt-oss-120b`** em todos os resumos e questões desde novembro (16 resumos, 18 listas); `llama-3.3-70b-versatile` só em 1 resumo e 1 lista de agosto. Transcrição: `assemblyai-stt-3-7` |
+| Advisors de segurança | os mesmos do staging antes da 3.3: `rls_enabled_no_policy` (intencional), `storage_owns_material` (intencional, usada pelas políticas do Storage) e proteção contra senhas vazadas desligada (recomendado ligar) |
+
+**Consequência para a seção 4.** O `GROQ_MODEL` de produção já é `openai/gpt-oss-120b` (confirmado pelos registros). O código da 3.4 passa a mandar `reasoning_effort=low` para esse modelo (`LLM_REASONING_EFFORT`, padrão `low`), e isso muda também os resumos e as questões de uma aula, que hoje rodam sem esse parâmetro (padrão da Groq). No staging, com `low`, o resumo e as 5 questões ficaram corretos e mais rápidos (1,4–1,5 s). Para manter o comportamento atual, defina `LLM_REASONING_EFFORT=medium`. Atenção: com `medium`, o mapa multiaula pode estourar o limite de tokens.
+
+## Pacote de release (verificável)
+
+`database/release/3.4/manifest.json` lista as 8 migrations na ordem, com SHA-256, dependências, preflight, postflight, guia de reversão e guia da migration. Antes da janela, rode:
+
+```bash
+node scripts/release/verify-release.mjs
+```
+
+O verificador confere que:
+
+- todos os arquivos existem;
+- cada migration é exatamente a revisada (SHA-256);
+- a ordem respeita as dependências;
+- cada migration é transacional, tem guarda `*_ABORT` e não executa nenhum comando destrutivo;
+- toda tabela criada tem RLS.
+
+Use o SHA-256 também para conferir o texto colado no SQL Editor (`sha256sum arquivo.sql`).
+
 ## 0. O que vai mudar
 
 | # | Migration | Cria | Flag que usa | Dados existentes |
@@ -57,10 +90,12 @@ postflight.
    - os novos probes de readiness;
    - o modelo padrão `openai/gpt-oss-120b`.
 4. **Configuração de IA.** O modelo `llama-3.3-70b-versatile` **não é mais oferecido pela Groq**: ele não aparece na lista de modelos da conta, conferida em 21/11.
-   - Se produção usa `GROQ_MODEL=llama-3.3-70b-versatile`, mude para `openai/gpt-oss-120b`, com `LLM_REASONING_EFFORT=low`.
-   - Faça isso **antes** de ativar qualquer flag. Com o modelo antigo, toda geração de texto falha.
+   - Produção já usa `openai/gpt-oss-120b`, conforme os registros (ver "Auditoria").
+   - Decida `LLM_REASONING_EFFORT` antes do deploy: `low` é o padrão da 3.4; `medium` mantém o comportamento atual dos resumos e das questões.
 5. **Ensaio.**
+   - Rode `node scripts/release/verify-release.mjs`: deve sair com código 0.
    - Rode o roteiro inteiro no staging. O último ensaio, de 21/11, está registrado em `docs/OVERNIGHT_PROGRESS.md`.
+   - Rode `scripts/staging/browser-auth-storage-check.mjs` (login normal e RLS do Storage sem chave privilegiada; `docs/STAGING_BROWSER_AUTH.md`).
    - Rode `scripts/staging/e2e-staging.mjs`. Ele se recusa a rodar contra produção.
 6. **Aviso aos usuários**, se houver: a janela não exige parar o app, mas as migrations 1 e 3 travam por poucos segundos as tabelas de anotações e de flashcards.
 

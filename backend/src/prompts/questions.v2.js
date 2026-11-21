@@ -1,4 +1,4 @@
-export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2.2';
+export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2.3';
 
 const SOURCE_RULES = [
   'Use exclusivamente a transcrição fornecida; não use conhecimento externo.',
@@ -83,6 +83,7 @@ export function buildPlannedQuestionMessages(transcript, { slots, avoid = [], to
         `Dificuldades: ${levels.map((key) => LEVEL_GUIDE[key]).join('; ')}.`,
         `Aspectos (facet) do conceito: ${facets.map((key) => FACET_GUIDE[key]).join('; ')}. Slots com o mesmo conceito e aspectos diferentes pedem perguntas com propósitos diferentes.`,
         'Pergunte o que é central na aula; não faça perguntas sobre detalhes triviais (datas, nomes ou números soltos) a menos que a aula os trate como importantes.',
+        'Escreva o enunciado sobre o conteúdo, como numa prova: nunca mencione "a transcrição", "o texto" ou "o trecho" (por exemplo, não escreva "descrita na transcrição").',
         'Cada questão tem enunciado claro, exatamente quatro alternativas distintas, UMA única alternativa correta (correctIndex de 0 a 3) e explicação breve sustentada pela aula.',
         'Distratores: os três errados devem ser plausíveis para quem não estudou, do mesmo tipo e tamanho da resposta certa, de preferência outros termos ou ideias da própria aula ou confusões comuns; nunca use alternativas absurdas ou fora do assunto.',
         'Varie a posição da alternativa correta entre as questões.',

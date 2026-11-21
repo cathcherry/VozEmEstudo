@@ -6,6 +6,8 @@ import { readApkg, ApkgError } from '../domain/apkg.js';
 import { AppError } from '../domain/errors.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { rpc } from '../repositories/rpc.js';
+
+export const templateNameKey = (name) => String(name || '').normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
 import {
   validateTemplateSave,
   validateSetTemplate,
@@ -97,7 +99,18 @@ export function buildFlashcardsV3Service({
 } = {}) {
   return {
     listTemplates: (userId) => store.listTemplates(userId),
-    saveTemplate: (userId, id, body) => store.saveTemplate(userId, id, validateTemplateSave(body)),
+    async saveTemplate(userId, id, body) {
+      const input = validateTemplateSave(body);
+      // A name identifies a look in every selector: two of the same account's templates may not share
+      // one (ignoring case, accents' composition and spacing). Renaming or re-saving itself is fine.
+      if (input.body.name && !input.body.deleted) {
+        const wanted = templateNameKey(input.body.name);
+        const taken = (await store.listTemplates(userId)).some((t) => t.id !== id && templateNameKey(t.name) === wanted);
+        if (taken)
+          throw new AppError('FLASHCARD_TEMPLATE_NAME_TAKEN', 'Você já tem um modelo com esse nome. Escolha outro nome.', 409);
+      }
+      return store.saveTemplate(userId, id, input);
+    },
     setTemplate: (userId, setId, body) => store.setTemplate(userId, setId, validateSetTemplate(body)),
 
     /** A personal deck written by hand or imported from text, with typed notes. */

@@ -137,7 +137,7 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
       );
       assert.equal(list.coverage.shortfall, 'insufficient_content');
       assert.deepEqual(list.config.difficulties, ['basic', 'advanced']);
-      assert.equal(list.prompt_version, 'questions-v2.2');
+      assert.equal(list.prompt_version, 'questions-v2.3');
       const material = (await request(materialPath)).body;
       const dto = material.questionBatches.find((batch) => batch.id === listId);
       assert.equal(dto.title, 'Física — Conceitos básicos');
