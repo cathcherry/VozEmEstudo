@@ -15,6 +15,7 @@ export const featureSchema = Object.freeze({
   generation_reuse: { migration: '20261121160000_generation_reuse.sql', tables: { ai_generations: 'id,generation_key,status,job_id' } },
   flashcards_v3: { migration: '20261121150000_flashcards_3_0.sql', tables: { study_card_templates: 'id,user_id,version', study_flashcards: 'id,note_type,content_hash,media', study_flashcard_sets: 'id,template_id,template_base' } },
   classrooms: { migration: '20261121140000_classrooms.sql', tables: { classrooms: 'id,owner_id,status', classroom_members: 'classroom_id,user_id,role,status', classroom_invites: 'id,token_hash,max_uses,use_count', classroom_submissions: 'id,status,teacher_confirmed_revision_id', classroom_lessons: 'id,published_revision_id,status', classroom_shared_items: 'id,flashcard_set_id,revoked_at' } },
+  multi_lesson: { migration: '20261121170000_multi_lesson.sql', tables: { ai_generations: 'id,generation_key,status', multi_lesson_materials: 'id,user_id,sources,status', multi_lesson_jobs: 'id,status,next_attempt_at,locked_by' } },
   notebooks: { migration: '20261121130000_notes_3_0.sql', tables: { study_notebooks: 'id,user_id,material_id,version,visibility', study_annotations: 'id,end_segment_position,anchor_version,visibility' } },
 });
 
@@ -31,6 +32,7 @@ export function readinessFlagErrors(flags) {
   if (flags.flashcards_v3 && !flags.flashcard_sets) errors.push('FEATURE_FLASHCARDS_V3 exige FEATURE_FLASHCARD_SETS=true.');
   if (flags.classrooms && !flags.flashcard_sets) errors.push('FEATURE_CLASSROOMS exige FEATURE_FLASHCARD_SETS=true.');
   if (flags.notebooks && !flags.annotations) errors.push('FEATURE_NOTEBOOKS exige FEATURE_ANNOTATIONS=true.');
+  if (flags.multi_lesson && !flags.catalog_units) errors.push('FEATURE_MULTI_LESSON exige FEATURE_CATALOG_UNITS=true.');
   return errors;
 }
 

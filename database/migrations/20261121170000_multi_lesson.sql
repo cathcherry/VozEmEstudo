@@ -310,6 +310,31 @@ begin
   return found;
 end $$;
 
+-- The worker reads the frozen sources of the job it holds: each revision's segments_snapshot, only
+-- while the lease is its own, only revisions of the record's owner that the owner still confirms.
+create function public.multi_lesson_job_sources_admin(p_job_id uuid, p_worker_id text)
+returns jsonb language plpgsql stable security invoker set search_path = '' as $$
+declare v_job public.multi_lesson_jobs; v_rec public.multi_lesson_materials; v_result jsonb;
+begin
+  select * into v_job from public.multi_lesson_jobs where id = p_job_id;
+  if not found then raise exception 'MULTI_LESSON_NOT_FOUND'; end if;
+  if v_job.status <> 'running' or v_job.locked_by is distinct from p_worker_id then raise exception 'MULTI_LESSON_LEASE_LOST'; end if;
+  select * into v_rec from public.multi_lesson_materials where id = v_job.multi_lesson_id;
+  if exists (select 1 from unnest(v_rec.source_revision_ids) s(id) where not exists (
+      select 1 from public.transcription_versions tv
+      join public.transcriptions t on t.id = tv.transcription_id
+      join public.materials m on m.id = t.material_id and m.user_id = v_rec.user_id
+      join public.transcription_confirmations tc on tc.transcription_version_id = tv.id and tc.user_id = v_rec.user_id
+      where tv.id = s.id)) then
+    raise exception 'TRANSCRIPTION_CONFIRMATION_REQUIRED';
+  end if;
+  select jsonb_agg(src.value || jsonb_build_object('segments', tv.segments_snapshot) order by src.ordinality)
+    into v_result
+    from jsonb_array_elements(v_rec.sources) with ordinality src(value, ordinality)
+    join public.transcription_versions tv on tv.id = (src.value->>'revisionId')::uuid;
+  return coalesce(v_result, '[]'::jsonb);
+end $$;
+
 -- Success: the record(s) answering the generation become ready, the generation is completed.
 create function public.multi_lesson_complete_job_admin(p_job_id uuid, p_worker_id text, p_result jsonb, p_model text)
 returns jsonb language plpgsql security invoker set search_path = '' as $$
@@ -365,6 +390,7 @@ revoke all on function public.multi_lesson_freeze_sources(),
   public.multi_lesson_delete_admin(uuid, uuid),
   public.multi_lesson_claim_job_admin(text, integer),
   public.multi_lesson_renew_lease_admin(uuid, text),
+  public.multi_lesson_job_sources_admin(uuid, text),
   public.multi_lesson_complete_job_admin(uuid, text, jsonb, text),
   public.multi_lesson_fail_job_admin(uuid, text, text, timestamptz)
   from public, anon, authenticated;
@@ -375,6 +401,7 @@ grant execute on function public.multi_lesson_resolve_admin(uuid, text, uuid[]),
   public.multi_lesson_delete_admin(uuid, uuid),
   public.multi_lesson_claim_job_admin(text, integer),
   public.multi_lesson_renew_lease_admin(uuid, text),
+  public.multi_lesson_job_sources_admin(uuid, text),
   public.multi_lesson_complete_job_admin(uuid, text, jsonb, text),
   public.multi_lesson_fail_job_admin(uuid, text, text, timestamptz)
   to service_role;
