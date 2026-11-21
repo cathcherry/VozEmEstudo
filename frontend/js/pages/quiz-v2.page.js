@@ -231,7 +231,11 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
             await finishQuizSession(session.id);
             await reload();
           } catch (error) {
-            feedback.textContent = error.message || 'Não foi possível concluir.';
+            // Stay on this question so the message is seen; the button can be used again.
+            busy = false;
+            action.disabled = false;
+            feedback.textContent = error.message || 'Não foi possível concluir. Tente novamente.';
+            return;
           } finally { busy = false; }
         }
         render();

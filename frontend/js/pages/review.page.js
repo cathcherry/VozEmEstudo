@@ -3,7 +3,7 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { listMaterials } from '../api/material.api.js';
-import { initToolTabs } from '../utils/tool-tabs.js';
+import { initToolTabs, showToolFailure } from '../utils/tool-tabs.js';
 import { emptyState } from '../utils/material-ui.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
 import { initAnnotationsPanel } from './annotations-panel.js';
@@ -65,9 +65,11 @@ if (!sections.length) {
       }),
     );
   const results = await Promise.allSettled(loads);
-  for (const result of results)
+  // Tools load in the same order as their tabs (`sections`).
+  results.forEach((result, index) => {
     if (result.status === 'rejected')
-      console.warn('Ferramenta de revisão indisponível:', result.reason);
+      showToolFailure(sections[index], 'Esta seção não pôde ser carregada agora.', result.reason);
+  });
   if (params.has('acao') || params.has('busca'))
     history.replaceState(null, '', `${location.pathname}${location.hash}`);
 }

@@ -524,3 +524,23 @@ body.app-page
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+/* A tool that failed to start explains it inside its own tab. */
+.tool-page .tool-failure {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-light);
+  border-left: 4px solid var(--danger, #b3261e);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.tool-page .tool-failure h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.tool-page .tool-failure p {
+  margin: 0;
+  color: var(--muted);
+}

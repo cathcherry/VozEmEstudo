@@ -312,6 +312,18 @@ export async function initPlanningPanel({ materials }) {
 
   function renderTasks(host, related) {
     const visible = sortedPlanningTasks(related, { filter: taskFilter.value, sort: taskSort.value });
+    if (!visible.length) {
+      // Say why the list is empty instead of showing nothing.
+      const empty = document.createElement('p');
+      empty.className = 'planning-empty';
+      empty.textContent = !related.length
+        ? 'Nenhuma tarefa aqui ainda.'
+        : taskFilter.value === 'completed'
+          ? 'Nenhuma tarefa concluída aqui.'
+          : 'Todas as tarefas daqui estão concluídas.';
+      host.append(empty);
+      return;
+    }
     const ul = document.createElement('ul');
     ul.className = 'planning-tasks';
     for (const task of visible) {

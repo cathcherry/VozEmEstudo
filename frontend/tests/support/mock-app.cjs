@@ -350,6 +350,13 @@ async function setup(context, base, flags, data, options = {}) {
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
     if (p.endsWith('/playback'))
       return json({ video: null, signedVideoUrl: null, signedAudioUrl: `${base}/__fixture.wav` });
+    if (p === '/api/planning' && method === 'GET' && data.failPlanning)
+      return json({ error: { message: 'O planejamento está indisponível agora.' } }, 503);
+    if (/^\/api\/planning\/tasks\/[^/]+\/completion$/.test(p) && method === 'PATCH') {
+      const task = data.tasks.find((item) => item.id === p.split('/')[4]);
+      task.completed_at = request.postDataJSON().completed ? new Date().toISOString() : null;
+      return json(task);
+    }
     if (p === '/api/planning' && method === 'GET')
       return json({ goals: data.goals, subgoals: data.subgoals, tasks: data.tasks });
     if (p === '/api/planning/goals' && method === 'POST') {
@@ -406,6 +413,15 @@ async function setup(context, base, flags, data, options = {}) {
             materialId: t.material_id,
           })),
       ];
+      // `data.calendarPageSize` pages the feed (without `limit`, as an older server would).
+      if (data.calendarPageSize) {
+        const offset = Number(url.searchParams.get('offset')) || 0;
+        return json({
+          items: items.slice(offset, offset + data.calendarPageSize),
+          total: items.length,
+          offset,
+        });
+      }
       return json({ items, total: items.length, limit: 100, offset: 0 });
     }
     if (p === '/api/calendar' && method === 'PUT') {
@@ -419,6 +435,15 @@ async function setup(context, base, flags, data, options = {}) {
       const notes = data.notes.filter(
         (n) => !q || `${n.quote} ${n.note_text}`.toLowerCase().includes(q),
       );
+      if (data.notePageSize) {
+        const offset = Number(url.searchParams.get('offset')) || 0;
+        return json({
+          notes: notes.slice(offset, offset + data.notePageSize),
+          total: notes.length,
+          limit: data.notePageSize,
+          offset,
+        });
+      }
       return json({ notes, total: notes.length + (q ? 0 : 5), limit: 50, offset: 0 });
     }
     if (p === '/api/study/progress' && method === 'GET')

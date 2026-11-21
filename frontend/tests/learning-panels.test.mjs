@@ -42,3 +42,12 @@ test('public copy fetch omits credentials, sends token only in POST body and ren
     assert.equal(dom.window.document.querySelector('img,script'),null);assert.match(dom.window.document.body.textContent,/中文/);
   }finally{dom.window.close();}
 });
+test('a note found in Revisar opens its lesson on the highlighted passage', () => {
+  const lessonHref = new Function(`${code('annotations-panel').split('async function initAnnotationsPanel')[0]};return lessonHref;`)();
+  assert.equal(lessonHref({ material_id: 'a b', quote: '' }), './material.html?id=a+b');
+  const long = 'energia luminosa convertida em energia química dentro do cloroplasto durante a fase clara';
+  const href = new URL(lessonHref({ material_id: 'm1', quote: long, segment_position: 3 }), 'http://x/');
+  assert.equal(href.searchParams.get('trecho'), '3');
+  assert(long.startsWith(href.searchParams.get('busca')), 'search term is the start of the quote');
+  assert(href.searchParams.get('busca').length <= 80 && !href.searchParams.get('busca').endsWith(' '));
+});

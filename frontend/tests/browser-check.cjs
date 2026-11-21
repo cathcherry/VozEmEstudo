@@ -2229,6 +2229,12 @@ async function main() {
     assert.equal(await publicPage.locator('.shared-questions > li').count(), 5);
     assert.equal(await publicPage.locator('.shared-questions > li').first().locator('.shared-options li').count(), 4);
     assert.doesNotMatch(await publicPage.locator('main').textContent(), /Resposta correta|Explicação/);
+    // Revoking asks first: cancelling keeps the link, confirming revokes it.
+    page.once('dialog', (dialog) => { assert.match(dialog.message(), /não pode ser desfeita/); void dialog.dismiss(); });
+    await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
+    await page.waitForTimeout(200);
+    assert(![...listShares.values()].some((item) => item.revoked), 'cancel keeps the link');
+    page.once('dialog', (dialog) => void dialog.accept());
     await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
     await page.locator('[data-list-share-list]').getByText(/^Revogado/).waitFor();
     await publicPage.reload();

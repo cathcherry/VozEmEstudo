@@ -436,6 +436,8 @@ export async function initFlashcardsPanel({ materials }) {
     }
   }
 
+  // Set counts are refreshed right after a card is created (see the sets panel below).
+  let afterCreate = async () => {};
   createForm.addEventListener('submit', (event) => {
     event.preventDefault();
     if (creating || loading || reviewing || pendingReview || !createForm.reportValidity()) return;
@@ -454,6 +456,7 @@ export async function initFlashcardsPanel({ materials }) {
         createForm.reset();
         setStatus(createMessage, 'Cartão criado e disponível para a primeira revisão.', 'success');
         await refresh();
+        await afterCreate();
       } catch (error) {
         setStatus(createMessage, error.message || 'Não foi possível salvar o cartão.', 'error');
       } finally { creating = false; updateControls(); }
@@ -493,9 +496,15 @@ export async function initFlashcardsPanel({ materials }) {
         setFilter.focus();
       },
     });
-    const reloadSets = () => setsPanel.load().then(fillSetOptions).catch(() => {});
+    const reloadSets = () =>
+      setsPanel
+        .load()
+        .then(fillSetOptions)
+        .catch((error) =>
+          setStatus(managerMessage, error?.message || 'Não foi possível carregar os conjuntos agora.', 'error'),
+        );
     await reloadSets();
-    createForm.addEventListener('submit', () => setTimeout(reloadSets, 800));
+    afterCreate = reloadSets;
     deleteCardButton.addEventListener('click', () => {
       const id = managerSelect.value;
       if (!id || saving || !confirm('Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.')) return;

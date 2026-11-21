@@ -65,9 +65,10 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const save=make('button','Salvar meta e fuso');save.type='submit';
   const useZone=make('button','Usar fuso deste aparelho');useZone.type='button';useZone.addEventListener('click',()=>{zone.value=Intl.DateTimeFormat().resolvedOptions().timeZone;});
   settings.append(goalLabel,zoneLabel,useZone,save);
-  let initial=true,refreshing=false;
+  let initial=true,refreshing=false,again=false;
+  // A refresh asked for while one runs (e.g. after pausing or saving the goal) runs right after it.
   async function refresh() {
-    if(refreshing)return;refreshing=true;
+    if(refreshing){again=true;return;}refreshing=true;
     try {
       const data=await getStudyOverview();metrics.replaceChildren(make('h3',`Semana iniciada em ${data.weekStart} · ${data.timezone}`));
       const minutes=Math.floor(Number(data.weekSeconds)/60);
@@ -85,12 +86,13 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       if(data.activeSession&&!clock.session) {
         const close=make('button','Encerrar sessão ativa em outro aparelho ou aba');close.type='button';
         close.addEventListener('click',()=>{
+          if(!confirm('Encerrar a sessão de estudo aberta em outro aparelho ou aba? O tempo já registrado é mantido.'))return;
           close.disabled=true;void tickStudySession(data.activeSession.id,{sequence:data.activeSession.last_sequence+1,active:false,close:true})
             .then(refresh).catch(notice).finally(()=>{close.disabled=false;});
         });metrics.append(close);
       }
     } catch(error){metrics.replaceChildren(make('p',error.message||'Indicadores indisponíveis.'));signal('study-overview',{error:error.message||'Indicadores indisponíveis.'});}
-    finally{refreshing=false;}
+    finally{refreshing=false;if(again){again=false;void refresh();}}
   }
   settings.addEventListener('submit',(event)=>{
     event.preventDefault();if(!settings.reportValidity())return;save.disabled=true;

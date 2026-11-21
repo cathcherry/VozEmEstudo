@@ -27,7 +27,7 @@ const WEEKDAYS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 /** Pending tasks of active goals, first by deadline, with the goal title. */
 export function upcomingTasks({ goals = [], tasks = [] }, limit = 4) {
   const titles = new Map(goals.map((goal) => [goal.id, goal.title]));
-  const active = new Set(goals.filter((goal) => goal.status !== 'archived').map((goal) => goal.id));
+  const active = new Set(goals.filter((goal) => goal.status === 'active').map((goal) => goal.id));
   return sortedPlanningTasks(
     tasks.filter((task) => active.has(task.goal_id)),
     { filter: 'pending', sort: 'due' },

@@ -3,7 +3,7 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { listMaterials } from '../api/material.api.js';
-import { initToolTabs } from '../utils/tool-tabs.js';
+import { initToolTabs, showToolFailure } from '../utils/tool-tabs.js';
 import { emptyState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
 import { initCalendarPanel } from './calendar-panel.js';
@@ -64,9 +64,11 @@ if (!sections.length) {
     );
   if (flags.study_tracking) loads.push(initStudyTrackingPanel({ materials }));
   const results = await Promise.allSettled(loads);
-  for (const result of results)
+  // Tools load in the same order as their tabs (`sections`).
+  results.forEach((result, index) => {
     if (result.status === 'rejected')
-      console.warn('Ferramenta de planejamento indisponível:', result.reason);
+      showToolFailure(sections[index], 'Esta seção não pôde ser carregada agora.', result.reason);
+  });
   // Remove the one-off creation request so a reload does not open the form again.
   if (create) history.replaceState(null, '', `${location.pathname}${location.hash}`);
 }

@@ -1,6 +1,8 @@
 import { createMaterialShare,listMaterialShares,revokeMaterialShare } from '../api/learning-tools.api.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
 const make=(tag,text)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el;};
+// Revoking cannot be undone: whoever has the address loses access at once.
+export const REVOKE_QUESTION='Revogar este link? Quem tiver o endereço não conseguirá mais abrir a cópia. Esta ação não pode ser desfeita.';
 export function randomShareToken(){return [...crypto.getRandomValues(new Uint8Array(32))].map((b)=>b.toString(16).padStart(2,'0')).join('');}
 export async function initSharingPanel({panel,materialId,context}){
   panel.hidden=false;panel.replaceChildren(make('h2','Compartilhar uma cópia para leitura'),make('p','Qualquer pessoa com o link poderá ler os textos escolhidos até a expiração ou revogação. Áudio, vídeo, anotações pessoais e progresso ficam fora da cópia. Uma revogação impede novos acessos, mas não remove cópias já baixadas.'));
@@ -27,9 +29,10 @@ export async function initSharingPanel({panel,materialId,context}){
   async function load(reset=false){
     more.disabled=true;try{const data=await listMaterialShares(materialId,reset?0:offset);if(reset){offset=0;list.replaceChildren();}total=data.total;
       for(const row of data.shares){const item=make('p',`${row.revoked_at?'Revogado':Date.parse(row.expires_at)<=Date.now()?'Expirado':'Disponível'} · expira em ${new Date(row.expires_at).toLocaleString('pt-BR')} `);
-        if(!row.revoked_at&&Date.parse(row.expires_at)>Date.now()){const revoke=make('button','Revogar link');revoke.type='button';revoke.addEventListener('click',()=>{revoke.disabled=true;void revokeMaterialShare(materialId,row.id).then(()=>load(true)).catch((e)=>{status.textContent=e.message;revoke.disabled=false;});});item.append(revoke);}list.append(item);}
+        if(!row.revoked_at&&Date.parse(row.expires_at)>Date.now()){const revoke=make('button','Revogar link');revoke.type='button';revoke.addEventListener('click',()=>{if(!confirm(REVOKE_QUESTION))return;revoke.disabled=true;void revokeMaterialShare(materialId,row.id).then(()=>load(true)).catch((e)=>{status.textContent=e.message;revoke.disabled=false;});});item.append(revoke);}list.append(item);}
       offset+=data.shares.length;more.hidden=offset>=total;
-    }catch(error){status.textContent=error.message;}finally{more.disabled=false;}
+      if(!total)list.replaceChildren(make('p','Nenhum link criado para esta aula.'));
+    }catch(error){status.textContent=error.message||'Não foi possível carregar os links.';more.hidden=true;}finally{more.disabled=false;}
   }
   more.addEventListener('click',()=>{void load();});await load(true);
 }

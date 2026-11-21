@@ -51,3 +51,27 @@ export function initToolTabs(tablist, available) {
   select(location.hash.slice(1));
   return { select, current: () => current };
 }
+
+/**
+ * A tool that failed to start says so in its own tab (with a way to try again) instead of
+ * leaving an empty section; the other tools keep working.
+ */
+export function showToolFailure(sectionId, title, reason) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  const box = document.createElement('div');
+  box.className = 'tool-failure';
+  box.setAttribute('role', 'alert');
+  const heading = document.createElement('h2');
+  heading.textContent = title;
+  const text = document.createElement('p');
+  text.textContent =
+    (reason && reason.message) || 'Verifique a conexão e tente de novo. As outras seções continuam disponíveis.';
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'secondary-action';
+  retry.textContent = 'Tentar novamente';
+  retry.addEventListener('click', () => location.reload());
+  box.append(heading, text, retry);
+  section.prepend(box);
+}

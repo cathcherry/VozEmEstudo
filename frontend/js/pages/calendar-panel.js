@@ -77,7 +77,7 @@ export async function initCalendarPanel({panel,materials=[]}){
   month.addEventListener('change',()=>{selectedDay='';void load(true);});refresh.addEventListener('click',()=>{void load(true);});all.addEventListener('click',()=>{selectedDay='';render();});more.addEventListener('click',()=>{void load();});
   exportButton.addEventListener('click',()=>{
     const selected=month.value;exportButton.disabled=true;
-    void (async()=>{const allItems=[];let start=0,count;const range=monthRange(selected);do{const page=await listCalendar({...range,offset:start});allItems.push(...page.items);count=page.total;if(!page.items.length&&start<count)throw new Error('Não foi possível completar o calendário.');start+=page.limit;}while(start<count);
+    void (async()=>{const allItems=[];let start=0,count;const range=monthRange(selected);do{const page=await listCalendar({...range,offset:start});allItems.push(...page.items);count=page.total;if(!page.items.length&&start<count)throw new Error('Não foi possível completar o calendário.');start+=page.items.length;}while(start<count);
       downloadText(calendarIcs(allItems),`calendario_${selected}.ics`,'text/calendar;charset=utf-8');status.textContent='Arquivo ICS preparado com o mês completo.';
     })().catch((error)=>{status.textContent=error.message;}).finally(()=>{exportButton.disabled=false;});
   });
