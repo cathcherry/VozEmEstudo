@@ -24,7 +24,7 @@ const make = (tag, text, className) => {
  * Painel → Flashcards → "Conjuntos": named sets organized by lesson, with review counts, rename,
  * archive/restore, delete (confirmed) and export. Reviewing stays in the existing queue.
  */
-export function initFlashcardSetsPanel({ container, materials, onChange, onSelect }) {
+export function initFlashcardSetsPanel({ container, materials, onChange, onSelect, toolsSlot = null }) {
   const lessons = new Map(materials.map((m) => [m.id, m.title]));
   const section = make('details', null, 'flashcard-management flashcard-sets');
   const summary = make('summary', 'Conjuntos de flashcards');
@@ -32,59 +32,110 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const list = make('div', null, 'flashcard-set-list');
-  // Merge sets / import a file: both create a new personal set.
+  // Merge sets / import a file: both create a new personal set. They live in plain sight next to
+  // "Novos cartões" (toolsSlot), with their own confirmation, instead of inside this disclosure.
   const tools = make('div', null, 'deck-tools');
+  tools.setAttribute('role', 'group');
+  tools.setAttribute('aria-labelledby', 'deck-tools-title');
+  const toolsTitle = make('p', 'Juntar ou trazer conjuntos', 'deck-tools-title');
+  toolsTitle.id = 'deck-tools-title';
+  const toolsHint = make('p', 'Criam um conjunto novo; os originais não mudam.', 'flashcard-muted deck-tools-hint');
+  const buttons = make('div', null, 'deck-tools-buttons');
   const mergeButton = make('button', 'Mesclar conjuntos', 'secondary-action');
   mergeButton.type = 'button';
+  mergeButton.setAttribute('aria-haspopup', 'dialog');
   const importButton = make('button', 'Importar cartões', 'secondary-action');
   importButton.type = 'button';
-  tools.append(mergeButton, importButton);
-  async function afterTool(result) {
-    if (!result) return;
-    status.textContent = result.message;
+  importButton.setAttribute('aria-haspopup', 'dialog');
+  buttons.append(mergeButton, importButton);
+  const result = make('div', null, 'deck-tools-result');
+  result.setAttribute('role', 'status');
+  result.setAttribute('aria-live', 'polite');
+  tools.append(toolsTitle, toolsHint, buttons, result);
+  async function afterTool(done) {
+    if (!done) return;
+    const open = make('button', 'Abrir o conjunto novo', 'text-action');
+    open.type = 'button';
+    open.addEventListener('click', () => onSelect(done.id));
+    const text = make('p', null, 'deck-tools-result-text');
+    text.append(make('strong', done.message));
+    for (const sentence of done.details || []) text.append(' ', make('span', sentence));
+    result.replaceChildren(text, open);
+    status.textContent = done.message;
+    open.focus();
     await load();
     await onChange();
     document.dispatchEvent(new CustomEvent('voz:flashcards-sets-changed'));
   }
   const v3 = () => isFeatureEnabled('flashcards_v3').catch(() => false);
-  mergeButton.addEventListener('click', async () => {
-    const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
-    // Flashcards 3.0 + Turmas: decks classmates shared in my classes can be merged too (read only).
-    if ((await v3()) && (await isFeatureEnabled('classrooms').catch(() => false))) {
-      const classes = await listClassrooms().catch(() => []);
-      for (const room of Array.isArray(classes) ? classes : classes?.classrooms || []) {
-        const shared = await listSharedSets(room.id).catch(() => []);
-        for (const item of shared)
-          if (!item.isMine && item.cardCount > 0)
-            usable.push({
-              id: `${room.id}:${item.sharedId}`,
-              classroomId: room.id,
-              sharedId: item.sharedId,
-              name: `${item.name} — ${item.author?.displayName || 'colega'} (${room.name})`,
-              card_count: item.cardCount,
-            });
+  /** Keeps the button busy while the sets (and the classes' shared decks) are being read. */
+  const whileBusy = async (button, work) => {
+    if (button.disabled) return;
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    try {
+      await work();
+    } catch (error) {
+      result.replaceChildren(make('p', error.message || 'Não foi possível abrir agora. Tente de novo.', 'deck-error'));
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    }
+  };
+  mergeButton.addEventListener('click', () =>
+    whileBusy(mergeButton, async () => {
+      result.replaceChildren();
+      const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
+      const typed = await v3();
+      // Flashcards 3.0 + Turmas: decks classmates shared in my classes can be merged too (read only).
+      if (typed && (await isFeatureEnabled('classrooms').catch(() => false))) {
+        const classes = await listClassrooms().catch(() => []);
+        for (const room of Array.isArray(classes) ? classes : classes?.classrooms || []) {
+          const shared = await listSharedSets(room.id).catch(() => []);
+          for (const item of shared)
+            if (!item.isMine && item.cardCount > 0)
+              usable.push({
+                id: `${room.id}:${item.sharedId}`,
+                classroomId: room.id,
+                sharedId: item.sharedId,
+                name: item.name,
+                authorName: item.author?.displayName || 'colega',
+                classroomName: room.name,
+                card_count: item.cardCount,
+              });
+        }
       }
-    }
-    if (usable.length < 2) {
-      status.textContent = 'Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.';
-      return;
-    }
-    await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton, v3: await v3() }));
-  });
-  importButton.addEventListener('click', async () => {
-    await afterTool(await openImportDialog({ opener: importButton, v3: await v3() }));
-  });
+      if (usable.length < 2) {
+        result.replaceChildren(
+          make(
+            'p',
+            'Para mesclar, é preciso ter pelo menos dois conjuntos com cartões. Crie um conjunto na aba Flashcards de uma aula ou importe cartões de um arquivo.',
+            'flashcard-muted',
+          ),
+        );
+        return;
+      }
+      await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton, v3: typed }));
+    }),
+  );
+  importButton.addEventListener('click', () =>
+    whileBusy(importButton, async () => {
+      result.replaceChildren();
+      await afterTool(await openImportDialog({ opener: importButton, v3: await v3() }));
+    }),
+  );
   section.append(
     summary,
     make(
       'p',
-      'Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.',
+      'Crie conjuntos na aba Flashcards de cada aula. Para mesclar conjuntos ou importar cartões, use “Juntar ou trazer conjuntos”, em Novos cartões. Aqui você organiza, revisa por conjunto e exporta.',
       'flashcard-muted',
     ),
-    tools,
     list,
     status,
   );
+  if (toolsSlot) toolsSlot.append(tools);
+  else section.insertBefore(tools, list);
   container.after(section);
   let sets = [];
 
