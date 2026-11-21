@@ -934,9 +934,12 @@ async function startServer() {
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
-  app.get('/__fixture.wav', (_req, res) =>
-    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav'), { dotfiles: 'allow' }),
-  );
+  // browser-check.cjs writes a real fixture; other checks may run first, so fall back to 1 s of silence.
+  app.get('/__fixture.wav', (_req, res) => {
+    const file = path.join(root, 'tests', 'artifacts', 'fixture.wav');
+    if (require('node:fs').existsSync(file)) return res.sendFile(file, { dotfiles: 'allow' });
+    res.type('audio/wav').send(silentWav(1));
+  });
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   return { server, base: `http://127.0.0.1:${server.address().port}` };
@@ -973,3 +976,22 @@ module.exports = {
   startServer,
   launchBrowser,
 };
+
+/** Mono 8 kHz 16-bit PCM silence. */
+function silentWav(seconds) {
+  const samples = 8000 * seconds;
+  const buffer = Buffer.alloc(44 + samples * 2);
+  buffer.write('RIFF', 0);
+  buffer.writeUInt32LE(36 + samples * 2, 4);
+  buffer.write('WAVEfmt ', 8);
+  buffer.writeUInt32LE(16, 16);
+  buffer.writeUInt16LE(1, 20);
+  buffer.writeUInt16LE(1, 22);
+  buffer.writeUInt32LE(8000, 24);
+  buffer.writeUInt32LE(16000, 28);
+  buffer.writeUInt16LE(2, 32);
+  buffer.writeUInt16LE(16, 34);
+  buffer.write('data', 36);
+  buffer.writeUInt32LE(samples * 2, 40);
+  return buffer;
+}
