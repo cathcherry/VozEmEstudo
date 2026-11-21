@@ -22,7 +22,8 @@ function fakeAudio() {
 }
 
 test('settings are normalised and never resume playing by themselves', () => {
-  assert.deepEqual(normalizeAmbient({ kind: 'jazz', volume: 7, duck: 'no' }), { kind: 'brown', volume: 1, duck: true, playing: false });
+  assert.deepEqual(normalizeAmbient({ kind: 'jazz', volume: 7, duck: 'no' }), { kind: 'brown', volume: 1, duck: true, withFocus: false, playing: false });
+  assert.equal(normalizeAmbient({ withFocus: true }).withFocus, true);
   assert.equal(SOUNDS.length, 3);
   const player = createAmbientPlayer({ initial: { kind: 'rain', playing: true } });
   assert.equal(player.state().playing, false, 'browsers need a click to start audio');

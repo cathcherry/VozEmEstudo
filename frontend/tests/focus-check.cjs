@@ -151,8 +151,19 @@ async function main() {
     await page.locator('.app-toast:not([hidden])', { hasText: 'O som ambiente parou ao trocar de página.' }).waitFor();
     await page.getByRole('button', { name: 'Retomar som' }).click();
     await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
-    await page.locator('[data-utility-tool="focus"]').click().catch(() => {});
-    record('Som ambiente (gerado no navegador): outra ferramenta do mesmo painel; abaixa durante a gravação da aula; oferece "Retomar som" após trocar de página');
+    // "Tocar junto com o foco": the sound follows focus blocks.
+    await page.locator('.utility-sound-toggle', { hasText: 'Pausar som' }).click();
+    await page.locator('#utility-panel[data-sound="off"]').waitFor({ state: 'attached' });
+    await page.getByLabel('Tocar junto com o foco (pausa nas pausas)').check();
+    await page.locator('[data-utility-tool="focus"]').click();
+    const soundPanel = page.locator('#utility-panel');
+    await soundPanel.locator('[data-focus-primary]', { hasText: 'Iniciar foco' }).click();
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
+    await soundPanel.locator('[data-focus-primary]', { hasText: 'Pausar' }).click();
+    await page.locator('#utility-panel[data-sound="off"]').waitFor({ state: 'attached' });
+    assert.equal(JSON.parse(await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-ambient-v1:'))?.[1])).withFocus, true);
+    await soundPanel.locator('.utility-stop').click();
+    record('Som ambiente (gerado no navegador): outra ferramenta do mesmo painel; abaixa durante a gravação da aula; oferece "Retomar som" após trocar de página; opção de tocar junto com o foco');
 
     // ---------- Início: one click starts focusing ------------------------------------------
     await page.goto(base + '/painel.html');

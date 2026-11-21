@@ -18,6 +18,8 @@ export function normalizeAmbient(value = {}) {
     kind: KINDS.includes(value.kind) ? value.kind : 'brown',
     volume: Number.isFinite(volume) ? Math.min(1, Math.max(0, volume)) : 0.4,
     duck: value.duck !== false,
+    // Follow the focus timer: play when a focus block starts, pause when it pauses or ends.
+    withFocus: value.withFocus === true,
     playing: value.playing === true,
   };
 }
@@ -146,6 +148,10 @@ export function createAmbientPlayer({ initial = {}, onChange = () => {} } = {}) 
     setDuck(on) {
       state.duck = Boolean(on);
       ramp();
+      emit();
+    },
+    setWithFocus(on) {
+      state.withFocus = Boolean(on);
       emit();
     },
     /** A lesson recording started (true) or stopped (false). */

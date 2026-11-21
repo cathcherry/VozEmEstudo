@@ -370,7 +370,7 @@ Já existe:
 
 ## 12. Música
 
-**Primeira fatia implementada (`6439743`):** sons ambientes gerados no navegador (Web Audio: ruído marrom, chuva suave e ondas), sem gravações nem licenças, como a ferramenta "Som" do mesmo painel do Focar. Inclui volume e redução automática (ducking) enquanto a gravação da aula toca, e oferece "Retomar som" depois de trocar de página.
+**Primeira fatia implementada (`6439743`):** sons ambientes gerados no navegador (Web Audio: ruído marrom, chuva suave e ondas), sem gravações nem licenças, como a ferramenta "Som" do mesmo painel do Focar. Inclui volume e redução automática (ducking) enquanto a gravação da aula toca, e oferece "Retomar som" depois de trocar de página. A opção "Tocar junto com o foco" toca o som quando um bloco de foco começa e pausa nas pausas, só na aba em primeiro plano.
 
 **Ainda em desenho:** faixas licenciadas, playlists, Spotify e YouTube.
 
