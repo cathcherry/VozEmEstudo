@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" fill="none" class="lume-outfit" data-lume-outfit="raincoat">
+<!-- voz-art:generated | id: character.lume.outfit.raincoat | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<g data-layer="body">
+      <path d="M101 134 Q120 142 139 134 C143 150 147 166 150 178 Q120 188 90 178 C93 166 97 150 101 134 Z" fill="#A9C4D9" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M137 140 C141 154 144 166 146 176 Q138 180 130 181 C138 168 139 154 137 140 Z" fill="#7D9DB8" opacity="0.4"/>
+      <path d="M96 130 Q108 142 120 138 Q132 142 144 130 L141 126 Q120 135 99 126 Z" fill="#D3E2EE" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M120 139 V184" stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle cx="125" cy="151" r="2.3" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle cx="125" cy="164" r="2.3" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle cx="125" cy="177" r="2.3" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    </g>
+    <g data-layer="head">
+      <path d="M86 84 Q90 58 120 56 Q150 58 154 84 Q120 74 86 84 Z" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M78 86 Q120 70 162 86 Q164 92 156 92 Q120 80 84 92 Q76 92 78 86 Z" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M100 62 Q104 70 104 78" stroke="#B9862A" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.7"/>
+    </g>
+</svg>

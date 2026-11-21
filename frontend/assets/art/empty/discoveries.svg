@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none">
+<!-- voz-art:generated | id: empty.discoveries | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<ellipse cx="160" cy="128" rx="138" ry="96" fill="#FAEDCB"/>
+  <ellipse cx="160" cy="204" rx="126" ry="8.0" fill="#2E2A3B" opacity="0.08"/>
+  <path d="M40 186 Q100 172 160 184 Q220 172 280 186 L280 196 Q220 182 160 196 Q100 182 40 196 Z" fill="#8E7CC3" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M46 70 Q104 58 160 72 V188 Q104 174 46 186 Z" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M274 70 Q216 58 160 72 V188 Q216 174 274 186 Z" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M160 72 V188" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <circle cx="104" cy="118" r="26" stroke="#8E7CC3" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M182 100 H252 M182 116 H246 M182 132 H252 M182 148 H238" stroke="#CFC5EC" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M66 166 Q76 150 92 146" stroke="#5E7F4E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M76 156 Q68 150 70 144 Q78 148 77 155 Z M84 150 Q86 142 92 142 Q90 149 85 151 Z" fill="#B5CDA4" stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <g transform="rotate(-24 236 170)">
+    <rect x="206" y="164" width="56" height="10" rx="2" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M206 164 L194 169 L206 174 Z" fill="#E2C6A8" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <rect x="256" y="164" width="8" height="10" rx="2" fill="#EDBDC7" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  </g>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" width="240" height="320" fill="none">
+<!-- voz-art:generated | id: cover.mist-marbled | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="cover-clip"><path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z"/></clipPath></defs>
+<rect x="22" y="10" width="214" height="308" rx="9" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M230 22 V306 M233 26 V302" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" fill="#A9C4D9"/>
+  <g clip-path="url(#cover-clip)">
+    <path d="M0 20 C40 -6 70 50 120 24 S200 -2 250 30" stroke="#D3E2EE" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 36 C50 16 80 60 130 38 S210 20 250 44" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 66 C40 40 70 96 120 70 S200 44 250 76" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 82 C50 62 80 106 130 84 S210 66 250 90" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 112 C40 86 70 142 120 116 S200 90 250 122" stroke="#CFC5EC" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 128 C50 108 80 152 130 130 S210 112 250 136" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 158 C40 132 70 188 120 162 S200 136 250 168" stroke="#D3E2EE" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 174 C50 154 80 198 130 176 S210 158 250 182" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 204 C40 178 70 234 120 208 S200 182 250 214" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 220 C50 200 80 244 130 222 S210 204 250 228" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 250 C40 224 70 280 120 254 S200 228 250 260" stroke="#CFC5EC" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 266 C50 246 80 290 130 268 S210 250 250 274" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M0 296 C40 270 70 326 120 300 S200 274 250 306" stroke="#D3E2EE" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+    <path d="M0 312 C50 292 80 336 130 314 S210 296 250 320" stroke="#7D9DB8" stroke-width="1.2" opacity="0.4"/>
+    <path d="M232 200 V314 H120 Q200 290 232 200 Z" fill="#2E2A3B" opacity="0.06"/>
+  </g>
+  <path d="M8 16 A10 10 0 0 1 18 6 H40 V314 H18 A10 10 0 0 1 8 304 Z" fill="#7D9DB8" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M33 14 V306" stroke="#F7F5FB" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7" stroke-dasharray="4 4"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="78" y="62" width="112" height="50" rx="7" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="84" y="68" width="100" height="38" rx="4" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.45"/>
+  <rect x="200" y="6" width="10" height="308" fill="#E2B14A" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M203 6 V314" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+</svg>

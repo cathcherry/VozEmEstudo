@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160" fill="none">
+<!-- voz-art:generated | id: object.teacup | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<ellipse cx="80" cy="140" rx="44" ry="6.2" fill="#2E2A3B" opacity="0.12"/>
+    <path d="M68 84 Q64 76 68 68 Q72 60 68 52 M88 84 Q84 76 88 68 Q92 60 88 52" stroke="#7D9DB8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.7"/>
+    <ellipse cx="80" cy="134" rx="40" ry="8" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <ellipse cx="80" cy="132" rx="24" ry="4" fill="#ECE8F7"/>
+    <path d="M108 102 C126 100 126 124 104 122" stroke="#2E2A3B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M108 102 C126 100 126 124 104 122" stroke="#D98A9B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M50 94 H110 V104 Q110 130 80 130 Q50 130 50 104 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M100 98 Q104 122 86 128 Q102 126 106 108 Z" fill="#B86A7C" opacity="0.35"/>
+    <path d="M52 108 Q80 116 108 108" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" stroke-dasharray="0.1 6"/>
+    <ellipse cx="80" cy="94" rx="30" ry="7" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <ellipse cx="80" cy="95" rx="25" ry="4.6" fill="#7FA36B"/>
+    <path d="M66 94 Q72 92 78 93" stroke="#B5CDA4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>
