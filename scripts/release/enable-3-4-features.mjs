@@ -23,8 +23,6 @@ export const RELEASE_SETTINGS = Object.freeze({
   FEATURE_CLASSROOMS: 'true',
   FEATURE_NOTEBOOKS: 'true',
   FEATURE_MULTI_LESSON: 'true',
-  // 3.5 staging only: its migration (20261123090000_discoveries.sql) is not in production.
-  FEATURE_DISCOVERIES: 'false',
   // Not implemented: must stay off.
   FEATURE_SOCIAL_BASIC: 'false',
   GROQ_MODEL: 'openai/gpt-oss-120b',

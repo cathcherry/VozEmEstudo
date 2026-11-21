@@ -16,7 +16,6 @@ const FLAGGED = {
   classrooms: '/api/classrooms',
   notebooks: '/api/notebooks/x',
   multi_lesson: '/api/multi-lesson',
-  discoveries: '/api/discoveries',
 };
 
 function probe(env) {

@@ -24,7 +24,6 @@ import { publicQuestionList } from './routes/question-share.routes.js';
 import { classroomRouter } from './routes/classroom.routes.js';
 import { notebookRouter } from './routes/notebook.routes.js';
 import { multiLessonRouter } from './routes/multi-lesson.routes.js';
-import { investigationRouter, discoveryRouter, collectionRouter } from './routes/discovery.routes.js';
 import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
@@ -115,12 +114,6 @@ if (isFeatureEnabled('study_tracking')) app.use('/api/study', requireAuth, study
 if (isFeatureEnabled('classrooms')) app.use('/api/classrooms', requireAuth, classroomRouter);
 // Milestone C: integrated materials of several confirmed lessons (private to the account).
 if (isFeatureEnabled('multi_lesson')) app.use('/api/multi-lesson', requireAuth, multiLessonRouter);
-// 3.5 Milestone 6: investigations, the Arquivo de Descobertas and the Gabinete (private).
-if (isFeatureEnabled('discoveries')) {
-  app.use('/api/investigations', requireAuth, investigationRouter);
-  app.use('/api/discoveries', requireAuth, discoveryRouter);
-  app.use('/api/collection', requireAuth, collectionRouter);
-}
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {

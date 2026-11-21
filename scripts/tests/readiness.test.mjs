@@ -89,17 +89,6 @@ test('multi-lesson: its tables and generation reuse are probed; the flag needs c
   assert.match(readinessFlagErrors({ multi_lesson: true }).join(' '), /FEATURE_MULTI_LESSON exige FEATURE_CATALOG_UNITS/);
 });
 
-test('discoveries: investigations, evidence, discoveries, unlocks and desk are probed; the flag needs annotations', async () => {
-  const { db } = fixture({ missing: 'collection_unlocks' });
-  const flags = { annotations: true, discoveries: true };
-  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
-  for (const name of ['investigations', 'investigation_evidence', 'discoveries', 'desk_layouts'])
-    assert(results.some((r) => r.ok && r.label.includes(`discoveries: ${name} `)), name);
-  assert(results.some((r) => !r.ok && r.label.includes('collection_unlocks')));
-  assert.deepEqual(readinessFlagErrors(flags), []);
-  assert.match(readinessFlagErrors({ discoveries: true }).join(' '), /FEATURE_DISCOVERIES exige FEATURE_ANNOTATIONS/);
-});
-
 test('classroom contributions: an optional probe that reports but never blocks', async () => {
   assert.equal(optionalSchema.classroom_contributions.flag, 'classrooms');
   const { db } = fixture({ missing: 'classroom_contributions' });
