@@ -12,6 +12,7 @@ export const featureSchema = Object.freeze({
   sharing: { migration: '20261105014500_calendar_sharing.sql', tables: { material_shares: 'id,token_hash,expires_at,revoked_at' } },
   study_authoring: { migration: '20261119120000_study_authoring.sql', tables: { question_batches: 'id,title,config,coverage', summary_versions: 'id,label,options', question_list_shares: 'id,token_hash,expires_at,revoked_at' } },
   flashcard_sets: { migration: '20261119121000_flashcard_sets.sql', tables: { study_flashcard_sets: 'id,user_id,status', study_flashcards: 'id,set_id,source_revision_id' } },
+  flashcards_v3: { migration: '20261121150000_flashcards_3_0.sql', tables: { study_card_templates: 'id,user_id,version', study_flashcards: 'id,note_type,content_hash,media', study_flashcard_sets: 'id,template_id,template_base' } },
 });
 
 /** Not flags, but configuration with its own schema (checked when the setting is active). */
@@ -24,6 +25,7 @@ export function readinessFlagErrors(flags) {
   if (flags.social_basic) errors.push('FEATURE_SOCIAL_BASIC não está implementada; mantenha false.');
   if (flags.quiz_review && !flags.quiz_v2) errors.push('FEATURE_QUIZ_REVIEW exige FEATURE_QUIZ_V2=true.');
   if (flags.flashcard_sets && !flags.flashcards) errors.push('FEATURE_FLASHCARD_SETS exige FEATURE_FLASHCARDS=true.');
+  if (flags.flashcards_v3 && !flags.flashcard_sets) errors.push('FEATURE_FLASHCARDS_V3 exige FEATURE_FLASHCARD_SETS=true.');
   return errors;
 }
 

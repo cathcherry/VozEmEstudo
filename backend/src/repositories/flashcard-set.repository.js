@@ -1,5 +1,7 @@
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { AppError } from '../domain/errors.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
+import { V3_CARD_FIELDS, signMedia } from './flashcards-v3.repository.js';
 
 export const SET_CARD_FIELDS =
   'id,set_id,material_id,front_text,back_text,status,due_at,interval_days,repetitions,ease_factor,' +
@@ -95,14 +97,24 @@ export async function getSet(userId, setId) {
     .maybeSingle();
   assertDb(error);
   if (!set) throw new AppError('FLASHCARD_NOT_FOUND', 'Conjunto não encontrado.', 404);
+  // Flashcards 3.0 adds the note type, origin and imported images (signed for one hour).
+  const v3 = isFeatureEnabled('flashcards_v3');
   const { data: cards, error: cardsError } = await db()
     .from('study_flashcards')
-    .select(SET_CARD_FIELDS)
+    .select(v3 ? V3_CARD_FIELDS : SET_CARD_FIELDS)
     .eq('user_id', userId)
     .eq('set_id', setId)
     .order('created_at', { ascending: true });
   assertDb(cardsError);
-  return { ...set, cards: cards || [] };
+  if (!v3) return { ...set, cards: cards || [] };
+  const urls = await signMedia([...new Set((cards || []).flatMap((c) => (c.media || []).map((m) => m.path)))]);
+  return {
+    ...set,
+    cards: (cards || []).map((card) => ({
+      ...card,
+      media: (card.media || []).map((m) => ({ name: m.name, mime: m.mime, url: urls.get(m.path) || null })),
+    })),
+  };
 }
 
 /** Fronts already saved for the lesson (or one set): generation never proposes them again. */

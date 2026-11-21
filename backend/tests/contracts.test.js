@@ -1,4 +1,5 @@
 import { PERMISSION_DECLARATION } from '../src/config/permission-declaration.js';
+import { FEATURE_FLAG_NAMES } from '../src/config/feature-flags.js';
 import { revisionIds } from './fixtures/academic-db.fixture.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -81,7 +82,7 @@ test('the current app HTTP contract uses fake providers and stable responses', a
       });
       const config = (await request('/api/config', { token: null })).body;
       assert.deepEqual(config.allowedQuestionCounts, [3, 5, 10, 20]);
-      assert.equal(Object.keys(config.featureFlags).length, 13);
+      assert.deepEqual(Object.keys(config.featureFlags), [...FEATURE_FLAG_NAMES]);
       assert.equal(config.featureFlags.study_authoring, false);
       assert.equal(config.featureFlags.flashcard_sets, false);
       assert(Object.values(config.featureFlags).every((flag) => flag === false));
