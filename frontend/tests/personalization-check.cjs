@@ -345,6 +345,48 @@ async function main() {
       );
     }
 
+    // ---------- Study presets on Aparência -------------------------------------------------
+    {
+      const presets = await openApp(browser, base, allFlags, state());
+      const p = presets.page;
+      await p.addInitScript(() => {
+        if (!localStorage.getItem('audioestudo-ui-preferences'))
+          localStorage.setItem(
+            'audioestudo-ui-preferences',
+            JSON.stringify({ textSize: 'extra-large' }),
+          );
+      });
+      await p.goto(base + '/aparencia.html');
+      const reading = p.locator('[data-study-preset="reading"]');
+      await reading.waitFor();
+      assert.equal(await p.locator('[data-study-preset][aria-pressed="true"]').count(), 0);
+      await reading.click();
+      assert.equal(await reading.getAttribute('aria-pressed'), 'true');
+      const root = (key) => p.evaluate((k) => document.documentElement.dataset[k], key);
+      assert.equal(await root('textSize'), 'extra-large', 'never lowers the text size');
+      assert.equal(await root('readingSpacing'), 'wide');
+      assert.equal(
+        await p.locator('#setting-reading-spacing').inputValue(),
+        'wide',
+        'controls follow',
+      );
+      await p.locator('[data-study-preset="review"]').click();
+      assert.equal(await root('density'), 'compact');
+      // Adjusting one setting afterwards leaves no preset marked.
+      await p.locator('#setting-density').selectOption('comfortable');
+      assert.equal(await p.locator('[data-study-preset][aria-pressed="true"]').count(), 0);
+      await p.locator('[data-study-preset="focus"]').click();
+      assert.equal(await root('focusMode'), 'true');
+      assert.equal(await root('reducedMotion'), 'true');
+      await settle(p);
+      await axeCheck(p, 'main', 'Aparência com modos de estudo');
+      await shot(p, 'aparencia-modos-1440', false);
+      await presets.context.close();
+      record(
+        'Modos de estudo: aplicam várias preferências de uma vez, controles acompanham, nunca diminuem o texto; ajuste individual desmarca o modo',
+      );
+    }
+
     // ---------- Phone: the sheet fits and the essential card stays -------------------------
     const phone = await openApp(browser, base, allFlags, state(), { width: 390, height: 844 });
     await phone.page.goto(base + '/painel.html');

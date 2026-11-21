@@ -474,3 +474,48 @@ body[data-profile-editing] .account-page .profile-block-grid > .profile-block {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ---- Aparência: study presets ------------------------------------------------------------ */
+.study-presets-intro {
+  max-width: 68ch;
+  margin: 4px 0 16px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.study-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+.study-preset {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-height: 96px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.study-preset strong {
+  font-size: 1.02rem;
+}
+.study-preset span {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.study-preset:hover {
+  border-color: var(--accent);
+}
+.study-preset[aria-pressed='true'] {
+  border: 2px solid var(--accent-strong);
+  background: var(--accent-soft);
+}
+.study-preset[aria-pressed='true'] strong::after {
+  content: ' ✓';
+}

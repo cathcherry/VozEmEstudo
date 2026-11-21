@@ -2,6 +2,7 @@ import { toast } from './toast.js';
 import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
 import { initPageReader } from './page-reader.js';
+import { STUDY_PRESETS, applyStudyPreset, activeStudyPreset } from './study-presets.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
@@ -46,9 +47,37 @@ function updateControls() {
           String(row.dataset.themeProfile === document.documentElement.dataset.profile),
         ),
     );
+  const preset = activeStudyPreset(uiPreferences);
+  document.querySelectorAll('[data-study-preset]').forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.studyPreset === preset));
+  });
   syncNavigation();
   syncFocusDock();
   syncScreenReaderToggle();
+}
+/** Builds the "Modos de estudo" choices (Aparência); each applies a named set of preferences. */
+function renderStudyPresets() {
+  const host = document.querySelector('[data-study-presets]');
+  if (!host || host.childElementCount) return;
+  for (const [id, preset] of Object.entries(STUDY_PRESETS)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'study-preset';
+    button.dataset.studyPreset = id;
+    const name = document.createElement('strong');
+    name.textContent = preset.label;
+    const text = document.createElement('span');
+    text.textContent = preset.description;
+    button.append(name, text);
+    button.addEventListener('click', () => {
+      const saved = saveUi(applyStudyPreset(uiPreferences, id));
+      const status = document.querySelector('[data-study-preset-status]');
+      if (status) status.textContent = `${preset.label} aplicado.`;
+      if (!saved) showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
+      else showToast(`${preset.label} aplicado. Ajuste os detalhes em Leitura e foco.`);
+    });
+    host.append(button);
+  }
 }
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
@@ -386,6 +415,7 @@ function initialize() {
       if (event.target === dialog) dialog.close();
     }),
   );
+  renderStudyPresets();
   updateControls();
   markTheme();
   document
