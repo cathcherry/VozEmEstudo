@@ -9,6 +9,7 @@ import { toFlashcardCsv } from '../utils/flashcard-csv.js';
 import { downloadText } from '../utils/study-export.js';
 import { buildStudyDocument, toMarkdown, safeFilename } from '../utils/study-document.js';
 import { ninoNote } from '../utils/material-ui.js';
+import { openMergeDialog, openImportDialog } from './deck-tools-panel.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -29,13 +30,38 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const list = make('div', null, 'flashcard-set-list');
+  // Merge sets / import a file: both create a new personal set.
+  const tools = make('div', null, 'deck-tools');
+  const mergeButton = make('button', 'Mesclar conjuntos', 'secondary-action');
+  mergeButton.type = 'button';
+  const importButton = make('button', 'Importar cartões', 'secondary-action');
+  importButton.type = 'button';
+  tools.append(mergeButton, importButton);
+  async function afterTool(result) {
+    if (!result) return;
+    status.textContent = result.message;
+    await load();
+    await onChange();
+  }
+  mergeButton.addEventListener('click', async () => {
+    const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
+    if (usable.length < 2) {
+      status.textContent = 'Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.';
+      return;
+    }
+    await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton }));
+  });
+  importButton.addEventListener('click', async () => {
+    await afterTool(await openImportDialog({ opener: importButton }));
+  });
   section.append(
     summary,
     make(
       'p',
-      'Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.',
+      'Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.',
       'flashcard-muted',
     ),
+    tools,
     list,
     status,
   );

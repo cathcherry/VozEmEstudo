@@ -113,3 +113,9 @@ Nenhuma migration foi criada ou aplicada.
 | Correção de privacidade: "Apagar dados desta conta" também remove Focar, painel e som (achada pelo CI) | `5ddc1b9` |
 
 **PR #9 integrado em `main`** (merge `399bddb`), depois do CI verde em `5ddc1b9`.
+
+## Continuação — branch `feat/ux-navigation` (Flashcards 3.0 sem migrations)
+
+| Marco | Commit |
+| --- | --- |
+| Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | (este commit) |

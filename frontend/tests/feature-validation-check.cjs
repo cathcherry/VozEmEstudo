@@ -166,6 +166,77 @@ async function main() {
     await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
     record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
 
+    // ---------- Flashcards 3.0: merge own sets and import a text file (new set each) ---------
+    {
+      const cardsOf = (prefix, from, to) =>
+        Array.from({ length: to - from }, (_, i) => ({
+          id: `${prefix}-${from + i}`,
+          front_text: `Pergunta ${from + i}?`,
+          back_text: `Resposta ${from + i}`,
+        }));
+      const ana = cardsOf('ana', 0, 70);
+      const bruno = [
+        ...cardsOf('bruno', 40, 110), // 30 repeated from Ana, 40 new
+        { id: 'bruno-x', front_text: 'pergunta 1', back_text: 'Outra resposta' }, // same question
+      ];
+      data.sets = [
+        { id: 'set-ana', name: 'Ana', card_count: ana.length, due_count: 0, status: 'active', cards: ana },
+        { id: 'set-bruno', name: 'Bruno', card_count: bruno.length, due_count: 0, status: 'active', cards: bruno },
+      ];
+      data.setRequests = 0;
+      await page.goto(base + '/revisar.html#flashcards');
+      await page.reload(); // same URL: goto alone only changes the hash
+      const panel = page.locator('details.flashcard-sets');
+      await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
+      if (!(await panel.evaluate((node) => node.open))) await panel.locator('summary').click();
+      await panel.getByRole('button', { name: 'Mesclar conjuntos' }).click();
+      const mergeDialog = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
+      await mergeDialog.waitFor();
+      await mergeDialog.getByRole('checkbox', { name: /Ana/ }).check();
+      await mergeDialog.getByRole('checkbox', { name: /Bruno/ }).check();
+      await mergeDialog.locator('.deck-preview', { hasText: '111 cartões no conjunto novo' }).waitFor();
+      const preview = await mergeDialog.locator('.deck-preview').textContent();
+      assert.match(preview, /30 cartões repetidos ficam de fora/);
+      assert.match(preview, /1 pergunta aparece com respostas diferentes/);
+      assert.equal(await mergeDialog.getByLabel('Nome do novo conjunto').inputValue(), 'Mesclado: Ana + Bruno');
+      await settle(page);
+      await axeCheck(page, 'dialog[open]', 'Mesclar conjuntos');
+      await mergeDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await panel.locator('[role=status]', { hasText: 'Conjunto mesclado criado com 111 cartões.' }).waitFor();
+      const created = data.sets.at(-1);
+      assert.equal(created.cards.length, 111);
+      assert.equal(created.material_id, null);
+      assert.deepEqual(created.config.origin.sets.map((x) => x.name), ['Ana', 'Bruno']);
+      assert.equal(data.setRequests, 2, 'one create (100) and one add (11)');
+      assert.equal(data.sets[0].cards.length, 70, 'sources unchanged');
+      await panel.locator('h4', { hasText: 'Mesclado: Ana + Bruno' }).waitFor();
+
+      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      const importDialog = page.getByRole('dialog', { name: 'Importar cartões' });
+      await importDialog.waitFor();
+      const anki = ['#separator:tab', '#html:true', 'O que é <b>ATP</b>?\tMoeda de energia', 'A {{c1::clorofila}} absorve luz.\t', 'Só frente\t'].join('\n');
+      await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'Biologia Anki.txt', mimeType: 'text/plain', buffer: Buffer.from(anki) });
+      await importDialog.locator('.deck-preview', { hasText: '2 cartões encontrados' }).waitFor();
+      assert.match(await importDialog.locator('.deck-preview').textContent(), /1 linha ignorada: sem pergunta ou sem resposta/);
+      assert.equal(await importDialog.getByLabel('Nome do novo conjunto').inputValue(), 'Biologia Anki');
+      await settle(page);
+      await axeCheck(page, 'dialog[open]', 'Importar cartões');
+      await importDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await panel.locator('[role=status]', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
+      assert.deepEqual(
+        data.sets.at(-1).cards.map((c) => [c.front_text, c.back_text]),
+        [['O que é ATP?', 'Moeda de energia'], ['A […] absorve luz.', 'A clorofila absorve luz.']],
+      );
+      // An .apkg package is explained, not sent anywhere.
+      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'deck.apkg', mimeType: 'application/zip', buffer: Buffer.from('PK') });
+      await importDialog.locator('.deck-error', { hasText: 'Notas em texto simples' }).waitFor();
+      assert(await importDialog.getByRole('button', { name: 'Criar conjunto' }).isDisabled());
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.activeElement?.textContent === 'Importar cartões', null, { timeout: 3000 });
+      record('Mesclar conjuntos (repetidos de fora, mais de 100 cartões em partes, originais intactos) e importar arquivo do Anki (HTML, cloze, .apkg explicado)');
+    }
+
     // ---------- Lesson › Flashcards tab: the lesson's sets, review one now -------------------
     data.sets = [];
     await page.goto(base + '/material.html?id=l-foto#flashcards');

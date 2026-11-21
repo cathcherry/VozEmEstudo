@@ -464,11 +464,13 @@ export default {
   "Criando conta...": "Creando cuenta...",
   "Criando tarefa de geração...": "Creando tarea de generación...",
   "Criando tentativa…": "Creando intento…",
+  "Criando…": "Creando…",
   "Criar a partir de um modo": "Crear a partir de un modo",
   "Criar bloco": "Crear bloque",
   "Criar cartão": "Crear tarjeta",
   "Criar cartão manualmente": "Crear tarjeta manualmente",
   "Criar cartões com IA": "Crear tarjetas con IA",
+  "Criar conjunto": "Crear conjunto",
   "Criar conta": "Crear cuenta",
   "Criar flashcards": "Crear tarjetas",
   "Criar link de leitura": "Crear enlace de lectura",
@@ -480,6 +482,7 @@ export default {
   "Criar questões": "Crear preguntas",
   "Criar um objetivo": "Crear un objetivo",
   "Criar uma conta": "Crear una cuenta",
+  "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Crea conjuntos en la pestaña Flashcards de cada clase, combina conjuntos o importa tarjetas de un archivo. Aquí organizas, repasas por conjunto y exportas.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Crea conjuntos en la pestaña Resumen de cada clase. Aquí los organizas, repasas por conjunto y exportas.",
   "Cronológico": "Cronológico",
   "Cronológico, quando houver datas": "Cronológico, cuando haya fechas",
@@ -617,7 +620,9 @@ export default {
   "Equilibrado": "Equilibrado",
   "Escolha a gravação": "Elige la grabación",
   "Escolha como deseja responder": "Elige cómo quieres responder",
+  "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "Elige dos o más conjuntos. Se crea un conjunto nuevo con sus tarjetas; los originales no cambian y el historial de repaso no se copia.",
   "Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.": "Elige qué aparece y en qué orden. Los cambios se ven al instante y quedan guardados en tu cuenta.",
+  "Escolha pelo menos dois conjuntos.": "Elige al menos dos conjuntos.",
   "Escolha pelo menos uma dificuldade e um foco.": "Elige al menos una dificultad y un enfoque.",
   "Escolha pelo menos uma dificuldade e uma habilidade.": "Elige al menos una dificultad y una habilidad.",
   "Escolha um arquivo com conteúdo e até 100 MB.": "Elige un archivo con contenido y de hasta 100 MB.",
@@ -832,6 +837,7 @@ export default {
   "Imagens de vídeos não são enviadas.": "Las imágenes de los videos no se envían.",
   "Importar andamento local sem registro na conta": "Importar progreso local sin registro en la cuenta",
   "Importar arquivo": "Importar archivo",
+  "Importar cartões": "Importar tarjetas",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "Importa el audio o video y elige un fragmento o la grabación completa.",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "Importa un audio o video. Puedes seleccionar el inicio y el final del fragmento que quieres transcribir o usar el archivo completo. También puedes descargar el recorte en MP4 para video o MP3 para audio.",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "Importa una grabación y selecciona el inicio y el final del fragmento que quieres transcribir.",
@@ -893,6 +899,7 @@ export default {
   "Leitura em voz alta: em todo o site": "Lectura en voz alta: en todo el sitio",
   "Leitura fácil": "Lectura fácil",
   "LEMBRETE": "RECORDATORIO",
+  "Lendo os cartões…": "Leyendo las tarjetas…",
   "Ligar ou desligar o modo foco": "Activar o desactivar el modo enfoque",
   "Lilás e violeta intenso.": "Lila y violeta intenso.",
   "Limita o comprimento das linhas de transcrições e resumos.": "Limita la longitud de las líneas de transcripciones y resúmenes.",
@@ -949,6 +956,7 @@ export default {
   "Mês": "Mes",
   "Mês anterior": "Mes anterior",
   "Mesa digital": "Escritorio digital",
+  "Mesclar conjuntos": "Combinar conjuntos",
   "Meta da semana alcançada. 🎉": "Meta de la semana alcanzada. 🎉",
   "Meta e fuso salvos na conta.": "Meta y zona horaria guardadas en la cuenta.",
   "Meta e sincronização": "Meta y sincronización",
@@ -1142,6 +1150,7 @@ export default {
   "Nome da lista": "Nombre de la lista",
   "Nome da versão": "Nombre de la versión",
   "Nome do conjunto": "Nombre del conjunto",
+  "Nome do novo conjunto": "Nombre del nuevo conjunto",
   "Nome do subobjetivo": "Nombre del subobjetivo",
   "Nome do tema": "Nombre del tema",
   "Nome exibido": "Nombre visible",
@@ -1171,6 +1180,7 @@ export default {
   "O acesso foi cancelado ou não pôde ser autorizado. Você pode tentar novamente.": "El acceso se canceló o no se pudo autorizar. Puedes intentarlo de nuevo.",
   "O app também analisa as imagens do vídeo?": "¿La app también analiza las imágenes del video?",
   "O armazenamento não respondeu.": "El almacenamiento no respondió.",
+  "O arquivo passa de 2 MB. Divida-o em partes menores.": "El archivo supera 2 MB. Divídelo en partes más pequeñas.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala.": "El audio del fragmento se envía a un servicio externo de reconocimiento de voz.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões. Imagens de vídeos não são enviadas.": "El audio del fragmento se envía a un servicio externo de reconocimiento de voz. El texto transcrito se envía a un servicio externo de IA para avisos preliminares y, tras tu confirmación, resumen y preguntas. Las imágenes de los videos no se envían.",
   "O áudio está com o serviço de transcrição. Esta página atualiza sozinha.": "El audio está en el servicio de transcripción. Esta página se actualiza sola.",
@@ -1259,6 +1269,7 @@ export default {
   "Ouvir resumo": "Escuchar resumen",
   "Ouvir trecho": "Escuchar fragmento",
   "Ouvir, compreender, praticar": "Escuchar, comprender, practicar",
+  "Pacotes .apkg ainda não são lidos. No Anki, exporte o baralho como \"Notas em texto simples\" (.txt) e escolha esse arquivo.": "Los paquetes .apkg aún no se pueden leer. En Anki, exporta el mazo como \"Notas en texto plano\" (.txt) y elige ese archivo.",
   "Padrão": "Estándar",
   "Padrão — 100%": "Predeterminado — 100%",
   "Padrão do tema": "Predeterminada del tema",
@@ -1273,6 +1284,7 @@ export default {
   "para as dúvidas.": "para las dudas.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "Para corregir el texto de la clase, usa “Editar transcripción”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "Para crear una lista nueva, abre una clase en la Biblioteca y usa la pestaña Preguntas.",
+  "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "Para combinar, necesitas al menos dos conjuntos con tarjetas.",
   "para mudar o tema e": "para cambiar el tema y",
   "Para revisar": "Para repasar",
   "para saber o que é salvo na conta ou neste dispositivo.": "para saber qué se guarda en la cuenta o en este dispositivo.",
@@ -1369,6 +1381,7 @@ export default {
   "Primeira aula": "Primera clase",
   "Primeira resposta": "Primera respuesta",
   "Primeira revisão": "Primer repaso",
+  "Primeiros cartões:": "Primeras tarjetas:",
   "Priorizar conceitos ainda não avaliados": "Priorizar conceptos aún no evaluados",
   "Privacidade": "Privacidad",
   "Privacidade e armazenamento": "Privacidad y almacenamiento",
@@ -1787,6 +1800,7 @@ export default {
   "Usar versão da conta em conflitos": "Usar la versión de la cuenta en conflictos",
   "Use": "Usa",
   "Use o menu": "Usa el menú",
+  "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "Usa un archivo .txt, .tsv o .csv: de Anki (Archivo › Exportar › \"Notas en texto plano\"), la exportación CSV de aquí o una lista con pregunta y respuesta en dos columnas.",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Usa un enlace de canción, álbum, playlist, episodio o programa de Spotify.",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "Usa una imagen PNG, JPEG, WebP o GIF.",
   "Validade": "Validez",
@@ -1915,12 +1929,28 @@ export default {
    "{0} min de estudio registrados · meta: {1} · {2} repasos marcados como hechos en tu cuenta"
   ],
   [
+   "{0} pergunta aparece com respostas diferentes; as duas ficam para você decidir depois.",
+   "{0} pregunta aparece con respuestas distintas; ambas se mantienen para que decidas después."
+  ],
+  [
+   "{0} perguntas aparecem com respostas diferentes; todas ficam para você decidir depois.",
+   "{0} preguntas aparecen con respuestas distintas; todas se mantienen para que decidas después."
+  ],
+  [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Horarios en la zona horaria de este dispositivo ({0}). Los plazos de tareas aparecen como día completo."
   ],
   [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
    "Se generaron {0} de {1}: la clase es demasiado corta para más preguntas distintas."
+  ],
+  [
+   "{0} cartões repetidos ficam de fora (mesma pergunta e mesma resposta).",
+   "{0} tarjetas repetidas quedan fuera (misma pregunta y misma respuesta)."
+  ],
+  [
+   "{0} cartão repetido fica de fora (mesma pergunta e mesma resposta).",
+   "{0} tarjeta repetida queda fuera (misma pregunta y misma respuesta)."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
@@ -1959,8 +1989,16 @@ export default {
    "{0} tarjeta guardada. Entra en el repaso del Inicio."
   ],
   [
+   "{0} linhas ignoradas: sem pergunta ou sem resposta.",
+   "{0} líneas omitidas: sin pregunta o sin respuesta."
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "Respuesta incorrecta. La respuesta esperada es {0}.{1}"
+  ],
+  [
+   "{0} linha ignorada: sem pergunta ou sem resposta.",
+   "{0} línea omitida: sin pregunta o sin respuesta."
   ],
   [
    "{0} oculto. Ele continua aqui no modo de edição.",
@@ -2003,16 +2041,40 @@ export default {
    "{0} enfoques hoy · {1} de {2} hasta la pausa larga"
   ],
   [
+   "{0} cartões importados para um conjunto novo.",
+   "{0} tarjetas importadas a un conjunto nuevo."
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} enfoque hoy · {1} de {2} hasta la pausa larga"
+  ],
+  [
+   "{0} linhas ignoradas: além do limite de {1}.",
+   "{0} líneas omitidas: por encima del límite de {1}."
+  ],
+  [
+   "{0} cartão importado para um conjunto novo.",
+   "{0} tarjeta importada a un conjunto nuevo."
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
    "Indica un número entero de 1 a {0}."
   ],
   [
+   "{0} linha ignorada: além do limite de {1}.",
+   "{0} línea omitida: por encima del límite de {1}."
+  ],
+  [
    "(ou a {0}, se o serviço principal falhar)",
    "(o a {0}, si el servicio principal falla)"
+  ],
+  [
+   "Limite de {0} cartões: {1} ficam de fora.",
+   "Límite de {0} tarjetas: {1} quedan fuera."
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartões.",
+   "Conjunto combinado creado con {0} tarjetas."
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2021,6 +2083,10 @@ export default {
   [
    "Resumo · versão {0} · fonte: revisão {1}",
    "Resumen · versión {0} · fuente: versión {1}"
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartão.",
+   "Conjunto combinado creado con {0} tarjeta."
   ],
   [
    "{0} não {1}: {2} para “Sem disciplina”.",
@@ -2047,6 +2113,10 @@ export default {
    "{0} de {1} aciertos ({2}%). {3} error."
   ],
   [
+   "{0} linhas ignoradas: longas demais.",
+   "{0} líneas omitidas: demasiado largas."
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "{0} de {1} tareas hechas · {2}"
   ],
@@ -2057,6 +2127,10 @@ export default {
   [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "¿Quitar la asignatura “{0}”?\\n\\n{1}"
+  ],
+  [
+   "{0} linha ignorada: longas demais.",
+   "{0} línea omitida: demasiado larga."
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -2115,6 +2189,10 @@ export default {
    "Añadir subobjetivo a {0}"
   ],
   [
+   "{0} cartões no conjunto novo",
+   "{0} tarjetas en el conjunto nuevo"
+  ],
+  [
    "Horário salvo na conta. {0}",
    "Horario guardado en tu cuenta. {0}"
   ],
@@ -2133,6 +2211,10 @@ export default {
   [
    "{0} conjuntos · {1} cartões",
    "{0} conjuntos · {1} tarjetas"
+  ],
+  [
+   "{0} cartão no conjunto novo",
+   "{0} tarjeta en el conjunto nuevo"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2191,6 +2273,10 @@ export default {
    "{0} enfoque completado hoy"
   ],
   [
+   "{0} cartões encontrados",
+   "{0} tarjetas encontradas"
+  ],
+  [
    "Adicionar a: {0} ({1})",
    "Añadir a: {0} ({1})"
   ],
@@ -2229,6 +2315,10 @@ export default {
   [
    "Prazo de tarefa · {0}",
    "Plazo de tarea · {0}"
+  ],
+  [
+   "{0} cartão encontrado",
+   "{0} tarjeta encontrada"
   ],
   [
    "Cópia de {0} criada.",
@@ -2363,6 +2453,10 @@ export default {
    "Resultado {0} de {1}"
   ],
   [
+   "{0} ({1} cartões)",
+   "{0} ({1} tarjetas)"
+  ],
+  [
    "Questão {0}. {1}",
    "Pregunta {0}. {1}"
   ],
@@ -2389,6 +2483,10 @@ export default {
   [
    "{0} em andamento",
    "{0} en curso"
+  ],
+  [
+   "{0} ({1} cartão)",
+   "{0} ({1} tarjeta)"
   ],
   [
    "Explicação: {0}",

@@ -225,7 +225,22 @@ Compartilhar uma nota é um ato explícito e por item. Compartilhar um caderno n
 
 ## 8. Flashcards 3.0 — conteúdo, aparência e histórico separados
 
-**Desenho**. A fundação de templates ainda não foi implementada.
+**Primeiras fatias implementadas, sem tabelas novas:**
+
+- Modelos visuais separados do conteúdo (`52b3284`).
+- **Mesclar conjuntos próprios** (Revisar › Conjuntos), com a API de conjuntos que já existe:
+  - prévia com os repetidos exatos (mesma pergunta e resposta, sem diferença de maiúsculas, acentos ou pontuação), que ficam de fora;
+  - perguntas iguais com respostas diferentes são mantidas e apontadas;
+  - o resultado é um conjunto **novo**, sem aula, com `config.origin` (conjuntos de origem);
+  - os originais não mudam e o histórico não é copiado;
+  - envio em partes de 100, com limite de 1.000 cartões.
+- **Importar cartões de arquivo de texto**:
+  - do Anki ("Notas em texto simples", com os cabeçalhos `#separator`, `#html` e `#columns`; HTML vira texto e scripts são descartados; cloze vira frente com `[…]` e verso revelado);
+  - do CSV exportado daqui (a proteção contra fórmulas é desfeita);
+  - de duas colunas em TSV, CSV ou com ponto e vírgula;
+  - arquivos `.apkg` são explicados (exportar como texto), nunca enviados.
+
+**Ainda em desenho** (precisam de tabelas): notas tipadas, `card_templates` com variantes, mescla de baralhos **de colegas** (depende de compartilhamento) e leitura direta de `.apkg`.
 
 O princípio é ter **três camadas independentes**:
 

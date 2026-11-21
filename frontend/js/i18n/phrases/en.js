@@ -464,11 +464,13 @@ export default {
   "Criando conta...": "Creating account...",
   "Criando tarefa de geração...": "Creating generation job...",
   "Criando tentativa…": "Creating attempt…",
+  "Criando…": "Creating…",
   "Criar a partir de um modo": "Create from a mode",
   "Criar bloco": "Create block",
   "Criar cartão": "Create card",
   "Criar cartão manualmente": "Create card manually",
   "Criar cartões com IA": "Create cards with AI",
+  "Criar conjunto": "Create set",
   "Criar conta": "Create account",
   "Criar flashcards": "Create flashcards",
   "Criar link de leitura": "Create read-only link",
@@ -480,6 +482,7 @@ export default {
   "Criar questões": "Create questions",
   "Criar um objetivo": "Create a goal",
   "Criar uma conta": "Create an account",
+  "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Flashcards tab, merge sets or import cards from a file. Here you organize, review by set and export.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Summary tab. Here you organize, review by set and export.",
   "Cronológico": "Chronological",
   "Cronológico, quando houver datas": "Chronological, when there are dates",
@@ -617,7 +620,9 @@ export default {
   "Equilibrado": "Balanced",
   "Escolha a gravação": "Choose the recording",
   "Escolha como deseja responder": "Choose how you want to answer",
+  "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "Choose two or more sets. A new set is created with their cards; the originals do not change and review history is not copied.",
   "Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.": "Choose what appears and in what order. Changes show up right away and are saved to your account.",
+  "Escolha pelo menos dois conjuntos.": "Choose at least two sets.",
   "Escolha pelo menos uma dificuldade e um foco.": "Choose at least one difficulty and one focus.",
   "Escolha pelo menos uma dificuldade e uma habilidade.": "Choose at least one difficulty and one skill.",
   "Escolha um arquivo com conteúdo e até 100 MB.": "Choose a non-empty file of up to 100 MB.",
@@ -832,6 +837,7 @@ export default {
   "Imagens de vídeos não são enviadas.": "Video images are not sent.",
   "Importar andamento local sem registro na conta": "Import local progress not saved to the account",
   "Importar arquivo": "Import file",
+  "Importar cartões": "Import cards",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "Import the audio or video and choose a clip or the whole recording.",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "Import an audio or video file. You can select the start and end of the clip you want to transcribe or use the whole file. You can also download the clip as MP4 for video or MP3 for audio.",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "Import a recording and select the start and end of the clip you want to transcribe.",
@@ -893,6 +899,7 @@ export default {
   "Leitura em voz alta: em todo o site": "Read aloud: across the whole site",
   "Leitura fácil": "Easy reading",
   "LEMBRETE": "REMINDER",
+  "Lendo os cartões…": "Reading the cards…",
   "Ligar ou desligar o modo foco": "Turn focus mode on or off",
   "Lilás e violeta intenso.": "Lilac and deep violet.",
   "Limita o comprimento das linhas de transcrições e resumos.": "Limits the line length of transcripts and summaries.",
@@ -949,6 +956,7 @@ export default {
   "Mês": "Month",
   "Mês anterior": "Previous month",
   "Mesa digital": "Digital desk",
+  "Mesclar conjuntos": "Merge sets",
   "Meta da semana alcançada. 🎉": "Weekly goal reached. 🎉",
   "Meta e fuso salvos na conta.": "Goal and time zone saved to your account.",
   "Meta e sincronização": "Goal and sync",
@@ -1142,6 +1150,7 @@ export default {
   "Nome da lista": "List name",
   "Nome da versão": "Version name",
   "Nome do conjunto": "Set name",
+  "Nome do novo conjunto": "Name of the new set",
   "Nome do subobjetivo": "Subgoal name",
   "Nome do tema": "Theme name",
   "Nome exibido": "Display name",
@@ -1171,6 +1180,7 @@ export default {
   "O acesso foi cancelado ou não pôde ser autorizado. Você pode tentar novamente.": "Access was canceled or couldn't be authorized. You can try again.",
   "O app também analisa as imagens do vídeo?": "Does the app also analyze the video images?",
   "O armazenamento não respondeu.": "Storage didn't respond.",
+  "O arquivo passa de 2 MB. Divida-o em partes menores.": "The file is larger than 2 MB. Split it into smaller parts.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala.": "The clip's audio is sent to an external speech recognition service.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões. Imagens de vídeos não são enviadas.": "The clip audio is sent to an external speech recognition service. The transcribed text is sent to an external AI service for preliminary warnings and, after you confirm, for the summary and questions. Video images are not sent.",
   "O áudio está com o serviço de transcrição. Esta página atualiza sozinha.": "The audio is with the transcription service. This page updates on its own.",
@@ -1259,6 +1269,7 @@ export default {
   "Ouvir resumo": "Listen to summary",
   "Ouvir trecho": "Play clip",
   "Ouvir, compreender, praticar": "Listen, understand, practice",
+  "Pacotes .apkg ainda não são lidos. No Anki, exporte o baralho como \"Notas em texto simples\" (.txt) e escolha esse arquivo.": ".apkg packages cannot be read yet. In Anki, export the deck as \"Notes in Plain Text\" (.txt) and choose that file.",
   "Padrão": "Standard",
   "Padrão — 100%": "Default — 100%",
   "Padrão do tema": "Theme default",
@@ -1273,6 +1284,7 @@ export default {
   "para as dúvidas.": "for questions.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "To fix the lesson text, use “Edit transcript”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "To create a new list, open a lesson in the Library and use the Questions tab.",
+  "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "To merge, you need at least two sets with cards.",
   "para mudar o tema e": "to change the theme and",
   "Para revisar": "To review",
   "para saber o que é salvo na conta ou neste dispositivo.": "to learn what is saved in your account or on this device.",
@@ -1369,6 +1381,7 @@ export default {
   "Primeira aula": "First lesson",
   "Primeira resposta": "First answer",
   "Primeira revisão": "First review",
+  "Primeiros cartões:": "First cards:",
   "Priorizar conceitos ainda não avaliados": "Prioritize concepts not yet assessed",
   "Privacidade": "Privacy",
   "Privacidade e armazenamento": "Privacy and storage",
@@ -1787,6 +1800,7 @@ export default {
   "Usar versão da conta em conflitos": "Use account version in conflicts",
   "Use": "Use",
   "Use o menu": "Use the menu",
+  "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "Use a .txt, .tsv or .csv file: from Anki (File › Export › \"Notes in Plain Text\"), the CSV export from here, or a list with question and answer in two columns.",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Use a Spotify song, album, playlist, episode or show link.",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "Use a PNG, JPEG, WebP or GIF image.",
   "Validade": "Expires after",
@@ -1915,12 +1929,28 @@ export default {
    "{0} min of study recorded · goal: {1} · {2} reviews marked as done in your account"
   ],
   [
+   "{0} pergunta aparece com respostas diferentes; as duas ficam para você decidir depois.",
+   "{0} question appears with different answers; both are kept for you to decide later."
+  ],
+  [
+   "{0} perguntas aparecem com respostas diferentes; todas ficam para você decidir depois.",
+   "{0} questions appear with different answers; all are kept for you to decide later."
+  ],
+  [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Times in this device's time zone ({0}). Task deadlines show as all-day."
   ],
   [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
    "{0} of {1} were generated: the lesson is too short for more distinct questions."
+  ],
+  [
+   "{0} cartões repetidos ficam de fora (mesma pergunta e mesma resposta).",
+   "{0} repeated cards are left out (same question and same answer)."
+  ],
+  [
+   "{0} cartão repetido fica de fora (mesma pergunta e mesma resposta).",
+   "{0} repeated card is left out (same question and same answer)."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
@@ -1959,8 +1989,16 @@ export default {
    "{0} card saved. It joins your review on Home."
   ],
   [
+   "{0} linhas ignoradas: sem pergunta ou sem resposta.",
+   "{0} lines skipped: missing question or answer."
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "Incorrect answer. The expected answer is {0}.{1}"
+  ],
+  [
+   "{0} linha ignorada: sem pergunta ou sem resposta.",
+   "{0} line skipped: missing question or answer."
   ],
   [
    "{0} oculto. Ele continua aqui no modo de edição.",
@@ -2003,16 +2041,40 @@ export default {
    "{0} focus blocks today · {1} of {2} until the long break"
   ],
   [
+   "{0} cartões importados para um conjunto novo.",
+   "{0} cards imported into a new set."
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} focus block today · {1} of {2} until the long break"
+  ],
+  [
+   "{0} linhas ignoradas: além do limite de {1}.",
+   "{0} lines skipped: over the limit of {1}."
+  ],
+  [
+   "{0} cartão importado para um conjunto novo.",
+   "{0} card imported into a new set."
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
    "Enter a whole number from 1 to {0}."
   ],
   [
+   "{0} linha ignorada: além do limite de {1}.",
+   "{0} line skipped: over the limit of {1}."
+  ],
+  [
    "(ou a {0}, se o serviço principal falhar)",
    "(or to {0}, if the main service fails)"
+  ],
+  [
+   "Limite de {0} cartões: {1} ficam de fora.",
+   "Limit of {0} cards: {1} are left out."
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartões.",
+   "Merged set created with {0} cards."
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2021,6 +2083,10 @@ export default {
   [
    "Resumo · versão {0} · fonte: revisão {1}",
    "Summary · version {0} · source: version {1}"
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartão.",
+   "Merged set created with {0} card."
   ],
   [
    "{0} não {1}: {2} para “Sem disciplina”.",
@@ -2047,6 +2113,10 @@ export default {
    "{0} of {1} correct ({2}%). {3} mistake."
   ],
   [
+   "{0} linhas ignoradas: longas demais.",
+   "{0} lines skipped: too long."
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "{0} of {1} tasks done · {2}"
   ],
@@ -2057,6 +2127,10 @@ export default {
   [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "Remove the subject “{0}”?\\n\\n{1}"
+  ],
+  [
+   "{0} linha ignorada: longas demais.",
+   "{0} line skipped: too long."
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -2115,6 +2189,10 @@ export default {
    "Add subgoal to {0}"
   ],
   [
+   "{0} cartões no conjunto novo",
+   "{0} cards in the new set"
+  ],
+  [
    "Horário salvo na conta. {0}",
    "Study session saved to your account. {0}"
   ],
@@ -2133,6 +2211,10 @@ export default {
   [
    "{0} conjuntos · {1} cartões",
    "{0} sets · {1} cards"
+  ],
+  [
+   "{0} cartão no conjunto novo",
+   "{0} card in the new set"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2191,6 +2273,10 @@ export default {
    "{0} focus block done today"
   ],
   [
+   "{0} cartões encontrados",
+   "{0} cards found"
+  ],
+  [
    "Adicionar a: {0} ({1})",
    "Add to: {0} ({1})"
   ],
@@ -2229,6 +2315,10 @@ export default {
   [
    "Prazo de tarefa · {0}",
    "Task deadline · {0}"
+  ],
+  [
+   "{0} cartão encontrado",
+   "{0} card found"
   ],
   [
    "Cópia de {0} criada.",
@@ -2363,6 +2453,10 @@ export default {
    "Match {0} of {1}"
   ],
   [
+   "{0} ({1} cartões)",
+   "{0} ({1} cards)"
+  ],
+  [
    "Questão {0}. {1}",
    "Question {0}. {1}"
   ],
@@ -2389,6 +2483,10 @@ export default {
   [
    "{0} em andamento",
    "{0} in progress"
+  ],
+  [
+   "{0} ({1} cartão)",
+   "{0} ({1} card)"
   ],
   [
    "Explicação: {0}",

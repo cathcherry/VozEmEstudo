@@ -402,6 +402,30 @@ async function setup(context, base, flags, data, options = {}) {
       data.tasks.push(task);
       return json(task, 201);
     }
+    if (p === '/api/flashcards/sets' && method === 'POST') {
+      const body = request.postDataJSON();
+      const set = {
+        id: body.id, name: body.name, material_id: body.materialId, config: body.config,
+        status: 'active', card_count: body.cards.length, due_count: body.cards.length,
+        cards: body.cards.map((c, i) => ({ id: `${body.id}-${i}`, front_text: c.front, back_text: c.back })),
+      };
+      data.sets = [...(data.sets || []), set];
+      data.setRequests = (data.setRequests || 0) + 1;
+      return json(set, 201);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+\/cards$/.test(p) && method === 'POST') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      const { cards } = request.postDataJSON();
+      if (cards.length > 100) return json({ error: { code: 'VALIDATION', message: 'too many' } }, 400);
+      set.cards.push(...cards.map((c, i) => ({ id: `${set.id}-${set.cards.length + i}`, front_text: c.front, back_text: c.back })));
+      set.card_count = set.due_count = set.cards.length;
+      data.setRequests = (data.setRequests || 0) + 1;
+      return json({ added: cards.length }, 201);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'GET') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      return set ? json(set) : json({ error: { code: 'FLASHCARD_NOT_FOUND', message: 'Conjunto não encontrado.' } }, 404);
+    }
     if (p === '/api/flashcards/sets') return json(data.sets || []);
     if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'PATCH') {
       const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
