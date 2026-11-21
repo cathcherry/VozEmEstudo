@@ -1,13 +1,16 @@
 # Runbook de produção: migrations e recursos da 3.3 e 3.4
 
-**Situação em 21/11/2026:** nada deste roteiro foi executado em produção (`audioestudo`,
-`fxsuagrcfargpejglwtl`). As migrations estão no Git e foram aplicadas e validadas em:
+> **EXECUTADO em 21/11/2026**, com autorização explícita da responsável. As 8 migrations estão
+> aplicadas em `audioestudo`. O ponto de recuperação é o schema `backup_pre_3_4_20261121`
+> (20:13:54 UTC), com a restauração verificada. O registro completo está em
+> `docs/OVERNIGHT_PROGRESS.md`, seção "Release 3.3/3.4 em produção". As flags vivem no
+> `backend/.env` de quem roda o app (`ATIVAR_RECURSOS_3_4.cmd`), porque **não há hospedagem pública**.
 
-- PGlite (testes automáticos);
-- Postgres 16.15 local, com ensaio completo deste roteiro;
-- staging Supabase (`voz-em-estudo-staging`), com o teste ponta a ponta de `docs/STAGING_E2E.md`.
+### Diferenças entre o roteiro e a execução
 
-**Só execute com autorização explícita da responsável e com um backup verificado (seção 2).**
+- **Backup.** O roteiro previa `pg_dump`, mas esta sessão não tem a senha do banco de produção. O backup foi uma cópia completa dentro do banco, num schema privado, com a restauração verificada por hash de cada tabela. Para quem tiver acesso ao painel, o backup diário do Supabase continua sendo a segunda linha de defesa.
+- **Aplicação.** As migrations não foram coladas no SQL Editor. Foram aplicadas por um auxiliar temporário que conferia o SHA-256 de cada arquivo contra o manifesto e foi removido no fim.
+- **Fumaça.** Foi feita em SQL, numa transação desfeita, porque não há site publicado nem chave do servidor de produção nesta sessão.
 
 ## Auditoria de produção (21/11/2026, somente leitura)
 
