@@ -482,6 +482,10 @@ async function main() {
       await openSheet(view.page);
       await axeCheck(view.page, '[data-dashboard-customize-dialog]', `Personalizar (${theme})`);
       await view.page.goto(base + '/conta.html');
+      // The profile is ready once its blocks were rendered (only a hidden one: the section hides).
+      await view.page.waitForFunction(() =>
+        document.querySelector('.profile-content-section')?.hasAttribute('data-user-hidden'),
+      );
       await view.page.locator('[data-profile-edit-toggle]').click();
       await view.page.locator('.is-hidden-block .profile-hidden-badge').waitFor();
       await settle(view.page);

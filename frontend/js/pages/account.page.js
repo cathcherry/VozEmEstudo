@@ -364,7 +364,12 @@ function setEditing(next) {
   applySections();
   announce(editing ? 'Modo de edição: reorganize, oculte ou adicione blocos. As mudanças são salvas na hora.' : 'Edição concluída.');
 }
-document.querySelector('[data-profile-edit-toggle]')?.addEventListener('click', () => setEditing(!editing));
+{
+  // Enabled only now: before the page script is ready, a click would do nothing.
+  const toggle = document.querySelector('[data-profile-edit-toggle]');
+  toggle?.addEventListener('click', () => setEditing(!editing));
+  if (toggle) toggle.disabled = false;
+}
 document.querySelector('[data-profile-edit-done]')?.addEventListener('click', () => {
   setEditing(false);
   document.querySelector('[data-profile-edit-toggle]')?.focus();
