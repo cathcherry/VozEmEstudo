@@ -205,6 +205,73 @@ const SCENES = {
   },
 };
 
+// 3.5 M5: the two atmospheres that had no wallpaper yet.
+SCENES['old-notebook'] = () => {
+  const random = rng(53);
+  let rules = '';
+  for (let y = 130; y < H; y += 44)
+    rules += `<path d="M0 ${y} H${W}" stroke="${C.mist}" stroke-width="2" opacity="0.32"/>`;
+  // Pencil notes in the margins only (wavy strokes, never letters), so the centre stays calm.
+  let notes = '';
+  for (const [x0, y0, n] of [
+    [36, 210, 4],
+    [1330, 300, 5],
+    [40, 700, 3],
+  ])
+    for (let i = 0; i < n; i += 1) {
+      const y = y0 + i * 44 - 10;
+      const w = 110 + random() * 110;
+      let d = `M${x0} ${y}`;
+      for (let x = x0; x < x0 + w; x += 14) d += ` q7 ${r1(-4 - random() * 4)} 14 0`;
+      notes += `<path d="${d}" stroke="${C.inkSoft}" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.22"/>`;
+    }
+  const leaf = (x, y, a, s, fill) =>
+    `<g transform="translate(${x} ${y}) rotate(${a}) scale(${s})"><path d="M0 0 C30 -40 90 -40 120 0 C90 40 30 40 0 0 Z" fill="${fill}" opacity="0.55"/><path d="M0 0 H118 M30 0 l14 -14 M30 0 l14 14 M60 0 l14 -16 M60 0 l14 16 M90 0 l12 -12 M90 0 l12 12" stroke="${C.matchaDeep}" stroke-width="2" opacity="0.4"/></g>`;
+  return {
+    defs: sky('on-sky', [
+      [0, C.paper],
+      [1, C.honeyPale],
+    ]),
+    body: `<rect width="${W}" height="${H}" fill="url(#on-sky)"/>
+  <rect width="${W}" height="${H}" fill="${C.mistPale}" opacity="0.35"/>
+  ${rules}
+  <path d="M232 0 V${H}" stroke="${C.rose}" stroke-width="3" opacity="0.4"/>
+  <path d="M1460 0 V170 L1490 146 L1520 170 V0 Z" fill="${C.roseDeep}" opacity="0.55"/>
+  ${notes}
+  <circle cx="1240" cy="860" r="34" fill="${C.lavenderDeep}" opacity="0.12"/>
+  <circle cx="1286" cy="884" r="9" fill="${C.lavenderDeep}" opacity="0.12"/>
+  ${leaf(70, 900, -24, 1.3, C.matchaLight)}${leaf(150, 960, -8, 0.9, C.honeyLight)}${leaf(1440, 640, 200, 1.1, C.matchaLight)}
+  <rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="${C.woodLight}" stroke-width="28" opacity="0.35"/>`,
+  };
+};
+SCENES['dreamy-pastel'] = () => {
+  const random = rng(61);
+  const cloud = (x, y, s, opacity = 0.85) =>
+    `<g transform="translate(${x} ${y}) scale(${s})" opacity="${opacity}"><circle cx="0" cy="0" r="60" fill="${C.white}"/><circle cx="70" cy="-26" r="76" fill="${C.white}"/><circle cx="150" cy="0" r="58" fill="${C.white}"/><rect x="0" y="0" width="150" height="58" fill="${C.white}"/></g>`;
+  let stars = '';
+  for (let i = 0; i < 22; i += 1) {
+    const x = random() * W;
+    const y = random() * 520;
+    if (x > 520 && x < 1080 && y > 160) continue;
+    stars += sparkle(r1(x), r1(y), r1(5 + random() * 7), [C.lavenderLight, C.roseLight, C.honeyLight][i % 3]);
+  }
+  const arcs = [C.roseLight, C.honeyLight, C.matchaLight, C.mistLight, C.lavenderLight]
+    .map((tone, i) => `<path d="M-120 1000 A${520 - i * 26} ${520 - i * 26} 0 0 1 ${920 - i * 52} 1000" stroke="${tone}" stroke-width="26" fill="none" opacity="0.5"/>`)
+    .join('');
+  return {
+    defs: sky('dp-sky', [
+      [0, C.lavenderPale],
+      [0.55, C.rosePale],
+      [1, C.mistPale],
+    ]),
+    body: `<rect width="${W}" height="${H}" fill="url(#dp-sky)"/>
+  ${arcs}
+  <path d="M1352.8 116 A64 64 0 1 0 1404 199.2 A48 48 0 1 1 1352.8 116 Z" fill="${C.honeyPale}" opacity="0.95"/>
+  ${stars}
+  ${cloud(80, 220, 1.1)}${cloud(1240, 420, 1.3)}${cloud(980, 120, 0.7, 0.7)}${cloud(1300, 880, 1.6)}${cloud(-60, 900, 1.4)}`,
+  };
+};
+
 export const WALLPAPER_IDS = Object.keys(SCENES);
 
 export function wallpaperFiles() {

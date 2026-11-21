@@ -108,7 +108,13 @@ export function artSlot(doc, slot, id, className = 'collectible-art') {
 export const EXPERIENCE_MODES = Object.freeze(['quiet', 'cozy', 'adventure']);
 const MODE_KEY = 'voz-experience-mode';
 
+/**
+ * The account's mode (Aparência; synced with the other appearance preferences). Before 3.5 M5 it
+ * was a per-device value; theme-init.js migrates it, and this still reads it as a fallback.
+ */
 export function readExperienceMode(storage = globalThis.localStorage) {
+  const account = globalThis.VozAppearance?.loadUi?.().experience;
+  if (EXPERIENCE_MODES.includes(account)) return account;
   try {
     const value = storage?.getItem(MODE_KEY);
     return EXPERIENCE_MODES.includes(value) ? value : 'cozy';
@@ -120,7 +126,10 @@ export function readExperienceMode(storage = globalThis.localStorage) {
 /** Applies the mode to <html data-experience-mode>; CSS hides [data-game-ui] in quiet mode. */
 export function applyExperienceMode(mode = readExperienceMode(), root = globalThis.document?.documentElement) {
   const value = EXPERIENCE_MODES.includes(mode) ? mode : 'cozy';
-  if (root) root.dataset.experienceMode = value;
+  if (root) {
+    root.dataset.experienceMode = value;
+    root.dataset.experience = value;
+  }
   return value;
 }
 

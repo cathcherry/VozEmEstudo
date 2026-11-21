@@ -260,6 +260,16 @@ export const ART = Object.freeze({
     'Jardim à noite com lua, flores e vaga-lumes',
     'dark',
   ),
+  'wallpaper.old-notebook': wallpaper(
+    'old-notebook',
+    'Caderno acadêmico antigo',
+    'Folha pautada com margem, fita marcadora e folhas prensadas',
+  ),
+  'wallpaper.dreamy-pastel': wallpaper(
+    'dreamy-pastel',
+    'Pastel sonhador',
+    'Céu lilás com nuvens, lua, estrelinhas e um arco-íris claro',
+  ),
 
   'empty.library': empty('library', 'Prateleira com espaço para os próximos livros'),
   'empty.discoveries': empty('discoveries', 'Caderno aberto esperando a primeira descoberta'),

@@ -34,7 +34,49 @@
     cardTemplate: 'classic',
     // Title typography (pairs with the body font). Reading-font accessibility choices win.
     headingFont: 'editorial',
+    // 3.5 Personalization (utils/atmospheres.js is the source of truth for the values).
+    // Experience mode: same data, more or less game interface ('quiet' hides Lume, decoration
+    // and [data-game-ui]; 'adventure' surfaces investigations and the collection).
+    experience: 'cozy',
+    // The study atmosphere and what the student changed after choosing it.
+    atmosphere: 'lavender-desk',
+    atmosphereAccent: '',
+    atmospherePalette: 'on',
+    atmosphereWallpaper: 'on',
+    atmosphereMotion: 'on',
+    lumeOutfit: 'auto',
+    notebookCover: 'auto',
+    decoration: 'balanced',
   });
+  // Kept in sync with utils/atmospheres.js (frontend/tests/atmospheres.test.mjs checks it).
+  const EXPERIENCES = ['quiet', 'cozy', 'adventure'];
+  const ATMOSPHERES = [
+    'rainy-library',
+    'lavender-desk',
+    'matcha-afternoon',
+    'cozy-winter',
+    'seaside',
+    'night-garden',
+    'old-notebook',
+    'dreamy-pastel',
+  ];
+  const ON_OFF = ['on', 'off'];
+  const OUTFITS = ['auto', 'none', 'winter-scarf', 'raincoat', 'reading-glasses', 'explorer-hat'];
+  const COVERS = [
+    'auto',
+    'cover.lavender-dots',
+    'cover.honey-gingham',
+    'cover.mist-marbled',
+    'cover.rose-botanical',
+    'cover.night-stars',
+    'cover.matcha-linen',
+  ];
+  const DECORATIONS = ['minimal', 'balanced', 'abundant'];
+  // Desk objects anyone can place (not collectibles); collectible objects live in the server's
+  // desk layout. Slots are the server's slot names.
+  const DESK_SLOTS = ['desk-left', 'desk-center', 'desk-right', 'shelf-left', 'shelf-right', 'window', 'wall', 'lamp-corner'];
+  const DESK_STARTERS = ['object.teacup', 'object.inkwell', 'object.cactus', 'object.hourglass'];
+  const DEFAULT_DESK = Object.freeze({ 'desk-left': 'object.inkwell', 'desk-right': 'object.teacup', 'shelf-left': 'object.cactus' });
   const NAVIGATIONS = ['sidebar', 'dock'];
   const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars', 'image'];
   const SURFACES = ['solid', 'glass'];
@@ -131,10 +173,18 @@
     } catch {
       /* Missing or invalid local preferences retain the safe initial defaults. */
     }
+    // Until 3.5 M5 the experience mode was kept per device (Gabinete). It becomes the account's
+    // preference: the device value is used until the person chooses again (then it is synced).
+    if (saved && typeof saved === 'object' && !EXPERIENCES.includes(saved.experience)) {
+      const legacy = storage.get('voz-experience-mode', '');
+      if (EXPERIENCES.includes(legacy)) saved = { ...saved, experience: legacy };
+    }
     return normalizeUi(saved);
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
+    // Older pages and the art system read the mode under this name too.
+    root.dataset.experienceMode = prefs.experience;
     const page = WALLPAPER_PAGES[location.pathname.split('/').pop()] || '';
     root.dataset.wallpaper = (page && prefs.pageWallpapers?.[page]) || prefs.wallpaper;
     root.lang = prefs.language;
@@ -272,6 +322,25 @@
     if (SURFACES.includes(value?.surfaces)) result.surfaces = value.surfaces;
     if (CARD_TEMPLATES.includes(value?.cardTemplate)) result.cardTemplate = value.cardTemplate;
     if (HEADING_FONTS.includes(value?.headingFont)) result.headingFont = value.headingFont;
+    if (EXPERIENCES.includes(value?.experience)) result.experience = value.experience;
+    if (ATMOSPHERES.includes(value?.atmosphere)) result.atmosphere = value.atmosphere;
+    if (/^[a-z][a-z-]{0,23}$/.test(value?.atmosphereAccent || ''))
+      result.atmosphereAccent = value.atmosphereAccent;
+    for (const key of ['atmospherePalette', 'atmosphereWallpaper', 'atmosphereMotion'])
+      if (ON_OFF.includes(value?.[key])) result[key] = value[key];
+    if (OUTFITS.includes(value?.lumeOutfit)) result.lumeOutfit = value.lumeOutfit;
+    if (COVERS.includes(value?.notebookCover)) result.notebookCover = value.notebookCover;
+    if (DECORATIONS.includes(value?.decoration)) result.decoration = value.decoration;
+    // Starter desk objects by slot (one object per slot, each object once).
+    if (value?.deskStarters && typeof value.deskStarters === 'object') {
+      result.deskStarters = {};
+      const used = new Set();
+      for (const [slot, id] of Object.entries(value.deskStarters))
+        if (DESK_SLOTS.includes(slot) && DESK_STARTERS.includes(id) && !used.has(id)) {
+          result.deskStarters[slot] = id;
+          used.add(id);
+        }
+    } else result.deskStarters = { ...DEFAULT_DESK };
     // Focar: block durations follow the account to every device (minutes; same limits as
     // utils/focus-session.js normalizeSettings).
     if (value?.focusSettings && typeof value.focusSettings === 'object') {
@@ -382,6 +451,8 @@
       screenReaderMode: current.screenReaderMode,
       density: current.density,
       language: current.language,
+      experience: current.experience,
+      deskStarters: current.deskStarters,
     });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);
@@ -401,6 +472,8 @@
     defaults,
     syncedKeys: SYNCED_KEYS,
     normalizeUi,
+    deskSlots: DESK_SLOTS,
+    deskStarters: DESK_STARTERS,
     textSizes: TEXT_SIZES,
     fonts,
     storage,

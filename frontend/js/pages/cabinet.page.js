@@ -2,7 +2,7 @@
 // the student did, when, in which lesson). The server owns every unlock; this page only shows
 // them and lets the student place unlocked desk objects (object id + slot). Art is resolved by id
 // through data-art-slot / data-art-id; nothing renders when an asset is missing.
-import '../utils/preferences.js';
+import { setUiPreference } from '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
@@ -14,7 +14,6 @@ import {
   describeCollectible,
   formatDay,
   readExperienceMode,
-  saveExperienceMode,
 } from '../utils/collectibles.js';
 import * as api from '../api/discovery.api.js';
 
@@ -103,6 +102,13 @@ function renderDrawers() {
       list,
     );
   });
+  // Opening a drawer pulls its contents out (a short gesture; closing is instant).
+  for (const drawer of drawers)
+    drawer.addEventListener('toggle', () => {
+      if (!drawer.open) return;
+      drawer.dataset.opening = '';
+      setTimeout(() => delete drawer.dataset.opening, 320);
+    });
   $('[data-cabinet-drawers]').replaceChildren(...drawers);
   if (!collection.unlocks.length)
     $('[data-cabinet-drawers]').prepend(
@@ -171,7 +177,8 @@ function wireModes() {
   for (const input of document.querySelectorAll('input[name="experience-mode"]')) {
     input.checked = input.value === mode;
     input.addEventListener('change', () => {
-      saveExperienceMode(input.value);
+      // One preference for the account (Aparência shows the same choice); nothing is erased.
+      setUiPreference('experience', input.value);
       setStatus({ quiet: 'Modo Estudo silencioso: selos e celebrações ficam ocultos; tudo continua registrado.', cozy: 'Modo Estudo aconchegante.', adventure: 'Modo Estudo aventura: o caminho até os próximos itens fica visível.' }[input.value]);
     });
   }

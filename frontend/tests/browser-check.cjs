@@ -732,9 +732,9 @@ async function main() {
     );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
-    // Revisar, Planejar, Focar and Turmas exist in the dock but stay hidden while their features are off.
+    // Revisar, Planejar, Focar, Turmas and Descobertas exist in the dock but stay hidden while their features are off.
     assert.equal(await page.locator('#focus-dock a:visible').count(), 4);
-    assert.equal(await page.locator('#focus-dock a').count(), 8);
+    assert.equal(await page.locator('#focus-dock a').count(), 9);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
@@ -2386,7 +2386,7 @@ async function main() {
     assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'true', 'persists');
     await page.goto(base + '/aparencia.html');
     assert(await page.locator('#setting-screen-reader').isChecked());
-    await page.locator('#setting-screen-reader').uncheck();
+    await page.locator('#setting-screen-reader-off').check();
     assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'false');
     record('Modo para leitores de tela: no segundo Tab de cada página, sem decoração nem animação, axe sem violações');
     // Transcript search shows the searched words in bold, ignoring accents and case.
