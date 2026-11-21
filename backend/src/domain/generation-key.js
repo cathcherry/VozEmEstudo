@@ -19,9 +19,11 @@ export const CONTENT_SETTINGS = Object.freeze({
   ],
   summary: ['style', 'length', 'focus', 'audience', 'format'],
   flashcards: ['count', 'style', 'types', 'focus'],
+  // Milestone C: integrated material of several lessons (sources = all revision ids).
+  multi_lesson: ['outputs', 'questionCount', 'flashcardCount', 'length', 'focus'],
 });
 // Order does not matter for these (they are sets).
-const SET_LIKE = new Set(['difficulties', 'skills', 'types']);
+const SET_LIKE = new Set(['difficulties', 'skills', 'types', 'outputs']);
 
 function canonical(value) {
   if (Array.isArray(value)) return value.map(canonical);
