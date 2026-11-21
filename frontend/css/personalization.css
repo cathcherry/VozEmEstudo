@@ -971,3 +971,4 @@ html[data-surfaces='glass']:not([data-high-contrast='true']):not([data-low-stimu
 .studio-side { display: grid; gap: 12px; align-content: start; }
 .studio-pages > summary { min-height: 44px; padding: 10px 0; font-weight: 600; cursor: pointer; }
 .studio-page-list { display: grid; gap: 8px; }
+.dash-card-head .focus-shortcut { margin-inline-start: auto; margin-inline-end: 12px; font-variant-numeric: tabular-nums; }

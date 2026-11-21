@@ -1450,6 +1450,7 @@ export default {
   "Resumo da Biblioteca": "Library overview",
   "Resumos": "Summaries",
   "Retomar": "Resume",
+  "Retomar foco": "Resume focus",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "Revisit the main ideas and use the questions to check your understanding.",
   "Revelar resposta": "Show answer",
   "Rever aula": "Review lesson",
@@ -2370,6 +2371,10 @@ export default {
   [
    "Legenda: {0}",
    "Captions: {0}"
+  ],
+  [
+   "Pausar · {0}",
+   "Pause · {0}"
   ],
   [
    "revisão {0}",

@@ -125,6 +125,18 @@ async function main() {
     await panel.locator('[data-focus-primary]', { hasText: 'Iniciar foco' }).waitFor();
     record('Esconder a cápsula não para o cronômetro; retomar e encerrar pelo painel');
 
+    // ---------- Início: one click starts focusing ------------------------------------------
+    await page.goto(base + '/painel.html');
+    const shortcut = page.locator('[data-focus-shortcut]');
+    await shortcut.waitFor();
+    await shortcut.click();
+    await page.locator('[data-focus-shortcut]', { hasText: /^Pausar · / }).waitFor();
+    // The capsule stays hidden (the student hid it above); the topbar shows the running session.
+    await page.locator('[data-utility-trigger].is-active').waitFor();
+    await shortcut.click();
+    await page.locator('[data-focus-shortcut]', { hasText: 'Retomar foco' }).waitFor();
+    record('Início: "Iniciar foco" começa a sessão com um clique; o mesmo botão pausa e retoma');
+
     // ---------- Phone: the panel is a bottom sheet; no horizontal scroll --------------------
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(300);

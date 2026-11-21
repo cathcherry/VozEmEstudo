@@ -1450,6 +1450,7 @@ export default {
   "Resumo da Biblioteca": "资料库概览",
   "Resumos": "摘要",
   "Retomar": "继续",
+  "Retomar foco": "继续专注",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "回顾主要观点，用题目检验你的理解。",
   "Revelar resposta": "显示答案",
   "Rever aula": "复习课程",
@@ -2370,6 +2371,10 @@ export default {
   [
    "Legenda: {0}",
    "字幕：{0}"
+  ],
+  [
+   "Pausar · {0}",
+   "暂停 · {0}"
   ],
   [
    "revisão {0}",

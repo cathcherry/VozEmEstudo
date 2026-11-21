@@ -179,6 +179,21 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
 
   document.body.append(panel, capsule);
 
+  // Início: start focusing in one click from the week card (same session as everywhere).
+  const weekHead = document.querySelector('[data-week-widget] .dash-card-head');
+  let shortcut = null;
+  if (weekHead) {
+    shortcut = make('button', 'Iniciar foco', 'text-action focus-shortcut');
+    shortcut.type = 'button';
+    shortcut.dataset.focusShortcut = '';
+    weekHead.querySelector('h2')?.after(shortcut);
+    shortcut.addEventListener('click', () => {
+      const state = session.state();
+      if (state.status === 'running') void session.pause().catch(() => {});
+      else void session.start({ mode: state.status === 'paused' ? undefined : 'pomodoro' }).catch(() => {});
+    });
+  }
+
   // ---- behaviour --------------------------------------------------------------------------
   let shown = readPref().mode; // 'auto' | 'panel' | 'capsule' | 'hidden'
   let opener = null;
@@ -298,6 +313,10 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     const done = state.cycle % state.settings.longEvery;
     cycles.textContent = `${state.completedToday} ${state.completedToday === 1 ? 'foco hoje' : 'focos hoje'} · ${done} de ${state.settings.longEvery} até a pausa longa`;
     status.textContent = state.error || (state.notice ? NOTICES[state.notice.kind] || '' : '');
+    if (shortcut) {
+      shortcut.textContent = running ? `Pausar · ${label}` : state.status === 'paused' ? 'Retomar foco' : 'Iniciar foco';
+      shortcut.disabled = state.busy;
+    }
     layout(state);
   }
   session.subscribe(render);
