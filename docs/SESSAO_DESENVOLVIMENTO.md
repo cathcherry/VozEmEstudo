@@ -90,3 +90,77 @@ contagem de conjuntos com timer; títulos quebrando no meio da palavra; contrast
 2. Preferências por conta (ROADMAP §5.2): hoje aparência, idioma e densidade são do navegador.
 3. Trocar o `prompt()` de "Renomear conjunto" por um diálogo do app.
 4. Teste com leitores de tela reais nas telas novas.
+
+---
+
+# Continuação (21/11/2026) — etapas 10 a 15
+
+Base: `feat/personalization-2-0` @ `5aabbb1` (PR #7, rascunho, CI verde). Mesmo branch, mesmo PR.
+Nada de produção: sem migration, SQL, deploy, chamada paga de IA ou credencial.
+
+## Situação
+
+| #   | Etapa                                | Situação                               | Commits              |
+| --- | ------------------------------------ | -------------------------------------- | -------------------- |
+| 10  | Internacionalização completa         | Concluída (limites abaixo)             | `4ed1070`, `2bea5c3` |
+| 11  | Preferências por conta e privacidade | Concluída (hora do servidor: proposta) | `4ed1070`            |
+| 12  | UX em todo o app                     | Parcial                                | `8a12ce4`            |
+| 13  | Confiabilidade e dívidas             | Concluída em parte                     | `6a8ae52`, `1cfa22b` |
+| 14  | Preparação para hospedagem           | Concluída (não publicado)              | `1cfa22b`            |
+| 15  | Validação final e passagem           | Concluída                              | este commit          |
+
+## O que mudou
+
+- **Idiomas**: catálogo de frases (o português é a chave) aplicado ao DOM, inclusive ao que os
+  scripts acrescentam depois, a rótulos e a diálogos nativos; 1.678 frases e 131 padrões por idioma.
+  Conteúdo de usuário protegido (frase inteira, contêineres de conteúdo, padrões curtos só com
+  números ou palavras da interface). Datas pelo idioma. Cobertura em `IDIOMAS.md`.
+  Tradução feita com subagentes a partir de um glossário (`scripts/i18n/build-phrases.mjs` gera os
+  catálogos); **não revisada por falantes nativos**.
+- **Preferências**: separação conta × dispositivo; sair restaura o dispositivo; conta nova parte do
+  dispositivo; conta que volta recupera as suas. Indicador de sincronização e "Apagar dados desta
+  conta neste navegador" em Configurações. Cópia pública com as preferências do visitante.
+- **UX**: diálogo do app para renomear conjuntos (no lugar de `prompt()`), diagnóstico em cache por
+  tentativa, ações do diálogo de compartilhar com o estilo do app.
+- **Confiabilidade**: duração exata de AAC; bucket configurável ao excluir; testes de flags
+  desligadas; limites por conta; desligamento da API em até 10 s; CSP opcional.
+- **Hospedagem**: `docs/HOSPEDAGEM.md`, `deploy/railway.api.json`, `deploy/railway.worker.json`.
+
+## Bugs encontrados e corrigidos
+
+1. Tema e idioma de uma conta apareciam na tela de entrada e para a próxima conta no mesmo
+   navegador.
+2. Após apagar os dados locais, o histórico de estudo era regravado ao sair da página (`pagehide`).
+3. A navegação do botão "Sair" era abortada por um recarregamento de idioma.
+4. Texto longo inserido na página (ex.: script do axe) travava o tradutor (padrões com backtracking).
+5. Texto do estado vazio do perfil corrompido por uma edição da sessão anterior.
+6. Duração de AAC bruto estimada pela taxa de bits (até 0,26 s de erro).
+7. Exclusão de aula usava o bucket fixo `audios`.
+8. Foco não voltava ao botão depois de fechar um diálogo quando o botão estava ocupado.
+
+## Testes (21/11/2026, neste contêiner)
+
+- `npm run lint`, `check:syntax`, `check:ci`, `check:secrets`: OK.
+- Backend: **264/264** (antes 258/260; inclui os novos testes de flags e limites).
+- Front end (Node): todas as suítes `test:*`; `test:personalization` inclui idiomas e catálogo.
+- Navegador (API simulada): `browser-check` (57), `subject-menu`, `password-signup`,
+  `dashboard-home`, `navigation`, `personalization`, `feature-validation` (5), `i18n-check`
+  (4 idiomas × 10 páginas × 2 larguras), `account-privacy` (6), `theme-check` (3 temas × 8
+  páginas). Resultado final na seção de validação do PR.
+- **Não feito**: login real, Supabase real, provedores de IA, leitores de tela reais (NVDA,
+  VoiceOver, TalkBack), dois aparelhos reais, revisão nativa das traduções.
+
+## Pendências que dependem de você
+
+- Testes manuais 1–41 de `PAINEL_TESTE_MANUAL.md` (prioridade: 33–37 e o fluxo de estudo 2–6).
+- Publicação: seguir `HOSPEDAGEM.md` (serviços, variáveis, URLs do Supabase, CSP).
+- Aprovar ou não: hora do servidor em `profile_state` (migration), migration de desempenho de RLS,
+  limite global com Redis/tabela, exclusão de objetivos/tarefas.
+
+## Próximos passos sugeridos
+
+1. Revisão das traduções por falantes nativos (principalmente chinês).
+2. Mensagens de erro do servidor no idioma da interface (enviar `Accept-Language`).
+3. Redesenho do "Organizar meus cartões" (hoje um formulário com seletor) e das listas longas do
+   Planejar.
+4. `ai_job_executions` de tarefas de texto continuam em `pending` após terminar (dívida).

@@ -433,10 +433,22 @@ Regras da sincronização (`profile_state`):
   marcos e os ícones de pasta são **combinados** (nada de outro aparelho se perde); as demais chaves
   ficam com a **edição mais recente** (pela hora da edição, não do envio).
 - Sem conexão, a mudança fica pendente neste navegador e é enviada depois.
+- **Conta e dispositivo**: aparência, idioma e densidade escolhidos **sem conta** (tela de entrada) são
+  as preferências do dispositivo. Ao sair, o navegador volta a elas — a próxima pessoa não vê o tema
+  nem o idioma da conta anterior. Uma conta sem preferências salvas começa das do dispositivo; uma
+  conta que volta recupera as próprias (da cópia na conta, aplicadas logo após entrar). Sem
+  preferências do dispositivo, só as necessidades de acessibilidade (tamanho do texto, contraste,
+  movimento, leitor de tela, fonte de leitura) ficam na tela de entrada.
 - Ao trocar de conta no mesmo navegador, as preferências não salvas da conta anterior esperam por ela
   e não vão para a nova conta.
-- A cópia local continua no navegador depois de sair da conta (em computadores compartilhados, use uma
-  janela anônima).
+- **Configurações › Sincronização e dados neste navegador** mostra o estado real (tudo salvo,
+  sincronizando, pendente, sem conexão, falha) a partir do que está pendente; "Sincronizar agora"
+  aparece só quando há o que enviar.
+- **Sair** não apaga nada do navegador. **Apagar dados desta conta neste navegador e sair** remove só
+  as cópias desta conta (localStorage e IndexedDB), nunca as de outras contas nem as preferências do
+  dispositivo; avisa se há mudanças não enviadas e oferece sincronizar antes.
+- Limite: "edição mais recente" usa a hora do aparelho; um relógio muito errado pode perder a disputa
+  (a hora do servidor exigiria uma função no banco — proposta no ROADMAP).
 
 ---
 

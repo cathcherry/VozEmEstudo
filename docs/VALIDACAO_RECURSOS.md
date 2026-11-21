@@ -23,13 +23,18 @@ SQL das migrations, `scripts/tests`), **unit** (jsdom/Node em `frontend/tests/*.
 | Flags desligadas        | Menu sem Revisar/Planejar; página direta explica; Início sem cartões                                                                                  | browser                                                                                   | Passa      | —                                                                                                                                        | Desligar flags no `.env` real                                                                |
 | Falha de uma ferramenta | Erro de carregamento não derruba as outras abas                                                                                                       | browser (`feature-validation-check`)                                                      | Passa      | Ferramenta que não inicia mostra aviso na própria aba (antes só `console.warn`)                                                          | —                                                                                            |
 
-## Defeitos conhecidos, não corrigidos
+## Acréscimos de 21/11/2026 (continuação)
 
-- `flashcard-sets-panel.js`: "Renomear" usa `prompt()` do navegador em vez de um diálogo do app.
-  Funciona com teclado e leitor de tela, mas destoa do resto.
-- Revisão de questões: cada Anterior/Próxima numa tentativa concluída pede o diagnóstico de novo
-  (requisições extras, resultado correto).
-- Não há teste HTTP de que um módulo com flag desligada responde 404.
+| Recurso                 | Comportamento testado                                                         | Cobertura automática                                      | Resultado | Correções                                                                 | Falta verificar manualmente |
+| ----------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------- | --------- | ------------------------------------------------------------------------- | --------------------------- |
+| Conjuntos de flashcards | Renomear em diálogo do app, Esc cancela, Enter salva, foco volta              | browser (`feature-validation-check`)                      | Passa     | `prompt()` substituído                                                    | Arquivar e excluir conjunto |
+| Revisão de erros        | Diagnóstico pedido uma vez por tentativa concluída; falha é tentada de novo   | unit (`quiz-diagnostic-ui.test.mjs`)                      | Passa     | Requisições repetidas em Anterior/Próxima                                 | —                           |
+| Mídia                   | Duração de AAC bruto contada por quadros                                      | backend (FFmpeg real)                                     | Passa     | Estimativa por taxa de bits (até 0,26 s de erro)                          | Arquivo .aac real           |
+| Flags                   | APIs com flag desligada respondem 404; ligar uma monta só ela, atrás de login | backend (processos separados)                             | Passa     | —                                                                         | —                           |
+| Limites por conta       | Janela, `Retry-After`, contas separadas, 0 desliga                            | unit (`rate-limit.test.js`)                               | Passa     | Novo                                                                      | Com o servidor real         |
+| Preferências e conta    | Sair, outra conta, retorno, sincronização, apagar dados, cópia pública        | browser (`account-privacy-check`), unit (`profile-cloud`) | Passa     | Vazamento de tema/idioma entre contas; reescrita do histórico após apagar | Dois aparelhos reais        |
+
+## Defeitos conhecidos, não corrigidos
 
 ## Como repetir
 

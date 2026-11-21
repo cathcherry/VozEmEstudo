@@ -93,17 +93,30 @@ conquistas próprias, importação do histórico como provisório, avatares libe
 [GAMIFICACAO_2_0_DESIGN.md](GAMIFICACAO_2_0_DESIGN.md). Depende de E10, E12, E13 e E08/E09 para ter
 eventos além de aulas e confirmações.
 
+## 6.1 Situação em 21/11/2026 (sessão de continuação)
+
+Resolvido: tradução de quase toda a interface (en, es, zh-CN; ver [IDIOMAS.md](IDIOMAS.md)),
+preferências por conta e por dispositivo, indicador de sincronização, apagar dados da conta no
+navegador (§5.1, §5.2 e §5.3 abaixo), cópia pública com as preferências do visitante (§5.6),
+duração exata de AAC (teste de recorte portátil), bucket configurável ao excluir aula, testes de
+flags desligadas, limites por conta nos pedidos caros, CSP opcional, guia de hospedagem
+([HOSPEDAGEM.md](HOSPEDAGEM.md)).
+
+Proposta (não aplicada, pede aprovação): usar a **hora do servidor** na disputa de edições de
+`profile_state` — um `default now()`/trigger em `updated_at` e uma RPC de gravação condicional —
+para que relógios errados de aparelhos não percam edições (§5.4).
+
 ## 7. Dívidas técnicas encontradas
 
 | Item                                                                                                           | Impacto                                 | Sugestão                                                    |
 | -------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------- |
 | Arquivos órfãos em `audios/temp/` quando o upload termina mas a aula não é criada e a pessoa muda o formulário | Espaço no Storage                       | Tarefa periódica que apaga `temp/` sem aula há mais de 24 h |
 | Repetição de geração após resposta inválida do modelo repete o custo                                           | Custo de API                            | Guardar respostas parciais por tarefa                       |
-| Sem limitador de requisições HTTP global                                                                       | Abuso                                   | Limite por usuário nas rotas de geração e mídia             |
+| Sem limitador global (há limite **por conta e por processo** desde 21/11)                                      | Abuso                                   | Limite por usuário nas rotas de geração e mídia             |
 | `ai_job_executions` de tarefas de texto ficam em `pending`                                                     | Leitura confusa                         | Marcar `completed` ao terminar                              |
 | `check:openapi` sem o arquivo OpenAPI                                                                          | Check desativado                        | Gerar a especificação a partir de `docs/API.md`             |
-| Teste de recorte AAC depende da versão do FFmpeg                                                               | Falha conhecida na suíte                | Fixar a versão ou gerar o AAC no teste                      |
+| ~~Teste de recorte AAC depende da versão do FFmpeg~~ (resolvido: duração contada por quadros)                  | Falha conhecida na suíte                | Fixar a versão ou gerar o AAC no teste                      |
 | Flag `social_basic` sem uso; `questoes.html` sem link; `catalog-panel.js` não importado                        | Código morto                            | Remover                                                     |
-| `deleteOwnedMaterial` usa o bucket `'audios'` fixo                                                             | Quebra se o bucket mudar                | Usar `env.audioBucket`                                      |
+| ~~`deleteOwnedMaterial` usa o bucket `'audios'` fixo~~ (resolvido: `SUPABASE_AUDIO_BUCKET`)                    | Quebra se o bucket mudar                | Usar `env.audioBucket`                                      |
 | `RETRANSCRIBIR_AUDIO` sem implementação                                                                        | Enum sem uso                            | Implementar ou remover                                      |
 | Cópia local mantida após sair da conta                                                                         | Privacidade em computador compartilhado | Ver item 5.1                                                |
