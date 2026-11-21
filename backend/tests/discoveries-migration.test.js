@@ -280,7 +280,7 @@ test('thresholds unlock desk objects from the n-th learning event', async () => 
       const result = await f.api.evidence(a, investigation.id, { segmentPosition: 1, startOffset: offset, endOffset: offset + 1, quote: multiSegments[1][offset] });
       jar = jar.concat(ids(result.newUnlocks));
     }
-    assert.deepEqual(jar, ['object.specimen-jar']);
+    assert.deepEqual(jar, ['object.specimen-box']);
   } finally {
     await f.db.close();
   }
@@ -338,7 +338,7 @@ test('connections across subjects, meaningful revisits (rate-limited, a day late
     assert.deepEqual(newEvidence.newUnlocks, []);
     await age(f.db, heat.id, 4);
     const pressed = await f.api.reflect(a, heat.id, 'Voltei para ligar com a combustão.');
-    assert.deepEqual(ids(pressed.newUnlocks), ['object.pressed-flower']);
+    assert.deepEqual(ids(pressed.newUnlocks), ['object.pressed-flower-jar']);
   } finally {
     await f.db.close();
   }

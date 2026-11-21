@@ -94,6 +94,17 @@ const MOTIFS = {
       <path d="M66 58 H82 M66 64 H80 M66 70 H78" ${line(1.4, C.lavender)}/>
       ${sparkle(76, 36, 7, C.honey)}`,
   },
+  'first-reflection': {
+    tint: [C.mistPale, C.mistLight],
+    body: `<path d="M28 70 Q60 62 92 70 Q60 82 28 70 Z" fill="${C.mist}" opacity="0.55"/>
+      <path d="M32 70 Q60 64 88 70" ${line(1.4, C.mistDeep)}/>
+      <circle cx="60" cy="48" r="11" fill="${C.honeyLight}" ${line(1.6)}/>
+      <circle cx="64" cy="45" r="9" fill="${C.mistPale}"/>
+      <path d="M50 76 Q60 80 70 76" ${line(1.6, C.honeyDeep)} opacity="0.75"/>
+      <path d="M54 82 Q60 84 66 82" ${line(1.4, C.honeyDeep)} opacity="0.45"/>
+      <path d="M40 88 H52 M68 88 H80" ${line(1.2, C.mistDeep)} opacity="0.6"/>
+      ${sparkle(84, 40, 6, C.honey)}`,
+  },
   'deep-focus': {
     tint: [C.mistPale, C.mistLight],
     body: `<circle cx="60" cy="64" r="22" fill="${C.honey}" opacity="0.28"/>

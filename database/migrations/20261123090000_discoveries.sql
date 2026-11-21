@@ -241,8 +241,8 @@ returns jsonb language sql immutable set search_path = '' as $$
     jsonb_build_object('id', 'stamp.revisit', 'kind', 'stamp', 'event', 'revisit_made', 'count', 1),
     jsonb_build_object('id', 'object.magnifying-glass', 'kind', 'object', 'event', 'investigation_completed', 'count', 3),
     jsonb_build_object('id', 'object.desk-lamp', 'kind', 'object', 'event', 'investigation_completed', 'count', 5),
-    jsonb_build_object('id', 'object.specimen-jar', 'kind', 'object', 'event', 'evidence_verified', 'count', 10),
-    jsonb_build_object('id', 'object.pressed-flower', 'kind', 'object', 'event', 'revisit_made', 'count', 3),
+    jsonb_build_object('id', 'object.specimen-box', 'kind', 'object', 'event', 'evidence_verified', 'count', 10),
+    jsonb_build_object('id', 'object.pressed-flower-jar', 'kind', 'object', 'event', 'revisit_made', 'count', 3),
     jsonb_build_object('id', 'object.globe', 'kind', 'object', 'event', 'subjects_explored', 'count', 3),
     jsonb_build_object('id', 'cover.matcha-linen', 'kind', 'cover', 'event', 'connection_made', 'count', 3))
 $$;
@@ -263,7 +263,7 @@ begin
   insert into public.collection_unlocks(user_id, collectible_id, source_event, source_id, investigation_id,
       discovery_id, material_id, material_title, subject_label, occurred_at)
   select v_user, r.id, 'evidence_verified', e.id, e.investigation_id, d.id, e.material_id, m.title, m.subject, e.created_at
-  from (values ('stamp.first-evidence', 1), ('object.specimen-jar', 10)) r(id, n)
+  from (values ('stamp.first-evidence', 1), ('object.specimen-box', 10)) r(id, n)
   cross join lateral (select * from public.investigation_evidence x where x.user_id = v_user
     order by x.created_at, x.id offset r.n - 1 limit 1) e
   join public.materials m on m.id = e.material_id
@@ -329,7 +329,7 @@ begin
       discovery_id, material_id, material_title, subject_label, occurred_at)
   select v_user, r.id, 'revisit_made', v.discovery_id, d.investigation_id, d.id, d.material_id, m.title,
     d.subject_label, v.created_at
-  from (values ('stamp.revisit', 1), ('object.pressed-flower', 3)) r(id, n)
+  from (values ('stamp.revisit', 1), ('object.pressed-flower-jar', 3)) r(id, n)
   cross join lateral (select * from public.discovery_revisits x where x.user_id = v_user
     order by x.created_at, x.discovery_id offset r.n - 1 limit 1) v
   join public.discoveries d on d.id = v.discovery_id

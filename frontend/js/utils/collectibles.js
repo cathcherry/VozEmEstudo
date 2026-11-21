@@ -45,12 +45,12 @@ export const COLLECTIBLES = Object.freeze({
     memory: 'Você investigou cinco perguntas até o fim.',
     hint: 'Aparece depois de cinco investigações registradas.',
   },
-  'object.specimen-jar': {
+  'object.specimen-box': {
     name: 'Pote de espécimes',
     memory: 'Você reuniu dez evidências conferidas.',
     hint: 'Aparece depois de dez evidências reunidas.',
   },
-  'object.pressed-flower': {
+  'object.pressed-flower-jar': {
     name: 'Flor prensada',
     memory: 'Você revisitou descobertas em três dias diferentes.',
     hint: 'Aparece depois de três revisitas.',

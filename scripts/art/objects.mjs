@@ -100,6 +100,15 @@ const OBJECTS = {
     <rect x="48" y="28" width="64" height="10" rx="3.5" fill="${C.wood}" ${line(1.8)}/>
     <rect x="48" y="128" width="64" height="10" rx="3.5" fill="${C.wood}" ${line(1.8)}/>
     <path d="M52 33 H108 M52 133 H108" ${line(1.2, C.woodDeep)} opacity="0.5"/>`,
+  'magnifying-glass': `${groundShadow(80, 140, 46)}
+    <path d="M98 100 L128 132" ${line(12, C.wood)}/>
+    <path d="M101 104 L126 131" ${line(2, C.woodLight)} opacity="0.7"/>
+    <rect x="93" y="93" width="14" height="12" rx="3" transform="rotate(43 100 99)" fill="${C.honey}" ${line(1.6)}/>
+    <circle cx="72" cy="70" r="34" fill="${C.honey}" ${line(1.8)}/>
+    <circle cx="72" cy="70" r="27" fill="${C.mistPale}" fill-opacity="0.85" ${line(1.6)}/>
+    <path d="M58 58 Q64 50 74 49" ${line(3, C.white, 0.9)}/>
+    <path d="M62 80 Q68 72 78 74 Q84 76 86 70" ${line(1.4, C.matchaDeep)} opacity="0.7"/>
+    <path d="M70 75 Q66 70 68 66 Q73 68 72 74 Z" fill="${C.matchaLight}" ${line(1.1)}/>`,
   'specimen-box': `${groundShadow(80, 140, 58)}
     <rect x="24" y="56" width="112" height="82" rx="5" fill="${C.wood}" ${line(1.8)}/>
     <rect x="32" y="64" width="96" height="66" rx="2" fill="${C.paper}" ${line(1.5)}/>

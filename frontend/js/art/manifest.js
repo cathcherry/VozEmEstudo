@@ -182,6 +182,12 @@ export const ART = Object.freeze({
     'Começou a estudar uma disciplina nova.',
   ),
 
+  'stamp.first-reflection': stamp(
+    'first-reflection',
+    'Primeira reflexão',
+    'Registrou uma reflexão sobre o que investigou.',
+  ),
+
   'object.desk-lamp': object(
     'desk-lamp',
     'Luminária de mesa',
@@ -201,6 +207,7 @@ export const ART = Object.freeze({
     'Cacto redondo florido num vaso rosa',
   ),
   'object.hourglass': object('hourglass', 'Ampulheta', 'Ampulheta de madeira com areia cor de mel'),
+  'object.magnifying-glass': object('magnifying-glass', 'Lupa', 'Lupa de aro dourado e cabo de madeira'),
   'object.specimen-box': object(
     'specimen-box',
     'Caixa de espécimes',

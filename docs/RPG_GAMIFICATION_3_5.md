@@ -31,8 +31,8 @@ registrados pelo servidor contam).
 | `stamp.revisit` — Revisita | `revisit_made` | 1ª revisita significativa |
 | `object.magnifying-glass` — Lupa | `investigation_completed` | 3ª investigação concluída |
 | `object.desk-lamp` — Luminária de mesa | `investigation_completed` | 5ª investigação concluída |
-| `object.specimen-jar` — Pote de espécimes | `evidence_verified` | 10ª evidência |
-| `object.pressed-flower` — Flor prensada | `revisit_made` | 3ª revisita |
+| `object.specimen-box` — Pote de espécimes | `evidence_verified` | 10ª evidência |
+| `object.pressed-flower-jar` — Flor prensada | `revisit_made` | 3ª revisita |
 | `object.globe` — Globo | `subjects_explored` | descobertas em 3 disciplinas |
 | `cover.matcha-linen` — Capa de linho matcha | `connection_made` | 3ª conexão |
 

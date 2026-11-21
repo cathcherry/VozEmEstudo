@@ -16,8 +16,8 @@ const CATALOG = [
   ['stamp.revisit', 'stamp', 'revisit_made', 1],
   ['object.magnifying-glass', 'object', 'investigation_completed', 3],
   ['object.desk-lamp', 'object', 'investigation_completed', 5],
-  ['object.specimen-jar', 'object', 'evidence_verified', 10],
-  ['object.pressed-flower', 'object', 'revisit_made', 3],
+  ['object.specimen-box', 'object', 'evidence_verified', 10],
+  ['object.pressed-flower-jar', 'object', 'revisit_made', 3],
   ['object.globe', 'object', 'subjects_explored', 3],
   ['cover.matcha-linen', 'cover', 'connection_made', 3],
 ].map(([id, kind, event, count]) => ({ id, kind, event, count }));
