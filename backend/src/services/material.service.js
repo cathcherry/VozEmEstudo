@@ -11,7 +11,7 @@ import * as materials from '../repositories/material.repository.js';
 import { getByMaterial as getTranscription } from '../repositories/transcription.repository.js';
 import { listSummaries } from '../repositories/summary.repository.js';
 import { listBatches } from '../repositories/question.repository.js';
-import { createJob, createQuestionListJob, getOwnedJob } from '../repositories/job.repository.js';
+import { createJob, createQuestionListJob, getOwnedJob, findOwnedJobByGeneration } from '../repositories/job.repository.js';
 import { generationReuseEnabled, beginGeneration, attachGenerationJob } from './generation-reuse.service.js';
 import { createAudioSignedUrl } from './audio.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
@@ -133,6 +133,20 @@ export async function enqueueQuestions(userId, materialId, count, rawInput, conf
 }
 
 /**
+ * A `join` can arrive in the few milliseconds between the first request starting the generation
+ * and attaching its job (double click, five tabs). Without a job id the client cannot follow the
+ * job, so wait briefly for the job the first request is creating (tagged with the generation id).
+ */
+export async function waitForGenerationJob(lookup, { attempts = 12, delayMs = 250, sleep = (ms) => new Promise((r) => setTimeout(r, ms)) } = {}) {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const job = await lookup().catch(() => null);
+    if (job) return job;
+    if (attempt < attempts - 1) await sleep(delayMs);
+  }
+  return null;
+}
+
+/**
  * Generation reuse (3.3): the same job response shape is returned in every case, so the client
  * keeps polling a job. `reuse` → the finished job of the equivalent result; `join` → the job that
  * is already running; `start` → a new job tagged with its generation id.
@@ -150,7 +164,9 @@ async function queueGeneration(userId, materialId, kind, params, selection, { al
   const generation = outcome.generation;
   if (outcome.decision !== 'start') {
     const jobId = generation.job_id || generation.result?.jobId;
-    const job = jobId ? await getOwnedJob(userId, jobId).catch(() => null) : null;
+    const job = jobId
+      ? await getOwnedJob(userId, jobId).catch(() => null)
+      : await waitForGenerationJob(() => findOwnedJobByGeneration(userId, materialId, generation.id));
     return { ...(job || { status: 'PENDENTE', material_id: materialId }), generation: { id: generation.id, decision: outcome.decision } };
   }
   // A retry with the same idempotency key keeps the original params (and generation) of its job.

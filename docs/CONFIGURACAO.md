@@ -24,9 +24,16 @@ o `INICIAR.cmd` de novo.
 | `SUPABASE_PUBLISHABLE_KEY` | —               | Chave publicável: vai para o navegador e valida tokens                                         |
 | `SUPABASE_SECRET_KEY`      | —               | **Secreta**, só no servidor; nunca publicar                                                    |
 | `SUPABASE_AUDIO_BUCKET`    | `audios`        | Bucket dos áudios enviados                                                                     |
+| `SUPABASE_AUTH_VERIFY`     | `server`        | Como o token do usuário é conferido: `server` (pergunta ao Supabase Auth a cada pedido) ou `jwks` (confere a assinatura pela JWKS pública do projeto; ver abaixo) |
 | `OAUTH_PROVIDERS`          | `google,github` | Botões de login social exibidos (ver [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md)) |
 
 Se uma chave secreta for colocada por engano em `SUPABASE_PUBLISHABLE_KEY`, o servidor se recusa a entregá-la ao navegador.
+
+`SUPABASE_AUTH_VERIFY=jwks` serve para ambientes em que o Supabase Auth não enxerga o token do usuário
+(por exemplo, atrás de um proxy que injeta a chave do servidor em todo pedido ao Supabase — o caso do
+teste de staging descrito em [STAGING_E2E.md](STAGING_E2E.md)). Com ele, tokens assinados com chave
+assimétrica (ES256/RS256) são conferidos localmente pela JWKS pública; uma sessão encerrada continua
+valendo até o `exp` do token (1 h por padrão). O padrão `server` não muda nada.
 
 ## Inteligência artificial
 

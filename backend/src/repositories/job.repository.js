@@ -84,6 +84,24 @@ export async function getOwnedJob(userId, jobId) {
   return data;
 }
 
+/** The job a generation (3.3 reuse) created on one of the account's lessons, or null. */
+export async function findOwnedJobByGeneration(userId, materialId, generationId) {
+  const db = getAdminSupabase();
+  const { data, error } = await db
+    .from('processing_jobs')
+    .select('*,materials!inner(user_id)')
+    .eq('material_id', materialId)
+    .eq('materials.user_id', userId)
+    .eq('params->>generationId', generationId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  delete data.materials;
+  return data;
+}
+
 export async function listOwnedEvents(userId, jobId) {
   await getOwnedJob(userId, jobId);
   const db = getAdminSupabase();

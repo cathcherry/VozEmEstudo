@@ -30,6 +30,8 @@ export const env = Object.freeze({
   supabaseUrl: process.env.SUPABASE_URL || '',
   supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || '',
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || '',
+  // How user tokens are checked: 'server' (getUser, default) or 'jwks' (signature via public JWKS).
+  supabaseAuthVerify: process.env.SUPABASE_AUTH_VERIFY === 'jwks' ? 'jwks' : 'server',
   audioBucket: process.env.SUPABASE_AUDIO_BUCKET || 'audios',
   // Per-account limits on costly requests (0 turns a limit off). See docs/HOSPEDAGEM.md.
   // Content-Security-Policy for the served pages: 'off' (default), 'report-only' or 'enforce'.
