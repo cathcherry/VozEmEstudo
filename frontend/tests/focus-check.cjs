@@ -145,6 +145,27 @@ async function main() {
     await shot(page, 'painel-celular', false);
     record('Celular: o painel vira uma folha inferior, sem rolagem horizontal');
     await context.close();
+
+    // ---------- Durations follow the account to another device ----------------------------
+    {
+      const one = await openApp(browser, base, allFlags, data, { width: 1280, height: 900 });
+      await one.page.goto(base + '/focar.html');
+      await one.page.locator('.week-settings').click();
+      await one.page.locator('.focus-settings-dialog [type=number]').first().fill('50');
+      await one.page.locator('.focus-settings-dialog [type=submit]').click();
+      await one.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
+      const saved = await one.page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences')).focusSettings);
+      assert.equal(saved.focus, 50, 'saved with the synced preferences');
+      await one.context.close();
+      // A fresh browser that only has the account's preferences (as after a cloud pull).
+      const two = await openApp(browser, base, allFlags, data, { width: 1280, height: 900 });
+      await two.page.addInitScript((prefs) => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs)), { focusSettings: saved });
+      await two.page.goto(base + '/focar.html');
+      await two.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
+      assert.equal(await two.page.locator('.focus-time').textContent(), '50:00');
+      await two.context.close();
+      record('Durações do Focar salvas nas preferências da conta e aplicadas em outro navegador');
+    }
   } finally {
     await browser.close();
     server.close();

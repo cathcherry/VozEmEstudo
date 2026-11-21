@@ -113,7 +113,7 @@ export function setUiPreference(key, value) {
 }
 export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
-  if (!(key in appearance.defaults) && key !== 'pageWallpapers' && key !== 'setTemplates') return;
+  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings'].includes(key)) return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
   if (key === 'language') reloadIfLanguageChanged();

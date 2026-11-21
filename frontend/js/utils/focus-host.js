@@ -3,6 +3,7 @@
 // chime. Every view (Focar page, Planejar, side panel, capsule) uses `getFocusSession()`.
 import { createFocusSession } from './focus-session.js';
 import { startStudySession, tickStudySession } from '../api/study.api.js';
+import { getUiPreferences, setUiPreference } from './preferences.js';
 
 let session = null;
 let resolveReady;
@@ -48,6 +49,24 @@ export function initFocusHost(userId) {
     uuid: () => crypto.randomUUID(),
     isVisible: () => document.visibilityState === 'visible',
   });
+  const update = session.updateSettings;
+  // Durations saved in the account (synced preferences) win over this browser's copy.
+  const saved = getUiPreferences().focusSettings;
+  const current = session.state().settings;
+  if (saved && JSON.stringify(saved) !== JSON.stringify(current)) update(saved);
+  // Preferences pulled from the account later (sign-in on a new device) also apply.
+  window.addEventListener('voz-preferences-change', () => {
+    queueMicrotask(() => {
+      const remote = getUiPreferences().focusSettings;
+      if (remote && JSON.stringify(remote) !== JSON.stringify(session.state().settings)) update(remote);
+    });
+  });
+  // …and a change here is saved to the account.
+  session.updateSettings = (partial) => {
+    const state = update(partial);
+    setUiPreference('focusSettings', state.settings);
+    return state;
+  };
   let lastNotice = session.state().notice?.at || 0;
   session.subscribe((state) => {
     // The leader announces a finished block once, for every view of this page.
