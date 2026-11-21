@@ -125,4 +125,4 @@ Nenhuma migration foi criada ou aplicada.
 | Aula muito longa: busca na transcrição sem travar (pausa, cache, fatias) + jornada de 2.200 trechos | `8e22974` |
 | Questões: "Reportar problema" (marca própria, sincronizada, desfazer) + Aparência na página de responder | `c5c9967` |
 | Revisar › Questões: lista "Questões marcadas" | `1490c10` |
-| Som ambiente "Tocar junto com o foco" | (este commit) |
+| Som ambiente "Tocar junto com o foco" | `61d94df` |
