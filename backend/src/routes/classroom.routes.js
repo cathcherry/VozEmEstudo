@@ -119,6 +119,36 @@ r.delete(
   '/:classId/flashcard-sets/:sharedId',
   action((q) => service.revokeShared(q.user, p(q).classId, p(q).sharedId)),
 );
+// Contributions (flashcard sets and integrated materials): students' wait for review; staff see
+// the class queue, students only their own.
+r.get(
+  '/:classId/contributions',
+  action((q) => service.contributions(q.user, p(q).classId)),
+);
+r.post(
+  '/:classId/contributions',
+  action((q) => service.contribute(q.user, p(q).classId, q.body), 201),
+);
+r.get(
+  '/:classId/contributions/:contributionId',
+  action((q) => service.contribution(q.user, p(q).classId, p(q).contributionId)),
+);
+r.post(
+  '/:classId/contributions/:contributionId/review',
+  action((q) => service.reviewContribution(q.user, p(q).classId, p(q).contributionId, q.body)),
+);
+r.delete(
+  '/:classId/contributions/:contributionId',
+  action((q) => service.endContribution(q.user, p(q).classId, p(q).contributionId)),
+);
+r.get(
+  '/:classId/integrated-materials',
+  action((q) => service.integratedMaterials(q.user, p(q).classId)),
+);
+r.get(
+  '/:classId/integrated-materials/:contributionId',
+  action((q) => service.integratedMaterial(q.user, p(q).classId, p(q).contributionId)),
+);
 r.get(
   '/:classId/resources',
   action((q) => service.resources(q.user, p(q).classId)),

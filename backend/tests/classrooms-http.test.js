@@ -227,6 +227,18 @@ test('classrooms over HTTP: auth, validation, roles, scoped errors and private h
       assert.deepEqual((await request(base + '/flashcard-sets', 'GET', null, 'a')).body, []);
     });
 
+    await t.test(
+      'without the contributions migration: scoped 503, direct sharing still works',
+      async () => {
+        for (const path of ['/contributions', '/integrated-materials']) {
+          const res = await request(base + path, 'GET', null, 'b');
+          assert.equal(res.status, 503, path);
+          assert.equal(res.body.error.code, 'CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED');
+        }
+        assert.equal((await request(base, 'GET', null, 'b')).status, 200, 'the class still works');
+      },
+    );
+
     await t.test('resources and leaving', async () => {
       const resource = {
         id: randomUUID(),

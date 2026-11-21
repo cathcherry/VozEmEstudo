@@ -30,8 +30,10 @@ const checks = createReadinessChecks(getAdminSupabase(), featureFlags, env.audio
 console.log('Verificando Supabase e recursos ativos (sem alterar nenhum dado)...');
 const results = await runReadinessChecks(checks);
 for (const result of results) {
-  console.log(`[${result.ok ? 'OK' : 'ERRO'}] ${result.label}${result.ok ? '' : ': ' + result.reason}`);
-  if (!result.ok) errors.push(result.label);
+  const tag = result.ok ? 'OK' : result.optional ? 'AVISO' : 'ERRO';
+  console.log(`[${tag}] ${result.label}${result.ok ? '' : ': ' + result.reason}`);
+  // An optional sub-feature without its migration only answers a scoped 503; it never blocks startup.
+  if (!result.ok && !result.optional) errors.push(result.label);
 }
 console.log(`IA: ASR ${aiConfig.asr.provider}/${aiConfig.asr.model}; texto ${[...new Set(Object.values(aiConfig.llm).map((t) => t.provider))].join(', ')} (conectividade/quotas não testadas).`);
 if (errors.length) {

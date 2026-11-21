@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createAcademicDatabase } from '../../backend/tests/fixtures/academic-db.fixture.js';
 import { identities, resourceIds } from '../../backend/tests/fixtures/ownership.fixture.js';
-import { featureSchema } from '../../backend/src/diagnostics/readiness.js';
+import { featureSchema, optionalSchema } from '../../backend/src/diagnostics/readiness.js';
 
 test('all candidate migrations coexist, preserve legacy rows and support E10→E12 across owners', async () => {
   const { db } = await createAcademicDatabase();
@@ -16,7 +16,7 @@ test('all candidate migrations coexist, preserve legacy rows and support E10→E
     })));
     const before = await snapshot();
     await db.exec(await readFile(new URL('../../database/checks/first-test-inventory.sql', import.meta.url), 'utf8'));
-    const migrations = [...new Set(Object.values(featureSchema).map((entry) => entry.migration))].sort();
+    const migrations = [...new Set([...Object.values(featureSchema), ...Object.values(optionalSchema)].map((entry) => entry.migration))].sort();
     for (const file of migrations) {
       await db.exec(await readFile(new URL(`../../database/migrations/${file}`, import.meta.url), 'utf8'));
     }
@@ -34,7 +34,7 @@ test('all candidate migrations coexist, preserve legacy rows and support E10→E
       'legacy content and media references must survive every migration',
     );
     // The manifest used by startup must match the actual combined SQL schema.
-    for (const entry of Object.values(featureSchema)) {
+    for (const entry of [...Object.values(featureSchema), ...Object.values(optionalSchema)]) {
       for (const [table, columns] of Object.entries(entry.tables)) await db.query(`select ${columns} from public.${table} limit 0`);
     }
     const sessionId = '00000000-0000-4000-8000-000000000001';
