@@ -10,12 +10,12 @@ revisão de acessibilidade — sem tocar em produção.
 
 ## Base
 
-| Item             | Valor                                                                    |
-| ---------------- | ------------------------------------------------------------------------ |
-| Branch de origem | `feat/ux-navigation` @ `6a54c4e` (CI verde)                              |
-| `main`           | `47b64bf`                                                                |
-| Branch de work   | `feat/personalization-2-0`                                               |
-| Produção         | Nenhuma migration, SQL ou deploy feito nesta sessão                      |
+| Item             | Valor                                                                                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Branch de origem | `feat/ux-navigation` @ `6a54c4e` (CI verde)                                                                                                          |
+| `main`           | `47b64bf`                                                                                                                                            |
+| Branch de work   | `feat/personalization-2-0`                                                                                                                           |
+| Produção         | Nenhuma migration, SQL ou deploy feito nesta sessão                                                                                                  |
 | Banco            | Novas chaves de `profile_state` (`dashboard-layout`) seguem o formato já exigido pela migration `profile_state_hardening`; nenhuma mudança de schema |
 
 ## Como rodar os testes aqui
