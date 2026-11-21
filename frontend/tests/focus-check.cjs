@@ -123,7 +123,36 @@ async function main() {
     assert.equal(data.sessions, 2, 'resuming opens a new server session');
     await panel.locator('.utility-stop').click();
     await panel.locator('[data-focus-primary]', { hasText: 'Iniciar foco' }).waitFor();
+    // Started on the lesson page: the block is linked to that lesson.
+    await panel.locator('[data-focus-primary]').click();
+    await panel.locator('.utility-lesson', { hasText: 'Aula: Fotossíntese e respiração celular' }).waitFor();
+    await panel.locator('.utility-stop').click();
     record('Esconder a cápsula não para o cronômetro; retomar e encerrar pelo painel');
+
+    // ---------- Ambient sound: a second tool of the same panel, with ducking ----------------
+    await page.goto(base + '/material.html?id=l-foto');
+    await page.locator('[data-utility-trigger]').waitFor();
+    if (await page.locator('#utility-panel').isHidden()) await page.locator('[data-utility-trigger]').click();
+    await page.locator('[data-utility-tool="sound"]').click();
+    await page.locator('#utility-panel-title', { hasText: 'Som ambiente' }).waitFor();
+    await page.locator('.utility-sound-option', { hasText: 'Chuva suave' }).click();
+    await page.locator('.utility-sound-toggle').click();
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
+    await settle(page);
+    await axeCheck(page, '#utility-panel', 'Painel › Som ambiente');
+    // The lesson recording plays: the sound goes down; it pauses: the sound comes back.
+    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('play')));
+    await page.locator('#utility-panel[data-sound="ducked"]').waitFor();
+    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('pause')));
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
+    const saved = await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-ambient-v1:'))?.[1]);
+    assert.equal(JSON.parse(saved).kind, 'rain');
+    await page.reload();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'O som ambiente parou ao trocar de página.' }).waitFor();
+    await page.getByRole('button', { name: 'Retomar som' }).click();
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
+    await page.locator('[data-utility-tool="focus"]').click().catch(() => {});
+    record('Som ambiente (gerado no navegador): outra ferramenta do mesmo painel; abaixa durante a gravação da aula; oferece "Retomar som" após trocar de página');
 
     // ---------- Início: one click starts focusing ------------------------------------------
     await page.goto(base + '/painel.html');
@@ -145,6 +174,59 @@ async function main() {
     await shot(page, 'painel-celular', false);
     record('Celular: o painel vira uma folha inferior, sem rolagem horizontal');
     await context.close();
+
+    // ---------- Durations follow the account to another device ----------------------------
+    {
+      const one = await openApp(browser, base, allFlags, data, { width: 1280, height: 900 });
+      await one.page.goto(base + '/focar.html');
+      await one.page.locator('.week-settings').click();
+      await one.page.locator('.focus-settings-dialog [type=number]').first().fill('50');
+      await one.page.locator('.focus-settings-dialog [type=submit]').click();
+      await one.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
+      const durations = await one.page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences')).focusSettings);
+      assert.equal(durations.focus, 50, 'saved with the synced preferences');
+      await one.context.close();
+      // A fresh browser that only has the account's preferences (as after a cloud pull).
+      const two = await openApp(browser, base, allFlags, data, { width: 1280, height: 900 });
+      await two.page.addInitScript((prefs) => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs)), { focusSettings: durations });
+      await two.page.goto(base + '/focar.html');
+      await two.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
+      assert.equal(await two.page.locator('.focus-time').textContent(), '50:00');
+      await two.context.close();
+      record('Durações do Focar salvas nas preferências da conta e aplicadas em outro navegador');
+    }
+
+    // ---------- Block history follows the account -------------------------------------------
+    {
+      const cloud = state();
+      const endedAt = Date.now() - 3_600_000;
+      cloud.profileState = [
+        {
+          user_id: 'user-dashboard',
+          key: 'focus-history',
+          updated_at: new Date(endedAt).toISOString(),
+          data: [{ mode: 'pomodoro', seconds: 1500, endedAt, materialId: 'l-foto', materialTitle: 'Bloco do notebook' }],
+        },
+      ];
+      const fresh = await openApp(browser, base, allFlags, cloud, { width: 1280, height: 900 });
+      await fresh.page.goto(base + '/focar.html');
+      await fresh.page.locator('[data-focus-history-list] li', { hasText: 'Bloco do notebook' }).waitFor();
+      // A block finished here is added to the account copy, next to the other device's.
+      // (written straight into this browser's session, as another tab finishing a short break)
+      await fresh.page.evaluate(() => {
+        const key = 'voz-focus-v1:user-dashboard';
+        const stored = JSON.parse(localStorage.getItem(key));
+        stored.history.unshift({ mode: 'short', seconds: 300, endedAt: Date.now(), materialId: null });
+        localStorage.setItem(key, JSON.stringify(stored));
+      });
+      await fresh.page.waitForFunction(() => document.querySelectorAll('[data-focus-history-list] li').length === 2);
+      await fresh.page.waitForTimeout(2500);
+      const row = cloud.profileState.find((item) => item.key === 'focus-history');
+      assert.equal(row.data.length, 2, 'both blocks in the account copy');
+      assert.equal(row.data[1].materialTitle, 'Bloco do notebook');
+      await fresh.context.close();
+      record('Histórico de blocos na conta: o de outro aparelho aparece aqui, e o novo soma aos dois sem apagar nada');
+    }
   } finally {
     await browser.close();
     server.close();

@@ -972,3 +972,40 @@ html[data-surfaces='glass']:not([data-high-contrast='true']):not([data-low-stimu
 .studio-pages > summary { min-height: 44px; padding: 10px 0; font-weight: 600; cursor: pointer; }
 .studio-page-list { display: grid; gap: 8px; }
 .dash-card-head .focus-shortcut { margin-inline-start: auto; margin-inline-end: 12px; font-variant-numeric: tabular-nums; }
+.utility-lesson { margin: -4px 0 0; max-width: 26ch; overflow: hidden; color: var(--muted); font-size: .82rem; text-align: center; text-overflow: ellipsis; white-space: nowrap; } .utility-lesson:empty { display: none; }
+/* Own image as wallpaper, under a veil of the theme's background for readability. */
+html[data-wallpaper='image'] body {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--background) 55%, transparent), color-mix(in srgb, var(--background) 55%, transparent)),
+    var(--user-wallpaper, none);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+[data-wallpaper-preview='image'] { background-image: linear-gradient(135deg, var(--accent-soft), var(--studio-sprinkle, var(--surface-alt))); position: relative; }
+[data-wallpaper-preview='image']::after { content: ''; position: absolute; inset: 30% 35%; border: 2px solid var(--accent-strong); border-radius: 4px; background: linear-gradient(135deg, transparent 55%, var(--accent-strong) 56% 64%, transparent 65%); }
+.wallpaper-image { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; }
+.wallpaper-image-pick { position: relative; cursor: pointer; }
+.wallpaper-image-pick:focus-within { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+.wallpaper-image .field-note { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .84rem; }
+.wallpaper-image-status:empty { display: none; }
+/* Title typography (Estúdio visual). The reading-font accessibility rule stays stronger. */
+html[data-heading-font='modern'] body.app-page :is(h1, h2, h3, h4) { font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 750; letter-spacing: -.025em; }
+html[data-heading-font='rounded'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', system-ui, sans-serif; letter-spacing: -.01em; }
+html[data-heading-font='friendly'] body.app-page :is(h1, h2, h3, h4) { font-family: Lexend, system-ui, sans-serif; font-weight: 650; letter-spacing: -.02em; }
+html[data-heading-font='typewriter'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; letter-spacing: 0; }
+/* Utility panel tools: Foco | Som, and the ambient sound tool. */
+.utility-tools { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--border-light); border-radius: 999px; background: var(--surface-alt); }
+.utility-tool { min-height: 30px; padding: 2px 12px; border: 0; border-radius: 999px; color: var(--muted); background: transparent; font: inherit; font-size: .82rem; font-weight: 650; cursor: pointer; }
+.utility-tool[aria-pressed='true'] { color: var(--text); background: var(--surface); box-shadow: 0 1px 3px rgb(0 0 0 / 10%); }
+.utility-panel-body[hidden] { display: none; }
+.utility-sound { justify-items: stretch; }
+.utility-sounds { display: grid; gap: 8px; }
+.utility-sound-option { display: grid; gap: 2px; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 14px; color: var(--text); background: var(--surface); font: inherit; text-align: start; cursor: pointer; }
+.utility-sound-option span { color: var(--muted); font-size: .8rem; }
+.utility-sound-option[aria-checked='true'] { border-color: var(--accent-strong); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-strong) 25%, transparent); }
+.utility-sound-toggle { justify-self: center; min-width: 10rem; }
+.utility-volume, .utility-duck { display: flex; align-items: center; gap: 10px; font-size: .88rem; }
+.utility-volume input { flex: 1; accent-color: var(--accent-strong); }
+.utility-duck input { width: 18px; height: 18px; accent-color: var(--accent-strong); }
+.utility-trigger.has-sound .utility-trigger-dot { opacity: 1; background: color-mix(in srgb, var(--accent-strong) 55%, #4aa38a); }

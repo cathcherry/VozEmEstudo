@@ -38,6 +38,7 @@ export default {
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "我们懂得那种想再听一遍讲得太快的讲解、串联课堂想法、检验是否掌握内容的感受。所以我们打造了一个汇集录音、转写、摘要和题目的地方，陪伴你课后的学习。",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "录音、分段转写、摘要和题目都关联在资料库中。这样你可以查看讲解并练习，同时不会脱离原始课程。",
   "A imagem deve ter no máximo 8 MB.": "图片不能超过 8 MB。",
+  "A imagem passa de 8 MB. Escolha um arquivo menor.": "图片超过 8 MB。请选择较小的文件。",
   "A organização por unidades está indisponível.": "按单元整理功能不可用。",
   "A paginação do andamento não pôde ser concluída.": "无法完成进度的分页加载。",
   "A pasta está vazia.": "文件夹为空。",
@@ -74,6 +75,7 @@ export default {
   "Abrir aula": "打开课程",
   "Abrir Biblioteca": "打开资料库",
   "Abrir configurações de leitura e foco": "打开阅读与专注设置",
+  "Abrir conjunto": "打开卡组",
   "Abrir cópia compartilhada": "打开分享的副本",
   "Abrir disciplina": "打开科目",
   "Abrir Focar": "打开专注",
@@ -110,6 +112,7 @@ export default {
   "Ainda não ativado neste servidor": "此服务器尚未启用",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "此转写尚无分析。你可以在上方请求提示。",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "暂无卡组。请在课程的“摘要”标签页中创建。",
+  "Ainda não há flashcards desta aula": "这节课还没有抽认卡",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "还没有题目列表。使用“生成列表”创建第一个。",
   "Ainda não há questões desta aula.": "此课程还没有题目。",
   "Ainda não há resumo desta aula.": "本课程还没有摘要。",
@@ -131,6 +134,7 @@ export default {
   "Alterações salvas.": "更改已保存。",
   "Alternativas da questão": "题目选项",
   "Amarelo": "黄色",
+  "Amigável (Lexend)": "亲和（Lexend）",
   "Amplo": "宽松",
   "Analisar novamente": "重新分析",
   "Análise e comparação": "分析与比较",
@@ -196,6 +200,7 @@ export default {
   "Arraste para redimensionar · clique duplo para restaurar": "拖动以调整大小 · 双击恢复",
   "Arraste uma gravação": "拖入录音",
   "Arredondada": "圆体",
+  "Arredondado": "圆润",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "此账户在本浏览器中的副本将被删除，你也会退出登录。已保存到账户中的内容仍会保留。",
   "As disciplinas que você mais revisita.": "你最常回顾的科目。",
   "As etapas desta aula e o próximo passo sugerido.": "本课的步骤和建议的下一步。",
@@ -232,6 +237,7 @@ export default {
   "Aulas em estudo": "学习中的课程",
   "Aulas estudadas": "已学课程",
   "Aulas recentes": "最近的课程",
+  "Aulas selecionadas": "已选课程",
   "Aulas sem unidade": "未分单元的课程",
   "Aumenta ou diminui textos e controles da página.": "放大或缩小页面文字和控件。",
   "Aumentar texto": "放大文字",
@@ -253,6 +259,7 @@ export default {
   "Azul marinho e ciano.": "海军蓝与青色。",
   "Baixa um arquivo .ics do mês. Não envia convites nem altera outros calendários.": "下载本月的 .ics 文件。不会发送邀请，也不会更改其他日历。",
   "Baixar calendário ICS": "下载 ICS 日历",
+  "Baixar enquanto a gravação da aula toca": "播放课程录音时调低",
   "Baixar trecho": "下载片段",
   "Barra inferior": "底部栏",
   "Barra inferior: os atalhos ficam fixos na parte de baixo e a barra lateral some. No modo foco, a barra inferior é sempre usada e aparece ao levar o cursor (ou o Tab) até a alça na base da tela.": "底部栏：快捷入口固定在底部，侧边栏隐藏。专注模式下始终使用底部栏，将光标（或按 Tab）移到屏幕底部的拉手时显示。",
@@ -267,6 +274,7 @@ export default {
   "Bloco pausado. Retome quando quiser.": "时段已暂停。随时继续。",
   "Bloco salvo.": "区块已保存。",
   "Blocos": "时段",
+  "blocos de foco": "专注时段",
   "blocos do perfil": "个人资料区块",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube 和 Spotify 区块会加载这些服务的内容。你可以在个人资料中编辑或移除区块。你的个人资料仍为私密。",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "显示你的学习数据并自动更新的区块。",
@@ -329,8 +337,10 @@ export default {
   "Causas e consequências": "原因与结果",
   "Cem descobertas": "百次发现",
   "Checklist": "清单",
+  "Chiado leve que sobe e desce devagar.": "轻柔的沙沙声，缓慢起伏。",
   "Chinês (cantonês)": "中文（粤语）",
   "Chinês (mandarim)": "中文（普通话）",
+  "Chuva suave": "细雨",
   "Ciano": "青色",
   "Citação": "引用",
   "Claro": "浅色",
@@ -379,6 +389,7 @@ export default {
   "Concluir": "完成",
   "Concluir edição": "完成编辑",
   "Concluir envio": "完成上传",
+  "Concluir seleção": "完成选择",
   "Concluir tentativa": "完成作答",
   "conectar as ideias": "串联想法",
   "Conferência sugerida": "建议核对",
@@ -565,6 +576,7 @@ export default {
   "Editar subobjetivo": "编辑子目标",
   "Editar tarefa": "编辑任务",
   "Editar transcrição": "编辑转写",
+  "Editorial (serifa)": "编辑风（衬线）",
   "Ela pode ter sido excluída ou pertencer a outra conta.": "它可能已被删除，或属于其他账户。",
   "Em andamento": "进行中",
   "Em Aparência, você pode ajustar o tamanho e o espaçamento do texto, escolher uma tipografia de leitura, reforçar o contraste e personalizar as cores. Há também movimento reduzido, baixa estimulação e modo foco para diminuir distrações.": "在外观中，你可以调整文字大小和间距、选择阅读字体、增强对比度并自定义颜色。还有减少动效、低刺激和专注模式，帮助减少干扰。",
@@ -615,7 +627,9 @@ export default {
   "Escolha um template.": "请选择模板。",
   "Escolha uma imagem PNG, JPG, WebP ou GIF.": "请选择 PNG、JPG、WebP 或 GIF 图片。",
   "Escolha uma imagem PNG.": "请选择 PNG 图片。",
+  "Escolha uma imagem.": "请选择一张图片。",
   "Escolha uma nova senha para sua conta.": "为你的账户设置新密码。",
+  "Escolher imagem ou GIF": "选择图片或 GIF",
   "Escolher uma aula": "选择课程",
   "Escolher uma aula na Biblioteca": "从资料库选择课程",
   "Esconder cápsula (o cronômetro continua)": "隐藏胶囊（计时器继续）",
@@ -650,6 +664,7 @@ export default {
   "Este destaque pertence a outra revisão ou o trecho foi editado. O texto original está preservado acima.": "此标记属于其他版本，或该片段已被编辑。原文保留在上方。",
   "Este envio já existe com escolhas diferentes. Revise o formulário.": "该上传已存在，但选项不同。请检查表单。",
   "Este navegador não oferece armazenamento local para imagens.": "此浏览器不支持本地存储图片。",
+  "Este navegador não toca sons gerados.": "此浏览器无法播放生成的声音。",
   "Este provedor ainda não está disponível. Entre com e-mail e senha.": "该登录方式暂不可用，请使用邮箱和密码登录。",
   "Este recurso está desligado neste servidor.": "此功能在此服务器上已关闭。",
   "Este trecho não pôde ser localizado na revisão analisada.": "在所分析的版本中找不到此片段。",
@@ -657,6 +672,7 @@ export default {
   "Estilo": "样式",
   "Estreito": "窄",
   "Estrelas": "星星",
+  "Estudada": "已学习",
   "Estúdio visual": "视觉工作室",
   "Estudo": "Estudo",
   "Estudo livre": "自由学习",
@@ -700,6 +716,7 @@ export default {
   "Feedback ao responder": "作答反馈",
   "feito com": "源于",
   "Feito por nós.": "由我们打造。",
+  "Ferramenta do painel": "面板工具",
   "Ferramentas": "工具",
   "Ferramentas indisponíveis.": "工具不可用。",
   "Filtrar conquistas": "筛选成就",
@@ -773,6 +790,7 @@ export default {
   "Gravação da aula": "课程录音",
   "Gravações e transcrição": "录音与转写",
   "Gravações mais longas: depende da densidade e da cobertura dos conceitos.": "较长的录音：取决于内容密度和概念覆盖面。",
+  "Grave e constante, ajuda a abafar conversas.": "低沉而稳定，有助于掩盖谈话声。",
   "Groq": "Groq",
   "Guardando o vídeo original…": "正在保存原始视频…",
   "Guardar após transcrever": "转写后保留",
@@ -807,6 +825,9 @@ export default {
   "Igual à favorita": "与常用相同",
   "Igual ao geral": "与总体相同",
   "Imagem de capa": "封面图片",
+  "Imagem de fundo aplicada.": "背景图片已应用。",
+  "Imagem de fundo removida.": "背景图片已移除。",
+  "Imagem própria": "自定义图片",
   "Imagem salva neste dispositivo · sincronização pendente": "图片已保存在此设备 · 待同步",
   "Imagens de vídeos não são enviadas.": "视频画面不会被发送。",
   "Importar andamento local sem registro na conta": "导入未记录到账户的本地进度",
@@ -907,6 +928,7 @@ export default {
   "Mais revisitados": "最常回顾",
   "Mantenha esta aba visível e em foco para iniciar.": "请保持此标签页可见并处于焦点以开始。",
   "Manter versão deste navegador em conflitos": "冲突时保留此浏览器的版本",
+  "Máquina de escrever": "打字机",
   "Marcar aula como estudada": "标记课程为已学习",
   "Marcos de estudo": "学习里程碑",
   "Matcha": "抹茶",
@@ -950,6 +972,7 @@ export default {
   "Minutos por dia": "每日分钟数",
   "Minutos registrados nesta semana e a sua meta.": "本周记录的分钟数和你的目标。",
   "Moderna": "现代",
+  "Moderno": "现代",
   "Modo": "模式",
   "Modo de edição: reorganize, oculte ou adicione blocos. As mudanças são salvas na hora.": "编辑模式：可重新排列、隐藏或添加区块。更改即时保存。",
   "Modo de edição.": "编辑模式。",
@@ -975,6 +998,7 @@ export default {
   "Mover para cá": "移到这里",
   "Mover para cima": "上移",
   "Mover para pasta": "移到文件夹",
+  "Mover para…": "移动到…",
   "Movimento reduzido": "减少动画",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3、WAV、M4A、MP4 等格式",
   "MP4 original": "原始 MP4",
@@ -1010,6 +1034,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "无法加载诊断。",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "无法加载记录。请重新选择卡片以重试。",
   "Não foi possível carregar os conjuntos agora.": "暂时无法加载卡组。",
+  "Não foi possível carregar os flashcards.": "无法加载抽认卡。",
   "Não foi possível carregar os links.": "无法加载链接。",
   "Não foi possível carregar os materiais.": "无法加载资料。",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "无法加载资源。按课程查看仍可使用。",
@@ -1126,6 +1151,7 @@ export default {
   "Norueguês (nynorsk)": "挪威语（新挪威语）",
   "nos títulos das aulas": "课程标题中",
   "Notas": "笔记",
+  "Notificação do sistema quando a página estiver em segundo plano": "页面在后台时显示系统通知",
   "Noturno": "夜间",
   "Nova aula": "新课程",
   "Nova disciplina": "新建科目",
@@ -1162,6 +1188,7 @@ export default {
   "O importante é continuar aprendendo.": "重要的是持续学习。",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "恢复链接无法使用。请重新申请邮件。",
   "O link expirou ou não pôde ser validado neste navegador. Solicite outro e abra-o no mesmo navegador em que fez o pedido.": "链接已过期或无法在此浏览器中验证。请重新申请，并在发出申请的同一浏览器中打开。",
+  "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "浏览器已阻止本网站的通知。请在浏览器设置中允许。",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino 已搜索标题、题目和转写。请检查拼写或换个词试试。",
   "O planejamento ainda não está ativo": "计划功能尚未启用",
   "O planejamento está temporariamente indisponível.": "计划功能暂时不可用。",
@@ -1170,6 +1197,7 @@ export default {
   "O que é enviado": "发送哪些内容",
   "O que fica reunido em cada material?": "每份资料包含什么？",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "在此服务器启用后，学习时间记录会显示在这里。",
+  "O som ambiente parou ao trocar de página.": "切换页面后环境音已停止。",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "转写文本会发送到外部 AI 服务，用于初步提示，并在你确认后生成摘要和题目。",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "服务商对数据的处理遵循其各自的政策。在应用内删除并不保证这些服务的系统中也会删除。",
   "O trecho pode ter até 54 minutos.": "片段最长可达 54 分钟。",
@@ -1191,6 +1219,7 @@ export default {
   "Ocultar senha": "隐藏密码",
   "Oculto": "已隐藏",
   "Olá": "你好",
+  "Ondas": "海浪",
   "Onde encontrar cada coisa": "各功能位置",
   "Onde seus dados ficam": "数据保存位置",
   "Onde seus dados ficam salvos": "数据保存位置",
@@ -1264,6 +1293,7 @@ export default {
   "Pausa longa concluída. Bom retorno!": "长休息结束。欢迎回来！",
   "Pausar": "暂停",
   "Pausar leitura": "暂停朗读",
+  "Pausar som": "暂停声音",
   "PDF (pela impressão do navegador)": "PDF（通过浏览器打印）",
   "Peça um novo link a quem compartilhou com você.": "请向分享者索取新链接。",
   "Pendentes": "未完成",
@@ -1293,6 +1323,7 @@ export default {
   "Planejar": "计划",
   "Planner": "手账",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "媒体播放器。空格键播放或暂停；方向键前进或后退十秒。",
+  "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG、JPEG、WebP 或 GIF，最大 8 MB。保存在你的账户中；开启减少动态效果时，GIF 显示为静止画面。",
   "PNG, JPG, WebP ou GIF · até 8 MB": "PNG、JPG、WebP 或 GIF · 最大 8 MB",
   "Pode sair: a aula aparece na Biblioteca quando terminar.": "可以先离开：完成后课程会出现在资料库中。",
   "Polaroid": "拍立得",
@@ -1417,6 +1448,7 @@ export default {
   "Remover capa": "移除封面",
   "Remover este horário do calendário?": "从日历中删除此学习时段？",
   "Remover horário": "删除学习时段",
+  "Remover imagem": "移除图片",
   "Remover o vídeo guardado desta aula?": "删除此课程已保存的视频？",
   "Remover seleção": "清除选择",
   "Remover tag": "移除标签",
@@ -1451,6 +1483,7 @@ export default {
   "Resumos": "摘要",
   "Retomar": "继续",
   "Retomar foco": "继续专注",
+  "Retomar som": "继续播放",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "回顾主要观点，用题目检验你的理解。",
   "Revelar resposta": "显示答案",
   "Rever aula": "复习课程",
@@ -1466,6 +1499,7 @@ export default {
   "Revisão rápida": "快速复习",
   "Revisar": "复习",
   "Revisar › Anotações": "复习 › 笔记",
+  "Revisar agora": "立即复习",
   "Revisar envio": "检查上传",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "复习我的笔记\\n练习一道题\\n休息一下",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "核对转写。编辑后，基于旧版本的摘要和题目可能需要更新。",
@@ -1483,11 +1517,14 @@ export default {
   "Ritmo de revisão": "复习节奏",
   "Rodapé": "页脚",
   "Rosa": "粉色",
+  "Ruído grave que vem e vai em ciclos longos.": "低沉的声音以长周期来回起伏。",
+  "Ruído marrom": "褐噪音",
   "sáb": "六",
   "Sáb": "周六",
   "Sair da lista": "退出列表",
   "Sair da tela cheia": "退出全屏",
   "Sair desta aba pausa a contagem; nada se perde.": "离开此标签页会暂停计时；不会丢失任何内容。",
+  "Salvando imagem…": "正在保存图片…",
   "Salvando perfil…": "正在保存个人资料…",
   "Salvar": "保存",
   "Salvar ajustes": "保存设置",
@@ -1520,6 +1557,7 @@ export default {
   "Seg": "周一",
   "Seguir áudio": "跟随音频",
   "Segurança": "安全",
+  "Selecionar": "选择",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "选择“上传并转写”。只有所选片段的音频会被发送转写；课程页面会显示进度。",
   "Selecione de 1 a 1.000 caracteres para destacar.": "请选择 1 到 1,000 个字符进行标记。",
   "Selecione pelo menos um conteúdo disponível.": "请至少选择一项可用内容。",
@@ -1601,10 +1639,13 @@ export default {
   "Sobre você": "关于你",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "已收到请求。如果可以注册，我们会发送确认邮件。如果你已有账户，请尝试登录或使用“忘记密码”。",
   "Sólidas": "实色",
+  "Som": "声音",
+  "Som ambiente": "环境音",
   "Som ao terminar um bloco": "时段结束时播放提示音",
   "Somente ao finalizar a lista": "仅在完成列表后",
   "Somente arquivos MP4": "仅限 MP4 文件",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "我们是 Catharine 和 Gabriela，是最好的朋友、学生，也热爱科技。Voz em Estudo 源于我们系统开发技术课程的毕业设计，以及我们共同的想法：用所学帮助其他同学。",
+  "Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.": "声音在浏览器中生成。切换页面时会停止；再次播放即可继续。",
   "Sua anotação": "你的笔记",
   "Sua aula continua depois que a gravação termina.": "录音结束后，你的课程仍在继续。",
   "Sua aula rende": "你的课程带来",
@@ -1674,6 +1715,8 @@ export default {
   "Título A–Z": "标题 A–Z",
   "Título do card": "卡片标题",
   "Título salvo. O navegador não permitiu salvar as tags.": "标题已保存。浏览器不允许保存标签。",
+  "Títulos": "标题",
+  "Tocar": "播放",
   "Tocar a gravação a partir daquele trecho": "从该处播放录音",
   "Todas": "全部",
   "Todas as aulas": "全部课程",
@@ -1687,6 +1730,7 @@ export default {
   "Todos os conjuntos": "全部卡组",
   "Todos os materiais": "全部资料",
   "Tópicos": "要点",
+  "Toque nas aulas para selecionar": "点按课程进行选择",
   "Transcrevendo o áudio…": "正在转写音频…",
   "Transcrição": "转写",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "转写已确认。可以生成摘要、题目或抽认卡，也可以直接开始学习。",
@@ -1696,6 +1740,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "将音频转为转写、摘要和题目，不丢失课程上下文。",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "将课程音频和视频转为可编辑的转写、摘要和题目。选择想复习的片段，在资料库中查看整理好的资料。",
   "Transforme o conteúdo da sua aula em material para revisar.": "将你的课程内容变成复习资料。",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "把这节课的摘要变成卡片，在接下来几天复习。",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "把摘要变成卡片，在接下来几天复习。",
   "Translúcido": "半透明",
   "Trecho": "片段",
@@ -1743,6 +1788,7 @@ export default {
   "Use": "使用",
   "Use o menu": "使用菜单",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "请使用 Spotify 歌曲、专辑、歌单、单集或节目的链接。",
+  "Use uma imagem PNG, JPEG, WebP ou GIF.": "请使用 PNG、JPEG、WebP 或 GIF 图片。",
   "Validade": "有效期",
   "Validando seu link de recuperação...": "正在验证你的恢复链接...",
   "Vamos descobrir": "一起去发现",
@@ -2005,6 +2051,10 @@ export default {
    "已完成 {0} / {1} 个任务 · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} 张卡片 · 今天要复习 {1} 张"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "删除科目“{0}”？\\n\\n{1}"
   ],
@@ -2027,6 +2077,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "已加载 {0} / {1} 项。"
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} 张卡片 · 今天没有待复习"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2077,12 +2131,20 @@ export default {
    "{0} XP · {1}/{2} 个里程碑"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} 个卡组 · {1} 张卡片"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "未找到“{0}”的相关结果"
   ],
   [
    "Ver resultado e erros: {0}",
    "查看结果和错题：{0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} 个卡组 · {1} 张卡片"
   ],
   [
    "Pelo menos {0} caracteres",
@@ -2153,6 +2215,10 @@ export default {
    "编辑目标{0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "已选 {0} 节课"
+  ],
+  [
    "Resultados para “{0}”",
    "“{0}”的搜索结果"
   ],
@@ -2199,6 +2265,10 @@ export default {
   [
    "{0} focos concluídos",
    "已完成 {0} 次专注"
+  ],
+  [
+   "{0} aula selecionada",
+   "已选 {0} 节课"
   ],
   [
    "{0} · expira em {1}",
@@ -2255,6 +2325,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{1} 分钟{0}"
+  ],
+  [
+   "{0} aulas movidas.",
+   "已移动 {0} 节课。"
   ],
   [
    "{0} · questão {1}",
@@ -2353,6 +2427,10 @@ export default {
    "待同步：{0}。"
   ],
   [
+   "Selecionar {0}",
+   "选择 {0}"
+  ],
+  [
    "- Revisão {0}",
    "- 版本 {0}"
   ],
@@ -2401,6 +2479,10 @@ export default {
    "{0}已暂停"
   ],
   [
+   "{0}% ouvido",
+   "已听 {0}%"
+  ],
+  [
    "Versão {0}",
    "版本 {0}"
   ],
@@ -2419,6 +2501,10 @@ export default {
   [
    "Ouvir {0}",
    "收听 {0}"
+  ],
+  [
+   "Aula: {0}",
+   "课程：{0}"
   ],
   [
    "{0} aula",

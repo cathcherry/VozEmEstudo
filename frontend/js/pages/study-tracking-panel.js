@@ -86,7 +86,11 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   }
   const autoLabel=make('label',null,'focus-check');const autoStart=make('input');autoStart.type='checkbox';autoLabel.append(autoStart,make('span','Começar o próximo bloco sozinho'));
   const soundLabel=make('label',null,'focus-check');const sound=make('input');sound.type='checkbox';soundLabel.append(sound,make('span','Som ao terminar um bloco'));
-  blocks.append(autoLabel,soundLabel);
+  const notifyLabel=make('label',null,'focus-check');const notify=make('input');notify.type='checkbox';notifyLabel.append(notify,make('span','Notificação do sistema quando a página estiver em segundo plano'));
+  notifyLabel.hidden=!('Notification' in (document.defaultView||{}));
+  // Asking for permission happens only when the student turns the option on.
+  notify.addEventListener('change',()=>{const N=document.defaultView?.Notification;if(notify.checked&&N&&N.permission==='default')void N.requestPermission().then((result)=>{if(result!=='granted')notify.checked=false;});else if(notify.checked&&N?.permission==='denied'){notify.checked=false;say('O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.','error');}});
+  blocks.append(autoLabel,soundLabel,notifyLabel);
   settings.append(blocks,goalLabel,zoneLabel,settingsActions);
   const syncSection=make('section',null,'focus-sync');syncSection.append(make('h3','Sincronização deste navegador'));
   const syncStatus=make('p',null,'focus-sync-status');syncStatus.setAttribute('role','status');syncStatus.setAttribute('aria-live','polite');
@@ -126,7 +130,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const session=await getFocusSession();
   if(materialId)session.setMaterial(materialId);
   let lastServer='',lastStatus='';
-  const fillDurations=()=>{const current=session.state().settings;for(const name of Object.keys(durations))durations[name].value=String(current[name]);autoStart.checked=current.autoStart;sound.checked=current.sound;};
+  const fillDurations=()=>{const current=session.state().settings;for(const name of Object.keys(durations))durations[name].value=String(current[name]);autoStart.checked=current.autoStart;sound.checked=current.sound;notify.checked=Boolean(current.notify);};
   fillDurations();
   function render(state){
     for(const [value,button] of modeButtons){const on=value===state.mode;button.setAttribute('aria-checked',String(on));button.tabIndex=on?0:-1;button.disabled=state.status==='running'||state.busy;}
@@ -226,7 +230,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   }
   settings.addEventListener('submit',(event)=>{
     event.preventDefault();if(!settings.reportValidity())return;save.disabled=true;
-    session.updateSettings({focus:durations.focus.value,short:durations.short.value,long:durations.long.value,longEvery:durations.longEvery.value,autoStart:autoStart.checked,sound:sound.checked});
+    session.updateSettings({focus:durations.focus.value,short:durations.short.value,long:durations.long.value,longEvery:durations.longEvery.value,autoStart:autoStart.checked,sound:sound.checked,notify:notify.checked});
     void saveStudySettings({goalMinutes:Number(goal.value),timezone:zone.value.trim()}).then(()=>{say('Ajustes salvos.','success');if(dialog.open)dialog.close();return refresh();})
       .catch(notice).finally(()=>{save.disabled=false;});
   });

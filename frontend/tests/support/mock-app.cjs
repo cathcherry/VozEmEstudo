@@ -31,8 +31,22 @@ const lesson = (id, title, subject, daysAgo, durationMs) => ({
   created_at: new Date(Date.now() - daysAgo * 86400000).toISOString(),
   audio_files: [{ duration_ms: durationMs, extension: 'mp3' }],
 });
+// Folders of the library (subjects and units), as GET /api/catalog returns them.
+const CATALOG = {
+  subjects: [
+    { id: 'sub-bio', name: 'Biologia', color_token: null, sort_order: 0 },
+    { id: 'sub-fis', name: 'Física', color_token: null, sort_order: 1 },
+    { id: 'sub-geo', name: 'Geografia', color_token: null, sort_order: 2 },
+    { id: 'sub-his', name: 'História', color_token: null, sort_order: 3 },
+    { id: 'sub-mat', name: 'Matemática', color_token: null, sort_order: 4 },
+  ],
+  units: [
+    { id: 'unit-energia', subject_id: 'sub-bio', title: 'Metabolismo energético', description: null, sort_order: 0 },
+    { id: 'unit-celula', subject_id: 'sub-bio', title: 'Célula', description: null, sort_order: 1 },
+  ],
+};
 const materials = [
-  lesson('l-foto', 'Fotossíntese e respiração celular', 'Biologia', 1, 1820000),
+  { ...lesson('l-foto', 'Fotossíntese e respiração celular', 'Biologia', 1, 1820000), subject_id: 'sub-bio', unit_id: 'unit-energia' },
   lesson('l-rev', 'Revolução Industrial: causas e consequências', 'História', 3, 2410000),
   lesson('l-func', 'Funções do 2º grau', 'Matemática', 5, 1505000),
   lesson('l-solo', 'Tipos de solo', 'Geografia', 9, 203000),
@@ -443,6 +457,15 @@ async function setup(context, base, flags, data, options = {}) {
       data.events.push({ kind: 'event', id: body.id, version: 1, ...body.body });
       return json({ id: body.id, version: 1 });
     }
+    if (p === '/api/catalog' && method === 'GET') return json(data.catalog || CATALOG);
+    if (/^\/api\/catalog\/materials\/[^/]+$/.test(p) && method === 'PATCH') {
+      const id = p.split('/').pop();
+      const body = request.postDataJSON();
+      data.moves = [...(data.moves || []), { id, ...body }];
+      const subject = (data.catalog || CATALOG).subjects.find((item) => item.id === body.subjectId);
+      return json({ id, subject_id: body.subjectId, unit_id: body.unitId, subject: subject?.name || null });
+    }
+    if (p === '/api/catalog/resources') return json({});
     if (p === '/api/annotations' && method === 'PUT') {
       const body = request.postDataJSON();
       data.savedNotes = [...(data.savedNotes || []), body];

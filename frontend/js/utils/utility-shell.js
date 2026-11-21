@@ -7,6 +7,8 @@
 //   • hidden  — nothing on screen; the session keeps running and the topbar button shows a dot.
 // Hiding or closing a presentation never stops the session.
 import { getFocusSession } from './focus-host.js';
+import { createAmbientPlayer, SOUNDS, normalizeAmbient } from './ambient-sound.js';
+import { toast } from './toast.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const MODES = [
@@ -66,7 +68,7 @@ const iconButton = (name, label, className) => {
 };
 
 /** Tools of the shell. Notes and music will register here; each renders into the panel body. */
-const TOOLS = { focus: { label: 'Foco' } };
+const TOOLS = { focus: { label: 'Foco' }, sound: { label: 'Som ambiente' } };
 
 export async function initUtilityShell({ userId, materialId = null } = {}) {
   if (
@@ -92,7 +94,27 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   };
   // On the Focar page the full timer is already the page.
   const onFocusPage = document.body.dataset.page === 'focus';
-  if (materialId) session.setMaterial(materialId);
+  // Outside a lesson, a new block is not linked to the last lesson visited.
+  if (!materialId && !document.querySelector('[data-study-tracking-panel]'))
+    session.setMaterial(null);
+  let link = () => {};
+  if (materialId) {
+    // The lesson's title arrives when the page has loaded it.
+    const titleNode = document.querySelector('[data-material-title]');
+    link = () => {
+      const text =
+        titleNode?.getAttribute('aria-busy') === 'true' ? '' : titleNode?.textContent || '';
+      session.setMaterial(materialId, text);
+    };
+    link();
+    if (titleNode)
+      new MutationObserver(link).observe(titleNode, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+        attributes: true,
+      });
+  }
 
   // ---- topbar button ---------------------------------------------------------------------
   const nav = document.querySelector('.header-navigation');
@@ -120,7 +142,22 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   openPage.href = './focar.html';
   const minimize = iconButton('minimize', 'Minimizar em cápsula');
   const close = iconButton('close', 'Fechar painel (o cronômetro continua na cápsula)');
-  head.append(title, openPage, minimize, close);
+  // Tool switcher: the same panel hosts the focus timer and ambient sound.
+  const tools = make('div', null, 'utility-tools');
+  tools.setAttribute('role', 'group');
+  tools.setAttribute('aria-label', 'Ferramenta do painel');
+  const toolButtons = {};
+  for (const [key, label] of [
+    ['focus', 'Foco'],
+    ['sound', 'Som'],
+  ]) {
+    const button = make('button', label, 'utility-tool');
+    button.type = 'button';
+    button.dataset.utilityTool = key;
+    toolButtons[key] = button;
+    tools.append(button);
+  }
+  head.append(title, tools, openPage, minimize, close);
   const body = make('div', null, 'utility-panel-body');
   const modes = make('div', null, 'utility-modes');
   modes.setAttribute('role', 'radiogroup');
@@ -143,6 +180,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   time.setAttribute('aria-live', 'off');
   time.setAttribute('aria-label', 'Tempo do bloco');
   const caption = make('p', null, 'utility-caption');
+  const lesson = make('p', null, 'utility-lesson');
   face.append(ring, time, caption);
   const actions = make('div', null, 'utility-actions');
   const primary = make('button', 'Iniciar foco', 'primary-action utility-primary');
@@ -155,8 +193,128 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const cycles = make('p', null, 'utility-cycles');
-  body.append(modes, face, actions, cycles, status);
-  panel.append(head, body);
+  body.append(modes, face, lesson, actions, cycles, status);
+  // ---- ambient sound tool ----------------------------------------------------------------
+  const soundBody = make('div', null, 'utility-panel-body utility-sound');
+  soundBody.hidden = true;
+  const ambientKey = `voz-ambient-v1:${userId}`;
+  const readAmbient = () => {
+    try {
+      return normalizeAmbient(JSON.parse(localStorage.getItem(ambientKey) || '{}'));
+    } catch {
+      return normalizeAmbient();
+    }
+  };
+  const remembered = readAmbient();
+  const soundList = make('div', null, 'utility-sounds');
+  soundList.setAttribute('role', 'radiogroup');
+  soundList.setAttribute('aria-label', 'Som');
+  const soundButtons = new Map();
+  for (const [key, label, hint] of SOUNDS) {
+    const button = make('button', null, 'utility-sound-option');
+    button.type = 'button';
+    button.setAttribute('role', 'radio');
+    button.dataset.sound = key;
+    button.append(make('strong', label), make('span', hint));
+    soundList.append(button);
+    soundButtons.set(key, button);
+  }
+  const soundToggle = make('button', 'Tocar', 'primary-action utility-sound-toggle');
+  soundToggle.type = 'button';
+  const volumeLabel = make('label', null, 'utility-volume');
+  const volume = make('input');
+  volume.type = 'range';
+  volume.min = '0';
+  volume.max = '100';
+  volume.step = '5';
+  volumeLabel.append(make('span', 'Volume'), volume);
+  const duckLabel = make('label', null, 'utility-duck');
+  const duck = make('input');
+  duck.type = 'checkbox';
+  duckLabel.append(duck, make('span', 'Baixar enquanto a gravação da aula toca'));
+  const soundNote = make(
+    'p',
+    'Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.',
+    'utility-cycles',
+  );
+  soundBody.append(soundList, soundToggle, volumeLabel, duckLabel, soundNote);
+  const ambient = createAmbientPlayer({
+    initial: remembered,
+    onChange: (state) => {
+      try {
+        localStorage.setItem(
+          ambientKey,
+          JSON.stringify({
+            kind: state.kind,
+            volume: state.volume,
+            duck: state.duck,
+            playing: state.playing,
+          }),
+        );
+      } catch {
+        /* per-device convenience */
+      }
+      for (const [key, button] of soundButtons) {
+        button.setAttribute('aria-checked', String(key === state.kind));
+        button.tabIndex = key === state.kind ? 0 : -1;
+      }
+      soundToggle.textContent = state.playing ? 'Pausar som' : 'Tocar';
+      soundToggle.setAttribute('aria-pressed', String(state.playing));
+      volume.value = String(Math.round(state.volume * 100));
+      duck.checked = state.duck;
+      panel.dataset.sound = state.playing ? (state.ducked ? 'ducked' : 'playing') : 'off';
+      trigger.classList.toggle('has-sound', state.playing);
+    },
+  });
+  for (const [key, button] of soundButtons)
+    button.addEventListener('click', () => void ambient.setKind(key));
+  soundToggle.addEventListener('click', () => {
+    if (ambient.state().playing) ambient.pause();
+    else void ambient.play().catch((error) => toast(error.message, { type: 'error' }));
+  });
+  volume.addEventListener('input', () => ambient.setVolume(Number(volume.value) / 100));
+  duck.addEventListener('change', () => ambient.setDuck(duck.checked));
+  ambient.setVolume(remembered.volume);
+  // Ducking: any lesson audio or video on the page.
+  const playingMedia = () =>
+    [...document.querySelectorAll('audio, video')].some((media) => !media.paused && !media.ended);
+  document.addEventListener(
+    'play',
+    (event) => {
+      if (/^(AUDIO|VIDEO)$/.test(event.target?.tagName)) ambient.duck(true);
+    },
+    true,
+  );
+  for (const type of ['pause', 'ended'])
+    document.addEventListener(
+      type,
+      (event) => {
+        if (/^(AUDIO|VIDEO)$/.test(event.target?.tagName) && !playingMedia()) ambient.duck(false);
+      },
+      true,
+    );
+  // Sound was playing on the previous page: offer to continue (browsers need a click).
+  if (remembered.playing)
+    toast('O som ambiente parou ao trocar de página.', {
+      action: { label: 'Retomar som', onClick: () => void ambient.play().catch(() => {}) },
+      duration: 12000,
+    });
+
+  let tool = readPref().tool === 'sound' ? 'sound' : 'focus';
+  const showTool = (next) => {
+    tool = next;
+    savePref({ tool });
+    body.hidden = tool !== 'focus';
+    soundBody.hidden = tool !== 'sound';
+    title.textContent = TOOLS[tool].label;
+    openPage.hidden = tool !== 'focus';
+    for (const [key, button] of Object.entries(toolButtons))
+      button.setAttribute('aria-pressed', String(key === tool));
+  };
+  for (const [key, button] of Object.entries(toolButtons))
+    button.addEventListener('click', () => showTool(key));
+  showTool(tool);
+  panel.append(head, body, soundBody);
 
   // ---- capsule ----------------------------------------------------------------------------
   const capsule = make('div', null, 'focus-capsule');
@@ -190,7 +348,10 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     shortcut.addEventListener('click', () => {
       const state = session.state();
       if (state.status === 'running') void session.pause().catch(() => {});
-      else void session.start({ mode: state.status === 'paused' ? undefined : 'pomodoro' }).catch(() => {});
+      else
+        void session
+          .start({ mode: state.status === 'paused' ? undefined : 'pomodoro' })
+          .catch(() => {});
     });
   }
 
@@ -206,7 +367,11 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   const togglePrimary = () => {
     const state = session.state();
     if (state.status === 'running') void session.pause().catch(() => {});
-    else void session.start({ materialId: materialId ?? undefined }).catch(() => {});
+    else {
+      // A new block started on a lesson page belongs to that lesson.
+      if (state.status === 'idle') link();
+      void session.start({ materialId: materialId ?? undefined }).catch(() => {});
+    }
   };
   trigger.addEventListener('click', () => {
     opener = trigger;
@@ -269,6 +434,10 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     time.textContent = label;
     capsuleTime.textContent = label;
     capsuleMode.textContent = MODE_LABEL[state.mode];
+    lesson.textContent =
+      state.materialTitle && (state.mode === 'pomodoro' || state.mode === 'reading')
+        ? `Aula: ${state.materialTitle}`
+        : '';
     caption.textContent =
       state.status === 'running'
         ? `${MODE_LABEL[state.mode]} em andamento`
@@ -314,7 +483,11 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     cycles.textContent = `${state.completedToday} ${state.completedToday === 1 ? 'foco hoje' : 'focos hoje'} · ${done} de ${state.settings.longEvery} até a pausa longa`;
     status.textContent = state.error || (state.notice ? NOTICES[state.notice.kind] || '' : '');
     if (shortcut) {
-      shortcut.textContent = running ? `Pausar · ${label}` : state.status === 'paused' ? 'Retomar foco' : 'Iniciar foco';
+      shortcut.textContent = running
+        ? `Pausar · ${label}`
+        : state.status === 'paused'
+          ? 'Retomar foco'
+          : 'Iniciar foco';
       shortcut.disabled = state.busy;
     }
     layout(state);

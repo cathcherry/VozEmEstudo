@@ -91,3 +91,11 @@ export async function readProfileMedia(userId,slot) {
     return local;
   } catch { return readLocalMedia(userId,slot); }
 }
+/** This device's copy only (no network): for things shown on every page, like the wallpaper. */
+export async function readLocalProfileMedia(userId, slot) {
+  try {
+    return await readLocalMedia(userId, slot);
+  } catch {
+    return null;
+  }
+}

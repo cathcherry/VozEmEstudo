@@ -1,10 +1,14 @@
 // One FocusSession per page for the signed-in account: it pumps once a second, hands the run over
 // when the page unloads, follows other tabs through `storage` events and plays the end-of-block
 // chime. Every view (Focar page, Planejar, side panel, capsule) uses `getFocusSession()`.
-import { createFocusSession } from './focus-session.js';
+import { createFocusSession, mergeFocusHistory } from './focus-session.js';
+import { loadCloudState, registerCloudMerge, saveCloudState } from './profile-cloud.js';
 import { startStudySession, tickStudySession } from '../api/study.api.js';
+import { getUiPreferences, setUiPreference } from './preferences.js';
 
 let session = null;
+// The block history follows the account: both copies are combined, never overwritten.
+registerCloudMerge('focus-history', mergeFocusHistory);
 let resolveReady;
 const ready = new Promise((resolve) => {
   resolveReady = resolve;
@@ -39,6 +43,33 @@ function chime() {
   }
 }
 
+function syncHistory(userId) {
+  let sent = JSON.stringify(session.state().history);
+  let timer;
+  loadCloudState(userId, 'focus-history', null)
+    .then((remote) => {
+      if (Array.isArray(remote)) session.mergeHistory(remote);
+      // Blocks recorded here before the account had a copy are uploaded once.
+      if (JSON.stringify(remote) !== JSON.stringify(session.state().history)) send();
+    })
+    .catch(() => {});
+  function send() {
+    const history = session.state().history;
+    sent = JSON.stringify(history);
+    void saveCloudState(userId, 'focus-history', history).catch(() => {});
+  }
+  // While a run has a leader, only that tab uploads (other tabs see the same storage). Idle tabs
+  // may both upload; the account merge makes that harmless.
+  session.subscribe((state) => {
+    if (timer || (state.leader && !state.isLeader) || JSON.stringify(state.history) === sent) return;
+    // Views are refreshed every second, so the upload is scheduled once, not pushed back.
+    timer = setTimeout(() => {
+      timer = null;
+      send();
+    }, 1500);
+  });
+}
+
 export function initFocusHost(userId) {
   if (session || !userId) return session;
   session = createFocusSession({
@@ -48,6 +79,24 @@ export function initFocusHost(userId) {
     uuid: () => crypto.randomUUID(),
     isVisible: () => document.visibilityState === 'visible',
   });
+  const update = session.updateSettings;
+  // Durations saved in the account (synced preferences) win over this browser's copy.
+  const saved = getUiPreferences().focusSettings;
+  const current = session.state().settings;
+  if (saved && JSON.stringify(saved) !== JSON.stringify(current)) update(saved);
+  // Preferences pulled from the account later (sign-in on a new device) also apply.
+  window.addEventListener('voz-preferences-change', () => {
+    queueMicrotask(() => {
+      const remote = getUiPreferences().focusSettings;
+      if (remote && JSON.stringify(remote) !== JSON.stringify(session.state().settings)) update(remote);
+    });
+  });
+  // …and a change here is saved to the account.
+  session.updateSettings = (partial) => {
+    const state = update(partial);
+    setUiPreference('focusSettings', state.settings);
+    return state;
+  };
   let lastNotice = session.state().notice?.at || 0;
   session.subscribe((state) => {
     // The leader announces a finished block once, for every view of this page.
@@ -55,6 +104,26 @@ export function initFocusHost(userId) {
       lastNotice = state.notice.at;
       if (state.notice.kind.endsWith('_done') && state.settings.sound && state.isLeader !== false)
         chime();
+      // System notification (opt-in) when the block ends while no page is in front.
+      if (
+        state.notice.kind.endsWith('_done') &&
+        state.settings.notify &&
+        state.isLeader !== false &&
+        document.visibilityState !== 'visible' &&
+        globalThis.Notification?.permission === 'granted'
+      ) {
+        const text = {
+          pomodoro_done: 'Foco concluído! Hora de uma pausa.',
+          short_done: 'Pausa concluída. Pronto para outro foco?',
+          long_done: 'Pausa longa concluída. Bom retorno!',
+          reading_done: 'Bloco concluído.',
+        }[state.notice.kind];
+        try {
+          new Notification('Voz em Estudo', { body: text, tag: 'voz-focus', silent: !state.settings.sound });
+        } catch {
+          /* some browsers only allow notifications from a service worker */
+        }
+      }
       document.dispatchEvent(new CustomEvent('voz:focus-notice', { detail: state.notice }));
     }
   });
@@ -79,6 +148,7 @@ export function initFocusHost(userId) {
     if (action === 'start') void session.start().catch(() => {});
     if (action === 'pause') void session.pause().catch(() => {});
   });
+  syncHistory(userId);
   pump();
   resolveReady(session);
   return session;

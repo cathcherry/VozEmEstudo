@@ -19,4 +19,4 @@ const filter=document.createElement('button');filter.type='button';filter.classN
 filter.addEventListener('click',()=>{panel.open=!panel.open;});panel.addEventListener('toggle',()=>filter.setAttribute('aria-expanded',String(panel.open)));toolbar.append(filter);
 root.dataset.libraryLayout='grid';
 const input=document.querySelector('#library-search');input.placeholder='Buscar na biblioteca';
-const create=document.querySelector('[data-open-new-subject]');create.textContent='+';create.title='Nova disciplina';create.setAttribute('aria-label','Nova disciplina');
+const create=document.querySelector('[data-open-new-subject]');create.textContent='+ Nova disciplina';create.title='Nova disciplina';create.removeAttribute('aria-label');create.classList.add('library-new-folder');

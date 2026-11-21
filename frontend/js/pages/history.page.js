@@ -4,7 +4,8 @@ import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
 import { getCatalog, getLibraryResources, createSubject, updateSubject, deleteSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
-import { studyFor, metadataTags, saveTags } from '../utils/study-store.js';
+import { studyFor, metadataTags, saveTags, listeningPercent } from '../utils/study-store.js';
+import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initLibraryViewSwitcher } from './library-views.js';
@@ -376,17 +377,27 @@ function groupMaterials(visible) {
 
 function lessonCountLabel(total) { return `${total} ${total === 1 ? 'aula' : 'aulas'}`; }
 
+// List view (Finder-like): one row per lesson with an original document icon, its date,
+// duration and progress; the lesson's parts (transcript, summary…) follow when known.
+const DOC_ICON='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 15h6M9 18h4"/></svg>';
 function treeFiles(material) {
-  const list=document.createElement('div');list.className='library-tree-files';
+  const list=document.createElement('div');list.className='library-tree-files';list.dataset.materialId=material.id;
   const available=treeResources[material.id]||{};
-  const types=[['audio','Áudio',''],['transcription','Transcrição','#transcricao'],['summary','Resumo','#resumo'],['questions','Questões','#questoes']];
+  const audio=Array.isArray(material.audio_files)?material.audio_files[0]:material.audio_files||material.audio;
+  const study=studyFor(material.id),percent=listeningPercent(material.id);
+  const main=document.createElement('a');main.href=materialHref(material.id);main.className='library-tree-row';
+  const icon=document.createElement('span');icon.className='library-doc-icon';icon.innerHTML=DOC_ICON;
+  const title=document.createElement('span');title.className='library-tree-title';title.textContent=material.title;
+  const date=document.createElement('small');date.className='library-tree-date';date.textContent=formatDate(material.created_at);
+  const length=document.createElement('small');length.className='library-tree-length';length.textContent=audio?.duration_ms?formatDuration(audio.duration_ms):'';
+  const progress=document.createElement('small');progress.className='library-tree-progress';
+  progress.textContent=study.completed?'Estudada':study.playedAt?`${percent}% ouvido`:'';
+  main.append(icon,title,date,length,progress);list.append(main);
+  const types=[['transcription','Transcrição','#transcricao'],['summary','Resumo','#resumo'],['questions','Questões','#questoes']];
   for(const [key,label,fragment] of types)if(available[key]===true){
-    const link=document.createElement('a');link.href=materialHref(material.id)+fragment;
-    const icon=document.createElement('span');icon.textContent='▤';icon.setAttribute('aria-hidden','true');
-    const title=document.createElement('span');title.textContent=material.title;
-    const kind=document.createElement('small');kind.textContent=label;link.append(icon,title,kind);list.append(link);
+    const link=document.createElement('a');link.href=materialHref(material.id)+fragment;link.className='library-tree-part';
+    link.textContent=label;link.setAttribute('aria-label',`${label} de ${material.title}`);list.append(link);
   }
-  if(!list.children.length){const link=document.createElement('a');link.href=materialHref(material.id);link.textContent='▤ '+material.title;list.append(link);}
   return list;
 }
 const SUBJECT_MENU_ICONS = {
@@ -693,7 +704,106 @@ function render() {
   state.hidden = true;
   if (showingResources) renderResources(visible);
   else renderFolderGroups(visible, needle);
+  decorateSelection();
 }
+
+// ---- Multiple selection: move several lessons at once (Biblioteca 3.0) ---------------------
+const selected = new Set();
+let selecting = false;
+const selectionBar = document.createElement('div');
+selectionBar.className = 'library-selection-bar';
+selectionBar.setAttribute('role', 'region');
+selectionBar.setAttribute('aria-label', 'Aulas selecionadas');
+selectionBar.hidden = true;
+const selectionCount = document.createElement('p');
+selectionCount.setAttribute('aria-live', 'polite');
+const moveSelected = document.createElement('button');
+moveSelected.type = 'button';
+moveSelected.className = 'primary-action';
+moveSelected.textContent = 'Mover para…';
+const cancelSelection = document.createElement('button');
+cancelSelection.type = 'button';
+cancelSelection.className = 'secondary-action';
+cancelSelection.textContent = 'Cancelar';
+selectionBar.append(selectionCount, moveSelected, cancelSelection);
+document.body.append(selectionBar);
+const selectToggle = document.createElement('button');
+selectToggle.type = 'button';
+selectToggle.className = 'secondary-action library-select-toggle';
+selectToggle.textContent = 'Selecionar';
+selectToggle.setAttribute('aria-pressed', 'false');
+function setSelecting(on) {
+  selecting = on;
+  if (!on) selected.clear();
+  selectToggle.setAttribute('aria-pressed', String(on));
+  selectToggle.textContent = on ? 'Concluir seleção' : 'Selecionar';
+  document.body.classList.toggle('library-selecting', on);
+  render();
+}
+selectToggle.addEventListener('click', () => setSelecting(!selecting));
+cancelSelection.addEventListener('click', () => {
+  setSelecting(false);
+  selectToggle.focus();
+});
+function updateSelectionBar() {
+  selectionBar.hidden = !selecting;
+  selectionCount.textContent = selected.size
+    ? `${selected.size} ${selected.size === 1 ? 'aula selecionada' : 'aulas selecionadas'}`
+    : 'Toque nas aulas para selecionar';
+  moveSelected.disabled = !selected.size;
+}
+function decorateSelection() {
+  // The toggle lives in the folder toolbar, next to the path.
+  if (catalogEnabled && catalog.subjects.length && folderToolbar && !folderToolbar.contains(selectToggle))
+    folderToolbar.append(selectToggle);
+  selectToggle.hidden = !catalogEnabled || !materials.length;
+  updateSelectionBar();
+  if (!selecting) return;
+  for (const item of document.querySelectorAll('.library-material[data-material-id], .library-tree-files[data-material-id]')) {
+    const id = item.dataset.materialId;
+    if (item.querySelector(':scope > .library-select')) continue;
+    const material = materials.find((entry) => entry.id === id);
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.className = 'library-select';
+    box.checked = selected.has(id);
+    box.setAttribute('aria-label', `Selecionar ${material?.title || 'aula'}`);
+    box.addEventListener('change', () => {
+      if (box.checked) selected.add(id);
+      else selected.delete(id);
+      item.classList.toggle('is-selected', box.checked);
+      updateSelectionBar();
+    });
+    item.classList.toggle('is-selected', box.checked);
+    item.prepend(box);
+  }
+}
+// While selecting, a click on a lesson selects it instead of opening it.
+document.addEventListener(
+  'click',
+  (event) => {
+    if (!selecting) return;
+    const item = event.target.closest?.('.library-material[data-material-id], .library-tree-files[data-material-id]');
+    if (!item || event.target.closest('.library-select')) return;
+    const link = event.target.closest('a');
+    if (!link && !event.target.closest('h3')) return;
+    event.preventDefault();
+    const box = item.querySelector(':scope > .library-select');
+    if (box) {
+      box.checked = !box.checked;
+      box.dispatchEvent(new Event('change'));
+    }
+  },
+  true,
+);
+moveSelected.addEventListener('click', () => {
+  const chosen = materials.filter((material) => selected.has(material.id));
+  if (!chosen.length) return;
+  openAssignDialog(chosen[0]);
+  assignForm.querySelector('[name="materialId"]').value = chosen.map((material) => material.id).join(',');
+  document.querySelector('[data-assign-material-title]').textContent =
+    chosen.length === 1 ? chosen[0].title : `${chosen.length} aulas`;
+});
 
 editForm.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -804,12 +914,19 @@ assignForm.addEventListener('submit', async (event) => {
   const button = assignForm.querySelector('[type="submit"]');
   button.disabled = true;
   try {
-    const updated = await assignMaterial(
-      assignForm.querySelector('[name="materialId"]').value,
-      assignSubject.value || null,
-      assignUnit.value || null,
-    );
-    syncMaterial(updated);
+    // One lesson, or several from the selection (moved one by one; a failure stops and says so).
+    const ids = assignForm.querySelector('[name="materialId"]').value.split(',').filter(Boolean);
+    let moved = 0;
+    for (const id of ids) {
+      const updated = await assignMaterial(id, assignSubject.value || null, assignUnit.value || null);
+      materials = materials.map((material) => (material.id === updated.id ? { ...material, ...updated } : material));
+      moved += 1;
+    }
+    populateFilters();
+    if (ids.length > 1) {
+      setStatus(count, `${moved} aulas movidas.`, 'success');
+      setSelecting(false);
+    } else render();
     assignDialog.close();
   } catch (error) {
     setStatus(assignMessage, error.message || 'Não foi possível mover a aula.', 'error');

@@ -47,8 +47,8 @@ let currentMaterial,
   editing = false,
   stopTracking,
   waveformController;
-const TAB_HASH = { transcription: 'transcricao', summary: 'resumo', questions: 'questoes', notes: 'anotacoes' };
-const hashTab = { '#resumo': 'summary', '#questoes': 'questions', '#gerar-questoes': 'questions', '#anotacoes': 'notes', '#transcricao': 'transcription' }[location.hash];
+const TAB_HASH = { transcription: 'transcricao', summary: 'resumo', questions: 'questoes', flashcards: 'flashcards', notes: 'anotacoes' };
+const hashTab = { '#resumo': 'summary', '#questoes': 'questions', '#gerar-questoes': 'questions', '#anotacoes': 'notes', '#transcricao': 'transcription', '#flashcards': 'flashcards' }[location.hash];
 let activeTab = hashTab || 'transcription';
 // The preparation guide reopened from "Guia da aula" while the lesson is already in study mode.
 let guideOpen = false;
@@ -218,7 +218,11 @@ function layout() {
   $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
   $('[data-material-tab="notes"]').hidden = !notesEnabled;
   if (activeTab === 'notes' && !notesEnabled) activeTab = 'transcription';
-  for (const name of ['transcription', 'summary', 'questions', 'notes']) {
+  const setsTab = Boolean(flags.flashcards && flags.flashcard_sets);
+  $('[data-material-tab="flashcards"]').hidden = !setsTab;
+  if (activeTab === 'flashcards' && !setsTab) activeTab = 'transcription';
+  if (activeTab === 'flashcards' && ready()) void renderLessonSets();
+  for (const name of ['transcription', 'summary', 'questions', 'flashcards', 'notes']) {
     const tab = $(`[data-material-tab="${name}"]`);
     tab.setAttribute('aria-selected', String(activeTab === name));
     tab.tabIndex = activeTab === name ? 0 : -1;
@@ -371,11 +375,11 @@ function runLessonStep(id) {
       break;
     }
     case 'view:flashcards':
-      if (lessonExtras.sets) location.href = './revisar.html#flashcards';
-      else open('summary');
+      open('flashcards');
       break;
     case 'flashcards':
-      open('summary', '[data-open-flashcards]');
+      open('flashcards');
+      void flashcardAuthoring?.open();
       break;
   }
 }
@@ -406,6 +410,55 @@ $('[data-start-studying]').addEventListener('click', () => {
   layout();
   $(`[data-material-tab="${activeTab}"]`)?.focus();
 });
+// Flashcards tab: this lesson's card sets, with a way to review each one now.
+let lessonSetsLoading = null;
+async function renderLessonSets() {
+  if (lessonSetsLoading) return lessonSetsLoading;
+  const host = $('[data-lesson-sets]');
+  const meta = $('[data-lesson-sets-meta]');
+  lessonSetsLoading = (async () => {
+    try {
+      const sets = await listFlashcardSets(materialId);
+      host.replaceChildren();
+      const cards = sets.reduce((sum, set) => sum + (Number(set.card_count) || 0), 0);
+      meta.textContent = sets.length
+        ? `${sets.length} ${sets.length === 1 ? 'conjunto' : 'conjuntos'} · ${cards} ${cards === 1 ? 'cartão' : 'cartões'}`
+        : '';
+      if (!sets.length) {
+        host.append(
+          ninoNote('Transforme o resumo desta aula em cartões para revisar nos próximos dias.', 'reading', {
+            title: 'Ainda não há flashcards desta aula',
+            action: { label: 'Criar flashcards', onClick: () => void flashcardAuthoring?.open() },
+          }),
+        );
+        return;
+      }
+      for (const set of sets) {
+        const row = document.createElement('article');
+        row.className = 'lesson-set-row';
+        const title = document.createElement('h3');
+        title.textContent = set.name;
+        const info = document.createElement('p');
+        const due = Number(set.due_count) || 0;
+        info.textContent = `${Number(set.card_count) || 0} cartões · ${due ? `${due} para revisar hoje` : 'nada pendente hoje'}`;
+        const review = document.createElement('a');
+        review.className = due ? 'primary-action' : 'secondary-action';
+        review.href = `./revisar.html?conjunto=${encodeURIComponent(set.id)}#flashcards`;
+        review.textContent = due ? 'Revisar agora' : 'Abrir conjunto';
+        const text = document.createElement('div');
+        text.append(title, info);
+        row.append(text, review);
+        host.append(row);
+      }
+    } catch (error) {
+      host.replaceChildren(ninoNote(error.message || 'Não foi possível carregar os flashcards.', 'curious'));
+    } finally {
+      lessonSetsLoading = null;
+    }
+  })();
+  return lessonSetsLoading;
+}
+$('[data-create-lesson-flashcards]').addEventListener('click', () => void flashcardAuthoring?.open());
 // The notes panel asks to show its tab (Comentar) or the transcript (Ir ao destaque).
 document.addEventListener('voz:open-notes', () => {
   if (notesEnabled) selectTab('notes');
@@ -1093,6 +1146,10 @@ const flashcardAuthoring = flashcardSets
   ? initFlashcardAuthoring({ material: () => currentMaterial })
   : null;
 $('[data-open-flashcards]').addEventListener('click', () => void flashcardAuthoring?.open());
+// New sets appear in the Flashcards tab as soon as the creation dialog closes.
+document.querySelector('[data-flashcard-dialog]')?.addEventListener('close', () => {
+  if (activeTab === 'flashcards') void renderLessonSets();
+});
 const exportPanel = initExportPanel({
   material: () => currentMaterial,
   flags,

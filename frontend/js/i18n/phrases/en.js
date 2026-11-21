@@ -38,6 +38,7 @@ export default {
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "We know what it's like to want to hear that quick explanation again, connect the ideas from the lesson and test whether the content stuck. That's why we created a place that brings together recordings, transcripts, summaries and questions to support your study after class.",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "The recording, the transcript in excerpts, the summary and the questions are linked in the Library. That way you can check the explanation and practice without losing sight of the original lesson.",
   "A imagem deve ter no máximo 8 MB.": "The image must be 8 MB or less.",
+  "A imagem passa de 8 MB. Escolha um arquivo menor.": "The image is larger than 8 MB. Choose a smaller file.",
   "A organização por unidades está indisponível.": "Organizing by units is unavailable.",
   "A paginação do andamento não pôde ser concluída.": "Progress paging couldn't be completed.",
   "A pasta está vazia.": "The folder is empty.",
@@ -74,6 +75,7 @@ export default {
   "Abrir aula": "Open lesson",
   "Abrir Biblioteca": "Open Library",
   "Abrir configurações de leitura e foco": "Open reading and focus settings",
+  "Abrir conjunto": "Open set",
   "Abrir cópia compartilhada": "Open shared copy",
   "Abrir disciplina": "Open subject",
   "Abrir Focar": "Open Focus",
@@ -110,6 +112,7 @@ export default {
   "Ainda não ativado neste servidor": "Not enabled on this server yet",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "There are no analyses of this transcript yet. You can request the warnings above.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "No sets yet. Create one in a lesson's Summary tab.",
+  "Ainda não há flashcards desta aula": "No flashcards for this lesson yet",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "No question lists yet. Use “Generate list” to create the first one.",
   "Ainda não há questões desta aula.": "There are no questions for this lesson yet.",
   "Ainda não há resumo desta aula.": "This lesson has no summary yet.",
@@ -131,6 +134,7 @@ export default {
   "Alterações salvas.": "Changes saved.",
   "Alternativas da questão": "Answer options",
   "Amarelo": "Yellow",
+  "Amigável (Lexend)": "Friendly (Lexend)",
   "Amplo": "Wide",
   "Analisar novamente": "Analyze again",
   "Análise e comparação": "Analysis and comparison",
@@ -196,6 +200,7 @@ export default {
   "Arraste para redimensionar · clique duplo para restaurar": "Drag to resize · double-click to restore",
   "Arraste uma gravação": "Drag a recording",
   "Arredondada": "Rounded",
+  "Arredondado": "Rounded",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "This account's copies on this browser will be deleted and you will be signed out. Everything already saved in your account stays there.",
   "As disciplinas que você mais revisita.": "The subjects you revisit most.",
   "As etapas desta aula e o próximo passo sugerido.": "This lesson's steps and the suggested next step.",
@@ -232,6 +237,7 @@ export default {
   "Aulas em estudo": "Lessons in progress",
   "Aulas estudadas": "Lessons studied",
   "Aulas recentes": "Recent lessons",
+  "Aulas selecionadas": "Selected lessons",
   "Aulas sem unidade": "Lessons without a unit",
   "Aumenta ou diminui textos e controles da página.": "Makes the page's text and controls larger or smaller.",
   "Aumentar texto": "Increase text size",
@@ -253,6 +259,7 @@ export default {
   "Azul marinho e ciano.": "Navy blue and cyan.",
   "Baixa um arquivo .ics do mês. Não envia convites nem altera outros calendários.": "Downloads an .ics file for the month. It sends no invitations and changes no other calendars.",
   "Baixar calendário ICS": "Download ICS calendar",
+  "Baixar enquanto a gravação da aula toca": "Lower while the lesson recording plays",
   "Baixar trecho": "Download clip",
   "Barra inferior": "Bottom bar",
   "Barra inferior: os atalhos ficam fixos na parte de baixo e a barra lateral some. No modo foco, a barra inferior é sempre usada e aparece ao levar o cursor (ou o Tab) até a alça na base da tela.": "Bottom bar: shortcuts stay fixed at the bottom and the sidebar disappears. In focus mode, the bottom bar is always used and appears when you move the cursor (or Tab) to the handle at the bottom of the screen.",
@@ -267,6 +274,7 @@ export default {
   "Bloco pausado. Retome quando quiser.": "Block paused. Resume whenever you like.",
   "Bloco salvo.": "Block saved.",
   "Blocos": "Blocks",
+  "blocos de foco": "focus blocks",
   "blocos do perfil": "profile blocks",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube and Spotify blocks load content from those services. You can edit or remove the blocks in your profile. Your profile stays private.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Blocks that show your own study data and update automatically.",
@@ -329,8 +337,10 @@ export default {
   "Causas e consequências": "Causes and consequences",
   "Cem descobertas": "A hundred discoveries",
   "Checklist": "Checklist",
+  "Chiado leve que sobe e desce devagar.": "A light hiss that slowly rises and falls.",
   "Chinês (cantonês)": "Chinese (Cantonese)",
   "Chinês (mandarim)": "Chinese (Mandarin)",
+  "Chuva suave": "Soft rain",
   "Ciano": "Cyan",
   "Citação": "Quote",
   "Claro": "Light",
@@ -379,6 +389,7 @@ export default {
   "Concluir": "Done",
   "Concluir edição": "Done editing",
   "Concluir envio": "Finish upload",
+  "Concluir seleção": "Done selecting",
   "Concluir tentativa": "Finish attempt",
   "conectar as ideias": "connect the ideas",
   "Conferência sugerida": "Check suggested",
@@ -565,6 +576,7 @@ export default {
   "Editar subobjetivo": "Edit subgoal",
   "Editar tarefa": "Edit task",
   "Editar transcrição": "Edit transcript",
+  "Editorial (serifa)": "Editorial (serif)",
   "Ela pode ter sido excluída ou pertencer a outra conta.": "It may have been deleted or belong to another account.",
   "Em andamento": "In progress",
   "Em Aparência, você pode ajustar o tamanho e o espaçamento do texto, escolher uma tipografia de leitura, reforçar o contraste e personalizar as cores. Há também movimento reduzido, baixa estimulação e modo foco para diminuir distrações.": "In Appearance, you can adjust text size and spacing, choose a reading font, increase contrast and customize colors. There's also reduced motion, low stimulation and focus mode to cut down on distractions.",
@@ -615,7 +627,9 @@ export default {
   "Escolha um template.": "Choose a template.",
   "Escolha uma imagem PNG, JPG, WebP ou GIF.": "Choose a PNG, JPG, WebP or GIF image.",
   "Escolha uma imagem PNG.": "Choose a PNG image.",
+  "Escolha uma imagem.": "Choose an image.",
   "Escolha uma nova senha para sua conta.": "Choose a new password for your account.",
+  "Escolher imagem ou GIF": "Choose an image or GIF",
   "Escolher uma aula": "Choose a lesson",
   "Escolher uma aula na Biblioteca": "Choose a lesson in the Library",
   "Esconder cápsula (o cronômetro continua)": "Hide capsule (the timer keeps running)",
@@ -650,6 +664,7 @@ export default {
   "Este destaque pertence a outra revisão ou o trecho foi editado. O texto original está preservado acima.": "This highlight belongs to another version or the excerpt was edited. The original text is kept above.",
   "Este envio já existe com escolhas diferentes. Revise o formulário.": "This upload already exists with different choices. Review the form.",
   "Este navegador não oferece armazenamento local para imagens.": "This browser doesn't offer local storage for images.",
+  "Este navegador não toca sons gerados.": "This browser cannot play generated sounds.",
   "Este provedor ainda não está disponível. Entre com e-mail e senha.": "This provider isn't available yet. Sign in with email and password.",
   "Este recurso está desligado neste servidor.": "This feature is turned off on this server.",
   "Este trecho não pôde ser localizado na revisão analisada.": "This excerpt couldn't be found in the analyzed version.",
@@ -657,6 +672,7 @@ export default {
   "Estilo": "Style",
   "Estreito": "Narrow",
   "Estrelas": "Stars",
+  "Estudada": "Studied",
   "Estúdio visual": "Visual studio",
   "Estudo": "Estudo",
   "Estudo livre": "Free study",
@@ -700,6 +716,7 @@ export default {
   "Feedback ao responder": "Feedback when answering",
   "feito com": "made with",
   "Feito por nós.": "Made by us.",
+  "Ferramenta do painel": "Panel tool",
   "Ferramentas": "Tools",
   "Ferramentas indisponíveis.": "Tools unavailable.",
   "Filtrar conquistas": "Filter achievements",
@@ -773,6 +790,7 @@ export default {
   "Gravação da aula": "Lesson recording",
   "Gravações e transcrição": "Recordings and transcription",
   "Gravações mais longas: depende da densidade e da cobertura dos conceitos.": "Longer recordings: depends on how dense the content is and how many concepts it covers.",
+  "Grave e constante, ajuda a abafar conversas.": "Deep and steady; helps mask conversations.",
   "Groq": "Groq",
   "Guardando o vídeo original…": "Saving the original video…",
   "Guardar após transcrever": "Keep after transcribing",
@@ -807,6 +825,9 @@ export default {
   "Igual à favorita": "Same as favourite",
   "Igual ao geral": "Same as general",
   "Imagem de capa": "Cover image",
+  "Imagem de fundo aplicada.": "Background image applied.",
+  "Imagem de fundo removida.": "Background image removed.",
+  "Imagem própria": "Your image",
   "Imagem salva neste dispositivo · sincronização pendente": "Image saved on this device · sync pending",
   "Imagens de vídeos não são enviadas.": "Video images are not sent.",
   "Importar andamento local sem registro na conta": "Import local progress not saved to the account",
@@ -907,6 +928,7 @@ export default {
   "Mais revisitados": "Most revisited",
   "Mantenha esta aba visível e em foco para iniciar.": "Keep this tab visible and in focus to start.",
   "Manter versão deste navegador em conflitos": "Keep this browser's version in conflicts",
+  "Máquina de escrever": "Typewriter",
   "Marcar aula como estudada": "Mark lesson as studied",
   "Marcos de estudo": "Study milestones",
   "Matcha": "Matcha",
@@ -950,6 +972,7 @@ export default {
   "Minutos por dia": "Minutes per day",
   "Minutos registrados nesta semana e a sua meta.": "Minutes logged this week and your goal.",
   "Moderna": "Modern",
+  "Moderno": "Modern",
   "Modo": "Mode",
   "Modo de edição: reorganize, oculte ou adicione blocos. As mudanças são salvas na hora.": "Edit mode: rearrange, hide or add blocks. Changes are saved right away.",
   "Modo de edição.": "Edit mode.",
@@ -975,6 +998,7 @@ export default {
   "Mover para cá": "Move here",
   "Mover para cima": "Move up",
   "Mover para pasta": "Move to folder",
+  "Mover para…": "Move to…",
   "Movimento reduzido": "Reduced motion",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3, WAV, M4A, MP4 and other formats",
   "MP4 original": "Original MP4",
@@ -1010,6 +1034,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "Couldn't load the diagnosis.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "Couldn't load the history. Select the card again to retry.",
   "Não foi possível carregar os conjuntos agora.": "Couldn't load the sets right now.",
+  "Não foi possível carregar os flashcards.": "The flashcards could not be loaded.",
   "Não foi possível carregar os links.": "Couldn't load the links.",
   "Não foi possível carregar os materiais.": "Couldn't load the materials.",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "Couldn't load the resources. The per-lesson view is still available.",
@@ -1126,6 +1151,7 @@ export default {
   "Norueguês (nynorsk)": "Norwegian (Nynorsk)",
   "nos títulos das aulas": "in lesson titles",
   "Notas": "Notes",
+  "Notificação do sistema quando a página estiver em segundo plano": "System notification when the page is in the background",
   "Noturno": "Night",
   "Nova aula": "New lesson",
   "Nova disciplina": "New subject",
@@ -1162,6 +1188,7 @@ export default {
   "O importante é continuar aprendendo.": "What matters is to keep learning.",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "The recovery link couldn't be used. Request a new email.",
   "O link expirou ou não pôde ser validado neste navegador. Solicite outro e abra-o no mesmo navegador em que fez o pedido.": "The link expired or couldn't be validated in this browser. Request another one and open it in the same browser you used to request it.",
+  "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "The browser blocked notifications for this site. Allow them in the browser settings.",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino searched titles, questions and transcripts. Check the spelling or try another word.",
   "O planejamento ainda não está ativo": "Planning isn't active yet",
   "O planejamento está temporariamente indisponível.": "Planning is temporarily unavailable.",
@@ -1170,6 +1197,7 @@ export default {
   "O que é enviado": "What is sent",
   "O que fica reunido em cada material?": "What does each material include?",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "Study time tracking appears here once it is enabled on this server.",
+  "O som ambiente parou ao trocar de página.": "The ambient sound stopped when you changed page.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "The transcribed text is sent to an external AI service for preliminary warnings and, after you confirm, the summary and questions.",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "Processing by providers follows their own policies. Deleting in the app does not guarantee deletion in those services' systems.",
   "O trecho pode ter até 54 minutos.": "The clip can be up to 54 minutes long.",
@@ -1191,6 +1219,7 @@ export default {
   "Ocultar senha": "Hide password",
   "Oculto": "Hidden",
   "Olá": "Hello",
+  "Ondas": "Waves",
   "Onde encontrar cada coisa": "Where to find everything",
   "Onde seus dados ficam": "Where your data is kept",
   "Onde seus dados ficam salvos": "Where your data is stored",
@@ -1264,6 +1293,7 @@ export default {
   "Pausa longa concluída. Bom retorno!": "Long break over. Welcome back!",
   "Pausar": "Pause",
   "Pausar leitura": "Pause reading",
+  "Pausar som": "Pause sound",
   "PDF (pela impressão do navegador)": "PDF (via browser print)",
   "Peça um novo link a quem compartilhou com você.": "Ask the person who shared it with you for a new link.",
   "Pendentes": "Pending",
@@ -1293,6 +1323,7 @@ export default {
   "Planejar": "Plan",
   "Planner": "Planner",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Media player. Space plays or pauses; arrow keys skip ten seconds forward or back.",
+  "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG, JPEG, WebP or GIF up to 8 MB. It stays in your account; with reduced motion, a GIF is shown still.",
   "PNG, JPG, WebP ou GIF · até 8 MB": "PNG, JPG, WebP or GIF · up to 8 MB",
   "Pode sair: a aula aparece na Biblioteca quando terminar.": "You can leave: the lesson will appear in the Library when it's done.",
   "Polaroid": "Polaroid",
@@ -1417,6 +1448,7 @@ export default {
   "Remover capa": "Remove cover",
   "Remover este horário do calendário?": "Remove this session from the calendar?",
   "Remover horário": "Remove session",
+  "Remover imagem": "Remove image",
   "Remover o vídeo guardado desta aula?": "Remove the stored video for this lesson?",
   "Remover seleção": "Clear selection",
   "Remover tag": "Remove tag",
@@ -1451,6 +1483,7 @@ export default {
   "Resumos": "Summaries",
   "Retomar": "Resume",
   "Retomar foco": "Resume focus",
+  "Retomar som": "Resume sound",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "Revisit the main ideas and use the questions to check your understanding.",
   "Revelar resposta": "Show answer",
   "Rever aula": "Review lesson",
@@ -1466,6 +1499,7 @@ export default {
   "Revisão rápida": "Quick review",
   "Revisar": "Review",
   "Revisar › Anotações": "Review › Notes",
+  "Revisar agora": "Review now",
   "Revisar envio": "Review upload",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "Review my notes\\nPractice a question\\nTake a break",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "Check the transcript. Summaries and questions from earlier versions may need updating after an edit.",
@@ -1483,11 +1517,14 @@ export default {
   "Ritmo de revisão": "Review rhythm",
   "Rodapé": "Footer",
   "Rosa": "Pink",
+  "Ruído grave que vem e vai em ciclos longos.": "A deep sound that comes and goes in long cycles.",
+  "Ruído marrom": "Brown noise",
   "sáb": "sat",
   "Sáb": "Sat",
   "Sair da lista": "Leave list",
   "Sair da tela cheia": "Exit full screen",
   "Sair desta aba pausa a contagem; nada se perde.": "Leaving this tab pauses the count; nothing is lost.",
+  "Salvando imagem…": "Saving image…",
   "Salvando perfil…": "Saving profile…",
   "Salvar": "Save",
   "Salvar ajustes": "Save settings",
@@ -1520,6 +1557,7 @@ export default {
   "Seg": "Mon",
   "Seguir áudio": "Follow audio",
   "Segurança": "Security",
+  "Selecionar": "Select",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "Select “Upload and transcribe”. Only the audio of the chosen clip is sent for transcription; the lesson page shows the progress.",
   "Selecione de 1 a 1.000 caracteres para destacar.": "Select 1 to 1,000 characters to highlight.",
   "Selecione pelo menos um conteúdo disponível.": "Select at least one available item.",
@@ -1601,10 +1639,13 @@ export default {
   "Sobre você": "About you",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "Request received. If sign-up is possible, we'll send a confirmation email. If you already have an account, try signing in or use “Forgot my password”.",
   "Sólidas": "Solid",
+  "Som": "Sound",
+  "Som ambiente": "Ambient sound",
   "Som ao terminar um bloco": "Sound when a block ends",
   "Somente ao finalizar a lista": "Only when I finish the list",
   "Somente arquivos MP4": "MP4 files only",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "We're Catharine and Gabriela: best friends, students and tech lovers. Voz em Estudo was born from our final project in the Systems Development technical course and from an idea we shared: using what we were learning to help other students.",
+  "Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.": "Sounds generated in your browser. Changing page stops the sound; press play again to continue.",
   "Sua anotação": "Your note",
   "Sua aula continua depois que a gravação termina.": "Your lesson goes on after the recording ends.",
   "Sua aula rende": "Your lesson leads to",
@@ -1674,6 +1715,8 @@ export default {
   "Título A–Z": "Title A–Z",
   "Título do card": "Card title",
   "Título salvo. O navegador não permitiu salvar as tags.": "Title saved. The browser didn't allow saving the tags.",
+  "Títulos": "Titles",
+  "Tocar": "Play",
   "Tocar a gravação a partir daquele trecho": "Play the recording from that point",
   "Todas": "All",
   "Todas as aulas": "All lessons",
@@ -1687,6 +1730,7 @@ export default {
   "Todos os conjuntos": "All sets",
   "Todos os materiais": "All materials",
   "Tópicos": "Bullet points",
+  "Toque nas aulas para selecionar": "Tap lessons to select them",
   "Transcrevendo o áudio…": "Transcribing the audio…",
   "Transcrição": "Transcript",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcript confirmed. Generate a summary, questions or flashcards — or start studying right away.",
@@ -1696,6 +1740,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "Turn audio into a transcript, summary and questions without losing the lesson's context.",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "Turn lesson audio and video into editable transcripts, summaries and questions. Choose the parts you want to review and find your materials organized in the Library.",
   "Transforme o conteúdo da sua aula em material para revisar.": "Turn your lesson content into material to review.",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "Turn this lesson's summary into cards to review over the next few days.",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "Turn the summary into cards to review over the next few days.",
   "Translúcido": "Translucent",
   "Trecho": "Clip",
@@ -1743,6 +1788,7 @@ export default {
   "Use": "Use",
   "Use o menu": "Use the menu",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Use a Spotify song, album, playlist, episode or show link.",
+  "Use uma imagem PNG, JPEG, WebP ou GIF.": "Use a PNG, JPEG, WebP or GIF image.",
   "Validade": "Expires after",
   "Validando seu link de recuperação...": "Validating your recovery link...",
   "Vamos descobrir": "Shall we discover",
@@ -2005,6 +2051,10 @@ export default {
    "{0} of {1} tasks done · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} cards · {1} to review today"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "Remove the subject “{0}”?\\n\\n{1}"
   ],
@@ -2027,6 +2077,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "{0} of {1} items loaded."
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} cards · nothing due today"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2077,12 +2131,20 @@ export default {
    "{0} XP · {1}/{2} milestones"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} sets · {1} cards"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "Nothing found for “{0}”"
   ],
   [
    "Ver resultado e erros: {0}",
    "See result and mistakes: {0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} set · {1} cards"
   ],
   [
    "Pelo menos {0} caracteres",
@@ -2153,6 +2215,10 @@ export default {
    "Edit goal {0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "{0} lessons selected"
+  ],
+  [
    "Resultados para “{0}”",
    "Results for “{0}”"
   ],
@@ -2199,6 +2265,10 @@ export default {
   [
    "{0} focos concluídos",
    "{0} focus sessions finished"
+  ],
+  [
+   "{0} aula selecionada",
+   "{0} lesson selected"
   ],
   [
    "{0} · expira em {1}",
@@ -2255,6 +2325,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{0} of {1} minutes"
+  ],
+  [
+   "{0} aulas movidas.",
+   "{0} lessons moved."
   ],
   [
    "{0} · questão {1}",
@@ -2353,6 +2427,10 @@ export default {
    "Pending: {0}."
   ],
   [
+   "Selecionar {0}",
+   "Select {0}"
+  ],
+  [
    "- Revisão {0}",
    "- Version {0}"
   ],
@@ -2401,6 +2479,10 @@ export default {
    "{0} paused"
   ],
   [
+   "{0}% ouvido",
+   "{0}% listened"
+  ],
+  [
    "Versão {0}",
    "Version {0}"
   ],
@@ -2419,6 +2501,10 @@ export default {
   [
    "Ouvir {0}",
    "Listen {0}"
+  ],
+  [
+   "Aula: {0}",
+   "Lesson: {0}"
   ],
   [
    "{0} aula",

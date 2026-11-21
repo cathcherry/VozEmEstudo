@@ -212,6 +212,9 @@
         <button type="button" id="tab-questions" role="tab" aria-controls="questoes" data-material-tab="questions">
           Questões
         </button>
+        <button type="button" id="tab-flashcards" role="tab" aria-controls="flashcards" data-material-tab="flashcards" hidden>
+          Flashcards
+        </button>
         <button type="button" id="tab-notes" role="tab" aria-controls="anotacoes" data-material-tab="notes" hidden>
           Anotações
         </button>
@@ -326,6 +329,16 @@
         </div>
         <p data-more-questions-message role="status" aria-live="polite"></p>
         <div class="question-batches" data-question-batches></div>
+      </section>
+      <section class="article-section" id="flashcards" role="tabpanel" aria-labelledby="tab-flashcards" data-flashcards-section hidden>
+        <h2 class="sr-only">Flashcards</h2>
+        <div class="panel-toolbar">
+          <p class="panel-meta" data-lesson-sets-meta></p>
+          <div class="panel-toolbar-actions">
+            <button class="secondary-action" type="button" data-create-lesson-flashcards>Criar flashcards</button>
+          </div>
+        </div>
+        <div class="lesson-sets" data-lesson-sets></div>
       </section>
       <section class="article-section" id="anotacoes" role="tabpanel" aria-labelledby="tab-notes" data-notes-section hidden>
         <h2 class="sr-only">Anotações</h2>

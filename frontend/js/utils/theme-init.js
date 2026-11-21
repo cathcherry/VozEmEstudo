@@ -32,11 +32,14 @@
     // Flashcards 3.0: how review cards look. Appearance only — never the card's content, source
     // or review history; changing it never asks the server or the AI for anything.
     cardTemplate: 'classic',
+    // Title typography (pairs with the body font). Reading-font accessibility choices win.
+    headingFont: 'editorial',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
-  const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars'];
+  const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars', 'image'];
   const SURFACES = ['solid', 'glass'];
   const CARD_TEMPLATES = ['classic', 'notebook', 'sticky', 'window', 'polaroid'];
+  const HEADING_FONTS = ['editorial', 'modern', 'rounded', 'friendly', 'typewriter'];
   // Pages that may have their own wallpaper (file name → key).
   const WALLPAPER_PAGES = {
     'painel.html': 'dashboard',
@@ -268,6 +271,25 @@
     if (WALLPAPERS.includes(value?.wallpaper)) result.wallpaper = value.wallpaper;
     if (SURFACES.includes(value?.surfaces)) result.surfaces = value.surfaces;
     if (CARD_TEMPLATES.includes(value?.cardTemplate)) result.cardTemplate = value.cardTemplate;
+    if (HEADING_FONTS.includes(value?.headingFont)) result.headingFont = value.headingFont;
+    // Focar: block durations follow the account to every device (minutes; same limits as
+    // utils/focus-session.js normalizeSettings).
+    if (value?.focusSettings && typeof value.focusSettings === 'object') {
+      const clamp = (n, min, max, fallback) => {
+        const v = Math.round(Number(n));
+        return Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : fallback;
+      };
+      const f = value.focusSettings;
+      result.focusSettings = {
+        focus: clamp(f.focus, 5, 120, 25),
+        short: clamp(f.short, 1, 30, 5),
+        long: clamp(f.long, 5, 60, 15),
+        longEvery: clamp(f.longEvery, 2, 8, 4),
+        autoStart: f.autoStart === true,
+        sound: f.sound !== false,
+        notify: f.notify === true,
+      };
+    }
     // Per-set card template (ids are opaque strings, kept short).
     result.setTemplates = {};
     for (const [id, template] of Object.entries(value?.setTemplates || {}).slice(0, 200))

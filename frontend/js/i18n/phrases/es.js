@@ -38,6 +38,7 @@ export default {
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "Sabemos lo que es querer escuchar de nuevo esa explicación que pasó rápido, unir las ideas de la clase y comprobar si el contenido quedó. Por eso creamos un lugar que reúne grabaciones, transcripciones, resúmenes y preguntas para acompañar el estudio después de clase.",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "La grabación, la transcripción por fragmentos, el resumen y las preguntas quedan vinculados en la Biblioteca. Así consultas la explicación y practicas sin perder de vista la clase de origen.",
   "A imagem deve ter no máximo 8 MB.": "La imagen debe tener como máximo 8 MB.",
+  "A imagem passa de 8 MB. Escolha um arquivo menor.": "La imagen supera los 8 MB. Elige un archivo más pequeño.",
   "A organização por unidades está indisponível.": "La organización por unidades no está disponible.",
   "A paginação do andamento não pôde ser concluída.": "No se pudo completar la paginación del progreso.",
   "A pasta está vazia.": "La carpeta está vacía.",
@@ -74,6 +75,7 @@ export default {
   "Abrir aula": "Abrir clase",
   "Abrir Biblioteca": "Abrir Biblioteca",
   "Abrir configurações de leitura e foco": "Abrir configuración de lectura y enfoque",
+  "Abrir conjunto": "Abrir conjunto",
   "Abrir cópia compartilhada": "Abrir copia compartida",
   "Abrir disciplina": "Abrir asignatura",
   "Abrir Focar": "Abrir Enfocar",
@@ -110,6 +112,7 @@ export default {
   "Ainda não ativado neste servidor": "Aún no activado en este servidor",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "Aún no hay análisis de esta transcripción. Puedes solicitar los avisos de arriba.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "Aún no hay conjuntos. Crea uno en la pestaña Resumen de una clase.",
+  "Ainda não há flashcards desta aula": "Aún no hay flashcards de esta clase",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "Aún no hay listas de preguntas. Usa “Generar lista” para crear la primera.",
   "Ainda não há questões desta aula.": "Aún no hay preguntas de esta clase.",
   "Ainda não há resumo desta aula.": "Esta clase aún no tiene resumen.",
@@ -131,6 +134,7 @@ export default {
   "Alterações salvas.": "Cambios guardados.",
   "Alternativas da questão": "Opciones de la pregunta",
   "Amarelo": "Amarillo",
+  "Amigável (Lexend)": "Amigable (Lexend)",
   "Amplo": "Amplio",
   "Analisar novamente": "Analizar de nuevo",
   "Análise e comparação": "Análisis y comparación",
@@ -196,6 +200,7 @@ export default {
   "Arraste para redimensionar · clique duplo para restaurar": "Arrastra para redimensionar · doble clic para restaurar",
   "Arraste uma gravação": "Arrastra una grabación",
   "Arredondada": "Redondeada",
+  "Arredondado": "Redondeado",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "Se borrarán las copias de esta cuenta en este navegador y se cerrará tu sesión. Lo que ya está guardado en la cuenta sigue allí.",
   "As disciplinas que você mais revisita.": "Las asignaturas que más repasas.",
   "As etapas desta aula e o próximo passo sugerido.": "Las etapas de esta clase y el siguiente paso sugerido.",
@@ -232,6 +237,7 @@ export default {
   "Aulas em estudo": "Clases en estudio",
   "Aulas estudadas": "Clases estudiadas",
   "Aulas recentes": "Clases recientes",
+  "Aulas selecionadas": "Clases seleccionadas",
   "Aulas sem unidade": "Clases sin unidad",
   "Aumenta ou diminui textos e controles da página.": "Aumenta o reduce los textos y controles de la página.",
   "Aumentar texto": "Aumentar texto",
@@ -253,6 +259,7 @@ export default {
   "Azul marinho e ciano.": "Azul marino y cian.",
   "Baixa um arquivo .ics do mês. Não envia convites nem altera outros calendários.": "Descarga un archivo .ics del mes. No envía invitaciones ni modifica otros calendarios.",
   "Baixar calendário ICS": "Descargar calendario ICS",
+  "Baixar enquanto a gravação da aula toca": "Bajar mientras suena la grabación de la clase",
   "Baixar trecho": "Descargar fragmento",
   "Barra inferior": "Barra inferior",
   "Barra inferior: os atalhos ficam fixos na parte de baixo e a barra lateral some. No modo foco, a barra inferior é sempre usada e aparece ao levar o cursor (ou o Tab) até a alça na base da tela.": "Barra inferior: los accesos quedan fijos en la parte de abajo y la barra lateral desaparece. En modo enfoque, siempre se usa la barra inferior, que aparece al llevar el cursor (o el Tab) hasta la pestaña en la base de la pantalla.",
@@ -267,6 +274,7 @@ export default {
   "Bloco pausado. Retome quando quiser.": "Bloque en pausa. Reanuda cuando quieras.",
   "Bloco salvo.": "Bloque guardado.",
   "Blocos": "Bloques",
+  "blocos de foco": "bloques de enfoque",
   "blocos do perfil": "bloques del perfil",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "Los bloques de YouTube y Spotify cargan contenido de esos servicios. Puedes editar o quitar los bloques en tu perfil. Tu perfil sigue siendo privado.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Bloques que muestran tus propios datos de estudio y se actualizan solos.",
@@ -329,8 +337,10 @@ export default {
   "Causas e consequências": "Causas y consecuencias",
   "Cem descobertas": "Cien descubrimientos",
   "Checklist": "Lista de tareas",
+  "Chiado leve que sobe e desce devagar.": "Un siseo ligero que sube y baja despacio.",
   "Chinês (cantonês)": "Chino (cantonés)",
   "Chinês (mandarim)": "Chino (mandarín)",
+  "Chuva suave": "Lluvia suave",
   "Ciano": "Cian",
   "Citação": "Cita",
   "Claro": "Claro",
@@ -379,6 +389,7 @@ export default {
   "Concluir": "Listo",
   "Concluir edição": "Terminar edición",
   "Concluir envio": "Completar subida",
+  "Concluir seleção": "Terminar selección",
   "Concluir tentativa": "Terminar intento",
   "conectar as ideias": "conectar las ideas",
   "Conferência sugerida": "Revisión sugerida",
@@ -565,6 +576,7 @@ export default {
   "Editar subobjetivo": "Editar subobjetivo",
   "Editar tarefa": "Editar tarea",
   "Editar transcrição": "Editar transcripción",
+  "Editorial (serifa)": "Editorial (con serifa)",
   "Ela pode ter sido excluída ou pertencer a outra conta.": "Puede que se haya eliminado o que pertenezca a otra cuenta.",
   "Em andamento": "En curso",
   "Em Aparência, você pode ajustar o tamanho e o espaçamento do texto, escolher uma tipografia de leitura, reforçar o contraste e personalizar as cores. Há também movimento reduzido, baixa estimulação e modo foco para diminuir distrações.": "En Apariencia, puedes ajustar el tamaño y el espaciado del texto, elegir una tipografía de lectura, reforzar el contraste y personalizar los colores. También hay movimiento reducido, baja estimulación y modo enfoque para reducir distracciones.",
@@ -615,7 +627,9 @@ export default {
   "Escolha um template.": "Elige una plantilla.",
   "Escolha uma imagem PNG, JPG, WebP ou GIF.": "Elige una imagen PNG, JPG, WebP o GIF.",
   "Escolha uma imagem PNG.": "Elige una imagen PNG.",
+  "Escolha uma imagem.": "Elige una imagen.",
   "Escolha uma nova senha para sua conta.": "Elige una nueva contraseña para tu cuenta.",
+  "Escolher imagem ou GIF": "Elegir imagen o GIF",
   "Escolher uma aula": "Elegir una clase",
   "Escolher uma aula na Biblioteca": "Elegir una clase en la Biblioteca",
   "Esconder cápsula (o cronômetro continua)": "Ocultar cápsula (el temporizador sigue)",
@@ -650,6 +664,7 @@ export default {
   "Este destaque pertence a outra revisão ou o trecho foi editado. O texto original está preservado acima.": "Este resaltado pertenece a otra versión o el fragmento fue editado. El texto original se conserva arriba.",
   "Este envio já existe com escolhas diferentes. Revise o formulário.": "Esta subida ya existe con opciones diferentes. Revisa el formulario.",
   "Este navegador não oferece armazenamento local para imagens.": "Este navegador no ofrece almacenamiento local para imágenes.",
+  "Este navegador não toca sons gerados.": "Este navegador no reproduce sonidos generados.",
   "Este provedor ainda não está disponível. Entre com e-mail e senha.": "Este proveedor aún no está disponible. Inicia sesión con correo electrónico y contraseña.",
   "Este recurso está desligado neste servidor.": "Esta función está desactivada en este servidor.",
   "Este trecho não pôde ser localizado na revisão analisada.": "Este fragmento no se pudo localizar en la versión analizada.",
@@ -657,6 +672,7 @@ export default {
   "Estilo": "Estilo",
   "Estreito": "Estrecho",
   "Estrelas": "Estrellas",
+  "Estudada": "Estudiada",
   "Estúdio visual": "Estudio visual",
   "Estudo": "Estudo",
   "Estudo livre": "Estudio libre",
@@ -700,6 +716,7 @@ export default {
   "Feedback ao responder": "Retroalimentación al responder",
   "feito com": "hecho con",
   "Feito por nós.": "Hecho por nosotras.",
+  "Ferramenta do painel": "Herramienta del panel",
   "Ferramentas": "Herramientas",
   "Ferramentas indisponíveis.": "Herramientas no disponibles.",
   "Filtrar conquistas": "Filtrar logros",
@@ -773,6 +790,7 @@ export default {
   "Gravação da aula": "Grabación de la clase",
   "Gravações e transcrição": "Grabaciones y transcripción",
   "Gravações mais longas: depende da densidade e da cobertura dos conceitos.": "Grabaciones más largas: depende de la densidad y la cobertura de los conceptos.",
+  "Grave e constante, ajuda a abafar conversas.": "Grave y constante; ayuda a tapar conversaciones.",
   "Groq": "Groq",
   "Guardando o vídeo original…": "Guardando el video original…",
   "Guardar após transcrever": "Guardar después de transcribir",
@@ -807,6 +825,9 @@ export default {
   "Igual à favorita": "Igual que la favorita",
   "Igual ao geral": "Igual que el general",
   "Imagem de capa": "Imagen de portada",
+  "Imagem de fundo aplicada.": "Imagen de fondo aplicada.",
+  "Imagem de fundo removida.": "Imagen de fondo eliminada.",
+  "Imagem própria": "Imagen propia",
   "Imagem salva neste dispositivo · sincronização pendente": "Imagen guardada en este dispositivo · sincronización pendiente",
   "Imagens de vídeos não são enviadas.": "Las imágenes de los videos no se envían.",
   "Importar andamento local sem registro na conta": "Importar progreso local sin registro en la cuenta",
@@ -907,6 +928,7 @@ export default {
   "Mais revisitados": "Más revisitadas",
   "Mantenha esta aba visível e em foco para iniciar.": "Mantén esta pestaña visible y en primer plano para empezar.",
   "Manter versão deste navegador em conflitos": "Mantener la versión de este navegador en conflictos",
+  "Máquina de escrever": "Máquina de escribir",
   "Marcar aula como estudada": "Marcar clase como estudiada",
   "Marcos de estudo": "Hitos de estudio",
   "Matcha": "Matcha",
@@ -950,6 +972,7 @@ export default {
   "Minutos por dia": "Minutos por día",
   "Minutos registrados nesta semana e a sua meta.": "Minutos registrados esta semana y tu meta.",
   "Moderna": "Moderna",
+  "Moderno": "Moderno",
   "Modo": "Modo",
   "Modo de edição: reorganize, oculte ou adicione blocos. As mudanças são salvas na hora.": "Modo de edición: reorganiza, oculta o añade bloques. Los cambios se guardan al instante.",
   "Modo de edição.": "Modo de edición.",
@@ -975,6 +998,7 @@ export default {
   "Mover para cá": "Mover aquí",
   "Mover para cima": "Mover arriba",
   "Mover para pasta": "Mover a carpeta",
+  "Mover para…": "Mover a…",
   "Movimento reduzido": "Movimiento reducido",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3, WAV, M4A, MP4 y otros formatos",
   "MP4 original": "MP4 original",
@@ -1010,6 +1034,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "No se pudo cargar el diagnóstico.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "No se pudo cargar el historial. Selecciona la tarjeta de nuevo para reintentarlo.",
   "Não foi possível carregar os conjuntos agora.": "No se pudieron cargar los conjuntos ahora.",
+  "Não foi possível carregar os flashcards.": "No se pudieron cargar las flashcards.",
   "Não foi possível carregar os links.": "No se pudieron cargar los enlaces.",
   "Não foi possível carregar os materiais.": "No se pudieron cargar los materiales.",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "No se pudieron cargar los recursos. La vista por clase sigue disponible.",
@@ -1126,6 +1151,7 @@ export default {
   "Norueguês (nynorsk)": "Noruego (nynorsk)",
   "nos títulos das aulas": "en los títulos de las clases",
   "Notas": "Notas",
+  "Notificação do sistema quando a página estiver em segundo plano": "Notificación del sistema cuando la página esté en segundo plano",
   "Noturno": "Nocturno",
   "Nova aula": "Nueva clase",
   "Nova disciplina": "Nueva asignatura",
@@ -1162,6 +1188,7 @@ export default {
   "O importante é continuar aprendendo.": "Lo importante es seguir aprendiendo.",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "No se pudo usar el enlace de recuperación. Solicita un nuevo correo.",
   "O link expirou ou não pôde ser validado neste navegador. Solicite outro e abra-o no mesmo navegador em que fez o pedido.": "El enlace caducó o no se pudo validar en este navegador. Solicita otro y ábrelo en el mismo navegador desde el que lo pediste.",
+  "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "El navegador bloqueó las notificaciones de este sitio. Permítelas en la configuración del navegador.",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino buscó en los títulos, las preguntas y las transcripciones. Revisa la ortografía o prueba otra palabra.",
   "O planejamento ainda não está ativo": "La planificación aún no está activa",
   "O planejamento está temporariamente indisponível.": "La planificación no está disponible temporalmente.",
@@ -1170,6 +1197,7 @@ export default {
   "O que é enviado": "Qué se envía",
   "O que fica reunido em cada material?": "¿Qué reúne cada material?",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "El registro de tiempo de estudio aparece aquí cuando se active en este servidor.",
+  "O som ambiente parou ao trocar de página.": "El sonido ambiente se detuvo al cambiar de página.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "El texto transcrito se envía a un servicio externo de IA para avisos preliminares y, tras tu confirmación, el resumen y las preguntas.",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "El tratamiento por parte de los proveedores sigue sus propias políticas. Eliminar en la aplicación no garantiza la eliminación en los sistemas de esos servicios.",
   "O trecho pode ter até 54 minutos.": "El fragmento puede durar hasta 54 minutos.",
@@ -1191,6 +1219,7 @@ export default {
   "Ocultar senha": "Ocultar contraseña",
   "Oculto": "Oculto",
   "Olá": "Hola",
+  "Ondas": "Olas",
   "Onde encontrar cada coisa": "Dónde encontrar cada cosa",
   "Onde seus dados ficam": "Dónde quedan tus datos",
   "Onde seus dados ficam salvos": "Dónde se guardan tus datos",
@@ -1264,6 +1293,7 @@ export default {
   "Pausa longa concluída. Bom retorno!": "Pausa larga terminada. ¡Bienvenido de nuevo!",
   "Pausar": "Pausar",
   "Pausar leitura": "Pausar lectura",
+  "Pausar som": "Pausar sonido",
   "PDF (pela impressão do navegador)": "PDF (con la impresión del navegador)",
   "Peça um novo link a quem compartilhou com você.": "Pide un nuevo enlace a quien lo compartió contigo.",
   "Pendentes": "Pendientes",
@@ -1293,6 +1323,7 @@ export default {
   "Planejar": "Planificar",
   "Planner": "Agenda",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Reproductor. Espacio reproduce o pausa; las flechas avanzan o retroceden diez segundos.",
+  "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG, JPEG, WebP o GIF de hasta 8 MB. Queda en tu cuenta; con movimiento reducido, el GIF aparece quieto.",
   "PNG, JPG, WebP ou GIF · até 8 MB": "PNG, JPG, WebP o GIF · hasta 8 MB",
   "Pode sair: a aula aparece na Biblioteca quando terminar.": "Puedes salir: la clase aparecerá en la Biblioteca cuando termine.",
   "Polaroid": "Polaroid",
@@ -1417,6 +1448,7 @@ export default {
   "Remover capa": "Quitar portada",
   "Remover este horário do calendário?": "¿Quitar este horario del calendario?",
   "Remover horário": "Quitar horario",
+  "Remover imagem": "Quitar imagen",
   "Remover o vídeo guardado desta aula?": "¿Quitar el video guardado de esta clase?",
   "Remover seleção": "Quitar selección",
   "Remover tag": "Quitar etiqueta",
@@ -1451,6 +1483,7 @@ export default {
   "Resumos": "Resúmenes",
   "Retomar": "Reanudar",
   "Retomar foco": "Reanudar enfoque",
+  "Retomar som": "Reanudar sonido",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "Retoma las ideas principales y usa las preguntas para comprobar tu comprensión.",
   "Revelar resposta": "Mostrar respuesta",
   "Rever aula": "Repasar clase",
@@ -1466,6 +1499,7 @@ export default {
   "Revisão rápida": "Repaso rápido",
   "Revisar": "Repasar",
   "Revisar › Anotações": "Repasar › Notas",
+  "Revisar agora": "Repasar ahora",
   "Revisar envio": "Revisar subida",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "Repasar mis notas\\nPracticar una pregunta\\nTomar un descanso",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "Revisa la transcripción. Los resúmenes y preguntas de versiones anteriores pueden necesitar actualizarse después de una edición.",
@@ -1483,11 +1517,14 @@ export default {
   "Ritmo de revisão": "Ritmo de repaso",
   "Rodapé": "Pie",
   "Rosa": "Rosa",
+  "Ruído grave que vem e vai em ciclos longos.": "Un ruido grave que va y viene en ciclos largos.",
+  "Ruído marrom": "Ruido marrón",
   "sáb": "sáb",
   "Sáb": "Sáb",
   "Sair da lista": "Salir de la lista",
   "Sair da tela cheia": "Salir de pantalla completa",
   "Sair desta aba pausa a contagem; nada se perde.": "Salir de esta pestaña pausa el conteo; no se pierde nada.",
+  "Salvando imagem…": "Guardando imagen…",
   "Salvando perfil…": "Guardando perfil…",
   "Salvar": "Guardar",
   "Salvar ajustes": "Guardar ajustes",
@@ -1520,6 +1557,7 @@ export default {
   "Seg": "Lun",
   "Seguir áudio": "Seguir audio",
   "Segurança": "Seguridad",
+  "Selecionar": "Seleccionar",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "Selecciona “Subir y transcribir”. Solo se envía a transcribir el audio del fragmento elegido; la página de la clase muestra el progreso.",
   "Selecione de 1 a 1.000 caracteres para destacar.": "Selecciona de 1 a 1.000 caracteres para resaltar.",
   "Selecione pelo menos um conteúdo disponível.": "Selecciona al menos un contenido disponible.",
@@ -1601,10 +1639,13 @@ export default {
   "Sobre você": "Sobre ti",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "Solicitud recibida. Si es posible crear la cuenta, te enviaremos un correo de confirmación. Si ya tienes cuenta, intenta iniciar sesión o usa “Olvidé mi contraseña”.",
   "Sólidas": "Sólidas",
+  "Som": "Sonido",
+  "Som ambiente": "Sonido ambiente",
   "Som ao terminar um bloco": "Sonido al terminar un bloque",
   "Somente ao finalizar a lista": "Solo al terminar la lista",
   "Somente arquivos MP4": "Solo archivos MP4",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "Somos Catharine y Gabriela, mejores amigas, estudiantes y apasionadas por la tecnología. Voz em Estudo nació de nuestro trabajo de fin de curso en el Técnico en Desarrollo de Sistemas y de una idea que compartíamos: usar lo que estábamos aprendiendo para ayudar a otros estudiantes.",
+  "Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.": "Sonidos generados en el propio navegador. Al cambiar de página el sonido se detiene; vuelve a reproducirlo para continuar.",
   "Sua anotação": "Tu nota",
   "Sua aula continua depois que a gravação termina.": "Tu clase continúa después de que termina la grabación.",
   "Sua aula rende": "Tu clase te lleva a",
@@ -1674,6 +1715,8 @@ export default {
   "Título A–Z": "Título A–Z",
   "Título do card": "Título de la tarjeta",
   "Título salvo. O navegador não permitiu salvar as tags.": "Título guardado. El navegador no permitió guardar las etiquetas.",
+  "Títulos": "Títulos",
+  "Tocar": "Reproducir",
   "Tocar a gravação a partir daquele trecho": "Reproducir la grabación desde ese fragmento",
   "Todas": "Todas",
   "Todas as aulas": "Todas las clases",
@@ -1687,6 +1730,7 @@ export default {
   "Todos os conjuntos": "Todos los conjuntos",
   "Todos os materiais": "Todos los materiales",
   "Tópicos": "Puntos clave",
+  "Toque nas aulas para selecionar": "Toca las clases para seleccionarlas",
   "Transcrevendo o áudio…": "Transcribiendo el audio…",
   "Transcrição": "Transcripción",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcripción confirmada. Genera un resumen, preguntas o flashcards, o empieza a estudiar directamente.",
@@ -1696,6 +1740,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "Convierte audio en transcripción, resumen y preguntas sin perder el contexto de la clase.",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "Convierte audios y videos de clases en transcripciones editables, resúmenes y preguntas. Elige los fragmentos que quieres repasar y encuentra tus materiales organizados en la Biblioteca.",
   "Transforme o conteúdo da sua aula em material para revisar.": "Convierte el contenido de tu clase en material para repasar.",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "Convierte el resumen de esta clase en tarjetas para repasar en los próximos días.",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "Convierte el resumen en tarjetas para repasar en los próximos días.",
   "Translúcido": "Translúcido",
   "Trecho": "Fragmento",
@@ -1743,6 +1788,7 @@ export default {
   "Use": "Usa",
   "Use o menu": "Usa el menú",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Usa un enlace de canción, álbum, playlist, episodio o programa de Spotify.",
+  "Use uma imagem PNG, JPEG, WebP ou GIF.": "Usa una imagen PNG, JPEG, WebP o GIF.",
   "Validade": "Validez",
   "Validando seu link de recuperação...": "Validando tu enlace de recuperación...",
   "Vamos descobrir": "¿Vamos a descubrir",
@@ -2005,6 +2051,10 @@ export default {
    "{0} de {1} tareas hechas · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} tarjetas · {1} para repasar hoy"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "¿Quitar la asignatura “{0}”?\\n\\n{1}"
   ],
@@ -2027,6 +2077,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "{0} de {1} elementos cargados."
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} tarjetas · nada pendiente hoy"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2077,12 +2131,20 @@ export default {
    "{0} XP · {1}/{2} hitos"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} conjuntos · {1} tarjetas"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "No se encontró nada para “{0}”"
   ],
   [
    "Ver resultado e erros: {0}",
    "Ver resultado y errores: {0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} conjunto · {1} tarjetas"
   ],
   [
    "Pelo menos {0} caracteres",
@@ -2153,6 +2215,10 @@ export default {
    "Editar objetivo {0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "{0} clases seleccionadas"
+  ],
+  [
    "Resultados para “{0}”",
    "Resultados para “{0}”"
   ],
@@ -2199,6 +2265,10 @@ export default {
   [
    "{0} focos concluídos",
    "{0} enfoques completados"
+  ],
+  [
+   "{0} aula selecionada",
+   "{0} clase seleccionada"
   ],
   [
    "{0} · expira em {1}",
@@ -2255,6 +2325,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{0} de {1} minutos"
+  ],
+  [
+   "{0} aulas movidas.",
+   "{0} clases movidas."
   ],
   [
    "{0} · questão {1}",
@@ -2353,6 +2427,10 @@ export default {
    "Pendiente: {0}."
   ],
   [
+   "Selecionar {0}",
+   "Seleccionar {0}"
+  ],
+  [
    "- Revisão {0}",
    "- Versión {0}"
   ],
@@ -2401,6 +2479,10 @@ export default {
    "{0} en pausa"
   ],
   [
+   "{0}% ouvido",
+   "{0}% escuchado"
+  ],
+  [
    "Versão {0}",
    "Versión {0}"
   ],
@@ -2419,6 +2501,10 @@ export default {
   [
    "Ouvir {0}",
    "Escuchar {0}"
+  ],
+  [
+   "Aula: {0}",
+   "Clase: {0}"
   ],
   [
    "{0} aula",
