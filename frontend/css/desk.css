@@ -17,7 +17,7 @@
     --desk-col-gap: clamp(var(--space-5), 3vw, var(--space-7));
     --desk-object: 5.1rem;
     --desk-shelf-object: 3.7rem;
-    --desk-lume: 8.25rem;
+    --desk-lume: 8.75rem;
     --desk-inset: 0.75rem;
     /* Fine wood grain: long fibres along the board (fractal noise stretched horizontally). The
        colour is neutral brown at low alpha, so every atmosphere's --desk-top shows through. */
@@ -717,7 +717,7 @@
       --desk-stage-h: 9.75rem;
       --desk-object: 3.9rem;
       --desk-shelf-object: 2.8rem;
-      --desk-lume: 6.5rem;
+      --desk-lume: 6.75rem;
       --desk-overlap: 1.25rem;
       --desk-inset: 0px;
     }
