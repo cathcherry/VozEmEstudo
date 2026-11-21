@@ -30,6 +30,8 @@ export default {
   "a aula não sustenta mais questões distintas": "the lesson doesn't support more distinct questions",
   "A aula para continuar, o que pede atenção hoje (tarefas, cartões, horários) e o seu tempo de estudo na semana. Cada bloco leva à página completa.": "The lesson to continue, what needs attention today (tasks, cards, study sessions) and your study time for the week. Each block leads to the full page.",
   "A busca não está disponível agora.": "Search isn't available right now.",
+  "A cada 2 dias": "Every 2 days",
+  "A cada 3 dias": "Every 3 days",
   "A conservação original aceita somente MP4.": "Keeping the original accepts only MP4.",
   "A declaração de permissão não carregou. Recarregue a página.": "The permission statement didn't load. Reload the page.",
   "A declaração é sua, sem verificação automática de direitos autorais. Cada provedor segue a própria política de dados.": "The declaration is yours, with no automatic copyright check. Each provider follows its own data policy.",
@@ -369,6 +371,7 @@ export default {
   "Com marcações de tempo": "With timestamps",
   "Combinações rápidas": "Quick combinations",
   "Começar a estudar": "Start studying",
+  "Começar em": "Start on",
   "Começar meu material de estudo": "Start my study material",
   "Começar o próximo bloco sozinho": "Start the next block automatically",
   "Começar tentativa": "Start attempt",
@@ -473,6 +476,7 @@ export default {
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "Colors, font and named custom themes, with reading and focus settings.",
   "Creme quente e terracota.": "Warm cream and terracotta.",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "Creates a read-only link with a frozen copy of the questions and options. Answers, explanations, transcript, recording and notes are not part of the link.",
+  "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "Creates a task for each lesson of the unit, inside a goal. If the unit gets new lessons, use it again: only the missing ones are added.",
   "Criando conta...": "Creating account...",
   "Criando tarefa de geração...": "Creating generation job...",
   "Criando tentativa…": "Creating attempt…",
@@ -492,10 +496,12 @@ export default {
   "Criar primeira unidade": "Create first unit",
   "Criar primeiro objetivo": "Create first goal",
   "Criar questões": "Create questions",
+  "Criar tarefas": "Create tasks",
   "Criar um objetivo": "Create a goal",
   "Criar uma conta": "Create an account",
   "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Flashcards tab, merge sets or import cards from a file. Here you organize, review by set and export.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Summary tab. Here you organize, review by set and export.",
+  "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "Create a goal first (for example, \"Biology exam\") and come back here.",
   "Cronológico": "Chronological",
   "Cronológico, quando houver datas": "Chronological, when there are dates",
   "Cronômetro de estudo": "Study timer",
@@ -637,6 +643,7 @@ export default {
   "Envio mais recente": "Most recent upload",
   "Equilibrado": "Balanced",
   "Escolha a gravação": "Choose the recording",
+  "Escolha a unidade": "Choose the unit",
   "Escolha até 3. Eles aparecem ao lado do título de cada página e somem com menos estímulos visuais.": "Choose up to 3. They appear next to each page's title and disappear with fewer visual stimuli.",
   "Escolha como deseja responder": "Choose how you want to answer",
   "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "Choose two or more sets. A new set is created with their cards; the originals do not change and review history is not copied.",
@@ -1375,6 +1382,7 @@ export default {
   "Personalizar perfil": "Customize profile",
   "Pesquisar texto e destaques": "Search text and highlights",
   "Planejar": "Plan",
+  "Planejar uma unidade": "Plan a unit",
   "Planner": "Planner",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Media player. Space plays or pauses; arrow keys skip ten seconds forward or back.",
   "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG, JPEG, WebP or GIF up to 8 MB. It stays in your account; with reduced motion, a GIF is shown still.",
@@ -1578,6 +1586,7 @@ export default {
   "Revogar": "Revoke",
   "Revogar este link? Quem tiver o endereço não conseguirá mais abrir a cópia. Esta ação não pode ser desfeita.": "Revoke this link? Anyone with the address will no longer be able to open the copy. This can't be undone.",
   "Revogar link": "Revoke link",
+  "Ritmo": "Pace",
   "Ritmo de revisão": "Review rhythm",
   "Rodapé": "Footer",
   "Rosa": "Pink",
@@ -1643,6 +1652,7 @@ export default {
   "Sem disciplina": "No subject",
   "sem fundo": "no background",
   "Sem fundo": "No background",
+  "Sem prazo": "No deadline",
   "Sem subobjetivo": "No subgoal",
   "Sem tags": "No tags",
   "Sem tarefas": "No tasks",
@@ -1838,6 +1848,8 @@ export default {
   "Um pouco de tudo, em níveis intercalados.": "A bit of everything, with mixed levels.",
   "Um símbolo (ex.: ! @ # ?)": "One symbol (e.g. ! @ # ?)",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "An excerpt that makes sense. An idea that sticks. A question that opens new paths.",
+  "Uma aula por dia": "One lesson a day",
+  "Uma aula por semana": "One lesson a week",
   "Uma aula.": "One lesson.",
   "Uma cópia para acesso rápido e alterações que aguardam sincronização. O estado temporário de widgets HTML/CSS personalizados pode ser reiniciado ao recarregar. Essa cópia continua neste navegador depois de sair da conta: em computadores compartilhados, use uma janela anônima.": "A copy for quick access and changes waiting to sync. The temporary state of custom HTML/CSS widgets may reset on reload. This copy stays in this browser after you sign out: on shared computers, use a private window.",
   "Uma hora de descobertas": "An hour of discoveries",
@@ -2213,6 +2225,10 @@ export default {
    "{0} cards · {1} to review today"
   ],
   [
+   "{0} tarefas criadas para a unidade.",
+   "{0} tasks created for the unit."
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "Remove the subject “{0}”?\\n\\n{1}"
   ],
@@ -2229,6 +2245,10 @@ export default {
    "of {0} min of study this week"
   ],
   [
+   "{0} tarefa criada para a unidade.",
+   "{0} task created for the unit."
+  ],
+  [
    "Meta semanal: {0} de {1} minutos",
    "Weekly goal: {0} of {1} minutes"
   ],
@@ -2243,6 +2263,14 @@ export default {
   [
    "{0} cartões · nada pendente hoje",
    "{0} cards · nothing due today"
+  ],
+  [
+   "{0} já têm tarefa neste objetivo",
+   "{0} already have a task in this goal"
+  ],
+  [
+   "{0} já tem tarefa neste objetivo",
+   "{0} already has a task in this goal"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2337,6 +2365,10 @@ export default {
    "{0} focus blocks done today"
   ],
   [
+   "{0} tarefas serão criadas",
+   "{0} tasks will be created"
+  ],
+  [
    "Opções da disciplina {0}",
    "Options for subject {0}"
   ],
@@ -2405,6 +2437,10 @@ export default {
    "{0} lessons selected"
   ],
   [
+   "{0} tarefa será criada",
+   "{0} task will be created"
+  ],
+  [
    "Resultados para “{0}”",
    "Results for “{0}”"
   ],
@@ -2461,6 +2497,10 @@ export default {
    "{0} lesson selected"
   ],
   [
+   "{0} aulas na unidade",
+   "{0} lessons in the unit"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · expires {1}"
   ],
@@ -2471,6 +2511,10 @@ export default {
   [
    "Áudio ouvido de {0}",
    "Audio listened for {0}"
+  ],
+  [
+   "{0} aula na unidade",
+   "{0} lesson in the unit"
   ],
   [
    "Ações da lista {0}",
@@ -2695,6 +2739,10 @@ export default {
   [
    "Prazo: {0}",
    "Due: {0}"
+  ],
+  [
+   "e mais {0}",
+   "and {0} more"
   ],
   [
    "Nível {0}",

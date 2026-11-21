@@ -9,6 +9,8 @@ import { initPlanningPanel } from './planning-panel.js';
 import { initCalendarPanel } from './calendar-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { initStudyStats } from './study-stats.js';
+import { openUnitPlanDialog } from './unit-plan.js';
+import { toast } from '../utils/toast.js';
 
 await initAuthenticatedShell();
 const flags = await getFeatureFlags().catch(() => ({}));
@@ -40,6 +42,26 @@ if (!sections.length) {
   if (flags.planning)
     loads.push(
       initPlanningPanel({ materials }).then(() => {
+        // "Planejar uma unidade" needs the catalog (subjects and units).
+        const unitButton = document.querySelector('[data-unit-plan-open]');
+        if (unitButton && flags.catalog_units && materials.some((m) => m.unit_id)) {
+          unitButton.hidden = false;
+          unitButton.addEventListener('click', async () => {
+            unitButton.disabled = true;
+            try {
+              const created = await openUnitPlanDialog({ materials, opener: unitButton });
+              if (created) {
+                document.dispatchEvent(new CustomEvent('voz:planning-command', { detail: { action: 'reload' } }));
+                toast(`${created} ${created === 1 ? 'tarefa criada' : 'tarefas criadas'} para a unidade.`);
+              }
+            } catch (error) {
+              toast(error.message || 'Não foi possível abrir o planejamento da unidade.', { type: 'error' });
+            } finally {
+              unitButton.disabled = false;
+              unitButton.focus();
+            }
+          });
+        }
         if (create === 'objetivo' || create === 'tarefa') {
           tabs.select('tarefas');
           document.dispatchEvent(

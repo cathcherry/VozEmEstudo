@@ -30,6 +30,8 @@ export default {
   "a aula não sustenta mais questões distintas": "课程内容不足以生成更多不同的题目",
   "A aula para continuar, o que pede atenção hoje (tarefas, cartões, horários) e o seu tempo de estudo na semana. Cada bloco leva à página completa.": "可继续学习的课程、今天需要处理的事项（任务、卡片、学习时段）以及本周学习时间。每个区块都可进入完整页面。",
   "A busca não está disponível agora.": "搜索暂时不可用。",
+  "A cada 2 dias": "每 2 天",
+  "A cada 3 dias": "每 3 天",
   "A conservação original aceita somente MP4.": "保留原始文件仅支持 MP4。",
   "A declaração de permissão não carregou. Recarregue a página.": "授权声明未能加载。请重新加载页面。",
   "A declaração é sua, sem verificação automática de direitos autorais. Cada provedor segue a própria política de dados.": "该声明由你本人作出，不会自动核查版权。各服务商遵循各自的数据政策。",
@@ -369,6 +371,7 @@ export default {
   "Com marcações de tempo": "含时间戳",
   "Combinações rápidas": "快速搭配",
   "Começar a estudar": "开始学习",
+  "Começar em": "开始日期",
   "Começar meu material de estudo": "开始制作我的学习资料",
   "Começar o próximo bloco sozinho": "自动开始下一个时段",
   "Começar tentativa": "开始作答",
@@ -473,6 +476,7 @@ export default {
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "颜色、字体和自定义命名主题，以及阅读与专注设置。",
   "Creme quente e terracota.": "暖米色与赤陶色。",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "创建只读链接，包含题目和选项的固定副本。答案、解析、转写、录音和笔记不包含在链接中。",
+  "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "在一个目标下为单元的每节课创建任务。单元有新课时再用一次：只会添加缺少的。",
   "Criando conta...": "正在创建账户...",
   "Criando tarefa de geração...": "正在创建生成任务...",
   "Criando tentativa…": "正在创建答题…",
@@ -492,10 +496,12 @@ export default {
   "Criar primeira unidade": "创建第一个单元",
   "Criar primeiro objetivo": "创建第一个目标",
   "Criar questões": "生成题目",
+  "Criar tarefas": "创建任务",
   "Criar um objetivo": "创建目标",
   "Criar uma conta": "创建账户",
   "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "在每节课的“闪卡”标签中创建卡组，合并卡组或从文件导入卡片。在这里整理、按卡组复习和导出。",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "在每节课的“摘要”标签页中创建卡组。在这里可以整理、按卡组复习和导出。",
+  "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "请先创建一个目标（例如“生物考试”），再回到这里。",
   "Cronológico": "按时间顺序",
   "Cronológico, quando houver datas": "按时间顺序（如有日期）",
   "Cronômetro de estudo": "学习计时器",
@@ -637,6 +643,7 @@ export default {
   "Envio mais recente": "最近上传",
   "Equilibrado": "均衡",
   "Escolha a gravação": "选择录音",
+  "Escolha a unidade": "选择单元",
   "Escolha até 3. Eles aparecem ao lado do título de cada página e somem com menos estímulos visuais.": "最多选择 3 个。它们显示在每个页面标题旁，开启“减少视觉刺激”时会隐藏。",
   "Escolha como deseja responder": "选择作答方式",
   "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "选择两个或更多卡组。将用它们的卡片创建一个新卡组；原卡组不变，复习记录不会被复制。",
@@ -1375,6 +1382,7 @@ export default {
   "Personalizar perfil": "自定义个人资料",
   "Pesquisar texto e destaques": "搜索文本和标记",
   "Planejar": "计划",
+  "Planejar uma unidade": "规划一个单元",
   "Planner": "手账",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "媒体播放器。空格键播放或暂停；方向键前进或后退十秒。",
   "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG、JPEG、WebP 或 GIF，最大 8 MB。保存在你的账户中；开启减少动态效果时，GIF 显示为静止画面。",
@@ -1578,6 +1586,7 @@ export default {
   "Revogar": "撤销",
   "Revogar este link? Quem tiver o endereço não conseguirá mais abrir a cópia. Esta ação não pode ser desfeita.": "撤销此链接？持有该地址的人将无法再打开副本。此操作无法撤消。",
   "Revogar link": "撤销链接",
+  "Ritmo": "节奏",
   "Ritmo de revisão": "复习节奏",
   "Rodapé": "页脚",
   "Rosa": "粉色",
@@ -1643,6 +1652,7 @@ export default {
   "Sem disciplina": "无科目",
   "sem fundo": "无背景",
   "Sem fundo": "无背景",
+  "Sem prazo": "无截止日期",
   "Sem subobjetivo": "无子目标",
   "Sem tags": "无标签",
   "Sem tarefas": "无任务",
@@ -1838,6 +1848,8 @@ export default {
   "Um pouco de tudo, em níveis intercalados.": "各方面都有一点，难度交替。",
   "Um símbolo (ex.: ! @ # ?)": "一个符号（如 ! @ # ?）",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "一个说得通的片段。一个记得住的想法。一个开拓思路的问题。",
+  "Uma aula por dia": "每天一节课",
+  "Uma aula por semana": "每周一节课",
   "Uma aula.": "一节课。",
   "Uma cópia para acesso rápido e alterações que aguardam sincronização. O estado temporário de widgets HTML/CSS personalizados pode ser reiniciado ao recarregar. Essa cópia continua neste navegador depois de sair da conta: em computadores compartilhados, use uma janela anônima.": "用于快速访问的副本，以及等待同步的更改。自定义 HTML/CSS 小组件的临时状态在刷新后可能会重置。退出登录后，此副本仍保留在此浏览器中：在共用电脑上请使用无痕窗口。",
   "Uma hora de descobertas": "一小时的发现",
@@ -2213,6 +2225,10 @@ export default {
    "{0} 张卡片 · 今天要复习 {1} 张"
   ],
   [
+   "{0} tarefas criadas para a unidade.",
+   "已为单元创建 {0} 个任务。"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "删除科目“{0}”？\\n\\n{1}"
   ],
@@ -2229,6 +2245,10 @@ export default {
    "/ {0} 分钟（本周学习）"
   ],
   [
+   "{0} tarefa criada para a unidade.",
+   "已为单元创建 {0} 个任务。"
+  ],
+  [
    "Meta semanal: {0} de {1} minutos",
    "每周目标：{0}/{1} 分钟"
   ],
@@ -2243,6 +2263,14 @@ export default {
   [
    "{0} cartões · nada pendente hoje",
    "{0} 张卡片 · 今天没有待复习"
+  ],
+  [
+   "{0} já têm tarefa neste objetivo",
+   "{0} 节已在此目标中有任务"
+  ],
+  [
+   "{0} já tem tarefa neste objetivo",
+   "{0} 节已在此目标中有任务"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2337,6 +2365,10 @@ export default {
    "今天已完成 {0} 次专注"
   ],
   [
+   "{0} tarefas serão criadas",
+   "将创建 {0} 个任务"
+  ],
+  [
    "Opções da disciplina {0}",
    "科目{0}的选项"
   ],
@@ -2405,6 +2437,10 @@ export default {
    "已选 {0} 节课"
   ],
   [
+   "{0} tarefa será criada",
+   "将创建 {0} 个任务"
+  ],
+  [
    "Resultados para “{0}”",
    "“{0}”的搜索结果"
   ],
@@ -2461,6 +2497,10 @@ export default {
    "已选 {0} 节课"
   ],
   [
+   "{0} aulas na unidade",
+   "单元中有 {0} 节课"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · {1}到期"
   ],
@@ -2471,6 +2511,10 @@ export default {
   [
    "Áudio ouvido de {0}",
    "{0}的音频收听进度"
+  ],
+  [
+   "{0} aula na unidade",
+   "单元中有 {0} 节课"
   ],
   [
    "Ações da lista {0}",
@@ -2695,6 +2739,10 @@ export default {
   [
    "Prazo: {0}",
    "截止：{0}"
+  ],
+  [
+   "e mais {0}",
+   "另外 {0} 个"
   ],
   [
    "Nível {0}",

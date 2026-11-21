@@ -354,7 +354,7 @@ async function setup(context, base, flags, data, options = {}) {
         recordingLanguages: { options: ['pt'], default: 'pt' },
         oauthProviders: [],
       });
-    if (p === '/api/materials' && method === 'GET') return json(materials);
+    if (p === '/api/materials' && method === 'GET') return json([...materials, ...(data.extraMaterials || [])]);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
       const detail = lessonDetail(m, data.lessonStage?.[m.id] || 'summary');

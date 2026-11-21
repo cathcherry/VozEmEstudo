@@ -401,7 +401,10 @@ Já existe (antes desta sessão):
 
 Desenho:
 
-- objetivos ligados a unidades, com inclusão de aulas novas por regra explícita;
+- ~~objetivos ligados a unidades, com inclusão de aulas novas por regra explícita~~: **"Planejar uma unidade"**:
+  - cria uma tarefa por aula da unidade dentro de um objetivo, com prazos espaçados (diário, a cada 2 ou 3 dias, semanal ou sem prazo);
+  - usar de novo acrescenta só as aulas sem tarefa naquele objetivo (a regra explícita);
+  - sem tabela nova; um vínculo permanente objetivo↔unidade ainda precisaria de coluna;
 - ~~semana em blocos de horário com movimentação acessível~~: **feito**. Calendário › Semana:
   - grade de 07:00 a 23:00 com prazos no topo de cada dia;
   - blocos sobrepostos lado a lado;

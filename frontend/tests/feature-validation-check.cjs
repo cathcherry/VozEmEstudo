@@ -176,6 +176,59 @@ async function main() {
       record(`Aula muito longa (2 200 trechos, 3 h): abre em ${renderMs} ms; busca sem travar (maior tarefa ${tasks[0] || 0} ms), resultados navegáveis, limpar remove os destaques`);
     }
 
+    // ---------- Planejar uma unidade: a task per lesson, deadlines spread, re-run adds only new --
+    {
+      const u = state();
+      const extra = (id, title, daysAgo) => ({
+        id, title, subject: 'Biologia', status: 'PRONTO', subject_id: 'sub-bio', unit_id: 'unit-energia',
+        created_at: new Date(Date.now() - daysAgo * 86400000).toISOString(),
+        audio_files: [{ duration_ms: 600000, extension: 'mp3' }],
+      });
+      u.extraMaterials = [extra('l-ciclo', 'Ciclo de Krebs', 3), extra('l-ferm', 'Fermentação', 2)];
+      const view = await openApp(browser, base, allFlags, u, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.goto(base + '/planejar.html#tarefas');
+      const open = p.getByRole('button', { name: 'Planejar uma unidade' });
+      await open.click();
+      const dialog = p.getByRole('dialog', { name: 'Planejar uma unidade' });
+      await dialog.waitFor();
+      await dialog.getByLabel('Unidade').selectOption('unit-energia');
+      await dialog.getByLabel('Objetivo').selectOption('g1');
+      await dialog.getByLabel('Ritmo').selectOption('2');
+      await dialog.getByLabel('Começar em').fill('2026-12-01');
+      await dialog.getByLabel('Começar em').dispatchEvent('change');
+      // Fotossíntese already has a task in this goal: only the other two are planned.
+      await dialog.locator('.unit-plan-summary', { hasText: '1 já tem tarefa neste objetivo' }).waitFor();
+      await dialog.locator('.unit-plan-summary', { hasText: '2 tarefas serão criadas' }).waitFor();
+      await settle(p);
+      await axeCheck(p, 'dialog[open]', 'Planejar uma unidade');
+      const before = u.tasks.length;
+      await dialog.getByRole('button', { name: 'Criar tarefas' }).click();
+      await dialog.waitFor({ state: 'detached' });
+      await p.locator('.app-toast:not([hidden])', { hasText: '2 tarefas criadas para a unidade.' }).waitFor();
+      const created = u.tasks.slice(before);
+      assert.deepEqual(
+        created.map((t) => [t.material_id, t.due_date, t.goal_id]),
+        [['l-ciclo', '2026-12-01', 'g1'], ['l-ferm', '2026-12-03', 'g1']],
+      );
+      await p.locator('[data-planning-panel]', { hasText: 'Estudar: Fermentação' }).first().waitFor();
+      await p.waitForFunction(() => document.activeElement?.matches('[data-unit-plan-open]'), null, { timeout: 3000 });
+      // A new lesson arrives in the unit: running again adds only that one.
+      u.extraMaterials.push(extra('l-glico', 'Glicólise', 1));
+      await p.reload();
+      await open.click();
+      await dialog.getByLabel('Unidade').selectOption('unit-energia');
+      await dialog.getByLabel('Objetivo').selectOption('g1');
+      await dialog.locator('.unit-plan-summary', { hasText: '3 já têm tarefa neste objetivo' }).waitFor();
+      await dialog.locator('.unit-plan-summary', { hasText: '1 tarefa será criada' }).waitFor();
+      await dialog.getByRole('button', { name: 'Criar tarefas' }).click();
+      await dialog.waitFor({ state: 'detached' });
+      assert.equal(u.tasks.at(-1).material_id, 'l-glico');
+      assert.equal(u.tasks.filter((t) => t.goal_id === 'g1' && t.material_id === 'l-foto').length, 1, 'no duplicate task');
+      await view.context.close();
+      record('Planejar uma unidade: uma tarefa por aula com prazos espaçados; usar de novo acrescenta só as aulas novas');
+    }
+
     // ---------- Calendar › Semana: blocks on a time grid, moved without dragging ------------
     {
       const today = new Date();
