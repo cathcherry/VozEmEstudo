@@ -74,6 +74,26 @@ export function initFocusHost(userId) {
       lastNotice = state.notice.at;
       if (state.notice.kind.endsWith('_done') && state.settings.sound && state.isLeader !== false)
         chime();
+      // System notification (opt-in) when the block ends while no page is in front.
+      if (
+        state.notice.kind.endsWith('_done') &&
+        state.settings.notify &&
+        state.isLeader !== false &&
+        document.visibilityState !== 'visible' &&
+        globalThis.Notification?.permission === 'granted'
+      ) {
+        const text = {
+          pomodoro_done: 'Foco concluído! Hora de uma pausa.',
+          short_done: 'Pausa concluída. Pronto para outro foco?',
+          long_done: 'Pausa longa concluída. Bom retorno!',
+          reading_done: 'Bloco concluído.',
+        }[state.notice.kind];
+        try {
+          new Notification('Voz em Estudo', { body: text, tag: 'voz-focus', silent: !state.settings.sound });
+        } catch {
+          /* some browsers only allow notifications from a service worker */
+        }
+      }
       document.dispatchEvent(new CustomEvent('voz:focus-notice', { detail: state.notice }));
     }
   });

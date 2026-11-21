@@ -44,7 +44,7 @@ if (!flags.study_tracking) {
         const name = document.createElement('strong');
         name.textContent = LABEL[item.mode] || item.mode;
         const detail = document.createElement('span');
-        detail.textContent = `${Math.round(item.seconds / 60)} min · ${new Date(item.endedAt).toLocaleString(locale(), { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`;
+        detail.textContent = `${item.materialTitle ? `${item.materialTitle} · ` : ''}${Math.round(item.seconds / 60)} min · ${new Date(item.endedAt).toLocaleString(locale(), { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`;
         row.append(name, detail);
         return row;
       }),

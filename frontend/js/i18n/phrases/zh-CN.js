@@ -1130,6 +1130,7 @@ export default {
   "Norueguês (nynorsk)": "挪威语（新挪威语）",
   "nos títulos das aulas": "课程标题中",
   "Notas": "笔记",
+  "Notificação do sistema quando a página estiver em segundo plano": "页面在后台时显示系统通知",
   "Noturno": "夜间",
   "Nova aula": "新课程",
   "Nova disciplina": "新建科目",
@@ -1166,6 +1167,7 @@ export default {
   "O importante é continuar aprendendo.": "重要的是持续学习。",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "恢复链接无法使用。请重新申请邮件。",
   "O link expirou ou não pôde ser validado neste navegador. Solicite outro e abra-o no mesmo navegador em que fez o pedido.": "链接已过期或无法在此浏览器中验证。请重新申请，并在发出申请的同一浏览器中打开。",
+  "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "浏览器已阻止本网站的通知。请在浏览器设置中允许。",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino 已搜索标题、题目和转写。请检查拼写或换个词试试。",
   "O planejamento ainda não está ativo": "计划功能尚未启用",
   "O planejamento está temporariamente indisponível.": "计划功能暂时不可用。",
@@ -2445,6 +2447,10 @@ export default {
   [
    "Ouvir {0}",
    "收听 {0}"
+  ],
+  [
+   "Aula: {0}",
+   "课程：{0}"
   ],
   [
    "{0} aula",

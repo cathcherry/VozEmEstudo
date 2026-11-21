@@ -223,3 +223,4 @@
 .focus-history-list li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--surface); }
 .focus-history-list li span { color: var(--muted); font-size: .88rem; }
 .focus-history-list li[data-mode='short'], .focus-history-list li[data-mode='long'] { opacity: .8; }
+.focus-settings-dialog .focus-check[hidden] { display: none; }

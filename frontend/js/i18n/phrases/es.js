@@ -1130,6 +1130,7 @@ export default {
   "Norueguês (nynorsk)": "Noruego (nynorsk)",
   "nos títulos das aulas": "en los títulos de las clases",
   "Notas": "Notas",
+  "Notificação do sistema quando a página estiver em segundo plano": "Notificación del sistema cuando la página esté en segundo plano",
   "Noturno": "Nocturno",
   "Nova aula": "Nueva clase",
   "Nova disciplina": "Nueva asignatura",
@@ -1166,6 +1167,7 @@ export default {
   "O importante é continuar aprendendo.": "Lo importante es seguir aprendiendo.",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "No se pudo usar el enlace de recuperación. Solicita un nuevo correo.",
   "O link expirou ou não pôde ser validado neste navegador. Solicite outro e abra-o no mesmo navegador em que fez o pedido.": "El enlace caducó o no se pudo validar en este navegador. Solicita otro y ábrelo en el mismo navegador desde el que lo pediste.",
+  "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "El navegador bloqueó las notificaciones de este sitio. Permítelas en la configuración del navegador.",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino buscó en los títulos, las preguntas y las transcripciones. Revisa la ortografía o prueba otra palabra.",
   "O planejamento ainda não está ativo": "La planificación aún no está activa",
   "O planejamento está temporariamente indisponível.": "La planificación no está disponible temporalmente.",
@@ -2445,6 +2447,10 @@ export default {
   [
    "Ouvir {0}",
    "Escuchar {0}"
+  ],
+  [
+   "Aula: {0}",
+   "Clase: {0}"
   ],
   [
    "{0} aula",

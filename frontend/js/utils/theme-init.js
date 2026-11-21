@@ -283,6 +283,7 @@
         longEvery: clamp(f.longEvery, 2, 8, 4),
         autoStart: f.autoStart === true,
         sound: f.sound !== false,
+        notify: f.notify === true,
       };
     }
     // Per-set card template (ids are opaque strings, kept short).

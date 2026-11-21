@@ -70,6 +70,7 @@ test('settings are clamped and defaults fill the gaps', () => {
     longEvery: 4,
     autoStart: false,
     sound: true,
+    notify: false,
   });
 });
 
@@ -204,4 +205,24 @@ test('another device holding the account session: the timer runs but says time i
   await p.start({ mode: 'pomodoro' });
   assert.equal(p.state().status, 'running');
   assert.match(p.state().error, /outro aparelho/);
+});
+
+test('a block remembers its lesson; another lesson never inherits the previous title', async () => {
+  const b = browser();
+  const p = b.page();
+  p.setMaterial('l1', 'Fotossíntese');
+  p.setMaterial('l1', ''); // the title is still loading on a reload
+  assert.equal(p.state().materialTitle, 'Fotossíntese');
+  p.setMaterial('l2', ''); // a different lesson whose title has not arrived yet
+  assert.equal(p.state().materialTitle, null);
+  p.setMaterial('l2', 'Ondas e som');
+  p.updateSettings({ focus: 5 });
+  await p.start({ mode: 'pomodoro' });
+  assert.equal(b.server.sessions[0].materialId, 'l2');
+  p.setMaterial(null); // ignored while running
+  await b.advance(5 * 60_000 + 1000, [p]);
+  assert.deepEqual(
+    { id: p.state().history[0].materialId, title: p.state().history[0].materialTitle },
+    { id: 'l2', title: 'Ondas e som' },
+  );
 });

@@ -123,6 +123,10 @@ async function main() {
     assert.equal(data.sessions, 2, 'resuming opens a new server session');
     await panel.locator('.utility-stop').click();
     await panel.locator('[data-focus-primary]', { hasText: 'Iniciar foco' }).waitFor();
+    // Started on the lesson page: the block is linked to that lesson.
+    await panel.locator('[data-focus-primary]').click();
+    await panel.locator('.utility-lesson', { hasText: 'Aula: Fotossíntese e respiração celular' }).waitFor();
+    await panel.locator('.utility-stop').click();
     record('Esconder a cápsula não para o cronômetro; retomar e encerrar pelo painel');
 
     // ---------- Início: one click starts focusing ------------------------------------------

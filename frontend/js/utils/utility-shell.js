@@ -92,7 +92,19 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   };
   // On the Focar page the full timer is already the page.
   const onFocusPage = document.body.dataset.page === 'focus';
-  if (materialId) session.setMaterial(materialId);
+  // Outside a lesson, a new block is not linked to the last lesson visited.
+  if (!materialId && !document.querySelector('[data-study-tracking-panel]')) session.setMaterial(null);
+  let link = () => {};
+  if (materialId) {
+    // The lesson's title arrives when the page has loaded it.
+    const titleNode = document.querySelector('[data-material-title]');
+    link = () => {
+      const text = titleNode?.getAttribute('aria-busy') === 'true' ? '' : titleNode?.textContent || '';
+      session.setMaterial(materialId, text);
+    };
+    link();
+    if (titleNode) new MutationObserver(link).observe(titleNode, { childList: true, characterData: true, subtree: true, attributes: true });
+  }
 
   // ---- topbar button ---------------------------------------------------------------------
   const nav = document.querySelector('.header-navigation');
@@ -143,6 +155,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   time.setAttribute('aria-live', 'off');
   time.setAttribute('aria-label', 'Tempo do bloco');
   const caption = make('p', null, 'utility-caption');
+  const lesson = make('p', null, 'utility-lesson');
   face.append(ring, time, caption);
   const actions = make('div', null, 'utility-actions');
   const primary = make('button', 'Iniciar foco', 'primary-action utility-primary');
@@ -155,7 +168,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
   const cycles = make('p', null, 'utility-cycles');
-  body.append(modes, face, actions, cycles, status);
+  body.append(modes, face, lesson, actions, cycles, status);
   panel.append(head, body);
 
   // ---- capsule ----------------------------------------------------------------------------
@@ -206,7 +219,11 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   const togglePrimary = () => {
     const state = session.state();
     if (state.status === 'running') void session.pause().catch(() => {});
-    else void session.start({ materialId: materialId ?? undefined }).catch(() => {});
+    else {
+      // A new block started on a lesson page belongs to that lesson.
+      if (state.status === 'idle') link();
+      void session.start({ materialId: materialId ?? undefined }).catch(() => {});
+    }
   };
   trigger.addEventListener('click', () => {
     opener = trigger;
@@ -269,6 +286,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     time.textContent = label;
     capsuleTime.textContent = label;
     capsuleMode.textContent = MODE_LABEL[state.mode];
+    lesson.textContent = state.materialTitle && (state.mode === 'pomodoro' || state.mode === 'reading') ? `Aula: ${state.materialTitle}` : '';
     caption.textContent =
       state.status === 'running'
         ? `${MODE_LABEL[state.mode]} em andamento`

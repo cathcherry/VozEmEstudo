@@ -22,6 +22,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   longEvery: 4, // a long break after this many focus blocks
   autoStart: false, // start the next block when one ends
   sound: true,
+  notify: false, // system notification when a block ends while the page is in the background
 });
 export const MODES = ['pomodoro', 'short', 'long', 'reading'];
 /** A page not seen for longer than this is gone: the run stops at the last time it was seen. */
@@ -43,6 +44,7 @@ export function normalizeSettings(input = {}) {
     longEvery: clampInt(input.longEvery, 2, 8, DEFAULT_SETTINGS.longEvery),
     autoStart: Boolean(input.autoStart ?? DEFAULT_SETTINGS.autoStart),
     sound: Boolean(input.sound ?? DEFAULT_SETTINGS.sound),
+    notify: Boolean(input.notify ?? DEFAULT_SETTINGS.notify),
   };
 }
 export const plannedSeconds = (mode, settings) =>
@@ -62,6 +64,7 @@ export function emptyState(settings = DEFAULT_SETTINGS) {
     lastSeen: null, // epoch ms a page last confirmed the run (running only)
     leader: null,
     materialId: null,
+    materialTitle: null, // shown in the views; the server only receives the id
     server: null, // { id, sequence, pending: {sequence, active, close} | null, lastTickAt, kind }
     cycle: 0, // focus blocks completed since the last long break
     completedToday: 0,
@@ -323,10 +326,17 @@ export function createFocusSession({
     return write(state);
   }
 
-  function setMaterial(materialId) {
+  /** Links the next block to a lesson (only while idle: a running block keeps its lesson). */
+  function setMaterial(materialId, title = null) {
     const state = read();
     if (state.status !== 'idle') return state;
-    state.materialId = materialId || null;
+    const id = materialId || null;
+    const given = String(title || '').trim().slice(0, 160);
+    // Keep the known title only for the same lesson (its title may still be loading).
+    const name = !id ? null : given || (state.materialId === id ? state.materialTitle : null);
+    if (state.materialId === id && state.materialTitle === name) return state;
+    state.materialId = id;
+    state.materialTitle = id ? name : null;
     return write(state);
   }
 
@@ -348,7 +358,7 @@ export function createFocusSession({
     }
     if (finished === 'long') state.cycle = 0;
     state.history = [
-      { mode: finished, seconds, endedAt: at, materialId: state.materialId },
+      { mode: finished, seconds, endedAt: at, materialId: state.materialId, materialTitle: state.materialTitle },
       ...state.history,
     ].slice(0, HISTORY_LIMIT);
     const next = nextModeAfter(state);
