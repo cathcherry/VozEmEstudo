@@ -53,11 +53,24 @@
 <h3>Materiais de apoio</h3>
 <div class="classrooms-toolbar" data-manager-only hidden><button type="button" class="secondary-action" data-classroom-open="resource" aria-haspopup="dialog">Adicionar link</button></div>
 <ul class="classroom-items" data-resources-list></ul>
+<div data-integrated-section hidden>
+<h3>Materiais integrados</h3>
+<p class="tool-hint">Resumos, questões e flashcards feitos de várias aulas, compartilhados por membros. Só leitura: as aulas de origem, as anotações e o histórico de quem compartilhou continuam privados.</p>
+<div class="classrooms-toolbar" data-integrated-share hidden><button type="button" class="secondary-action" data-classroom-open="share-integrated" aria-haspopup="dialog">Compartilhar material integrado</button></div>
+<ul class="classroom-items" data-integrated-list></ul>
+<article class="classroom-reader" data-integrated-reader hidden aria-labelledby="integrated-reader-title" tabindex="-1"></article>
+</div>
 </section>
 <section class="tool-section" id="envios" role="tabpanel" aria-labelledby="tab-envios" hidden>
 <p class="tool-hint" data-submissions-hint></p>
 <div class="classrooms-toolbar" data-student-only hidden><button type="button" class="primary-action" data-classroom-open="submit" aria-haspopup="dialog">Enviar gravação</button></div>
+<h3>Gravações</h3>
 <ul class="classroom-items" data-submissions-list></ul>
+<div data-contributions-section hidden>
+<h3>Flashcards e materiais integrados</h3>
+<p class="tool-hint" data-contributions-hint></p>
+<ul class="classroom-items" data-contributions-list></ul>
+</div>
 </section>
 <section class="tool-section" id="flashcards" role="tabpanel" aria-labelledby="tab-flashcards" hidden>
 <p class="tool-hint">Só o conteúdo dos cartões é compartilhado. O histórico de revisão de cada pessoa nunca aparece aqui.</p>
