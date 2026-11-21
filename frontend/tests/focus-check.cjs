@@ -212,10 +212,12 @@ async function main() {
       await fresh.page.goto(base + '/focar.html');
       await fresh.page.locator('[data-focus-history-list] li', { hasText: 'Bloco do notebook' }).waitFor();
       // A block finished here is added to the account copy, next to the other device's.
-      await fresh.page.evaluate(async () => {
-        const { getFocusSession } = await import('./js/utils/focus-host.js');
-        const session = await getFocusSession();
-        session.mergeHistory([{ mode: 'short', seconds: 300, endedAt: Date.now(), materialId: null }]);
+      // (written straight into this browser's session, as another tab finishing a short break)
+      await fresh.page.evaluate(() => {
+        const key = 'voz-focus-v1:user-dashboard';
+        const stored = JSON.parse(localStorage.getItem(key));
+        stored.history.unshift({ mode: 'short', seconds: 300, endedAt: Date.now(), materialId: null });
+        localStorage.setItem(key, JSON.stringify(stored));
       });
       await fresh.page.waitForFunction(() => document.querySelectorAll('[data-focus-history-list] li').length === 2);
       await fresh.page.waitForTimeout(2500);
