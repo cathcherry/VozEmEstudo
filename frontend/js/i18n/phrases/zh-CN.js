@@ -46,6 +46,7 @@ export default {
   "A senha não atende aos requisitos de segurança: use pelo menos 8 caracteres com letra minúscula, maiúscula, número e símbolo.": "密码不符合安全要求：至少 8 个字符，并包含小写字母、大写字母、数字和符号。",
   "A sessão anterior já foi encerrada. Inicie uma nova sessão.": "上一个会话已结束。请开始新的会话。",
   "A sessão expirou ou foi encerrada. Inicie outra para continuar.": "会话已过期或已结束。请开始新的会话以继续。",
+  "A sincronização falhou. As mudanças continuam salvas neste navegador.": "同步失败。更改仍保存在本浏览器中。",
   "A transcrição ainda não está disponível.": "转写尚不可用。",
   "A transcrição ainda não está disponível. Tente novamente.": "转写尚不可用。请重试。",
   "A transcrição está confirmada. Um resumo ajuda a fixar as ideias principais.": "转写已确认。摘要有助于巩固要点。",
@@ -61,6 +62,7 @@ export default {
   "Abra a unidade ou arraste uma aula para movê-la": "打开单元，或拖动课程进行移动",
   "Abra algumas aulas para ver suas disciplinas favoritas.": "打开一些课程即可查看你最常学的科目。",
   "Abra seu avatar no canto superior direito e escolha Sair da conta.": "点击右上角的头像，选择退出登录。",
+  "Abra seu avatar no canto superior direito e escolha Sair da conta. Sair não apaga nada deste navegador; para isso, use \"Apagar dados desta conta neste navegador\" abaixo.": "点击右上角的头像并选择“退出登录”。退出登录不会删除本浏览器中的任何内容；如需删除，请使用下方的“删除此账户在本浏览器中的数据”。",
   "Abra uma aula na": "在",
   "Abrindo a aula…": "正在打开课程…",
   "Abrindo aula": "正在打开课程",
@@ -101,6 +103,7 @@ export default {
   "Aguardando nova tentativa…": "等待重试…",
   "Aguarde": "请稍候",
   "Aguarde um instante…": "请稍候…",
+  "Ainda há mudanças pendentes.": "仍有待同步的更改。",
   "Ainda não ativado neste servidor": "此服务器尚未启用",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "此转写尚无分析。你可以在上方请求提示。",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "暂无卡组。请在课程的“摘要”标签页中创建。",
@@ -141,6 +144,11 @@ export default {
   "Anterior": "上一题",
   "Ao finalizar a lista": "完成列表后",
   "Ao revisar um conteúdo, podemos identificar o que já compreendemos e os pontos que precisam de mais atenção.": "复习内容时，我们可以分辨已经理解的部分和需要更多关注的要点。",
+  "Apagando…": "正在删除…",
+  "Apagar dados desta conta neste navegador e sair": "删除此账户在本浏览器中的数据并退出登录",
+  "Apagar dados desta conta neste navegador?": "删除此账户在本浏览器中的数据？",
+  "Apagar e sair": "删除并退出",
+  "Apagar mesmo assim e sair": "仍然删除并退出",
   "Apagar o áudio após transcrever": "转写后删除音频",
   "Aparência": "外观",
   "Aparência aplicada com contraste ajustado.": "外观已应用，对比度已调整。",
@@ -180,6 +188,7 @@ export default {
   "Arraste para redimensionar · clique duplo para restaurar": "拖动以调整大小 · 双击恢复",
   "Arraste uma gravação": "拖入录音",
   "Arredondada": "圆体",
+  "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "此账户在本浏览器中的副本将被删除，你也会退出登录。已保存到账户中的内容仍会保留。",
   "As disciplinas que você mais revisita.": "你最常回顾的科目。",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "答案将保存到你的账户。完成后可以复习错题。",
   "As senhas não coincidem.": "两次输入的密码不一致。",
@@ -221,7 +230,7 @@ export default {
   "Avaliação crítica": "批判性评价",
   "Avaliação crítica, quando a aula sustentar": "批判性评价（课程内容支持时）",
   "Avançado": "高级",
-  "Avançar 10 segundos": "快进 10 秒",
+  "Avançar 10 segundos": "前进 10 秒",
   "Avançar ou voltar entre os controles": "在控件之间前后切换",
   "Avance, dê um título à aula e escolha a quantidade de questões.": "继续，为课程命名并选择题目数量。",
   "Avatar aplicado": "头像已应用",
@@ -374,6 +383,7 @@ export default {
   "Conheça quem desenvolve o Voz em Estudo.": "认识 Voz em Estudo 的开发者。",
   "Conhecer os recursos": "了解功能",
   "Conjunto": "卡组",
+  "Conjunto (opcional)": "卡组（可选）",
   "Conjunto excluído.": "卡组已删除。",
   "Conjunto renomeado.": "卡组已重命名。",
   "Conjuntos": "卡组",
@@ -721,6 +731,7 @@ export default {
   "Guia de leitura": "阅读辅助",
   "Há andamento local aguardando sincronização.": "有本地进度等待同步。",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "设备之间存在冲突，请在下方选择保留哪份进度。",
+  "Há mudanças salvas só neste navegador, aguardando sincronização.": "有些更改只保存在本浏览器中，正在等待同步。",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "本地和账户中各有版本，请选择保留哪一个。",
   "Habilidades cognitivas": "认知能力",
   "Histórico de revisões": "复习记录",
@@ -759,6 +770,7 @@ export default {
   "Inglês (Reino Unido)": "英语（英国）",
   "Iniciado há poucos segundos": "几秒前开始",
   "Iniciando a transcrição…": "正在开始转写…",
+  "Iniciar / retomar": "开始 / 继续",
   "Iniciar a transcrição": "开始转写",
   "Inicie uma sessão para registrar tempo na conta. A contagem pausa ao sair desta aba. Minutos de estudo e trecho ouvido são indicadores diferentes.": "开始一次学习时段，即可将时间记录到账户。离开此标签页时计时会暂停。学习分钟数与已收听片段是不同的指标。",
   "Início": "首页",
@@ -820,6 +832,7 @@ export default {
   "Mais lenta": "较慢",
   "Mais opções": "更多选项",
   "Mais rápida": "较快",
+  "mais recente": "最新",
   "Mais recentes": "最新",
   "Mais revisitados": "最常回顾",
   "Mantenha esta aba visível e em foco para iniciar.": "请保持此标签页可见并处于焦点以开始。",
@@ -845,7 +858,7 @@ export default {
   "Meta semanal e fuso horário": "每周目标和时区",
   "Meta semanal em minutos (0 desativa)": "每周目标（分钟，0 表示关闭）",
   "Meu estudo": "我的学习",
-  "Meu percurso": "我的历程",
+  "Meu percurso": "我的学习历程",
   "Meu perfil": "我的个人资料",
   "MEU RITMO DE ESTUDO": "我的学习节奏",
   "Meu universo": "我的宇宙",
@@ -1157,6 +1170,7 @@ export default {
   "Pequenos passos": "小步前进",
   "Perfil atualizado.": "个人资料已更新。",
   "Perfil, blocos, fotos, preferências, histórico e conquistas são sincronizados com sua conta no Supabase. Uma cópia local permite continuar usando o site sem conexão; alterações pendentes são enviadas quando a conexão retorna. Esses dados ficam restritos à sua conta.": "个人资料、区块、照片、偏好设置、历史记录和里程碑会与你在 Supabase 中的账户同步。本地副本让你在离线时也能继续使用网站；网络恢复后会发送未同步的更改。这些数据仅限你的账户访问。",
+  "Perfil, layout do Início, preferências e histórico de estudo ficam na sua conta e voltam quando você entrar de novo. Apagar remove só as cópias desta conta neste navegador; outras contas e as preferências do dispositivo continuam.": "个人资料、首页布局、偏好设置和学习记录保存在你的账户中，再次登录时会恢复。删除只会移除此账户在本浏览器中的副本；其他账户和设备偏好不受影响。",
   "Perfil, objetivo de estudo e oito avatares do Nino, pelo atalho no cabeçalho.": "个人资料、学习目标和八款 Nino 头像，可通过页眉中的快捷入口访问。",
   "Pergunta e resposta": "问答",
   "Pergunta ou conceito": "问题或概念",
@@ -1393,6 +1407,7 @@ export default {
   "Selecione uma aula": "选择课程",
   "Sem aula": "无课程",
   "Sem aula vinculada": "未关联课程",
+  "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "无网络连接：更改已保存在本浏览器中，联网后会自动上传。",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "账户未确认。进度仍保存在此浏览器中，将以相同标识重新提交。",
   "Sem conjunto": "无卡组",
   "Sem disciplina": "无科目",
@@ -1427,7 +1442,10 @@ export default {
   "Simples, com glossário": "简明，附术语表",
   "Sincronização da conta": "账户同步",
   "Sincronização e andamento deste navegador": "此浏览器的同步与进度",
+  "Sincronização e dados neste navegador": "同步与此浏览器中的数据",
+  "Sincronizando…": "正在同步…",
   "Sincronizar agora": "立即同步",
+  "Sincronizar primeiro": "先同步",
   "Síntese": "综述",
   "Síntese, quando a aula sustentar": "综合（课程内容支持时）",
   "Sistema": "系统",
@@ -1548,6 +1566,8 @@ export default {
   "Trocar arquivo": "更换文件",
   "Trocar entre Transcrição, Resumo e Questões": "在转写、摘要和题目之间切换",
   "Tudo certo": "一切就绪",
+  "Tudo foi enviado para a conta. Agora é seguro apagar.": "所有内容都已上传到账户，现在可以安全删除。",
+  "Tudo salvo na sua conta.": "所有内容都已保存到你的账户。",
   "Turquesa e azul profundo.": "青绿与深蓝。",
   "Último acesso": "最近访问",
   "Um cantinho para a sua curiosidade": "属于你好奇心的小角落",
@@ -1587,6 +1607,7 @@ export default {
   "Vamos descobrir": "一起去发现",
   "Vamos tentar de novo?": "再试一次？",
   "Veja o que fica na sua conta, o que permanece neste navegador e como os arquivos são processados.": "了解哪些内容保存在你的账户中、哪些保留在此浏览器中，以及文件如何处理。",
+  "Velocidade": "速度",
   "Velocidade da voz": "语速",
   "Velocidade de reprodução": "播放速度",
   "Ver andamento": "查看进度",
@@ -1600,6 +1621,7 @@ export default {
   "Ver todos": "查看全部",
   "Verde": "绿色",
   "Verde folha e menta.": "叶绿与薄荷。",
+  "Verificando…": "正在检查…",
   "Verifique a conexão e tente de novo. As outras seções continuam disponíveis.": "请检查网络连接后重试。其他部分仍可使用。",
   "versão anterior": "旧版本",
   "Versão do resumo": "摘要版本",
@@ -1620,11 +1642,13 @@ export default {
   "Você pode responder às questões geradas a partir do material, conferir as explicações e voltar à transcrição para retomar uma dúvida. A proposta é conectar a prática ao conteúdo da sua própria aula.": "你可以回答根据资料生成的题目，查看解析，并回到转写中回顾疑问。目的是将练习与你自己的课程内容联系起来。",
   "Você pode salvar até 12 temas. Exclua um tema para criar outro.": "最多可保存 12 个主题。删除一个主题后才能新建。",
   "Voltar": "返回",
+  "Voltar 10 segundos": "后退 10 秒",
   "Voltar à Biblioteca": "返回资料库",
   "Voltar ao início": "返回首页",
   "Voltar ao login": "返回登录",
   "Voltar ao material": "返回资料",
   "Voltar ou avançar 10 segundos": "后退或快进 10 秒",
+  "Volume": "音量",
   "Voz": "Voz",
   "Voz em Estudo": "Voz em Estudo",
   "Voz em Estudo — aprender com a sua voz, no seu ritmo.": "Voz em Estudo — 用你的声音，按你的节奏学习。",
@@ -1675,6 +1699,10 @@ export default {
   [
    "O texto transcrito é enviado a {0} para avisos preliminares e, após sua confirmação, resumo e questões.",
    "转写文本会发送给 {0}，用于初步提示，并在你确认后生成摘要和题目。"
+  ],
+  [
+   "Atenção: ainda não foram enviados para a conta: {0}. Se apagar agora, essas mudanças serão perdidas.",
+   "注意：以下内容尚未上传到账户：{0}。如果现在删除，这些更改将会丢失。"
   ],
   [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
@@ -1855,6 +1883,10 @@ export default {
   [
    "{0} XP para o próximo nível",
    "距下一级还差 {0} XP"
+  ],
+  [
+   "{0} XP · {1}/{2} conquistas",
+   "{0} XP · {1}/{2} 个里程碑"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2101,6 +2133,10 @@ export default {
    "第 {0}–{1} 条，共 {2} 条"
   ],
   [
+   "Pendente: {0}.",
+   "待同步：{0}。"
+  ],
+  [
    "- Revisão {0}",
    "- 版本 {0}"
   ],
@@ -2129,8 +2165,20 @@ export default {
    "版本 {0}"
   ],
   [
+   "Ocultar {0}",
+   "隐藏{0}"
+  ],
+  [
+   "Mostrar {0}",
+   "显示{0}"
+  ],
+  [
    "Versão {0}",
    "版本 {0}"
+  ],
+  [
+   "Prazo: {0}",
+   "截止：{0}"
   ],
   [
    "Nível {0}",

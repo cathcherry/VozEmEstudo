@@ -46,6 +46,7 @@ export default {
   "A senha não atende aos requisitos de segurança: use pelo menos 8 caracteres com letra minúscula, maiúscula, número e símbolo.": "La contraseña no cumple los requisitos de seguridad: usa al menos 8 caracteres con minúscula, mayúscula, número y símbolo.",
   "A sessão anterior já foi encerrada. Inicie uma nova sessão.": "La sesión anterior ya terminó. Inicia una nueva sesión.",
   "A sessão expirou ou foi encerrada. Inicie outra para continuar.": "La sesión expiró o se cerró. Inicia otra para continuar.",
+  "A sincronização falhou. As mudanças continuam salvas neste navegador.": "La sincronización falló. Los cambios siguen guardados en este navegador.",
   "A transcrição ainda não está disponível.": "La transcripción aún no está disponible.",
   "A transcrição ainda não está disponível. Tente novamente.": "La transcripción aún no está disponible. Inténtalo de nuevo.",
   "A transcrição está confirmada. Um resumo ajuda a fixar as ideias principais.": "La transcripción está confirmada. Un resumen ayuda a fijar las ideas principales.",
@@ -61,6 +62,7 @@ export default {
   "Abra a unidade ou arraste uma aula para movê-la": "Abre la unidad o arrastra una clase para moverla",
   "Abra algumas aulas para ver suas disciplinas favoritas.": "Abre algunas clases para ver tus asignaturas favoritas.",
   "Abra seu avatar no canto superior direito e escolha Sair da conta.": "Abre tu avatar en la esquina superior derecha y elige Cerrar sesión.",
+  "Abra seu avatar no canto superior direito e escolha Sair da conta. Sair não apaga nada deste navegador; para isso, use \"Apagar dados desta conta neste navegador\" abaixo.": "Abre tu avatar arriba a la derecha y elige Cerrar sesión. Cerrar sesión no borra nada de este navegador; para eso, usa \"Borrar los datos de esta cuenta en este navegador\" abajo.",
   "Abra uma aula na": "Abre una clase en la",
   "Abrindo a aula…": "Abriendo la clase…",
   "Abrindo aula": "Abriendo clase",
@@ -101,6 +103,7 @@ export default {
   "Aguardando nova tentativa…": "Esperando un nuevo intento…",
   "Aguarde": "Espera",
   "Aguarde um instante…": "Espera un momento…",
+  "Ainda há mudanças pendentes.": "Todavía hay cambios pendientes.",
   "Ainda não ativado neste servidor": "Aún no activado en este servidor",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "Aún no hay análisis de esta transcripción. Puedes solicitar los avisos de arriba.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "Aún no hay conjuntos. Crea uno en la pestaña Resumen de una clase.",
@@ -141,6 +144,11 @@ export default {
   "Anterior": "Anterior",
   "Ao finalizar a lista": "Al terminar la lista",
   "Ao revisar um conteúdo, podemos identificar o que já compreendemos e os pontos que precisam de mais atenção.": "Al repasar un contenido, podemos identificar lo que ya entendemos y los puntos que necesitan más atención.",
+  "Apagando…": "Borrando…",
+  "Apagar dados desta conta neste navegador e sair": "Borrar los datos de esta cuenta en este navegador y cerrar sesión",
+  "Apagar dados desta conta neste navegador?": "¿Borrar los datos de esta cuenta en este navegador?",
+  "Apagar e sair": "Borrar y cerrar sesión",
+  "Apagar mesmo assim e sair": "Borrar de todos modos y cerrar sesión",
   "Apagar o áudio após transcrever": "Borrar el audio después de transcribir",
   "Aparência": "Apariencia",
   "Aparência aplicada com contraste ajustado.": "Apariencia aplicada con contraste ajustado.",
@@ -180,6 +188,7 @@ export default {
   "Arraste para redimensionar · clique duplo para restaurar": "Arrastra para redimensionar · doble clic para restaurar",
   "Arraste uma gravação": "Arrastra una grabación",
   "Arredondada": "Redondeada",
+  "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "Se borrarán las copias de esta cuenta en este navegador y se cerrará tu sesión. Lo que ya está guardado en la cuenta sigue allí.",
   "As disciplinas que você mais revisita.": "Las asignaturas que más repasas.",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "Las respuestas se guardarán en tu cuenta. Al terminar, podrás repasar tus fallos.",
   "As senhas não coincidem.": "Las contraseñas no coinciden.",
@@ -374,6 +383,7 @@ export default {
   "Conheça quem desenvolve o Voz em Estudo.": "Conoce a quienes desarrollan Voz em Estudo.",
   "Conhecer os recursos": "Conocer las funciones",
   "Conjunto": "Conjunto",
+  "Conjunto (opcional)": "Conjunto (opcional)",
   "Conjunto excluído.": "Conjunto eliminado.",
   "Conjunto renomeado.": "Conjunto renombrado.",
   "Conjuntos": "Conjuntos",
@@ -721,6 +731,7 @@ export default {
   "Guia de leitura": "Guía de lectura",
   "Há andamento local aguardando sincronização.": "Hay progreso local esperando sincronización.",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "Hay un conflicto entre dispositivos. Elige abajo qué progreso conservar.",
+  "Há mudanças salvas só neste navegador, aguardando sincronização.": "Hay cambios guardados solo en este navegador, pendientes de sincronizar.",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "Hay versiones locales y de la cuenta para comparar. Elige cuál conservar.",
   "Habilidades cognitivas": "Habilidades cognitivas",
   "Histórico de revisões": "Historial de repasos",
@@ -759,6 +770,7 @@ export default {
   "Inglês (Reino Unido)": "Inglés (Reino Unido)",
   "Iniciado há poucos segundos": "Iniciado hace unos segundos",
   "Iniciando a transcrição…": "Iniciando la transcripción…",
+  "Iniciar / retomar": "Iniciar / reanudar",
   "Iniciar a transcrição": "Iniciar la transcripción",
   "Inicie uma sessão para registrar tempo na conta. A contagem pausa ao sair desta aba. Minutos de estudo e trecho ouvido são indicadores diferentes.": "Inicia una sesión para registrar tiempo en la cuenta. El conteo se pausa al salir de esta pestaña. Los minutos de estudio y el fragmento escuchado son indicadores distintos.",
   "Início": "Inicio",
@@ -820,6 +832,7 @@ export default {
   "Mais lenta": "Más lenta",
   "Mais opções": "Más opciones",
   "Mais rápida": "Más rápida",
+  "mais recente": "más reciente",
   "Mais recentes": "Más recientes",
   "Mais revisitados": "Más revisitadas",
   "Mantenha esta aba visível e em foco para iniciar.": "Mantén esta pestaña visible y en primer plano para empezar.",
@@ -1157,6 +1170,7 @@ export default {
   "Pequenos passos": "Pequeños pasos",
   "Perfil atualizado.": "Perfil actualizado.",
   "Perfil, blocos, fotos, preferências, histórico e conquistas são sincronizados com sua conta no Supabase. Uma cópia local permite continuar usando o site sem conexão; alterações pendentes são enviadas quando a conexão retorna. Esses dados ficam restritos à sua conta.": "El perfil, los bloques, las fotos, las preferencias, el historial y los hitos se sincronizan con tu cuenta en Supabase. Una copia local te permite seguir usando el sitio sin conexión; los cambios pendientes se envían cuando vuelve la conexión. Estos datos quedan restringidos a tu cuenta.",
+  "Perfil, layout do Início, preferências e histórico de estudo ficam na sua conta e voltam quando você entrar de novo. Apagar remove só as cópias desta conta neste navegador; outras contas e as preferências do dispositivo continuam.": "El perfil, el diseño del Inicio, las preferencias y el historial de estudio quedan en tu cuenta y vuelven al iniciar sesión de nuevo. Borrar quita solo las copias de esta cuenta en este navegador; otras cuentas y las preferencias del dispositivo se mantienen.",
   "Perfil, objetivo de estudo e oito avatares do Nino, pelo atalho no cabeçalho.": "Perfil, objetivo de estudio y ocho avatares de Nino, desde el acceso en el encabezado.",
   "Pergunta e resposta": "Pregunta y respuesta",
   "Pergunta ou conceito": "Pregunta o concepto",
@@ -1393,6 +1407,7 @@ export default {
   "Selecione uma aula": "Selecciona una clase",
   "Sem aula": "Sin clase",
   "Sem aula vinculada": "Sin clase vinculada",
+  "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "Sin conexión: los cambios están guardados en este navegador y se enviarán cuando vuelva la conexión.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "Sin confirmación de la cuenta. El progreso sigue en este navegador y el envío se repetirá con la misma identificación.",
   "Sem conjunto": "Sin conjunto",
   "Sem disciplina": "Sin asignatura",
@@ -1427,7 +1442,10 @@ export default {
   "Simples, com glossário": "Sencillo, con glosario",
   "Sincronização da conta": "Sincronización de la cuenta",
   "Sincronização e andamento deste navegador": "Sincronización y progreso de este navegador",
+  "Sincronização e dados neste navegador": "Sincronización y datos en este navegador",
+  "Sincronizando…": "Sincronizando…",
   "Sincronizar agora": "Sincronizar ahora",
+  "Sincronizar primeiro": "Sincronizar primero",
   "Síntese": "Síntesis",
   "Síntese, quando a aula sustentar": "Síntesis, cuando la clase lo permita",
   "Sistema": "Sistema",
@@ -1548,6 +1566,8 @@ export default {
   "Trocar arquivo": "Cambiar archivo",
   "Trocar entre Transcrição, Resumo e Questões": "Cambiar entre Transcripción, Resumen y Preguntas",
   "Tudo certo": "Todo listo",
+  "Tudo foi enviado para a conta. Agora é seguro apagar.": "Todo se envió a la cuenta. Ya es seguro borrar.",
+  "Tudo salvo na sua conta.": "Todo está guardado en tu cuenta.",
   "Turquesa e azul profundo.": "Turquesa y azul profundo.",
   "Último acesso": "Último acceso",
   "Um cantinho para a sua curiosidade": "Un rincón para tu curiosidad",
@@ -1587,6 +1607,7 @@ export default {
   "Vamos descobrir": "¿Vamos a descubrir",
   "Vamos tentar de novo?": "¿Lo intentamos de nuevo?",
   "Veja o que fica na sua conta, o que permanece neste navegador e como os arquivos são processados.": "Mira qué queda en tu cuenta, qué permanece en este navegador y cómo se procesan los archivos.",
+  "Velocidade": "Velocidad",
   "Velocidade da voz": "Velocidad de la voz",
   "Velocidade de reprodução": "Velocidad de reproducción",
   "Ver andamento": "Ver progreso",
@@ -1600,6 +1621,7 @@ export default {
   "Ver todos": "Ver todos",
   "Verde": "Verde",
   "Verde folha e menta.": "Verde hoja y menta.",
+  "Verificando…": "Comprobando…",
   "Verifique a conexão e tente de novo. As outras seções continuam disponíveis.": "Revisa la conexión e inténtalo de nuevo. Las demás secciones siguen disponibles.",
   "versão anterior": "versión anterior",
   "Versão do resumo": "Versión del resumen",
@@ -1620,11 +1642,13 @@ export default {
   "Você pode responder às questões geradas a partir do material, conferir as explicações e voltar à transcrição para retomar uma dúvida. A proposta é conectar a prática ao conteúdo da sua própria aula.": "Puedes responder las preguntas generadas a partir del material, consultar las explicaciones y volver a la transcripción para retomar una duda. La idea es conectar la práctica con el contenido de tu propia clase.",
   "Você pode salvar até 12 temas. Exclua um tema para criar outro.": "Puedes guardar hasta 12 temas. Elimina uno para crear otro.",
   "Voltar": "Volver",
+  "Voltar 10 segundos": "Retroceder 10 segundos",
   "Voltar à Biblioteca": "Volver a la Biblioteca",
   "Voltar ao início": "Volver al inicio",
   "Voltar ao login": "Volver al inicio de sesión",
   "Voltar ao material": "Volver al material",
   "Voltar ou avançar 10 segundos": "Retroceder o avanzar 10 segundos",
+  "Volume": "Volumen",
   "Voz": "Voz",
   "Voz em Estudo": "Voz em Estudo",
   "Voz em Estudo — aprender com a sua voz, no seu ritmo.": "Voz em Estudo — aprende con tu voz, a tu ritmo.",
@@ -1675,6 +1699,10 @@ export default {
   [
    "O texto transcrito é enviado a {0} para avisos preliminares e, após sua confirmação, resumo e questões.",
    "El texto transcrito se envía a {0} para avisos preliminares y, tras tu confirmación, el resumen y las preguntas."
+  ],
+  [
+   "Atenção: ainda não foram enviados para a conta: {0}. Se apagar agora, essas mudanças serão perdidas.",
+   "Atención: aún no se enviaron a la cuenta: {0}. Si borras ahora, esos cambios se perderán."
   ],
   [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
@@ -1855,6 +1883,10 @@ export default {
   [
    "{0} XP para o próximo nível",
    "{0} XP para el siguiente nivel"
+  ],
+  [
+   "{0} XP · {1}/{2} conquistas",
+   "{0} XP · {1}/{2} hitos"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2101,6 +2133,10 @@ export default {
    "{0}–{1} de {2}"
   ],
   [
+   "Pendente: {0}.",
+   "Pendiente: {0}."
+  ],
+  [
    "- Revisão {0}",
    "- Versión {0}"
   ],
@@ -2129,8 +2165,20 @@ export default {
    "Versión {0}"
   ],
   [
+   "Ocultar {0}",
+   "Ocultar {0}"
+  ],
+  [
+   "Mostrar {0}",
+   "Mostrar {0}"
+  ],
+  [
    "Versão {0}",
    "Versión {0}"
+  ],
+  [
+   "Prazo: {0}",
+   "Plazo: {0}"
   ],
   [
    "Nível {0}",

@@ -110,3 +110,36 @@ test('long text and scripts are skipped quickly', () => {
   assert.equal(tr.phrase('a '.repeat(200000)), null);
   assert(Date.now() - started < 50, 'long text is not matched against patterns');
 });
+
+test('static page text is in the catalog (new interface text needs a translation)', async () => {
+  const { readdirSync, readFileSync } = await import('node:fs');
+  const { USER_CONTENT } = await import('../js/i18n/phrases.js');
+  const tr = createPhraseTranslator(en);
+  const missing = new Set();
+  let total = 0;
+  for (const file of readdirSync(new URL('../pages/', import.meta.url))) {
+    if (!file.endsWith('.html') || file === 'leitura.html') continue;
+    const { document } = new JSDOM(
+      readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8'),
+    ).window;
+    document.querySelectorAll('script,style,svg').forEach((node) => node.remove());
+    const walker = document.createTreeWalker(document.body, 4);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const text = node.data.replace(/\s+/g, ' ').trim();
+      if (!/[a-zà-ú]{2}/i.test(text) || node.parentElement.closest(USER_CONTENT)) continue;
+      total += 1;
+      if (tr.phrase(text) === null) missing.add(`${file}: ${text.slice(0, 60)}`);
+    }
+  }
+  // Brand words, font names and sample values may legitimately stay as they are.
+  const allowed = [...missing].filter(
+    (m) =>
+      !/: (Voz|em|Estudo|Voz em Estudo|Nino|Aa|A[−+]|[A-Z][a-z]+ ?[A-Z]?[a-z]*|Português \(Brasil\)|English|Español|简体中文)$/.test(
+        m,
+      ),
+  );
+  assert(
+    allowed.length / total < 0.03,
+    `${allowed.length} of ${total} untranslated:\n${allowed.slice(0, 30).join('\n')}`,
+  );
+});
