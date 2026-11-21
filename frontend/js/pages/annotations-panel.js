@@ -70,6 +70,8 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
         }list.append(card);
       }
       count.textContent=`${result.notes.length?offset+1:0}–${offset+result.notes.length} de ${total}`;
+      // One page or none: the page controls only add noise.
+      nav.hidden=total<=pageSize&&offset===0;
     }catch(error){if(request===version){list.replaceChildren();status.textContent=error.message;if(!materialId)signal('notes',{error:error.message||'Anotações indisponíveis.'});}}
     finally{if(request===version){find.disabled=false;previous.disabled=offset===0;next.disabled=offset+pageSize>=total;}}
   }

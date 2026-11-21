@@ -123,3 +123,63 @@ body:is([data-page='plan'],[data-page='review']) .flashcard-draft {
 .flashcard-set-row h4{margin:0;font-family:var(--ue-serif,Georgia,serif);overflow-wrap:anywhere}
 .flashcard-set-row p{margin:2px 0 6px}
 .flashcard-sets .proposal-actions{display:flex;flex-wrap:wrap;gap:4px 10px}
+
+/* Filters: one quiet line, not a form block. */
+body:is([data-page='plan'],[data-page='review']) .flashcard-filters { gap: 8px 20px; align-items: center; margin: 6px 0 18px; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-filters label {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: .85rem;
+}
+body:is([data-page='plan'],[data-page='review']) .flashcard-filters select { width: auto; max-width: 16rem; min-height: 40px; padding-block: 6px; font-size: .9rem; }
+
+/* New cards: two choices as tiles; each opens a dialog. */
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-actions { display: grid; gap: 10px; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-tile {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-tile:hover { border-color: var(--accent-strong); background: var(--surface-alt); }
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-tile strong { font-size: 1rem; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-tile span { color: var(--muted); font-size: .88rem; }
+body:is([data-page='plan'],[data-page='review']) .flashcard-create-done:not(:empty) {
+  margin: 10px 0 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  font-size: .92rem;
+}
+.flashcard-dialog { width: min(600px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+.flashcard-dialog h2 { margin-right: 48px; }
+.flashcard-dialog .flashcard-dialog-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.flashcard-dialog :is(textarea, select) { width: 100%; }
+.flashcard-dialog .flashcard-form { display: grid; gap: 12px; }
+.flashcard-dialog .flashcard-form label { display: grid; gap: 6px; font-weight: 600; }
+.flashcard-dialog .flashcard-form [type='submit'] { justify-self: end; }

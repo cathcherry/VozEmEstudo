@@ -36,6 +36,31 @@ export async function initFlashcardsPanel({ materials }) {
   const backInput = createForm.querySelector('[name="back"]');
   const materialInput = createForm.querySelector('[name="materialId"]');
   const createMessage = panel.querySelector('[data-flashcard-create-status]');
+  // Creating cards happens in dialogs opened from two buttons; the review stays the focus here.
+  const dialogs = {
+    generate: panel.querySelector('[data-flashcard-generate-disclosure]'),
+    create: panel.querySelector('[data-flashcard-create-disclosure]'),
+  };
+  const createDone = panel.querySelector('[data-flashcard-create-done]');
+  const openDialog = (kind, focus) => {
+    const dialog = dialogs[kind];
+    if (!dialog || dialog.tagName !== 'DIALOG') return;
+    for (const other of Object.values(dialogs)) if (other !== dialog && other?.open) other.close?.();
+    if (!dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+    (focus || dialog.querySelector('select, textarea, input'))?.focus();
+  };
+  for (const button of panel.querySelectorAll('[data-flashcard-open]')) {
+    button.addEventListener('click', () => { if (createDone) setStatus(createDone, ''); openDialog(button.dataset.flashcardOpen); });
+  }
+  for (const dialog of Object.values(dialogs)) {
+    if (dialog?.tagName !== 'DIALOG') continue;
+    dialog.querySelector('[data-flashcard-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => {
+      const kind = Object.keys(dialogs).find((key) => dialogs[key] === dialog);
+      setTimeout(() => panel.querySelector(`[data-flashcard-open="${kind}"]`)?.focus(), 0);
+    });
+  }
   const reviewMessage = panel.querySelector('[data-flashcard-review-status]');
   const count = panel.querySelector('[data-flashcard-count]');
   const dueArea = panel.querySelector('[data-flashcard-due-area]');
@@ -100,8 +125,8 @@ export async function initFlashcardsPanel({ materials }) {
       (dueArea.querySelector('button') || count)?.focus?.();
       dueArea.scrollIntoView?.({ block: 'nearest' });
     } else if (action === 'create') {
-      const summary = panel.querySelector('[data-flashcard-generate-disclosure] > summary')
-        || panel.querySelector('[data-flashcard-create-disclosure] > summary');
+      const summary = panel.querySelector('[data-flashcard-open="generate"]')
+        || panel.querySelector('[data-flashcard-generate-disclosure] > summary');
       summary?.focus();
       summary?.scrollIntoView?.({ block: 'nearest' });
     }
@@ -132,6 +157,7 @@ export async function initFlashcardsPanel({ materials }) {
           use.addEventListener('click', () => {
             const disclosure = createForm.closest('details');
             if (disclosure) disclosure.open = true;
+            else openDialog('create', frontInput);
             frontInput.value = card.front;
             backInput.value = card.back;
             materialInput.value = selectedMaterial;
@@ -455,6 +481,11 @@ export async function initFlashcardsPanel({ materials }) {
           });
         createForm.reset();
         setStatus(createMessage, 'Cartão criado e disponível para a primeira revisão.', 'success');
+        if (dialogs.create?.open) {
+          dialogs.create.close();
+          setStatus(createMessage, '');
+          if (createDone) setStatus(createDone, 'Cartão criado e disponível para a primeira revisão.', 'success');
+        }
         await refresh();
         await afterCreate();
       } catch (error) {

@@ -399,6 +399,13 @@ async function setup(context, base, flags, data, options = {}) {
       const cards = filter === 'due' ? data.dueCards : (data.allCards ?? data.dueCards);
       return json({ cards, total: cards.length, limit: 100, offset: 0 });
     }
+    if (p === '/api/flashcards' && method === 'POST') {
+      const body = request.postDataJSON() || {};
+      const card = { id: `fc-${Date.now()}`, front: body.front, back: body.back,
+        material_id: body.materialId || null, due_at: new Date().toISOString(), archived_at: null };
+      data.createdCards = [...(data.createdCards || []), card];
+      return json(card, 201);
+    }
     if (/^\/api\/flashcards\/[^/]+\/reviews$/.test(p) && method === 'POST') {
       data.reviews++;
       const id = p.split('/')[3];

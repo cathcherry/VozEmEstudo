@@ -34,8 +34,13 @@
 </div>
 <div class="flashcard-column flashcard-create-column">
 <h3>Novos cartões</h3>
-<details class="flashcard-disclosure" data-flashcard-generate-disclosure><summary>Gerar cartões com IA</summary><div data-flashcard-generator-slot></div></details>
-<details class="flashcard-disclosure" data-flashcard-create-disclosure><summary>Criar cartão manualmente</summary>
+<div class="flashcard-create-actions">
+<button type="button" class="flashcard-create-tile" data-flashcard-open="generate" aria-haspopup="dialog"><strong>Gerar cartões com IA</strong><span>Sugestões a partir da transcrição confirmada de uma aula.</span></button>
+<button type="button" class="flashcard-create-tile" data-flashcard-open="create" aria-haspopup="dialog"><strong>Criar cartão manualmente</strong><span>Escreva a pergunta e a resposta.</span></button>
+</div>
+<p class="flashcard-create-done" data-flashcard-create-done role="status" aria-live="polite"></p>
+<dialog class="app-dialog flashcard-dialog" data-flashcard-generate-disclosure aria-labelledby="flashcard-generate-title"><button type="button" class="dialog-close flashcard-dialog-close" data-flashcard-close aria-label="Fechar">×</button><h2 id="flashcard-generate-title">Gerar cartões com IA</h2><div data-flashcard-generator-slot></div></dialog>
+<dialog class="app-dialog flashcard-dialog" data-flashcard-create-disclosure aria-labelledby="flashcard-create-title"><button type="button" class="dialog-close flashcard-dialog-close" data-flashcard-close aria-label="Fechar">×</button><h2 id="flashcard-create-title">Criar cartão</h2>
 <form data-flashcard-create-form class="flashcard-form">
 <label for="flashcard-front">Pergunta ou conceito
 <textarea id="flashcard-front" name="front" maxlength="1000" rows="3" required></textarea></label>
@@ -44,7 +49,7 @@
 <label for="flashcard-material">Aula relacionada (opcional)
 <select id="flashcard-material" name="materialId"></select></label>
 <button type="submit" class="secondary-action">Criar cartão</button>
-</form></details><p data-flashcard-create-status role="status" aria-live="polite"></p>
+</form><p data-flashcard-create-status role="status" aria-live="polite"></p></dialog>
 </div>
 </div>
 <details class="flashcard-management">

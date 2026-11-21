@@ -106,6 +106,40 @@ Proposta (não aplicada, pede aprovação): usar a **hora do servidor** na dispu
 `profile_state` — um `default now()`/trigger em `updated_at` e uma RPC de gravação condicional —
 para que relógios errados de aparelhos não percam edições (§5.4).
 
+## 6.2 Polimento de UI/UX (22/11/2026)
+
+**Feito** (branch `feat/personalization-2-0`, testado em navegador simulado a 1280 e 390 px):
+
+- **Tempo de estudo** (Planejar e aula): anel de foco com um único botão Iniciar/Pausar/Retomar,
+  modos Foco/Pausa/Livre em chips, pontos de ciclos concluídos, Nino no anel (parado com
+  movimento reduzido), gráfico de colunas da semana com a meta. Meta, fuso e sincronização foram
+  para um diálogo (engrenagem); o diálogo abre sozinho se houver conflito. A atualização dos
+  indicadores é automática (saiu "Atualizar indicadores").
+- **Objetivos e tarefas**: criação em diálogo (nenhum formulário fica aberto na página); estado
+  vazio em cartão com a primeira ação; "Nova tarefa" começa pelo título com o objetivo já escolhido
+  e deixa subobjetivo, aula e link a um clique; filtros numa linha discreta; confirmações num aviso
+  que some sozinho.
+- **Calendário**: navegação por mês (‹ › Hoje), grade compacta com pontos ao lado da agenda,
+  "Agendar estudo" como botão principal que abre um diálogo, agenda vazia com ação.
+- **Revisar › Flashcards**: "Gerar cartões com IA" e "Criar cartão manualmente" viraram botões que
+  abrem diálogos (antes ficavam escondidos em seções recolhidas); filtros numa linha.
+- **Estados vazios** (`ninoNote`): Nino e o texto no mesmo cartão, com título e ação opcionais,
+  em todas as abas que usam o componente.
+
+**Propostas futuras (não implementadas):**
+
+1. Atalho "Iniciar foco" no Início que abre o cronômetro já pronto (hoje: Início › Sua semana ›
+   Detalhes › Iniciar foco).
+2. Duração de foco e pausa configuráveis (ex.: 50/10) e pausa longa a cada 4 focos; hoje o
+   relógio tem 25/5 fixos e o servidor valida esses tipos.
+3. Contagem de ciclos guardada na conta (hoje é só da visita).
+4. Sons ambientes e aviso sonoro ao fim do foco (pedem um sistema de áudio próprio e opção de
+   desligar; fora do escopo desta sessão).
+5. Arrastar para mover horários no calendário e visão semanal com blocos de horário.
+6. Revisar o "Organizar meus cartões" (gerenciador em formulário) para edição direto no cartão.
+7. Páginas de Configurações e Conta ainda usam seções recolhidas para itens técnicos; estão no
+   lugar certo, mas podem ganhar o mesmo tratamento visual de cartões.
+
 ## 7. Dívidas técnicas encontradas
 
 | Item                                                                                                           | Impacto                                 | Sugestão                                                    |

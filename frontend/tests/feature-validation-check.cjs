@@ -147,6 +147,24 @@ async function main() {
       'Renomear conjunto: diálogo do app com foco no campo, Esc cancela e devolve o foco, Enter salva',
     );
 
+    // ---------- New flashcard: a dialog opened from a tile, not a folded section ------------
+    await page.goto(base + '/revisar.html#flashcards');
+    const manual = page.getByRole('button', { name: /Criar cartão manualmente/ });
+    await manual.click();
+    const cardDialog = page.getByRole('dialog', { name: 'Criar cartão' });
+    await cardDialog.waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'flashcard-front');
+    await settle(page);
+    await axeCheck(page, 'dialog[open]', 'Criar cartão');
+    await cardDialog.getByLabel('Pergunta ou conceito').fill('O que é a fase clara?');
+    await cardDialog.getByLabel('Resposta ou explicação').fill('A etapa que depende de luz.');
+    await cardDialog.locator('[type=submit]').click();
+    await page.locator('[data-flashcard-create-done]', { hasText: 'Cartão criado' }).waitFor();
+    assert(await cardDialog.isHidden(), 'dialog closes after saving');
+    assert.deepEqual(data.createdCards.map((c) => c.front), ['O que é a fase clara?']);
+    await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
+    record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
+
     await context.close();
 
     // ---------- One tool fails: its tab says so, the others work -------------------------
