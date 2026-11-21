@@ -140,9 +140,9 @@ O dono autorizou criar e testar migrations; produção só com backup e nova aut
 | Marco | Situação | Commits |
 | --- | --- | --- |
 | B — Flashcards 3.0 | Backend e frontend prontos, com testes (detalhes abaixo). | `55ce18e`, `1567013` |
-| A — Anotações 3.0 | Em desenvolvimento por um subagente, numa worktree isolada. | — |
-| E — Turmas privadas | Em desenvolvimento por um subagente, numa worktree isolada. | — |
-| D — Gerações de IA reutilizáveis | A fazer. | — |
+| A — Anotações 3.0 (subagente, revisado e integrado) | Âncoras em vários trechos, caderno da aula com autosave, referências cientes de revisão, privado por padrão. | merge `50fd380` |
+| E — Turmas privadas (subagente, revisado e integrado) | Papéis, convites com hash, aulas publicadas com revisão fixada, máquina de estados de envios, conjuntos compartilhados sem histórico. | merge `8a32fc2` |
+| D — Gerações de IA reutilizáveis | Chave canônica ligada aos jobs: reuso autorizado, single flight, orçamento diário, falha honesta. | `d3c9436` |
 | C — Aprendizagem multiaula | A fazer. | — |
 
 **Flashcards 3.0 em detalhe:**
@@ -170,3 +170,31 @@ Resultado no Postgres 16.15 local:
 - uma segunda aplicação foi recusada com `FLASHCARDS_3_0_ABORT`.
 
 Achado: nenhuma migration cria `public.profile_state`. Ela vem da proposta `database/proposals/profile-gamification.sql`, aplicada à mão. Para recriar um banco do zero, aplique essa proposta antes de `20261120120000_profile_state_hardening.sql`.
+
+### Validação em Postgres 16.15 real (local, 21/11)
+
+Montei um banco novo com a cadeia inteira, de `001_initial.sql` até `20261120120000`, mais a proposta `profile_state`. Antes das migrations novas, criei pelas APIs antigas:
+
+- uma aula com permissão declarada e revisão confirmada;
+- um destaque E14;
+- uma nota solta;
+- um cartão `term_definition`.
+
+Depois apliquei as quatro migrations novas, na ordem de implantação:
+
+| Migration | Preflight | Aplicação | Postflight |
+| --- | --- | --- | --- |
+| `20261121130000_notes_3_0` | pré-requisitos ok; 2 anotações, 1 com âncora | ok | backfill completo (`legacy_rows_not_backfilled = 0`), contagens iguais, RLS ligado, sem acesso do navegador, nenhum compartilhamento |
+| `20261121140000_classrooms` | pré-requisitos ok | ok | RLS ligado nas 8 tabelas, funções só para o servidor |
+| `20261121150000_flashcards_3_0` | 1 cartão a reclassificar | ok | `term_cards = 1`, `untyped_term_cards = 0`, bucket privado |
+| `20261121160000_generation_reuse` | — | ok | — |
+
+**Concorrência real**, com conexões separadas (o PGlite não consegue testar isso):
+
+| Cenário | Resultado |
+| --- | --- |
+| 4 alunos entram ao mesmo tempo num convite de 1 uso | 1 entrou; `use_count = 1`; 3 receberam `CLASSROOM_INVITE_FULL` |
+| 5 pedidos de geração equivalentes ao mesmo tempo | 1 `start` e 4 `join`; uma única linha, ou seja, um único job pago |
+| 2 escritores no mesmo caderno, na versão 1 | um salvou (v2) e o outro recebeu `LEARNING_VERSION_CONFLICT`; nada foi perdido em silêncio |
+
+**Produção: nenhuma destas migrations foi aplicada.** Staging também não.
