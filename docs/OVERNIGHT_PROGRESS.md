@@ -431,3 +431,23 @@ Produção: **nada aplicado, nenhuma flag ligada**. Aguarda autorização explí
 - Esse merge incluiu também: seletor de aparência na importação de texto e de `.apkg`; tentativas repetidas da mescla e da importação antigas (flag `flashcards_v3` desligada) já não duplicam o conjunto; o mock de testes serve um WAV silencioso quando o arquivo de teste ainda não existe (sem ENOENT).
 - CI da `main` em `6310133`: workflow Quality, run 406, **sucesso** (19:39 UTC).
 - Produção: **nada aplicado, nenhuma flag ligada.**
+
+## Release 3.3/3.4 em produção (`audioestudo`, 21/11/2026) — EXECUTADA com autorização explícita
+
+| Passo | Resultado |
+| --- | --- |
+| Identidade | projeto `fxsuagrcfargpejglwtl` ("audioestudo"), `ACTIVE_HEALTHY`, Postgres 17.11 |
+| Estado antes | nenhuma das 8 migrations aplicada; pré-requisitos presentes; 4 contas, 22 aulas, 25 revisões, 0 anotações, 0 flashcards, 32 objetos no Storage |
+| **Backup** | schema privado `backup_pre_3_4_20261121`, com cópia de todas as 36 tabelas `public` (785 linhas), de `storage.buckets` e um manifesto (contas, ids e objetos). Sem acesso para `anon` ou `authenticated` |
+| **Recuperação verificada** | o hash do conteúdo de cada tabela copiada é igual ao original (36/36) |
+| **Ponto de recuperação** | **2026-11-21 20:13:54 UTC** (`backup_pre_3_4_20261121._manifest.taken_at`) |
+| Aplicação | um auxiliar temporário (`release_tmp`) baixou cada arquivo do GitHub no commit `ba24e35` e **recusava** qualquer arquivo cujo SHA-256 diferisse do `database/release/3.4/manifest.json`. As 8 migrations foram aplicadas na ordem do manifesto |
+| Postflights | 16 tabelas novas, todas com RLS; 0 tabelas legíveis e 0 funções novas chamáveis pelo navegador; bucket `flashcard-media` privado; gatilhos e índice único presentes |
+| **Integridade** | as 36 tabelas pré-existentes, comparadas pelas colunas que já existiam, estão **idênticas** ao backup (785 → 785 linhas). Contas (4) e objetos do Storage (32) intactos |
+| Fumaça em produção | criar turma, convite, entrada, convite cheio (`CLASSROOM_INVITE_FULL`), pessoa de fora (`CLASSROOM_NOT_FOUND`), modelo visual v1, baralho com modelo, multiaula sem vazamento. Tudo dentro de uma transação **desfeita** no fim (contas sintéticas `@example.test`); conferido depois: nada restou |
+| Limpeza | auxiliar `release_tmp` e a extensão `http` removidos |
+| Advisors | nenhum achado novo de segurança. Continua o aviso de proteção contra senhas vazadas desligada (só pelo painel do Auth) |
+
+**Recursos.** O app roda localmente (`INICIAR.cmd` lê `backend/.env`): **não existe hospedagem pública** (`docs/HOSPEDAGEM.md`). Para ligar todos os recursos da 3.4 nesse `.env`, use `ATIVAR_RECURSOS_3_4.cmd` (ou `node scripts/release/enable-3-4-features.mjs`). Ele faz uma cópia antes, só mexe nas chaves das flags e da Groq e respeita as dependências entre flags (teste em `scripts/tests/enable-features.test.mjs`).
+
+**Bloqueio: publicação do site.** Esta sessão não tem acesso a nenhuma plataforma de hospedagem: os únicos conectores são Supabase e Context7. A configuração do Railway está pronta em `deploy/`; os passos estão em `docs/HOSPEDAGEM.md`.
