@@ -195,7 +195,23 @@ async function main() {
     await noHorizontalScroll(page, 'biblioteca lista');
     await page.goto(base + '/historico.html');
     await page.getByRole('button', { name: '+ Nova disciplina' }).waitFor();
-    record('Biblioteca em lista: cada aula numa linha com ícone, data, duração e progresso; sem guias soltas na pasta');
+    // Several lessons at once: select, move to a folder, selection ends.
+    await page.goto(base + '/historico.html?folder=sub-bio&unit=unit-energia');
+    await page.getByRole('button', { name: 'Selecionar' }).click();
+    const box = page.getByRole('checkbox', { name: 'Selecionar Fotossíntese e respiração celular' });
+    await box.check();
+    await page.locator('.library-selection-bar', { hasText: '1 aula selecionada' }).waitFor();
+    await settle(page);
+    await axeCheck(page, 'body', 'Biblioteca em seleção');
+    await page.getByRole('button', { name: 'Mover para…' }).click();
+    const move = page.locator('[data-assign-dialog][open]');
+    await move.waitFor();
+    await move.locator('#assign-subject').selectOption('sub-bio');
+    await move.locator('#assign-unit').selectOption('unit-celula');
+    await move.locator('[type=submit]').click();
+    await move.waitFor({ state: 'hidden' });
+    assert.deepEqual(data.moves.at(-1), { id: 'l-foto', subjectId: 'sub-bio', unitId: 'unit-celula' });
+    record('Biblioteca em lista: cada aula numa linha com ícone, data, duração e progresso; sem guias soltas na pasta; seleção de várias aulas move de uma vez');
 
     // ---------- Flashcards 3.0: the look changes, the content and the server do not ----------
     await page.goto(base + '/revisar.html#flashcards');

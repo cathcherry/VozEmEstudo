@@ -237,6 +237,7 @@ export default {
   "Aulas em estudo": "学习中的课程",
   "Aulas estudadas": "已学课程",
   "Aulas recentes": "最近的课程",
+  "Aulas selecionadas": "已选课程",
   "Aulas sem unidade": "未分单元的课程",
   "Aumenta ou diminui textos e controles da página.": "放大或缩小页面文字和控件。",
   "Aumentar texto": "放大文字",
@@ -387,6 +388,7 @@ export default {
   "Concluir": "完成",
   "Concluir edição": "完成编辑",
   "Concluir envio": "完成上传",
+  "Concluir seleção": "完成选择",
   "Concluir tentativa": "完成作答",
   "conectar as ideias": "串联想法",
   "Conferência sugerida": "建议核对",
@@ -995,6 +997,7 @@ export default {
   "Mover para cá": "移到这里",
   "Mover para cima": "上移",
   "Mover para pasta": "移到文件夹",
+  "Mover para…": "移动到…",
   "Movimento reduzido": "减少动画",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3、WAV、M4A、MP4 等格式",
   "MP4 original": "原始 MP4",
@@ -1553,6 +1556,7 @@ export default {
   "Seg": "周一",
   "Seguir áudio": "跟随音频",
   "Segurança": "安全",
+  "Selecionar": "选择",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "选择“上传并转写”。只有所选片段的音频会被发送转写；课程页面会显示进度。",
   "Selecione de 1 a 1.000 caracteres para destacar.": "请选择 1 到 1,000 个字符进行标记。",
   "Selecione pelo menos um conteúdo disponível.": "请至少选择一项可用内容。",
@@ -1725,6 +1729,7 @@ export default {
   "Todos os conjuntos": "全部卡组",
   "Todos os materiais": "全部资料",
   "Tópicos": "要点",
+  "Toque nas aulas para selecionar": "点按课程进行选择",
   "Transcrevendo o áudio…": "正在转写音频…",
   "Transcrição": "转写",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "转写已确认。可以生成摘要、题目或抽认卡，也可以直接开始学习。",
@@ -2209,6 +2214,10 @@ export default {
    "编辑目标{0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "已选 {0} 节课"
+  ],
+  [
    "Resultados para “{0}”",
    "“{0}”的搜索结果"
   ],
@@ -2255,6 +2264,10 @@ export default {
   [
    "{0} focos concluídos",
    "已完成 {0} 次专注"
+  ],
+  [
+   "{0} aula selecionada",
+   "已选 {0} 节课"
   ],
   [
    "{0} · expira em {1}",
@@ -2311,6 +2324,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{1} 分钟{0}"
+  ],
+  [
+   "{0} aulas movidas.",
+   "已移动 {0} 节课。"
   ],
   [
    "{0} · questão {1}",
@@ -2407,6 +2424,10 @@ export default {
   [
    "Pendente: {0}.",
    "待同步：{0}。"
+  ],
+  [
+   "Selecionar {0}",
+   "选择 {0}"
   ],
   [
    "- Revisão {0}",

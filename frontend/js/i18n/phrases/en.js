@@ -237,6 +237,7 @@ export default {
   "Aulas em estudo": "Lessons in progress",
   "Aulas estudadas": "Lessons studied",
   "Aulas recentes": "Recent lessons",
+  "Aulas selecionadas": "Selected lessons",
   "Aulas sem unidade": "Lessons without a unit",
   "Aumenta ou diminui textos e controles da página.": "Makes the page's text and controls larger or smaller.",
   "Aumentar texto": "Increase text size",
@@ -387,6 +388,7 @@ export default {
   "Concluir": "Done",
   "Concluir edição": "Done editing",
   "Concluir envio": "Finish upload",
+  "Concluir seleção": "Done selecting",
   "Concluir tentativa": "Finish attempt",
   "conectar as ideias": "connect the ideas",
   "Conferência sugerida": "Check suggested",
@@ -995,6 +997,7 @@ export default {
   "Mover para cá": "Move here",
   "Mover para cima": "Move up",
   "Mover para pasta": "Move to folder",
+  "Mover para…": "Move to…",
   "Movimento reduzido": "Reduced motion",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3, WAV, M4A, MP4 and other formats",
   "MP4 original": "Original MP4",
@@ -1553,6 +1556,7 @@ export default {
   "Seg": "Mon",
   "Seguir áudio": "Follow audio",
   "Segurança": "Security",
+  "Selecionar": "Select",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "Select “Upload and transcribe”. Only the audio of the chosen clip is sent for transcription; the lesson page shows the progress.",
   "Selecione de 1 a 1.000 caracteres para destacar.": "Select 1 to 1,000 characters to highlight.",
   "Selecione pelo menos um conteúdo disponível.": "Select at least one available item.",
@@ -1725,6 +1729,7 @@ export default {
   "Todos os conjuntos": "All sets",
   "Todos os materiais": "All materials",
   "Tópicos": "Bullet points",
+  "Toque nas aulas para selecionar": "Tap lessons to select them",
   "Transcrevendo o áudio…": "Transcribing the audio…",
   "Transcrição": "Transcript",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcript confirmed. Generate a summary, questions or flashcards — or start studying right away.",
@@ -2209,6 +2214,10 @@ export default {
    "Edit goal {0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "{0} lessons selected"
+  ],
+  [
    "Resultados para “{0}”",
    "Results for “{0}”"
   ],
@@ -2255,6 +2264,10 @@ export default {
   [
    "{0} focos concluídos",
    "{0} focus sessions finished"
+  ],
+  [
+   "{0} aula selecionada",
+   "{0} lesson selected"
   ],
   [
    "{0} · expira em {1}",
@@ -2311,6 +2324,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{0} of {1} minutes"
+  ],
+  [
+   "{0} aulas movidas.",
+   "{0} lessons moved."
   ],
   [
    "{0} · questão {1}",
@@ -2407,6 +2424,10 @@ export default {
   [
    "Pendente: {0}.",
    "Pending: {0}."
+  ],
+  [
+   "Selecionar {0}",
+   "Select {0}"
   ],
   [
    "- Revisão {0}",

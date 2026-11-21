@@ -458,6 +458,13 @@ async function setup(context, base, flags, data, options = {}) {
       return json({ id: body.id, version: 1 });
     }
     if (p === '/api/catalog' && method === 'GET') return json(data.catalog || CATALOG);
+    if (/^\/api\/catalog\/materials\/[^/]+$/.test(p) && method === 'PATCH') {
+      const id = p.split('/').pop();
+      const body = request.postDataJSON();
+      data.moves = [...(data.moves || []), { id, ...body }];
+      const subject = (data.catalog || CATALOG).subjects.find((item) => item.id === body.subjectId);
+      return json({ id, subject_id: body.subjectId, unit_id: body.unitId, subject: subject?.name || null });
+    }
     if (p === '/api/catalog/resources') return json({});
     if (p === '/api/annotations' && method === 'PUT') {
       const body = request.postDataJSON();

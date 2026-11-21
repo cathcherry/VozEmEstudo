@@ -237,6 +237,7 @@ export default {
   "Aulas em estudo": "Clases en estudio",
   "Aulas estudadas": "Clases estudiadas",
   "Aulas recentes": "Clases recientes",
+  "Aulas selecionadas": "Clases seleccionadas",
   "Aulas sem unidade": "Clases sin unidad",
   "Aumenta ou diminui textos e controles da página.": "Aumenta o reduce los textos y controles de la página.",
   "Aumentar texto": "Aumentar texto",
@@ -387,6 +388,7 @@ export default {
   "Concluir": "Listo",
   "Concluir edição": "Terminar edición",
   "Concluir envio": "Completar subida",
+  "Concluir seleção": "Terminar selección",
   "Concluir tentativa": "Terminar intento",
   "conectar as ideias": "conectar las ideas",
   "Conferência sugerida": "Revisión sugerida",
@@ -995,6 +997,7 @@ export default {
   "Mover para cá": "Mover aquí",
   "Mover para cima": "Mover arriba",
   "Mover para pasta": "Mover a carpeta",
+  "Mover para…": "Mover a…",
   "Movimento reduzido": "Movimiento reducido",
   "MP3, WAV, M4A, MP4 e outros formatos": "MP3, WAV, M4A, MP4 y otros formatos",
   "MP4 original": "MP4 original",
@@ -1553,6 +1556,7 @@ export default {
   "Seg": "Lun",
   "Seguir áudio": "Seguir audio",
   "Segurança": "Seguridad",
+  "Selecionar": "Seleccionar",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "Selecciona “Subir y transcribir”. Solo se envía a transcribir el audio del fragmento elegido; la página de la clase muestra el progreso.",
   "Selecione de 1 a 1.000 caracteres para destacar.": "Selecciona de 1 a 1.000 caracteres para resaltar.",
   "Selecione pelo menos um conteúdo disponível.": "Selecciona al menos un contenido disponible.",
@@ -1725,6 +1729,7 @@ export default {
   "Todos os conjuntos": "Todos los conjuntos",
   "Todos os materiais": "Todos los materiales",
   "Tópicos": "Puntos clave",
+  "Toque nas aulas para selecionar": "Toca las clases para seleccionarlas",
   "Transcrevendo o áudio…": "Transcribiendo el audio…",
   "Transcrição": "Transcripción",
   "Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.": "Transcripción confirmada. Genera un resumen, preguntas o flashcards, o empieza a estudiar directamente.",
@@ -2209,6 +2214,10 @@ export default {
    "Editar objetivo {0}"
   ],
   [
+   "{0} aulas selecionadas",
+   "{0} clases seleccionadas"
+  ],
+  [
    "Resultados para “{0}”",
    "Resultados para “{0}”"
   ],
@@ -2255,6 +2264,10 @@ export default {
   [
    "{0} focos concluídos",
    "{0} enfoques completados"
+  ],
+  [
+   "{0} aula selecionada",
+   "{0} clase seleccionada"
   ],
   [
    "{0} · expira em {1}",
@@ -2311,6 +2324,10 @@ export default {
   [
    "{0} de {1} minutos",
    "{0} de {1} minutos"
+  ],
+  [
+   "{0} aulas movidas.",
+   "{0} clases movidas."
   ],
   [
    "{0} · questão {1}",
@@ -2407,6 +2424,10 @@ export default {
   [
    "Pendente: {0}.",
    "Pendiente: {0}."
+  ],
+  [
+   "Selecionar {0}",
+   "Seleccionar {0}"
   ],
   [
    "- Revisão {0}",
