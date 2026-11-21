@@ -34,7 +34,7 @@
     cardTemplate: 'classic',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
-  const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars'];
+  const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars', 'image'];
   const SURFACES = ['solid', 'glass'];
   const CARD_TEMPLATES = ['classic', 'notebook', 'sticky', 'window', 'polaroid'];
   // Pages that may have their own wallpaper (file name → key).

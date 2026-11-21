@@ -113,6 +113,7 @@ export function setUiPreference(key, value) {
 }
 export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
+  if (key === 'wallpaper' || key === 'pageWallpapers') queueMicrotask(() => window.dispatchEvent(new Event('voz-wallpaper-change')));
   if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings'].includes(key)) return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
@@ -127,6 +128,7 @@ const WALLPAPER_CHOICES = [
   ['desktop', 'Mesa digital'],
   ['meadow', 'Campo'],
   ['stars', 'Estrelas'],
+  ['image', 'Imagem própria'],
 ];
 const STUDIO_PAGES = [
   ['dashboard', 'Início'],

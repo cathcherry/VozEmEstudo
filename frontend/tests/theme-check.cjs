@@ -103,6 +103,25 @@ async function main() {
       await context.close();
     }
     record('Fundo por página, valores desconhecidos ignorados e "Restaurar visual padrão" sem mexer na leitura');
+    // Own image as wallpaper: saved for the account, shown on other pages, invalid files refused.
+    {
+      const { page, context } = await openApp(browser, base, allFlags, state());
+      await page.goto(`${base}/aparencia.html`);
+      const picker = page.locator('[data-wallpaper-image] input[type=file]');
+      await picker.setInputFiles({ name: 'notas.txt', mimeType: 'text/plain', buffer: Buffer.from('oi') });
+      await page.locator('[data-wallpaper-image-status]', { hasText: 'PNG, JPEG, WebP ou GIF' }).waitFor();
+      // A 1×1 PNG.
+      const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64');
+      await picker.setInputFiles({ name: 'fundo.png', mimeType: 'image/png', buffer: png });
+      await page.waitForFunction(() => document.documentElement.dataset.wallpaper === 'image' && document.documentElement.style.getPropertyValue('--user-wallpaper').startsWith('url('));
+      await page.goto(`${base}/painel.html`);
+      await page.waitForFunction(() => document.documentElement.style.getPropertyValue('--user-wallpaper').startsWith('url('), null, { timeout: 5000 });
+      await page.goto(`${base}/aparencia.html`);
+      await page.locator('[data-wallpaper-image-remove]:not([hidden])').click();
+      await page.waitForFunction(() => document.documentElement.dataset.wallpaper === 'none');
+      await context.close();
+    }
+    record('Imagem própria como fundo: arquivo inválido recusado; a imagem aparece nas outras páginas; remover volta ao liso');
   } finally {
     await browser.close();
     server.close();
