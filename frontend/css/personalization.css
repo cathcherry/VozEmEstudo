@@ -2,8 +2,13 @@
    Colours come from the active theme's tokens. */
 
 /* ---- Início: heading actions ------------------------------------------------------------- */
+body[data-page='dashboard'] .dashboard-heading {
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
 body[data-page='dashboard'] .dashboard-heading-actions {
   display: flex;
+  flex: 0 0 auto;
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
@@ -284,6 +289,7 @@ body.app-page .dash-customize .customize-group h3 {
     padding: 18px 16px;
   }
   body[data-page='dashboard'] .dashboard-heading-actions {
+    flex: 1 1 100%;
     justify-content: flex-start;
   }
 }
