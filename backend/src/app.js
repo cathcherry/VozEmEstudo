@@ -21,6 +21,7 @@ import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { publicQuestionList } from './routes/question-share.routes.js';
+import { classroomRouter } from './routes/classroom.routes.js';
 import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
@@ -105,6 +106,8 @@ if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planning
 if (isFeatureEnabled('quiz_v2')) app.use('/api/quiz-sessions', requireAuth, quizSessionRouter);
 if (isFeatureEnabled('flashcards')) app.use('/api/flashcards', requireAuth, flashcardRouter);
 if (isFeatureEnabled('study_tracking')) app.use('/api/study', requireAuth, studyRouter);
+// Private classrooms: members only, never public.
+if (isFeatureEnabled('classrooms')) app.use('/api/classrooms', requireAuth, classroomRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {
