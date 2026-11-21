@@ -23,8 +23,11 @@ Registro vivo da sessão. É atualizado a cada marco para que outra sessão poss
 | M2 | Focar 3.0: sessão única, painel lateral e cápsula, página Focar | Implementado e com testes automáticos (8 de unidade + jornada) | `5501d38` |
 | M3b | Questões 3.0: objetivos (presets) e opções avançadas | Implementado e com testes automáticos | `b8b4b63` |
 | M4 | Personalização 3.0: 3 temas, fundos, vidro, fundo por página | Implementado e com testes automáticos (axe) | `1a07155` |
-| M6 | Anotações 3.0 (caderno da aula) | Próximo | — |
-| M5 | Plano diretor 3.0 + relatório final | Pendente | — |
+| M6 | Anotações 3.0: Destacar/Comentar no texto, ouvir trecho, voltar ao destaque | Implementado e com testes automáticos | `edfb5b1` |
+| M5 | Plano diretor 3.0 | **Feito** | `62f8288` |
+| M7 | Flashcards 3.0: modelos visuais separados do conteúdo | Implementado e com testes automáticos (axe em cada modelo) | `52b3284` |
+| M8 | IA compartilhada: chave canônica e single flight (fundação) | Implementado e com testes de unidade; ainda não conectado aos jobs | `1a69148` |
+| M9 | Início: "Iniciar foco" com um clique | Implementado e com testes automáticos | `98a1e3a` |
 
 O CI do `5501d38` falhou por uma contagem de links no dock do modo foco, que mudou com o novo item "Focar". Isso foi corrigido em `b8b4b63`.
 

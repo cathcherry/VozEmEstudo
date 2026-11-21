@@ -140,6 +140,22 @@ para que relógios errados de aparelhos não percam edições (§5.4).
 7. Páginas de Configurações e Conta ainda usam seções recolhidas para itens técnicos; estão no
    lugar certo, mas podem ganhar o mesmo tratamento visual de cartões.
 
+## 6.3 Voz em Estudo 3.0 — sessão autônoma de 21/11/2026
+
+O plano completo, com o status de cada módulo, está em [PLANO_DIRETOR_VOZ_EM_ESTUDO_3_0.md](PLANO_DIRETOR_VOZ_EM_ESTUDO_3_0.md). O registro da sessão está em [OVERNIGHT_PROGRESS.md](OVERNIGHT_PROGRESS.md).
+
+Implementado e coberto por testes automáticos (API simulada), no branch `feat/voz-3-0`, PR #8:
+
+- Material 3.0: preparação × espaço de estudo, decididos pelo estado real; guia reabrível; última aba; aba Anotações.
+- Questões 3.0: fim da falsa "insuficiência" (plano conceito × habilidade × faceta, vagas reserva, motivos reais); objetivos (Essencial, Compreender, Aplicar, Equilibrado, Preparação para prova).
+- Focar 3.0: uma sessão por conta entre páginas, abas e recargas; página Focar; painel lateral e cápsula; atalho no Início.
+- Personalização 3.0: temas Matcha, Mesa digital e Planner; fundos, fundo por página e vidro; restaurar visual.
+- Anotações 3.0: Destacar/Comentar a partir do texto; ouvir o trecho; voltar ao destaque.
+- Flashcards 3.0: modelos visuais separados do conteúdo (favorito e por conjunto).
+- IA compartilhada: chave canônica de geração e single flight (fundação).
+
+Desenhado e ainda não implementado: âncoras com vários segmentos e cadernos ricos (migrations), mescla de baralhos e importação do Anki, multiaula, turmas e amigos, música.
+
 ## 7. Dívidas técnicas encontradas
 
 | Item                                                                                                           | Impacto                                 | Sugestão                                                    |
