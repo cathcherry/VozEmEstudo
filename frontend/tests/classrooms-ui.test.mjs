@@ -37,3 +37,15 @@ test('a pasted link or a typed code give the same hash on the server', () => {
   assert.equal(hashInviteCode(inviteCodeFrom(link)), expected);
   assert.equal(hashInviteCode('abcd-efgh-jkmn'), expected);
 });
+
+test('submission actions: from "published" the transcription_confirmed edge is labelled as unpublishing', async () => {
+  const { submissionActionLabel, isUnpublish } = await import('../js/utils/submission-actions.js');
+  // Found on staging (3.4 E2E): a published submission offered "Conferir e confirmar transcrição".
+  assert.equal(submissionActionLabel({ status: 'published', isMine: false }, 'transcription_confirmed'), 'Despublicar da turma');
+  assert.equal(isUnpublish('published', 'transcription_confirmed'), true);
+  assert.equal(submissionActionLabel({ status: 'processing', isMine: false }, 'transcription_confirmed'), 'Conferir e confirmar transcrição');
+  assert.equal(isUnpublish('processing', 'transcription_confirmed'), false);
+  assert.equal(submissionActionLabel({ status: 'approved_for_processing', isMine: true }, 'processing'), 'Já processei a gravação');
+  assert.equal(submissionActionLabel({ status: 'approved_for_processing', isMine: false }, 'processing', 'Em processamento'), 'Em processamento');
+  assert.equal(submissionActionLabel({ status: 'published', isMine: true }, 'withdrawn'), 'Retirar envio');
+});

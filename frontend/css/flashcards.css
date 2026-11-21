@@ -264,7 +264,7 @@ html[data-reduced-motion='true'] .flashcard-review-card[data-card-template] { tr
 .deck-dialog{width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}
 .deck-dialog .app-dialog-hint{margin:-6px 0 14px;line-height:1.45}
 .deck-dialog-body{display:grid;gap:14px}
-.deck-sources{display:grid;gap:4px;max-height:16rem;overflow:auto;margin:0;padding:10px 12px;border:1px solid var(--border-light);border-radius:12px}
+.deck-sources{display:grid;grid-auto-rows:max-content;gap:4px;max-height:16rem;overflow:auto;margin:0;padding:10px 12px;border:1px solid var(--border-light);border-radius:12px}
 .deck-sources legend{padding:0 6px;font-weight:700}
 .app-dialog .deck-source{display:flex;align-items:center;gap:10px;min-height:40px;font-weight:500;overflow-wrap:anywhere}
 .app-dialog .deck-source input{width:20px;height:20px;min-height:0;padding:0;flex:none;accent-color:var(--accent-strong)}

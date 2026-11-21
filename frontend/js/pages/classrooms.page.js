@@ -11,6 +11,7 @@ import * as api from '../api/classroom.api.js';
 import { listMaterials, getMaterial } from '../api/material.api.js';
 import { listFlashcardSets } from '../api/flashcard.api.js';
 import { listMultiLessons } from '../api/multi-lesson.api.js';
+import { isUnpublish, submissionActionLabel } from '../utils/submission-actions.js';
 
 const ROLE = { teacher: 'Professor(a)', assistant: 'Monitor(a)', student: 'Aluno(a)' };
 const STATUS = {
@@ -21,14 +22,6 @@ const STATUS = {
   published: 'Publicado na turma',
   rejected: 'Recusado',
   withdrawn: 'Retirado',
-};
-const ACTION = {
-  approved_for_processing: 'Aprovar para processar',
-  processing: 'Já processei a gravação',
-  transcription_confirmed: 'Conferir e confirmar transcrição',
-  published: 'Publicar na turma',
-  rejected: 'Recusar',
-  withdrawn: 'Retirar envio',
 };
 // Where a submission is on the main path (rejected and withdrawn are off it).
 const STEP = {
@@ -699,15 +692,25 @@ async function renderSubmissions(id, manager, reloadAll) {
   const move = async (submission, to, extra = {}) => {
     await api.moveSubmission(id, submission.id, { to, requestId: crypto.randomUUID(), ...extra });
     await reloadAll();
-    toast(`Envio: ${STATUS[to]}.`);
+    toast(isUnpublish(submission.status, to) ? 'Aula despublicada da turma.' : `Envio: ${STATUS[to]}.`);
   };
   list.replaceChildren(
     ...submissions.map((submission) => {
       const buttons = submission.actions.map((to) =>
         button(
-          to === 'processing' && !submission.isMine ? STATUS.processing : ACTION[to],
+          submissionActionLabel(submission, to, STATUS.processing),
           async (event) => {
             const opener = event.currentTarget;
+            // From "published", the transcription_confirmed edge unpublishes: say so, never
+            // reuse the confirmation dialog.
+            if (isUnpublish(submission.status, to))
+              return confirmDialog(
+                'Despublicar da turma',
+                'A aula sai da turma na hora e o envio volta para a etapa 4 (transcrição confirmada). Você pode publicar de novo depois.',
+                'Despublicar',
+                () => move(submission, to),
+                opener,
+              );
             if (to === 'rejected')
               return formDialog({
                 title: 'Recusar envio',
