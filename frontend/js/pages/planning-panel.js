@@ -7,6 +7,14 @@ import {
   updateTask, reorderGoalTasks, setTaskCompleted,
 } from '../api/planning.api.js';
 
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal = (name, detail) => {
+  try {
+    const view = document.defaultView;
+    if (view?.CustomEvent) document.dispatchEvent(new view.CustomEvent(`voz:${name}`, { detail }));
+  } catch { /* the dashboard summary is optional */ }
+};
+
 function option(value, label) {
   const element = document.createElement('option');
   element.value = value;
@@ -57,6 +65,98 @@ export async function initPlanningPanel({ materials }) {
   let subgoals = [];
   let tasks = [];
 
+  const toolbar = panel.querySelector('[data-planning-toolbar]');
+  const sortControls = panel.querySelector('[data-planning-controls]');
+  const forms = { goal: formGoal, subgoal: formSubgoal, task: formTask };
+  const openers = toolbar ? Object.fromEntries(
+    [...toolbar.querySelectorAll('[data-planning-open]')].map((b) => [b.dataset.planningOpen, b]),
+  ) : {};
+  let openedFrom = null;
+  // Creation happens in one modal dialog that shows the requested form; nothing stays open on
+  // the page. Without the dialog (older markup) the forms open inline as before.
+  const dialog = panel.querySelector('[data-planning-dialog]');
+  const dialogError = dialog ? document.createElement('p') : null;
+  if (dialogError) {
+    dialogError.className = 'planning-dialog-error';
+    dialogError.setAttribute('role', 'alert');
+    dialog.append(dialogError);
+  }
+
+  // One creation form at a time, opened on request. Without the toolbar (older markup) the
+  // forms simply stay visible as before.
+  function showForm(kind, { goalId = null, from = null } = {}) {
+    if (!toolbar) return;
+    for (const [name, form] of Object.entries(forms)) {
+      form.hidden = name !== kind;
+      openers[name]?.setAttribute('aria-expanded', String(name === kind));
+    }
+    openedFrom = from || openers[kind] || null;
+    if (goalId) {
+      if (kind === 'task') { goalSelect.value = goalId; refreshTaskSubgoals(); }
+      if (kind === 'subgoal') subgoalGoalSelect.value = goalId;
+    }
+    const form = forms[kind];
+    if (dialog) {
+      if (dialogError) dialogError.textContent = '';
+      dialog.setAttribute('aria-labelledby', form.querySelector('h3')?.id || '');
+      if (!dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+    }
+    // A new task starts in the first goal; the title is what the student types first.
+    if (kind === 'task' && !goalSelect.value && goals.length) { goalSelect.value = goals[0].id; refreshTaskSubgoals(); }
+    const first = kind === 'subgoal' && !goalId
+      ? form.querySelector('select, input')
+      : form.querySelector('[name="title"]');
+    form.scrollIntoView?.({ block: 'nearest' });
+    first?.focus();
+  }
+  function hideForms({ restoreFocus = true } = {}) {
+    if (!toolbar) return;
+    for (const [name, form] of Object.entries(forms)) {
+      form.hidden = true;
+      openers[name]?.setAttribute('aria-expanded', 'false');
+    }
+    if (dialog?.open) dialog.close();
+    const target = [openedFrom, openers.goal, list.querySelector('.nino-note-action')]
+      .find((element) => element?.isConnected && !element.closest('[hidden]'));
+    openedFrom = null;
+    if (restoreFocus) target?.focus();
+  }
+  for (const [kind, button] of Object.entries(openers)) {
+    button.addEventListener('click', () => {
+      if (!forms[kind].hidden) hideForms();
+      else showForm(kind);
+    });
+  }
+  for (const cancel of panel.querySelectorAll('[data-planning-cancel]'))
+    cancel.addEventListener('click', () => hideForms());
+  // Escape or a click on the backdrop closes the dialog like Cancel.
+  dialog?.addEventListener('cancel', (event) => { event.preventDefault(); hideForms(); });
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) hideForms(); });
+  for (const form of Object.values(forms))
+    form.addEventListener('keydown', (event) => {
+      // Escape closes the form first; a second Escape closes the dialog.
+      if (event.key === 'Escape' && toolbar && !form.hidden) {
+        event.preventDefault();
+        event.stopPropagation();
+        hideForms();
+      }
+    });
+  document.addEventListener('voz:planning-command', (event) => {
+    const action = event.detail?.action;
+    if (action === 'goal' || (action === 'task' && !goals.length)) showForm('goal');
+    else if (action === 'task') showForm('task');
+  });
+
+  function contextButton(text, kind, goal) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'planning-inline-button';
+    button.textContent = text;
+    button.setAttribute('aria-label', `${text} em ${goal.title}`);
+    button.addEventListener('click', () => showForm(kind, { goalId: goal.id, from: button }));
+    return button;
+  }
+
   panel.hidden = false;
   materialSelect.replaceChildren(option('', 'Sem aula vinculada'));
   for (const material of materials) materialSelect.append(option(material.id, material.title));
@@ -76,14 +176,22 @@ export async function initPlanningPanel({ materials }) {
     if (available.some((item) => item.id === previous)) taskSubgoalSelect.value = previous;
   }
 
+  // Confirmations show in a small inline banner that clears itself; errors stay until the next
+  // action. With the creation dialog open, the error also appears inside it, next to the form.
+  let clearTimer;
   async function mutate(action, success) {
+    clearTimeout(clearTimer);
     setStatus(notice, '');
+    if (dialogError) dialogError.textContent = '';
     try {
       await action();
       setStatus(notice, success, 'success');
+      clearTimer = setTimeout(() => { if (notice.dataset.state === 'success') setStatus(notice, ''); }, 6000);
       return true;
     } catch (error) {
-      setStatus(notice, error.message || 'Não foi possível salvar.', 'error');
+      const message = error.message || 'Não foi possível salvar.';
+      setStatus(notice, message, 'error');
+      if (dialog?.open && dialogError) dialogError.textContent = message;
       return false;
     }
   }
@@ -233,6 +341,18 @@ export async function initPlanningPanel({ materials }) {
 
   function renderTasks(host, related) {
     const visible = sortedPlanningTasks(related, { filter: taskFilter.value, sort: taskSort.value });
+    if (!visible.length) {
+      // Say why the list is empty instead of showing nothing.
+      const empty = document.createElement('p');
+      empty.className = 'planning-empty';
+      empty.textContent = !related.length
+        ? 'Nenhuma tarefa aqui ainda.'
+        : taskFilter.value === 'completed'
+          ? 'Nenhuma tarefa concluída aqui.'
+          : 'Todas as tarefas daqui estão concluídas.';
+      host.append(empty);
+      return;
+    }
     const ul = document.createElement('ul');
     ul.className = 'planning-tasks';
     for (const task of visible) {
@@ -309,9 +429,19 @@ export async function initPlanningPanel({ materials }) {
     refreshOptions(subgoalGoalSelect, goals, 'Selecione um objetivo');
     refreshTaskSubgoals();
     list.replaceChildren();
+    signal('planning', { goals, subgoals, tasks });
+    if (openers.task) openers.task.hidden = !goals.length;
+    if (openers.subgoal) openers.subgoal.hidden = !goals.length;
+    if (sortControls && toolbar) sortControls.hidden = !tasks.length;
+    // With nothing created yet, the empty card carries the one action.
+    if (toolbar) toolbar.hidden = !goals.length;
 
     if (!goals.length) {
-      list.append(ninoNote('Nenhum objetivo criado ainda. Comece definindo o que deseja estudar.', 'reading', { className: 'planning-empty' }));
+      list.append(ninoNote('Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar.', 'reading', {
+        className: 'planning-empty planning-start',
+        title: 'Nenhum objetivo criado ainda',
+        action: toolbar ? { label: 'Criar primeiro objetivo', onClick: (button) => showForm('goal', { from: button }) } : null,
+      }));
       return;
     }
 
@@ -323,7 +453,11 @@ export async function initPlanningPanel({ materials }) {
       const heading = document.createElement('h3');
       heading.textContent = goal.title;
       head.append(heading);
-      inlineEditGoal(goal, head);
+      const actions = document.createElement('div');
+      actions.className = 'planning-goal-actions';
+      head.append(actions);
+      if (toolbar) actions.append(contextButton('Adicionar tarefa', 'task', goal), contextButton('Adicionar subobjetivo', 'subgoal', goal));
+      inlineEditGoal(goal, actions);
       section.append(head);
 
       const progress = progressForGoal(goal, tasks);
@@ -394,7 +528,8 @@ export async function initPlanningPanel({ materials }) {
       goalSelect.value = created.id;
       subgoalGoalSelect.value = created.id;
       refreshTaskSubgoals();
-    }, 'Objetivo criado.');
+      hideForms();
+    }, 'Objetivo criado. Agora você pode adicionar tarefas a ele.');
   });
 
   formSubgoal.addEventListener('submit', (event) => {
@@ -410,6 +545,7 @@ export async function initPlanningPanel({ materials }) {
       title.value = '';
       due.value = '';
       render();
+      hideForms();
     }, 'Subobjetivo criado.');
   });
 
@@ -430,11 +566,22 @@ export async function initPlanningPanel({ materials }) {
       materialSelect.value = '';
       referenceInput.value = '';
       taskSubgoalSelect.value = '';
+      const details = formTask.querySelector('[data-planning-more]');
+      if (details) { details.hidden = true; formTask.querySelector('[data-planning-more-toggle]')?.setAttribute('aria-expanded', 'false'); }
       render();
+      hideForms();
     }, 'Tarefa criada.');
   });
 
   goalSelect.addEventListener('change', refreshTaskSubgoals);
+  // Optional task details stay one click away so the form starts short.
+  const moreToggle = formTask.querySelector('[data-planning-more-toggle]');
+  const more = formTask.querySelector('[data-planning-more]');
+  moreToggle?.addEventListener('click', () => {
+    more.hidden = !more.hidden;
+    moreToggle.setAttribute('aria-expanded', String(!more.hidden));
+    if (!more.hidden) more.querySelector('select, input')?.focus();
+  });
   taskFilter.addEventListener('change', render);
   taskSort.addEventListener('change', render);
 
@@ -446,6 +593,7 @@ export async function initPlanningPanel({ materials }) {
     render();
   } catch (error) {
     setStatus(notice, error.message || 'O planejamento está temporariamente indisponível.', 'error');
+    signal('planning', { error: error.message || 'O planejamento está temporariamente indisponível.' });
     for (const button of panel.querySelectorAll('[type="submit"]')) button.disabled = true;
   }
 }

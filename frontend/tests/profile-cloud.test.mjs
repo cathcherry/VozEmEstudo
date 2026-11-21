@@ -240,7 +240,8 @@ test('pending local edits survive failures and are retried when back online', as
   useServer(server, A);
   server.state.offline = true;
   assert.equal(await cloud.saveCloudState(A, 'preferences', { theme: 'night' }), false);
-  assert.match(events.at(-1), /sincronização pendente/);
+  assert.match(events.filter((e) => typeof e === 'string').at(-1), /sincronização pendente/);
+  assert.equal(events.at(-1).state, 'pending', 'indicator state');
   server.state.offline = false;
   await cloud.retryCloudState(A);
   assert.deepEqual(server.rows.get(server.id(A, 'preferences')).data, { theme: 'night' });
@@ -272,6 +273,7 @@ test("account switch on a shared browser: A's unsynced theme is parked for A, ne
   globalThis.window.VozAppearance = {
     syncedKeys: ['audioestudo-theme'],
     storage: { set: (key, value) => localStorage.setItem(key, value) },
+    loadUi: () => ({}),
   };
   // A changed the theme (dirty) and signed out; B signs in on the same browser.
   localStorage.setItem('audioestudo-theme', prefs.get('audioestudo-theme'));
@@ -295,17 +297,29 @@ test("account switch on a shared browser: A's unsynced theme is parked for A, ne
   assert.equal(server.rows.get(server.id(A, 'preferences')).data['audioestudo-theme'], 'night');
 });
 
-test("account switch: a new account with no saved preferences is not seeded with the previous account's", async () => {
+test("account switch: a new account starts from the device's preferences, never the previous account's", async () => {
   const server = fakeServer();
-  const { initPreferenceCloud, PREFERENCES_OWNER_KEY } =
+  const { initPreferenceCloud, PREFERENCES_OWNER_KEY, DEVICE_PREFERENCES_KEY } =
     await import('../js/utils/preference-cloud.js');
   globalThis.window.VozAppearance = {
     syncedKeys: ['audioestudo-theme'],
     storage: { set: (k, v) => localStorage.setItem(k, v) },
+    loadUi: () => ({}),
   };
+  localStorage.removeItem(DEVICE_PREFERENCES_KEY);
   localStorage.setItem('audioestudo-theme', 'night');
   localStorage.setItem(PREFERENCES_OWNER_KEY, A);
   useServer(server, B);
   await initPreferenceCloud(B);
-  assert.equal(server.rows.has(server.id(B, 'preferences')), false);
+  assert.notEqual(localStorage.getItem('audioestudo-theme'), 'night', "A's theme left with A");
+  const seeded = server.rows.get(server.id(B, 'preferences'))?.data || {};
+  assert.notEqual(seeded['audioestudo-theme'], 'night', "B's account never receives A's theme");
+  // A device choice made while signed out is what the next account starts from.
+  localStorage.setItem(DEVICE_PREFERENCES_KEY, JSON.stringify({ 'audioestudo-theme': 'contrast-dark' }));
+  localStorage.setItem(PREFERENCES_OWNER_KEY, B);
+  const C = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+  useServer(server, C);
+  await initPreferenceCloud(C);
+  assert.equal(localStorage.getItem('audioestudo-theme'), 'contrast-dark');
+  assert.equal(server.rows.get(server.id(C, 'preferences')).data['audioestudo-theme'], 'contrast-dark');
 });

@@ -36,13 +36,36 @@ export function emptyState(title, description, { href = './nova-transcricao.html
   if (href) { const link = document.createElement('a'); link.className = 'secondary-action button-link'; link.href = href; link.textContent = action; content.appendChild(link); }
   card.appendChild(content); return card;
 }
-/** Small inline variant for empty lists inside panels and tabs. */
-export function ninoNote(text, pose = 'rest', { className = '' } = {}) {
+/**
+ * Empty state for lists inside panels and tabs: Nino and the text share one card, with an
+ * optional title and a single action (the next step), so Nino never floats beside loose text.
+ */
+export function ninoNote(text, pose = 'rest', { className = '', title = '', action = null } = {}) {
   const note = document.createElement('div');
   note.className = `nino-note ${className}`.trim();
+  const body = document.createElement('div');
+  body.className = 'nino-note-body';
+  if (title) {
+    const heading = document.createElement('strong');
+    heading.className = 'nino-note-title';
+    heading.textContent = title;
+    body.append(heading);
+  }
   const paragraph = document.createElement('p');
   paragraph.textContent = text;
-  note.append(ninoImage(pose, 56), paragraph);
+  body.append(paragraph);
+  if (action) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'primary-action nino-note-action';
+    button.textContent = action.label;
+    button.addEventListener('click', () => action.onClick(button));
+    body.append(button);
+  }
+  const figure = document.createElement('span');
+  figure.className = 'nino-note-figure';
+  figure.append(ninoImage(pose, 56));
+  note.append(figure, body);
   return note;
 }
 export function errorState(message, retry) {

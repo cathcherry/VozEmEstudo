@@ -1,8 +1,10 @@
 import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { requestPasswordReset } from '../api/auth.api.js';
+import { initDeviceDataPanel } from './device-data-panel.js';
 
 const { user } = await initAuthenticatedShell();
+initDeviceDataPanel({ owner: user.id });
 const email = document.querySelector('[data-settings-email]');
 const created = document.querySelector('[data-settings-created]');
 const providers = document.querySelector('[data-settings-providers]');
@@ -14,7 +16,7 @@ email.textContent = user.email || 'Não informado';
 resetEmail.value = user.email || '';
 if (user.created_at) {
   const date = new Date(user.created_at);
-  created.textContent = date.toLocaleDateString('pt-BR');
+  created.textContent = date.toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR'));
 }
 const methods = [...new Set((user.identities || []).map(({ provider }) => provider).filter(Boolean))];
 if (!methods.length && user.app_metadata?.provider) methods.push(user.app_metadata.provider);

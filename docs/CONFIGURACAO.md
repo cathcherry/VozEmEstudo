@@ -32,24 +32,24 @@ Se uma chave secreta for colocada por engano em `SUPABASE_PUBLISHABLE_KEY`, o se
 
 Resumo; detalhes, custos e como trocar de provedor em [AI_PROVIDERS.md](AI_PROVIDERS.md).
 
-| Variável                                                                                                      | Padrão                        | Uso                                                                                                                |
-| ------------------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `ASR_PROVIDER`                                                                                                | `huggingface`                 | Transcrição: `huggingface` (Whisper via Space, síncrono) ou `assemblyai` (assíncrono, tempos por palavra, idiomas) |
-| `ASR_MODEL`                                                                                                   | depende do provedor           | AssemblyAI: `assemblyai-stt-3-7`                                                                                   |
-| `ASR_FALLBACK_PROVIDER`                                                                                       | vazio                         | Provedor reserva, só para erros definitivos; nunca automático sem configurar                                       |
-| `ASR_LANGUAGE`                                                                                                | `pt`                          | Idioma padrão                                                                                                      |
+| Variável                                                                                                      | Padrão                                              | Uso                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `ASR_PROVIDER`                                                                                                | `huggingface`                                       | Transcrição: `huggingface` (Whisper via Space, síncrono) ou `assemblyai` (assíncrono, tempos por palavra, idiomas) |
+| `ASR_MODEL`                                                                                                   | depende do provedor                                 | AssemblyAI: `assemblyai-stt-3-7`                                                                                   |
+| `ASR_FALLBACK_PROVIDER`                                                                                       | vazio                                               | Provedor reserva, só para erros definitivos; nunca automático sem configurar                                       |
+| `ASR_LANGUAGE`                                                                                                | `pt`                                                | Idioma padrão                                                                                                      |
 | `ASR_LANGUAGE_DETECTION`, `ASR_EXPECTED_LANGUAGES`, `ASR_SELECTABLE_LANGUAGES`                                | `false`, vazio, os 32 idiomas do AssemblyAI-STT-3.7 | Detecção e idiomas oferecidos no envio (AssemblyAI)                                                                |
-| `ASR_SPEAKER_LABELS`                                                                                          | `false`                       | Separar falantes                                                                                                   |
-| `ASR_POLL_INTERVAL_MS`, `ASR_MAX_WAIT_MS`                                                                     | `15000`, 3 h                  | Consulta e limite da transcrição assíncrona                                                                        |
-| `ASSEMBLYAI_API_KEY`                                                                                          | —                             | Secreta                                                                                                            |
-| `HF_TOKEN`, `HF_ASR_SPACE_ID`, `HF_ASR_API_NAME`, `HF_ASR_*`                                                  | `openai/whisper`, `/predict`… | Space do Hugging Face (ver `asr-space/`)                                                                           |
-| `LLM_PROVIDER`                                                                                                | `groq`                        | Texto: `groq` ou `assemblyai-gateway`                                                                              |
-| `LLM_MODEL`                                                                                                   | `GROQ_MODEL`                  | Modelo padrão                                                                                                      |
-| `LLM_SUMMARY_MODEL`, `LLM_QUESTIONS_MODEL`, `LLM_WARNINGS_MODEL`, `LLM_FLASHCARDS_MODEL`, `LLM_CLEANUP_MODEL` | `LLM_MODEL`                   | Modelo por tarefa (e `LLM_<TAREFA>_PROVIDER`)                                                                      |
-| `GROQ_API_KEY`, `GROQ_MODEL`                                                                                  | —, `llama-3.3-70b-versatile`  | Groq                                                                                                               |
-| `ASSEMBLYAI_LLM_GATEWAY_URL`, `ASSEMBLYAI_LLM_JSON_MODE`                                                      | padrão do provedor            | Gateway de texto da AssemblyAI                                                                                     |
-| `MOCK_EXTERNAL_SERVICES`                                                                                      | `false`                       | `true` = nada sai do servidor; transcrições e textos de demonstração (testes e apresentação)                       |
-| `MAX_QUESTION_LIST_COUNT`                                                                                     | `40`                          | Máximo de questões por lista com `study_authoring` (1–100)                                                         |
+| `ASR_SPEAKER_LABELS`                                                                                          | `false`                                             | Separar falantes                                                                                                   |
+| `ASR_POLL_INTERVAL_MS`, `ASR_MAX_WAIT_MS`                                                                     | `15000`, 3 h                                        | Consulta e limite da transcrição assíncrona                                                                        |
+| `ASSEMBLYAI_API_KEY`                                                                                          | —                                                   | Secreta                                                                                                            |
+| `HF_TOKEN`, `HF_ASR_SPACE_ID`, `HF_ASR_API_NAME`, `HF_ASR_*`                                                  | `openai/whisper`, `/predict`…                       | Space do Hugging Face (ver `asr-space/`)                                                                           |
+| `LLM_PROVIDER`                                                                                                | `groq`                                              | Texto: `groq` ou `assemblyai-gateway`                                                                              |
+| `LLM_MODEL`                                                                                                   | `GROQ_MODEL`                                        | Modelo padrão                                                                                                      |
+| `LLM_SUMMARY_MODEL`, `LLM_QUESTIONS_MODEL`, `LLM_WARNINGS_MODEL`, `LLM_FLASHCARDS_MODEL`, `LLM_CLEANUP_MODEL` | `LLM_MODEL`                                         | Modelo por tarefa (e `LLM_<TAREFA>_PROVIDER`)                                                                      |
+| `GROQ_API_KEY`, `GROQ_MODEL`                                                                                  | —, `llama-3.3-70b-versatile`                        | Groq                                                                                                               |
+| `ASSEMBLYAI_LLM_GATEWAY_URL`, `ASSEMBLYAI_LLM_JSON_MODE`                                                      | padrão do provedor                                  | Gateway de texto da AssemblyAI                                                                                     |
+| `MOCK_EXTERNAL_SERVICES`                                                                                      | `false`                                             | `true` = nada sai do servidor; transcrições e textos de demonstração (testes e apresentação)                       |
+| `MAX_QUESTION_LIST_COUNT`                                                                                     | `40`                                                | Máximo de questões por lista com `study_authoring` (1–100)                                                         |
 
 O provedor e o modelo usados ficam gravados em cada tarefa: mudar o `.env` não altera tarefas já
 na fila.
@@ -100,3 +100,13 @@ inicialização** com a lista do que falta. Se o servidor for iniciado de outro 
 - **Login social**: [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md).
 
 Matriz completa de cada flag e roteiro de ativação: [ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md).
+
+## Personalização e idioma
+
+Não há variáveis novas. O layout do Início, as seções do perfil, o idioma da interface e o
+espaçamento dos cartões ficam em `profile_state` (chaves `dashboard-layout`, `profile-layout` e
+`preferences`), no formato de chave já exigido pela migration `profile_state_hardening`. Os blocos
+"Seus dados" do perfil usam as flags `planning` e `study_tracking`; desligadas, o bloco avisa.
+
+Para rodar os testes de navegador fora do CI com um Chromium já instalado:
+`BROWSER_EXECUTABLE=/caminho/do/chrome npm run test:browser`.

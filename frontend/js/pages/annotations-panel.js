@@ -3,10 +3,19 @@ import { listAnnotations,saveAnnotation } from '../api/learning-tools.api.js';
 import { selectionAnchor,focusAnnotation } from '../utils/annotation-anchor.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
+/** Lesson link for a note: with a highlight, the lesson opens on that passage (searched and bolded). */
+export function lessonHref(note){
+  const params=new URLSearchParams({id:note.material_id});
+  const quote=String(note.quote||'').trim();
+  if(quote){params.set('busca',quote.length>80?quote.slice(0,80).replace(/\s+\S*$/,''):quote);if(Number.isInteger(note.segment_position))params.set('trecho',String(note.segment_position));}
+  return `./material.html?${params}`;
+}
 export async function initAnnotationsPanel({panel,materialId,context,segments,materials=[]}){
   panel.hidden=false;panel.replaceChildren(make('h2',materialId?'Anotações e destaques':'Buscar nas suas anotações'));
   const status=make('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-  let selectedField=null,anchor=null,draftId=crypto.randomUUID(),offset=0,version=0,total=0;
+  let selectedField=null,anchor=null,draftId=crypto.randomUUID(),offset=0,version=0,total=0,pageSize=50;
   const source=()=>context?.();
   if(materialId){
     segments.addEventListener('select',(event)=>{if(event.target.tagName==='TEXTAREA')selectedField=event.target;});
@@ -42,27 +51,31 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
     const request=++version;find.disabled=previous.disabled=next.disabled=true;
     try{
       const result=await listAnnotations({materialId,q:search.value.trim(),offset:nextOffset});if(request!==version)return;
-      offset=nextOffset;total=result.total;list.replaceChildren();
+      offset=nextOffset;total=result.total;pageSize=Number(result.limit)||pageSize;list.replaceChildren();
+      if(!materialId&&!search.value.trim())signal('notes',{total});
       if(!result.notes.length)list.append(ninoNote(search.value.trim()?'Nenhuma anotação encontrada.':'Nenhuma anotação ainda.',search.value.trim()?'curious':'rest'));
       for(const note of result.notes){
         const card=make('article');card.className=`annotation-card annotation-${note.color}`;
         card.append(make('h3',`Revisão ${note.source_revision}${materialId?'':' · '+(titles.get(note.material_id)||'Aula')}`));
         if(note.quote)card.append(make('blockquote',note.quote));
-        if(!materialId){const link=make('a','Abrir aula');link.href=`./material.html?id=${encodeURIComponent(note.material_id)}`;card.append(make('p',note.note_text),link);}
+        if(!materialId){const link=make('a',note.quote?'Abrir no trecho da aula':'Abrir aula');link.href=lessonHref(note);card.append(make('p',note.note_text),link);}
         else{
           const editLabel=make('label','Editar anotação'),edit=make('textarea');edit.value=note.note_text;edit.maxLength=5000;editLabel.append(edit);
-          const save=make('button','Salvar edição'),remove=make('button','Arquivar anotação');save.type=remove.type='button';
+          const save=make('button','Salvar edição'),remove=make('button','Excluir anotação');save.type=remove.type='button';
           const mutate=pendingMutation(saveAnnotation,()=>crypto.randomUUID());
-          const update=(body)=>{save.disabled=remove.disabled=true;void mutate({id:note.id,materialId,version:note.version,body}).then(()=>load()).catch((e)=>{status.textContent=e.message;}).finally(()=>{save.disabled=remove.disabled=false;});};
-          save.addEventListener('click',()=>update({noteText:edit.value}));
-          remove.addEventListener('click',()=>{if(confirm('Arquivar esta anotação?'))update({deleted:true});});card.append(editLabel,save,remove);
+          const update=(body,done)=>{save.disabled=remove.disabled=true;void mutate({id:note.id,materialId,version:note.version,body}).then(()=>{status.textContent=done;return load();}).catch((e)=>{status.textContent=e.message;}).finally(()=>{save.disabled=remove.disabled=false;});};
+          save.addEventListener('click',()=>{if(!edit.value.trim()&&!note.quote){status.textContent='Escreva a anotação ou exclua-a.';edit.focus();return;}update({noteText:edit.value},'Edição salva na conta.');});
+          remove.addEventListener('click',()=>{if(confirm('Excluir esta anotação? Ela deixa de aparecer nesta aula e nas buscas.'))update({deleted:true},'Anotação excluída.');});card.append(editLabel,save,remove);
           if(note.quote){const locate=make('button','Ir ao destaque');locate.type='button';locate.addEventListener('click',()=>{if(!focusAnnotation(note,segments,source()?.transcription?.current_revision))status.textContent='Este destaque pertence a outra revisão ou o trecho foi editado. O texto original está preservado acima.';});card.append(locate);}
         }list.append(card);
       }
       count.textContent=`${result.notes.length?offset+1:0}–${offset+result.notes.length} de ${total}`;
-    }catch(error){if(request===version){list.replaceChildren();status.textContent=error.message;}}
-    finally{if(request===version){find.disabled=false;previous.disabled=offset===0;next.disabled=offset+50>=total;}}
+      // One page or none: the page controls only add noise.
+      nav.hidden=total<=pageSize&&offset===0;
+    }catch(error){if(request===version){list.replaceChildren();status.textContent=error.message;if(!materialId)signal('notes',{error:error.message||'Anotações indisponíveis.'});}}
+    finally{if(request===version){find.disabled=false;previous.disabled=offset===0;next.disabled=offset+pageSize>=total;}}
   }
-  searchForm.addEventListener('submit',(e)=>{e.preventDefault();void load(0);});previous.addEventListener('click',()=>{void load(Math.max(0,offset-50));});next.addEventListener('click',()=>{void load(offset+50);});
+  searchForm.addEventListener('submit',(e)=>{e.preventDefault();void load(0);});
+  if(!materialId)document.addEventListener('voz:notes-command',(event)=>{if(event.detail?.action!=='search')return;search.value=String(event.detail.q||'').slice(0,200);search.focus();void load(0);});previous.addEventListener('click',()=>{void load(Math.max(0,offset-pageSize));});next.addEventListener('click',()=>{void load(offset+pageSize);});
   await load(0);
 }

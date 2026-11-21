@@ -623,7 +623,7 @@ body[data-page="landing"] { display: block; background: var(--background); }
   .menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; min-height: 42px; padding: 8px; border: 1px solid var(--border-light); border-radius: 8px; color: var(--text); background: var(--surface); }
   .site-header.app-topbar { display: flex; min-height: var(--topbar-height); padding: 12px 20px; gap: 12px; }
   .header-navigation { gap: 8px; }
-  .account-link > span:last-child { display: none; }
+  .account-link > span:last-child:not(.user-initials) { display: none; }
   .app-page .article-content { padding: 28px 20px 40px; }
   .personalization-settings { grid-template-columns: 1fr; }
   .dashboard-start { align-items: flex-start; flex-direction: column; gap: 20px; padding: 24px; }
@@ -886,15 +886,39 @@ kbd {
 
 /* Nino nos estados vazios e caminhos sem saída (js/utils/material-ui.js). */
 .empty-state-card .nino-art { flex: none; object-fit: contain; }
+/* ---- Empty states inside panels (ninoNote) -------------------------------------------------
+   Nino sits in a tinted badge inside the same card as the text, never beside loose text. */
 .nino-note {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 8px 0;
-  color: var(--muted);
+  gap: 18px;
+  max-width: 44rem;
+  margin-block: 12px;
+  padding: 18px 20px;
+  border: 1px dashed color-mix(in srgb, var(--accent-strong, var(--accent)) 30%, var(--border-light));
+  border-radius: 18px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-alt) 70%, var(--surface));
+  font-size: .95rem;
 }
-.nino-note p { margin: 0; }
-.nino-note .nino-art { flex: none; width: 56px; height: 56px; object-fit: contain; }
+.nino-note-figure {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+}
+.nino-note-figure img { width: 56px; height: 56px; object-fit: contain; }
+.nino-note-body { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+.nino-note-body p { margin: 0; color: var(--muted); }
+.nino-note-title { font-size: 1.05rem; }
+.nino-note-action { margin-top: 6px; }
+@media (max-width: 420px) {
+  .nino-note { flex-direction: column; align-items: flex-start; text-align: start; }
+}
 [data-low-stimulation='true'] .nino-note .nino-art { opacity: 0.7; }
 @media (max-width: 420px) {
   .empty-state-card { flex-direction: column; text-align: center; }
@@ -940,4 +964,18 @@ html[data-screen-reader-mode='true'] :focus-visible {
 }
 html[data-screen-reader-mode='true'] :is(.library-dashboard, .dashboard-library-side, .flashcard-columns, .authoring-grid, .choice-grid) {
   display: block !important;
+}
+
+/* Navigation: "Nova transcrição" is the create action at the top; Revisar and Planejar appear
+   only when at least one of their study tools is enabled (set by shell.js from the flags). */
+.side-navigation nav a.nav-create { margin-bottom: 10px; border-color: var(--button-background); color: var(--button-text); background: var(--button-background); font-weight: 700; }
+.side-navigation nav a.nav-create:hover { color: var(--button-text); background: var(--button-background); filter: brightness(.95); }
+.side-navigation nav a.nav-create.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-strong); }
+html:not([data-nav-review='true']) [data-nav-feature='review'],
+html:not([data-nav-plan='true']) [data-nav-feature='plan'] { display: none !important; }
+@media (forced-colors: active) { .side-navigation nav a.nav-create { border: 2px solid ButtonText; } }
+/* With the sidebar visible, "Nova transcrição" lives at its top; the page-heading copy stays only
+   where the sidebar is folded into the menu (narrow screens and focus mode). */
+@media (min-width: 901px) {
+  html:not([data-focus-mode='true']) .app-page .article-heading > .primary-action[href='./nova-transcricao.html'] { display: none; }
 }

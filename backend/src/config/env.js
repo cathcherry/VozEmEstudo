@@ -31,6 +31,14 @@ export const env = Object.freeze({
   supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || '',
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || '',
   audioBucket: process.env.SUPABASE_AUDIO_BUCKET || 'audios',
+  // Per-account limits on costly requests (0 turns a limit off). See docs/HOSPEDAGEM.md.
+  // Content-Security-Policy for the served pages: 'off' (default), 'report-only' or 'enforce'.
+  contentSecurityPolicy: ['report-only', 'enforce'].includes(process.env.CONTENT_SECURITY_POLICY)
+    ? process.env.CONTENT_SECURITY_POLICY
+    : 'off',
+  rateLimitTranscriptionsPerDay: number(process.env.RATE_LIMIT_TRANSCRIPTIONS_PER_DAY, 20),
+  rateLimitGenerationsPerHour: number(process.env.RATE_LIMIT_GENERATIONS_PER_HOUR, 30),
+  rateLimitMediaPerMinute: number(process.env.RATE_LIMIT_MEDIA_PER_MINUTE, 20),
   oauthProviders: (process.env.OAUTH_PROVIDERS || 'google,github')
     .split(',')
     .map((p) => p.trim())

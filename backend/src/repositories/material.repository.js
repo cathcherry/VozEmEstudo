@@ -4,6 +4,7 @@ import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { errors } from '../domain/errors.js';
 import { assertSafeStoragePath } from '../validators/storage-path.validator.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
+import { env } from '../config/env.js';
 
 export async function createMaterial(userId, data) {
   return rpc('create_material_with_permission_admin', {
@@ -79,7 +80,8 @@ export async function deleteOwnedMaterial(userId, materialId) {
     : material.audio_files;
   if (audio?.storage_path) {
     assertSafeStoragePath(audio.storage_path);
-    await db.storage.from('audios').remove([audio.storage_path]);
+    // Same bucket the upload used (SUPABASE_AUDIO_BUCKET), not a fixed name.
+    await db.storage.from(env.audioBucket).remove([audio.storage_path]);
   }
   const { error } = await db.from('materials').delete().eq('id', materialId).eq('user_id', userId);
   if (error) throw error;

@@ -730,7 +730,9 @@ async function main() {
     );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
-    assert.equal(await page.locator('#focus-dock a').count(), 4);
+    // Revisar and Planejar exist in the dock but stay hidden while their features are off.
+    assert.equal(await page.locator('#focus-dock a:visible').count(), 4);
+    assert.equal(await page.locator('#focus-dock a').count(), 6);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
@@ -924,10 +926,10 @@ async function main() {
       './material.html?id=aula-real&edit=transcricao#transcricao',
     );
     assert.equal(
-      await row.getByRole('link', { name: 'Abrir material', exact: true }).getAttribute('href'),
+      await row.getByRole('link', { name: 'Abrir aula', exact: true }).getAttribute('href'),
       './material.html?id=aula-real',
     );
-    await row.getByRole('button', { name: 'Organizar', exact: true }).click();
+    await row.getByRole('button', { name: 'Editar informações', exact: true }).click();
     await page.locator('#metadata-dialog[open]').waitFor();
     {
       await page.addScriptTag({ path: require.resolve('axe-core/axe.min.js') });
@@ -1224,7 +1226,7 @@ async function main() {
     await page.locator('[data-continue-list] .dashboard-lesson-card').first().waitFor();
     assert(
       await page
-        .getByRole('link', { name: 'Revisar Carros elétricos — energia', exact: true })
+        .getByRole('link', { name: 'Rever Carros elétricos — energia', exact: true })
         .first()
         .isVisible(),
     );
@@ -1246,16 +1248,16 @@ async function main() {
       async (old) => (await import('/js/utils/study-store.js')).updateStudy('aula-real', old),
       storedState,
     );
-    record('Fim do áudio oferece Revisar sem confundir reprodução com revisão concluída');
+    record('Fim do áudio oferece Rever sem confundir reprodução com aula estudada');
     await page.goto(base + '/material.html?id=aula-real');
     await page.locator('[data-complete-review]').waitFor();
-    await page.getByRole('button', { name: 'Marcar revisão concluída', exact: true }).click();
+    await page.getByRole('button', { name: 'Marcar aula como estudada', exact: true }).click();
     assert.equal(await page.locator('[data-complete-review]').getAttribute('aria-pressed'), 'true');
     await page.goto(base + '/painel.html');
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
     );
-    assert.match(await page.locator('[data-overview]').textContent(), /1 revisão concluída/);
+    assert.match(await page.locator('[data-overview]').textContent(), /1 aula estudada/);
     assert(await page.getByText('energia', { exact: true }).first().isVisible());
     assert.equal(await page.locator('[data-continue-list] .dashboard-lesson-card').count(), 1);
     assert.equal(
@@ -1264,7 +1266,7 @@ async function main() {
     );
     assert(
       await page
-        .getByRole('link', { name: 'Revisar Carros elétricos — energia', exact: true })
+        .getByRole('link', { name: 'Rever Carros elétricos — energia', exact: true })
         .first()
         .isVisible(),
     );
@@ -1293,8 +1295,8 @@ async function main() {
     // XP and milestones are browser-derived incentives and the page says so.
     await page.getByText('ainda não são verificados pelo servidor', { exact: false }).waitFor();
     assert((await page.locator('.account-link img').getAttribute('src')).includes('reading.png'));
-    await page.getByRole('button', { name: 'Editar perfil', exact: true }).click();
-    const profileDialog = page.getByRole('dialog', { name: 'Personalizar perfil' });
+    await page.getByRole('button', { name: 'Editar informações', exact: true }).click();
+    const profileDialog = page.getByRole('dialog', { name: 'Editar informações do perfil' });
     await profileDialog.waitFor();
     assert(
       await profileDialog
@@ -1768,7 +1770,8 @@ async function main() {
           focusMode: true,
           reducedMotion: true,
         };
-        localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs));
+        // Through the app's storage helper, as the settings page does (marks a local change).
+        window.VozAppearance.storage.set('audioestudo-ui-preferences', JSON.stringify(prefs));
         window.VozAppearance.applyUi(prefs);
       });
       for (const name of [
@@ -1855,7 +1858,9 @@ async function main() {
       const sidebar = await page.evaluate(() => {
         const nav = document.querySelector('.side-navigation');
         const brand = nav.querySelector('.sidebar-brand');
-        const words = [...nav.querySelectorAll('nav a > span')].flatMap((label) => {
+        // Links hidden because their feature is off are not laid out, so they cannot wrap.
+        const shown = [...nav.querySelectorAll('nav a > span')].filter((label) => label.closest('a').getClientRects().length);
+        const words = shown.flatMap((label) => {
           const link = label.closest('a');
           const room = link.clientWidth - 70; // icon, gap and padding
           return label.textContent
@@ -2110,7 +2115,7 @@ async function main() {
     authoringFlags.flashcard_sets = true;
     await page.goto(base + '/material.html?id=aula-real#questoes');
     await page.locator('[data-questions-section]').waitFor();
-    assert.equal(await page.locator('[data-open-questions]').textContent(), 'Gerar lista');
+    assert.equal(await page.locator('[data-open-questions]').textContent(), 'Criar lista de questões');
     // The material copy-for-reading form no longer sits in the page body: it opens from the header.
     const shareButton = page.locator('[data-material-actions]').getByRole('button', { name: 'Compartilhar', exact: true });
     await shareButton.waitFor();
@@ -2225,6 +2230,12 @@ async function main() {
     assert.equal(await publicPage.locator('.shared-questions > li').count(), 5);
     assert.equal(await publicPage.locator('.shared-questions > li').first().locator('.shared-options li').count(), 4);
     assert.doesNotMatch(await publicPage.locator('main').textContent(), /Resposta correta|Explicação/);
+    // Revoking asks first: cancelling keeps the link, confirming revokes it.
+    page.once('dialog', (dialog) => { assert.match(dialog.message(), /não pode ser desfeita/); void dialog.dismiss(); });
+    await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
+    await page.waitForTimeout(200);
+    assert(![...listShares.values()].some((item) => item.revoked), 'cancel keeps the link');
+    page.once('dialog', (dialog) => void dialog.accept());
     await page.locator('[data-list-share-list]').getByRole('button', { name: 'Revogar', exact: true }).click();
     await page.locator('[data-list-share-list]').getByText(/^Revogado/).waitFor();
     await publicPage.reload();
@@ -2425,7 +2436,7 @@ async function main() {
     assert(await page.locator('[data-search-results] img[data-nino="curious"]').isVisible());
     assert.equal(await page.locator('[data-search-results] img[data-nino="curious"]').getAttribute('alt'), '');
     await screenshot(page, output, 'dashboard-search-empty.png');
-    await page.getByRole('button', { name: 'Voltar ao painel', exact: true }).click();
+    await page.getByRole('button', { name: 'Voltar ao início', exact: true }).click();
     assert(await page.locator('[data-search-results]').isHidden());
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(base + '/painel.html?busca=energia');

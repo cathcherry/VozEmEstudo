@@ -12,6 +12,14 @@ import {
 import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
 import { ninoNote } from '../utils/material-ui.js';
 
+// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+const signal = (name, detail) => {
+  try {
+    const view = document.defaultView;
+    if (view?.CustomEvent) document.dispatchEvent(new view.CustomEvent(`voz:${name}`, { detail }));
+  } catch { /* the dashboard summary is optional */ }
+};
+
 function make(tag, value, className) {
   const element = document.createElement(tag);
   if (value !== undefined && value !== null) element.textContent = value;
@@ -28,6 +36,31 @@ export async function initFlashcardsPanel({ materials }) {
   const backInput = createForm.querySelector('[name="back"]');
   const materialInput = createForm.querySelector('[name="materialId"]');
   const createMessage = panel.querySelector('[data-flashcard-create-status]');
+  // Creating cards happens in dialogs opened from two buttons; the review stays the focus here.
+  const dialogs = {
+    generate: panel.querySelector('[data-flashcard-generate-disclosure]'),
+    create: panel.querySelector('[data-flashcard-create-disclosure]'),
+  };
+  const createDone = panel.querySelector('[data-flashcard-create-done]');
+  const openDialog = (kind, focus) => {
+    const dialog = dialogs[kind];
+    if (!dialog || dialog.tagName !== 'DIALOG') return;
+    for (const other of Object.values(dialogs)) if (other !== dialog && other?.open) other.close?.();
+    if (!dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+    (focus || dialog.querySelector('select, textarea, input'))?.focus();
+  };
+  for (const button of panel.querySelectorAll('[data-flashcard-open]')) {
+    button.addEventListener('click', () => { if (createDone) setStatus(createDone, ''); openDialog(button.dataset.flashcardOpen); });
+  }
+  for (const dialog of Object.values(dialogs)) {
+    if (dialog?.tagName !== 'DIALOG') continue;
+    dialog.querySelector('[data-flashcard-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => {
+      const kind = Object.keys(dialogs).find((key) => dialogs[key] === dialog);
+      setTimeout(() => panel.querySelector(`[data-flashcard-open="${kind}"]`)?.focus(), 0);
+    });
+  }
   const reviewMessage = panel.querySelector('[data-flashcard-review-status]');
   const count = panel.querySelector('[data-flashcard-count]');
   const dueArea = panel.querySelector('[data-flashcard-due-area]');
@@ -77,7 +110,27 @@ export async function initFlashcardsPanel({ materials }) {
   generator.append(make('h3', 'Criar cartões com IA'),
     make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.'),
     generateForm, generateMessage, drafts);
-  createForm.before(generator);
+  const generatorSlot = panel.querySelector('[data-flashcard-generator-slot]');
+  if (generatorSlot) generatorSlot.append(generator);
+  else createForm.before(generator);
+  // Re-rendering the review card replaces the focused button; keep keyboard users in place.
+  const keepFocus = (selector) => {
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected && panel.contains(active)) return;
+    dueArea.querySelector(selector)?.focus();
+  };
+  document.addEventListener('voz:flashcards-command', (event) => {
+    const action = event.detail?.action;
+    if (action === 'review') {
+      (dueArea.querySelector('button') || count)?.focus?.();
+      dueArea.scrollIntoView?.({ block: 'nearest' });
+    } else if (action === 'create') {
+      const summary = panel.querySelector('[data-flashcard-open="generate"]')
+        || panel.querySelector('[data-flashcard-generate-disclosure] > summary');
+      summary?.focus();
+      summary?.scrollIntoView?.({ block: 'nearest' });
+    }
+  });
 
   generateForm.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -102,6 +155,9 @@ export async function initFlashcardsPanel({ materials }) {
           const use = make('button', 'Editar este cartão no formulário', 'secondary-action');
           use.type = 'button';
           use.addEventListener('click', () => {
+            const disclosure = createForm.closest('details');
+            if (disclosure) disclosure.open = true;
+            else openDialog('create', frontInput);
             frontInput.value = card.front;
             backInput.value = card.back;
             materialInput.value = selectedMaterial;
@@ -194,6 +250,11 @@ export async function initFlashcardsPanel({ materials }) {
   function renderDue() {
     dueArea.replaceChildren();
     count.textContent = flashcardSummary(dueTotal);
+    signal('flashcards', {
+      dueTotal,
+      next: dueCards[0]?.front_text || '',
+      filtered: Boolean(lessonFilter.value || (setsEnabled && setFilter.value)),
+    });
     if (dueTotal > dueCards.length) {
       const note = make('p', `Mais cartões serão carregados à medida que você revisar. ${dueTotal} pendentes no filtro atual.`, 'flashcard-muted');
       dueArea.append(note);
@@ -222,6 +283,7 @@ export async function initFlashcardsPanel({ materials }) {
       reveal.addEventListener('click', () => {
         revealed = true;
         renderDue();
+        keepFocus('.flashcard-rating-buttons button:not([disabled])');
       });
       article.append(reveal);
     } else {
@@ -396,9 +458,12 @@ export async function initFlashcardsPanel({ materials }) {
       reviewing = false;
       updateControls();
       renderDue();
+      keepFocus('button:not([disabled])');
     }
   }
 
+  // Set counts are refreshed right after a card is created (see the sets panel below).
+  let afterCreate = async () => {};
   createForm.addEventListener('submit', (event) => {
     event.preventDefault();
     if (creating || loading || reviewing || pendingReview || !createForm.reportValidity()) return;
@@ -416,7 +481,13 @@ export async function initFlashcardsPanel({ materials }) {
           });
         createForm.reset();
         setStatus(createMessage, 'Cartão criado e disponível para a primeira revisão.', 'success');
+        if (dialogs.create?.open) {
+          dialogs.create.close();
+          setStatus(createMessage, '');
+          if (createDone) setStatus(createDone, 'Cartão criado e disponível para a primeira revisão.', 'success');
+        }
         await refresh();
+        await afterCreate();
       } catch (error) {
         setStatus(createMessage, error.message || 'Não foi possível salvar o cartão.', 'error');
       } finally { creating = false; updateControls(); }
@@ -456,9 +527,15 @@ export async function initFlashcardsPanel({ materials }) {
         setFilter.focus();
       },
     });
-    const reloadSets = () => setsPanel.load().then(fillSetOptions).catch(() => {});
+    const reloadSets = () =>
+      setsPanel
+        .load()
+        .then(fillSetOptions)
+        .catch((error) =>
+          setStatus(managerMessage, error?.message || 'Não foi possível carregar os conjuntos agora.', 'error'),
+        );
     await reloadSets();
-    createForm.addEventListener('submit', () => setTimeout(reloadSets, 800));
+    afterCreate = reloadSets;
     deleteCardButton.addEventListener('click', () => {
       const id = managerSelect.value;
       if (!id || saving || !confirm('Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.')) return;
@@ -483,6 +560,7 @@ export async function initFlashcardsPanel({ materials }) {
     createForm.querySelector('[type="submit"]').disabled = true;
     manager.querySelector('[type="submit"]').disabled = true;
     dueArea.append(make('p', 'Não foi possível carregar as revisões.', 'flashcard-muted'));
+    signal('flashcards', { error: error.message || 'Os flashcards estão indisponíveis.' });
   }
 }
 

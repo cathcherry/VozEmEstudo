@@ -1,102 +1,62 @@
-<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Painel</title>
-<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/dashboard.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" /><link rel="stylesheet" href="/css/planning.css" /><link rel="stylesheet" href="/css/flashcards.css" /><link rel="stylesheet" href="/css/dashboard-refinement.css" /><link rel="stylesheet" href="/css/global-search.css" />
+<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Início</title>
+<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/dashboard.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" /><link rel="stylesheet" href="/css/dashboard-refinement.css" /><link rel="stylesheet" href="/css/global-search.css" />
   <script defer src="/js/utils/card-motion.js"></script>
-<link rel="stylesheet" href="/css/study-tracking.css" />
-<link rel="stylesheet" href="/css/learning-tools.css" />
+<link rel="stylesheet" href="/css/dashboard-home.css" /><link rel="stylesheet" href="/css/personalization.css" />
 </head><body class="app-page" data-page="dashboard">
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
 <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span></a>
-<nav aria-label="Navegação principal" class="primary-navigation"><a href="./painel.html" class="active" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Painel</span></a><a href="./nova-transcricao.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/></svg><span>Nova transcrição</span></a><a href="./historico.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/></svg><span>Biblioteca</span></a></nav><nav class="sidebar-settings" aria-label="Configurações"><a href="./configuracoes.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.6 2-2 .9-2-.5-2 3.4 1.5 1.5v2.4L2.4 14l2 3.4 2-.6 2 .9L9 20h4l.6-2.3 2-.9 2 .6 2-3.4-1.5-1.3v-2.4L19.6 9l-2-3.4-2 .6-2-.9L13 3z"/><circle cx="11" cy="11.5" r="3"/></svg><span>Configurações</span></a></nav>
+<nav aria-label="Navegação principal" class="primary-navigation"><a href="./nova-transcricao.html" class="nav-create"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nova transcrição</span></a><a href="./painel.html" class="active" aria-current="page"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Início</span></a><a href="./historico.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/></svg><span>Biblioteca</span></a><a href="./revisar.html" data-nav-feature="review"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v11"/><path d="m7 13 2 2 4-4"/></svg><span>Revisar</span></a><a href="./planejar.html" data-nav-feature="plan"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 15h3M8 18h6"/></svg><span>Planejar</span></a></nav><nav class="sidebar-settings" aria-label="Configurações"><a href="./configuracoes.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.6 2-2 .9-2-.5-2 3.4 1.5 1.5v2.4L2.4 14l2 3.4 2-.6 2 .9L9 20h4l.6-2.3 2-.9 2 .6 2-3.4-1.5-1.3v-2.4L19.6 9l-2-3.4-2 .6-2-.9L13 3z"/><circle cx="11" cy="11.5" r="3"/></svg><span>Configurações</span></a></nav>
 </div></aside>
 <button class="menu-backdrop" data-menu-backdrop type="button" aria-label="Fechar menu"></button>
-<header class="site-header app-topbar"><div class="topbar-title"><button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="topbar-page-label">Painel</span></div><form class="topbar-search" action="./historico.html" role="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" name="q" aria-label="Buscar aulas" placeholder="Buscar na sua Biblioteca"><button type="submit" class="sr-only">Buscar</button></form>
+<header class="site-header app-topbar"><div class="topbar-title"><button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="topbar-page-label">Início</span></div><form class="topbar-search" action="./historico.html" role="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" name="q" aria-label="Buscar aulas" placeholder="Buscar na sua Biblioteca"><button type="submit" class="sr-only">Buscar</button></form>
 <div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
 <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg><span data-focus-toggle-label>Modo foco</span></button>
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
-<main class="article-content" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1></div><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></header>
-<section class="learning-tools-panel" data-note-search-panel hidden aria-label="Buscar anotações"></section>
-<section class="learning-tools-panel" data-calendar-panel hidden aria-label="Calendário de estudos"></section>
-<section class="study-tracking-panel" data-study-tracking-panel hidden aria-label="Tempo e progresso de estudo"></section>
-<section class="planning-panel" data-planning-panel hidden aria-labelledby="planning-heading">
-<h2 id="planning-heading">Meu planejamento</h2>
-<div class="planning-forms">
-<form data-planning-goal-form><h3>Novo objetivo</h3>
-<label for="planning-goal-title">O que deseja alcançar?<input id="planning-goal-title" name="title" maxlength="160" required></label>
-<label for="planning-goal-date">Prazo (opcional)<input id="planning-goal-date" name="targetDate" type="date"></label>
-<button type="submit" class="secondary-action">Criar objetivo</button></form>
-<form data-planning-subgoal-form><h3>Novo subobjetivo</h3>
-<label for="planning-subgoal-goal">Objetivo principal<select id="planning-subgoal-goal" data-planning-subgoal-goal required></select></label>
-<label for="planning-subgoal-title">Subobjetivo<input id="planning-subgoal-title" name="title" maxlength="160" required></label>
-<label for="planning-subgoal-date">Prazo (opcional)<input id="planning-subgoal-date" name="dueDate" type="date"></label>
-<button type="submit" class="secondary-action">Adicionar subobjetivo</button></form>
-<form data-planning-task-form><h3>Nova tarefa</h3>
-<label for="planning-task-goal">Objetivo<select id="planning-task-goal" data-planning-goal-select required></select></label>
-<label for="planning-task-title">Tarefa<input id="planning-task-title" name="title" maxlength="180" required></label>
-<label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
-<label for="planning-task-date">Prazo (opcional)<input id="planning-task-date" name="dueDate" type="date"></label>
-<label for="planning-task-material">Aula relacionada (opcional)<select id="planning-task-material" data-planning-material-select></select></label>
-<label for="planning-task-link">Link de apoio (opcional)<input id="planning-task-link" data-planning-task-link name="referenceUrl" type="url" maxlength="2048" pattern="https://.*" placeholder="https://exemplo.com/material"></label>
-<button type="submit" class="secondary-action">Adicionar tarefa</button></form>
-</div>
-<div class="planning-controls" aria-label="Organização das tarefas">
-<label for="planning-task-filter">Mostrar tarefas
-<select id="planning-task-filter" data-planning-task-filter>
-<option value="all">Todas</option><option value="pending">Pendentes</option><option value="completed">Concluídas</option>
-</select></label>
-<label for="planning-task-sort">Ordenar tarefas
-<select id="planning-task-sort" data-planning-task-sort>
-<option value="due">Prazo e pendências</option><option value="recent">Mais recentes</option><option value="title">Título</option><option value="manual">Ordem manual</option>
-</select></label>
-</div>
-<p data-planning-status role="status" aria-live="polite"></p>
-<div data-planning-list></div>
+<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1><span data-i18n="dashboard.hello">Olá</span><span data-first-name></span></h1><span class="dash-date" data-today></span></div><div class="dashboard-heading-actions"><button type="button" class="secondary-action dash-customize-trigger" data-dashboard-customize aria-haspopup="dialog" hidden><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="dashboard.customize">Personalizar</span></button><a class="primary-action button-link" href="./nova-transcricao.html"><span data-i18n="nav.newTranscription">Nova transcrição</span> <span aria-hidden="true">+</span></a></div></header>
+<div class="dash-home" data-dashboard-data aria-busy="true">
+<div class="dash-main">
+<section class="dash-continue" aria-labelledby="continue-heading"><div class="dash-card-head"><h2 id="continue-heading" data-i18n="dashboard.continue">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action" data-i18n="dashboard.inStudy">Aulas em estudo</a></div><div data-continue-list></div></section>
+<div class="dash-pair" data-plan-section data-widget-unit="plan" hidden>
+<section class="dash-card" data-tasks-widget data-widget="tasks" hidden aria-labelledby="tasks-heading">
+<div class="dash-card-head"><h2 id="tasks-heading"><span data-i18n="dashboard.tasks">Próximas tarefas</span> <span class="dash-count" data-tasks-count hidden></span></h2><a class="text-action" href="./planejar.html#tarefas" data-i18n="common.seeAllF">Ver todas</a></div>
+<div class="dash-card-body" data-tasks-preview></div>
+<div class="dash-card-foot" data-tasks-actions></div>
 </section>
-<section class="flashcards-panel" data-flashcards-panel hidden aria-labelledby="flashcards-heading">
-<h2 id="flashcards-heading">Flashcards</h2>
-<div class="flashcard-columns">
-<div class="flashcard-column">
-<h3>Revisão de hoje</h3><p data-flashcard-count class="flashcard-muted"></p>
-<div data-flashcard-due-area aria-live="polite"></div>
-<p data-flashcard-review-status role="status" aria-live="polite"></p>
-</div>
-<div class="flashcard-column">
-<h3>Novo cartão</h3>
-<form data-flashcard-create-form class="flashcard-form">
-<label for="flashcard-front">Pergunta ou conceito
-<textarea id="flashcard-front" name="front" maxlength="1000" rows="3" required></textarea></label>
-<label for="flashcard-back">Resposta ou explicação
-<textarea id="flashcard-back" name="back" maxlength="2000" rows="4" required></textarea></label>
-<label for="flashcard-material">Aula relacionada (opcional)
-<select id="flashcard-material" name="materialId"></select></label>
-<button type="submit" class="secondary-action">Criar cartão</button>
-</form><p data-flashcard-create-status role="status" aria-live="polite"></p>
-</div>
-</div>
-<details class="flashcard-management">
-<summary>Organizar meus cartões</summary>
-<form data-flashcard-manage-form class="flashcard-form">
-<label for="flashcard-manage-id">Cartão
-<select id="flashcard-manage-id" name="cardId" required></select></label>
-<label for="flashcard-manage-front">Frente
-<textarea id="flashcard-manage-front" name="front" maxlength="1000" rows="2" required disabled></textarea></label>
-<label for="flashcard-manage-back">Verso
-<textarea id="flashcard-manage-back" name="back" maxlength="2000" rows="3" required disabled></textarea></label>
-<label for="flashcard-manage-archive">Arquivar
-<input id="flashcard-manage-archive" type="checkbox" name="archived" disabled></label>
-<button type="submit" class="secondary-action" disabled>Salvar alterações</button>
-</form>
-<p data-flashcard-manage-limit class="flashcard-muted"></p>
-<p data-flashcard-manage-status role="status" aria-live="polite"></p>
-</details>
+<section class="dash-card" data-cards-widget data-widget="cards" hidden aria-labelledby="cards-heading">
+<div class="dash-card-head"><h2 id="cards-heading"><span data-i18n="dashboard.flashcards">Flashcards</span> <span class="dash-count" data-cards-count hidden></span></h2><a class="text-action" href="./revisar.html#flashcards" data-i18n="common.seeAllM">Ver todos</a></div>
+<div class="dash-card-body" data-cards-preview></div>
+<div class="dash-card-foot" data-cards-actions></div>
 </section>
-<div class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</div>
-<div class="library-dashboard" data-dashboard-data aria-busy="true">
-<div class="dashboard-main">
-<section class="study-section" aria-labelledby="continue-heading"><div class="section-title-row"><h2 id="continue-heading">Seu último estudo</h2><a href="./historico.html?study=active" class="text-action">Ver aulas em estudo <span aria-hidden="true">→</span></a></div><div data-continue-list></div></section>
-<section class="study-section focus-secondary" data-recent-section aria-labelledby="recent-heading"><div class="section-title-row"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Ver todas <span aria-hidden="true">→</span></a></div><div data-recent-list></div></section>
 </div>
-<div class="dashboard-library-side focus-secondary">
-<section class="study-section" aria-labelledby="subjects-heading"><h2 id="subjects-heading">Suas disciplinas</h2><div class="subject-shelf" data-subject-list></div></section>
-<section class="study-section" data-topics-section aria-labelledby="topics-heading"><h2 id="topics-heading">Assuntos revisitados</h2><ol class="studied-topics topic-list" data-topic-list></ol></section>
-</div></div></main>
+<section class="dash-card dash-recent focus-secondary" data-recent-section data-widget="recent" data-widget-unit="recent" aria-labelledby="recent-heading"><div class="dash-card-head"><h2 id="recent-heading" data-i18n="dashboard.recent">Aulas recentes</h2><a href="./historico.html" class="text-action" data-i18n="dashboard.openLibrary">Abrir Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca" data-i18n="dashboard.libraryLoading" data-i18n-attr="aria-label:dashboard.librarySummary">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div><div class="dash-topics" data-topics-section><h3 data-i18n="dashboard.mostVisited">Mais revisitados</h3><ol class="studied-topics topic-list" data-topic-list></ol></div></section>
+</div>
+<aside class="dash-rail" aria-label="Semana, agenda e disciplinas">
+<section class="dash-card dash-rail-week" data-week-widget data-widget="week" data-widget-unit="week" hidden aria-labelledby="week-heading">
+<div class="dash-card-head"><h2 id="week-heading" data-i18n="dashboard.week">Sua semana</h2><a class="text-action" href="./planejar.html#tempo" data-i18n="dashboard.details">Detalhes</a></div>
+<div class="dash-card-body" data-week-body></div>
+</section>
+<section class="dash-card dash-rail-agenda" data-events-widget data-widget="agenda" data-widget-unit="agenda" hidden aria-labelledby="events-heading">
+<div class="dash-card-head"><h2 id="events-heading" data-agenda-month>Agenda</h2><a class="text-action" href="./planejar.html#calendario" data-i18n="dashboard.calendar">Calendário</a></div>
+<div class="dash-card-body" data-events-preview></div>
+<div class="dash-card-foot" data-events-actions></div>
+</section>
+<section class="dash-card dash-rail-subjects focus-secondary" data-widget="subjects" data-widget-unit="subjects" aria-labelledby="subjects-heading">
+<div class="dash-card-head"><h2 id="subjects-heading" data-i18n="dashboard.subjects">Suas disciplinas</h2></div>
+<div class="subject-shelf" data-subject-list></div>
+</section>
+<section class="dash-card dash-rail-notes focus-secondary" data-notes-widget data-widget="notes" data-widget-unit="notes" hidden aria-labelledby="notes-heading">
+<div class="dash-card-head"><h2 id="notes-heading" data-i18n="dashboard.notes">Anotações</h2><a class="text-action" href="./revisar.html#anotacoes" data-notes-link>Ver todas</a></div>
+<p class="dash-note" data-notes-summary></p>
+</section>
+</aside>
+</div>
+<dialog class="dash-customize" data-dashboard-customize-dialog aria-labelledby="customize-title" aria-describedby="customize-intro">
+<div class="dash-customize-sheet">
+<header class="dash-customize-head"><h2 id="customize-title" tabindex="-1" data-i18n="customize.title">Personalizar o Início</h2><button class="dialog-close" type="button" data-customize-done aria-label="Fechar" data-i18n-attr="aria-label:common.close">&#215;</button></header>
+<p id="customize-intro" class="dash-customize-intro" data-i18n="customize.intro">Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.</p>
+<label class="dash-customize-density" for="dashboard-density"><span data-i18n="customize.density">Espaçamento dos cartões</span><select id="dashboard-density" data-ui-setting="density"><option value="comfortable" data-i18n="customize.comfortable">Confortável</option><option value="compact" data-i18n="customize.compact">Compacto</option></select></label>
+<div data-customize-list class="customize-list"></div>
+<footer class="dash-customize-foot"><button type="button" class="text-action" data-customize-reset data-i18n="customize.reset">Restaurar padrão</button><p class="dash-customize-status" data-customize-status role="status" aria-live="polite"></p><button type="button" class="primary-action" data-customize-done data-i18n="customize.done">Concluir</button></footer>
+</div>
+</dialog></main>
 <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>

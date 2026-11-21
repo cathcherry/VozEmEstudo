@@ -8,7 +8,14 @@ const server = app.listen(env.port, () => {
 });
 
 function shutdown() {
+  // Stop accepting requests and let the ones in progress finish; idle keep-alive connections
+  // would otherwise hold the process open until the platform kills it.
   server.close(() => process.exit(0));
+  server.closeIdleConnections?.();
+  setTimeout(() => {
+    logger.warn?.('API_SHUTDOWN_FORCED', { afterMs: 10000 });
+    process.exit(0);
+  }, 10000).unref();
 }
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

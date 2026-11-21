@@ -55,7 +55,7 @@ function sizeLabel(bytes) {
     value /= 1024;
     unit++;
   }
-  return `${value.toLocaleString('pt-BR', { maximumFractionDigits: value < 10 ? 1 : 0 })} ${units[unit]}`;
+  return `${value.toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'), { maximumFractionDigits: value < 10 ? 1 : 0 })} ${units[unit]}`;
 }
 const STEP_STATE_LABELS = {
   active: ' — em andamento',

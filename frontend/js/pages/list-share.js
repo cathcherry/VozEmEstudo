@@ -3,7 +3,7 @@ import {
   listQuestionListShares,
   revokeQuestionListShare,
 } from '../api/material.api.js';
-import { randomShareToken } from './sharing-panel.js';
+import { randomShareToken, REVOKE_QUESTION } from './sharing-panel.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
 
 const make = (tag, text) => {
@@ -11,7 +11,7 @@ const make = (tag, text) => {
   if (text !== undefined) node.textContent = text;
   return node;
 };
-const when = (value) => new Date(value).toLocaleString('pt-BR');
+const when = (value) => new Date(value).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'));
 
 /** Questões tab → list menu → "Compartilhar": revocable, expiring read-only worksheet links. */
 export function initListShare({ materialId }) {
@@ -43,6 +43,7 @@ export function initListShare({ materialId }) {
           revoke.type = 'button';
           revoke.className = 'text-action';
           revoke.addEventListener('click', () => {
+            if (!confirm(REVOKE_QUESTION)) return;
             revoke.disabled = true;
             void revokeQuestionListShare(materialId, batchId, share.id)
               .then(() => {

@@ -14,7 +14,7 @@ de produção (`audioestudo`) e o que ainda depende de migrations não aplicadas
 1. [Visão geral do fluxo](#1-visão-geral-do-fluxo)
 2. [Conta e acesso](#2-conta-e-acesso)
 3. [Estrutura comum das páginas](#3-estrutura-comum-das-páginas)
-4. [Painel](#4-painel)
+4. [Início, Revisar e Planejar](#4-início-revisar-e-planejar)
 5. [Nova transcrição (envio)](#5-nova-transcrição-envio)
 6. [Processamento](#6-processamento)
 7. [Biblioteca](#7-biblioteca)
@@ -77,37 +77,84 @@ Páginas: `login.html`, `cadastro.html`, `recuperar-senha.html`, `auth-callback.
 
 ## 3. Estrutura comum das páginas
 
-- **Barra lateral**: Painel, Nova transcrição, Biblioteca e Configurações. Pode ser recolhida, ou
-  trocada por uma **barra inferior** (Aparência › Navegação).
+- **Barra lateral**, organizada por atividade:
+  - **Nova transcrição** (botão no topo): enviar uma aula.
+  - **Início**: o que estudar agora (visão geral).
+  - **Biblioteca**: todas as aulas; cada aula é onde se estuda.
+  - **Revisar**: flashcards, tentativas de questões e anotações (aparece se ao menos um desses
+    recursos estiver ativo).
+  - **Planejar**: objetivos e tarefas, calendário e tempo de estudo (aparece se ao menos um desses
+    recursos estiver ativo).
+  - **Configurações**, no rodapé do menu.
+
+  O menu pode ser recolhido, ou trocado por uma **barra inferior** (Aparência › Navegação); no modo
+  foco, os mesmos destinos ficam no atalho de navegação do modo foco.
+
 - **Barra superior**: busca na Biblioteca, atalho para Aparência, **Modo foco** (Alt+F, com A−/A+),
   e o menu da conta (Perfil, Configurações, Sair).
 - **Atalhos**: `?` abre a lista de atalhos de teclado.
 - **Nino**, o mascote, aparece em estados vazios e becos sem saída (busca sem resultado, link
   expirado, pasta vazia) com poses diferentes.
 
-## 4. Painel
+## 4. Início, Revisar e Planejar
 
-Página: `painel.html`.
+### Início (`painel.html`)
 
-- "Olá, {nome}", atalho **Nova transcrição**, **Seu último estudo**, **Aulas recentes**,
-  **Suas disciplinas** e **Assuntos revisitados**.
-- **Busca global** (`GET /api/search`): procura em títulos de aulas, enunciados de questões e na
-  transcrição, sem diferenciar acentos. Mostra sugestões enquanto se digita (setas e Esc); o
-  resultado abre em abas (Aulas, Questões, Transcrições) que só aparecem quando têm resultados.
-  Termos encontrados ficam em negrito, e o resultado de transcrição abre a aula já no trecho.
-  Gabaritos nunca entram na busca.
-- Painéis que dependem de flags (e de migrations ainda não aplicadas em produção):
-  - **Meu planejamento** (`planning`, E05): objetivos, subobjetivos e tarefas com prazo, aula
-    relacionada e link de apoio; filtros, ordenação manual e conclusão.
-  - **Flashcards** (`flashcards`, E13): revisão do dia com espaçamento (De novo / Difícil / Bom /
-    Fácil), criar cartão, gerar cartões com IA, organizar, histórico de revisões. Com
-    `flashcard_sets`: **Conjuntos de flashcards** (ver, renomear, arquivar, excluir, exportar CSV
-    ou Markdown).
-  - **Tempo e progresso de estudo** (`study_tracking`, E08/E09): sessões de estudo livre ou
-    Pomodoro (25/5), meta semanal, fuso horário, sincronização entre aparelhos.
-  - **Anotações e destaques** (`annotations`, E14/E15): busca nas anotações de todas as aulas.
-  - **Calendário de estudos** (`calendar`, E18/E19): mês, horários ligados a aulas e tarefas,
-    exportação **.ics**.
+Visão geral em duas colunas que terminam juntas; nada é editado aqui.
+
+- **Coluna principal**: "Olá, {nome}" e a data; **Continuar estudando** (última aula, disciplina,
+  trecho ouvido, **Continuar aula**); **Próximas tarefas** e **Flashcards** lado a lado, cada um com
+  a contagem no título, um link "Ver todas/Ver todos" e no máximo um botão (Adicionar tarefa,
+  Revisar N cartões); **Aulas recentes** (até 6) com **Mais revisitados**.
+- **Coluna da direita** (um painel contínuo): **Sua semana** (minutos, meta e barras por dia),
+  **o mês** com o dia de hoje e pontos nos dias com estudo ou prazo, os próximos 3 itens e
+  **Agendar estudo**; **Suas disciplinas**; **Anotações**.
+- Cartões de recursos desligados não aparecem. Sem dados, o cartão diz para que serve em uma frase e
+  oferece um primeiro passo, sem mascote e sem números zerados ou gráficos vazios.
+- Com o menu lateral visível, **Nova transcrição** fica só no menu; em telas estreitas e no modo
+  foco, também ao lado da saudação. Em telas médias a coluna da direita vira um bloco de duas
+  colunas (calendário de um lado); no celular, tudo em uma coluna.
+- **Personalizar** (ao lado da saudação) abre uma folha lateral: mostrar ou ocultar cada cartão
+  opcional (tarefas, flashcards, aulas recentes, semana, agenda, disciplinas, anotações), mover os
+  blocos dentro da coluna com ↑/↓, escolher o **espaçamento dos cartões** (confortável/compacto) e
+  **Restaurar padrão**. Tudo vale na hora e fica salvo na conta (`profile_state`, chave
+  `dashboard-layout`); sem conexão, vale neste aparelho e sincroniza depois. "Continuar
+  estudando", o menu e a conta nunca podem ser ocultados. Uma conta nova (ou outra conta no mesmo
+  navegador) vê o layout padrão.
+
+**Busca global** (`GET /api/search`): títulos, enunciados de questões e transcrição, sem diferenciar
+acentos, com sugestões enquanto se digita. Resultados em abas (Aulas, Questões, Transcrições e, com
+`annotations`, **Anotações**) que só aparecem quando têm resultados; o botão da aba Anotações abre
+Revisar › Anotações com a mesma busca. Gabaritos nunca entram na busca.
+
+### Revisar (`revisar.html`)
+
+Uma aba por recurso ativo, com endereço próprio (`#flashcards`, `#questoes`, `#anotacoes`):
+
+- **Flashcards** (`flashcards`): revisão do dia (De novo / Difícil / Bom / Fácil, com o foco
+  acompanhando a revisão pelo teclado); **Gerar cartões com IA** e **Criar cartão manualmente**
+  (recolhidos); **Organizar meus cartões** (filtros, edição, arquivar, excluir, histórico) e, com
+  `flashcard_sets`, **Conjuntos de flashcards** (renomear, arquivar, exportar CSV ou Markdown).
+- **Questões** (`quiz_v2`): todas as tentativas, em andamento (**Continuar tentativa**) e concluídas
+  (**Ver resultado e erros**, onde fica "Refazer apenas as questões erradas").
+- **Anotações** (`annotations`): busca e paginação em todas as anotações, com link para a aula.
+
+### Planejar (`planejar.html`)
+
+Abas `#tarefas`, `#calendario`, `#tempo`:
+
+- **Objetivos e tarefas** (`planning`): **Novo objetivo / Nova tarefa / Novo subobjetivo** abrem um
+  formulário de cada vez; cada objetivo tem **Adicionar tarefa** e **Adicionar subobjetivo** com o
+  objetivo já escolhido. Filtros, ordem manual, edição, aula relacionada e link de apoio.
+- **Calendário** (`calendar`): mês, agenda do dia, **Agendar estudo** (recolhido até ser pedido),
+  edição, horário ligado a tarefa e exportação **.ics**.
+- **Tempo de estudo** (`study_tracking`): cronômetro (estudo livre ou Pomodoro 25/5), minutos por
+  dia; **Meta semanal e fuso horário** e **Sincronização** recolhidos (abrem sozinhos num conflito).
+
+Links diretos usados pelo Início: `planejar.html?criar=objetivo|tarefa#tarefas`,
+`planejar.html?criar=horario#calendario`, `revisar.html?acao=revisar#flashcards`,
+`revisar.html?busca=…#anotacoes`. Com todas as flags de uma página desligadas, ela explica que o
+recurso não está ativo.
 
 ## 5. Nova transcrição (envio)
 
@@ -162,9 +209,9 @@ Página: `historico.html`.
 
 - Busca, visualização em **Grade** ou **Lista**, e **Filtros**: por aula ou por tipo de recurso,
   disciplina, tag, situação (prontos, em processamento, com erro), progresso de estudo e ordenação.
-- Menu **⋯** de cada aula: Abrir material, Editar transcrição, Organizar, Ver questões, Gerar novas
+- Menu **⋯** de cada aula: Abrir aula, Editar transcrição, Editar informações, Ver questões, Gerar novas
   questões, Mover para pasta, Excluir material (com confirmação).
-- **Organizar**: título, disciplina, pasta/unidade e até 12 tags extras.
+- **Editar informações**: título, disciplina, pasta/unidade e até 12 tags extras.
 - **Pastas** (`catalog_units`, E03): disciplinas e unidades como pastas, criação com **+**,
   arrastar-e-soltar aulas, ícone PNG personalizado.
   - Menu **⋯** da disciplina: **Editar** (nome e ícone) e **Remover**. Remover nunca apaga aulas:
@@ -172,9 +219,22 @@ Página: `historico.html`.
 
 ## 8. Página da aula (material)
 
-Página: `material.html`. Cabeçalho com **Organizar**, **Exportar** e **Compartilhar**; player; três
-abas: **Transcrição | Resumo | Questões** (setas/Home/End; endereços `#transcricao`, `#resumo`,
-`#questoes`).
+Página: `material.html`. Cabeçalho com **Editar informações** (título, disciplina e tags, na
+Biblioteca), **Exportar** e **Compartilhar**; player; **etapas de estudo**; três abas:
+**Transcrição | Resumo | Questões** (setas/Home/End; endereços `#transcricao`, `#resumo`,
+`#questoes`). Depois do conteúdo: **Cronômetro de estudo** (aberto) e **Anotações e destaques desta
+aula** (recolhido), quando as flags estão ligadas, e **Marcar aula como estudada**.
+
+### Etapas de estudo
+
+Mostra onde a aula está e o próximo passo, com um único botão principal:
+**1 Conferir transcrição → 2 Resumo → 3 Questões → 4 Flashcards** (a 4ª só com
+`flashcards` + `flashcard_sets`). Cada etapa leva à aba correspondente; resumo, questões e
+flashcards ficam travados até a transcrição ser confirmada (nesse momento, a ação da página já é
+"Conferir transcrição" / "Confirmar e continuar"). O próximo passo usa os botões existentes:
+**Gerar resumo**, **Criar questões** (abre "Gerar lista de questões"), **Responder a lista** e
+**Criar flashcards**. Questões contam como feitas quando há resposta registrada ou tentativa na
+conta. Com tudo feito: "Aula estudada" e o link para Revisar.
 
 ### Player
 
@@ -251,7 +311,7 @@ Escolha do conteúdo e do formato em um único diálogo:
 - **Compartilhar** (`sharing`, E18/E19): cópia de leitura da transcrição e/ou do resumo, por 1, 7 ou
   30 dias, revogável.
 - **Marcar revisão concluída** (e desfazer).
-- **Tempo de estudo** (`study_tracking`): o mesmo cronômetro do Painel.
+- **Tempo de estudo** (`study_tracking`): o mesmo cronômetro de Planejar › Tempo de estudo.
 
 ## 9. Responder questões
 
@@ -270,8 +330,17 @@ Página: `conta.html`.
 
 - Avatar (8 poses do Nino, foto ou GIF até 8 MB), capa, nome exibido, instituição, curso, objetivo
   e "sobre mim".
-- **Meus cards**: blocos personalizáveis (templates, texto, código, HTML/CSS próprio, incorporação de
-  YouTube ou Spotify).
+- **Visualização e edição**: a página abre limpa, sem alças, menus ou botões de arrumação, e sem os
+  blocos e seções ocultos. **Personalizar perfil** liga o modo de edição, com uma barra fixa
+  (Adicionar bloco, Mostrar tudo, Concluir; Esc também sai).
+- **Meus cards**: blocos personalizáveis (templates, texto, código, HTML/CSS próprio sem scripts,
+  incorporação de YouTube ou Spotify) e **Seus dados**: blocos com dados reais — aulas recentes,
+  disciplinas favoritas (por acessos), objetivos ativos com tarefas feitas (`planning`) e minutos da
+  semana com a meta (`study_tracking`). Sem dados, o bloco diz isso; nada é inventado.
+- No modo de edição, o menu ⋯ de cada bloco tem Editar, Duplicar, Ocultar/Mostrar, Mover para
+  cima/baixo, quatro larguras e Remover (com confirmação) — tudo por teclado; arrastar e
+  redimensionar continuam para mouse e toque. **Sobre mim**, **Meu percurso** e **Marcos de estudo**
+  podem ser ocultados (chave `profile-layout`).
 - **Meu percurso / Marcos de estudo**: conquistas como "Primeira aula", com XP e níveis; alguns
   avatares do Nino são desbloqueados pelos marcos.
   - **Provisório**: pontos e conquistas são calculados **no navegador**, a partir do número de aulas
@@ -284,6 +353,12 @@ Página: `conta.html`.
 - `configuracoes.html`: dados da conta, forma de acesso, atalhos para Aparência, Privacidade e Ajuda,
   e **Enviar link para trocar a senha**.
 - `aparencia.html`:
+  - **Modos de estudo**: Leitura confortável, Foco profundo e Revisão rápida aplicam várias
+    preferências de uma vez; depois, cada uma pode ser ajustada. Um modo nunca diminui o texto nem
+    desliga movimento reduzido, contraste reforçado, modo para leitores de tela ou leitura em voz alta.
+  - **Idioma** da interface: português (padrão), inglês, espanhol ou chinês simplificado. Só muda a
+    interface; conteúdo das aulas e o que a pessoa escreveu ficam como estão. Cobertura em
+    [IDIOMAS.md](IDIOMAS.md) — os outros idiomas ainda não traduzem todas as telas, e a página avisa.
   - **Temas prontos**: Claro, Lavanda, Sálvia, Oceano, Vinho, Areia, Escuro, Contraste claro,
     Contraste escuro.
   - **Personalizar**: cores de fundo, detalhes e letras, e fonte; o contraste é corrigido
@@ -292,7 +367,7 @@ Página: `conta.html`.
   - **Leitura e foco**: modo para leitores de tela, modo foco, barra lateral ou inferior, menos
     estímulos visuais, movimento reduzido, contraste reforçado, fonte de leitura (Verdana, Atkinson
     Hyperlegible, Lexend, OpenDyslexic), tamanho do texto (90–200%), espaçamento, guia de leitura
-    (régua ou foco no trecho) e comprimento das linhas.
+    (régua ou foco no trecho), comprimento das linhas e espaçamento dos cartões.
   - **Leitura em voz alta**: desligada, ícones discretos ou em todo o site; velocidade da voz.
 - As preferências são aplicadas antes da página aparecer (sem "piscar") e sincronizadas com a conta.
 
@@ -338,16 +413,18 @@ Página: `compartilhado.html` (não exige login).
 
 ## 15. Onde cada dado fica salvo
 
-| Dado                                                            | Onde                                                                                                           |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Aulas, transcrições, versões, resumos, questões, avisos         | Banco Supabase (servidor)                                                                                      |
-| Áudio do trecho                                                 | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
-| Vídeo MP4 original                                              | Storage `study-videos` (se guardado)                                                                           |
-| Preferências de aparência e leitura                             | Navegador + tabela `profile_state` (sincronizadas)                                                             |
-| Histórico de estudo (posição, respostas, revisão concluída)     | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
-| Foto e capa do perfil                                           | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
-| Tags extras da Biblioteca (no histórico de estudo de cada aula) | Navegador + `profile_state` (sincronizadas)                                                                    |
-| Ícones de pasta                                                 | `profile-media` + `profile_state`                                                                              |
+| Dado                                                                        | Onde                                                                                                           |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Aulas, transcrições, versões, resumos, questões, avisos                     | Banco Supabase (servidor)                                                                                      |
+| Áudio do trecho                                                             | Storage `audios`; apagado após transcrever, salvo se a pessoa pediu para guardar                               |
+| Vídeo MP4 original                                                          | Storage `study-videos` (se guardado)                                                                           |
+| Preferências de aparência e leitura                                         | Navegador + tabela `profile_state` (sincronizadas)                                                             |
+| Histórico de estudo (posição, respostas, revisão concluída)                 | Navegador + `profile_state`; com `study_tracking`, também nas tabelas de estudo                                |
+| Foto e capa do perfil                                                       | Storage `profile-media` + cópia no navegador (IndexedDB); se o envio falhar, fica pendente e sincroniza depois |
+| Tags extras da Biblioteca (no histórico de estudo de cada aula)             | Navegador + `profile_state` (sincronizadas)                                                                    |
+| Ícones de pasta                                                             | `profile-media` + `profile_state`                                                                              |
+| Layout do Início (`dashboard-layout`) e seções do perfil (`profile-layout`) | `profile_state` + cópia no navegador (sincronizados, edição mais recente)                                      |
+| Idioma da interface e espaçamento dos cartões                               | Junto das preferências de aparência (`profile_state`, chave `preferences`)                                     |
 
 Regras da sincronização (`profile_state`):
 
@@ -356,10 +433,22 @@ Regras da sincronização (`profile_state`):
   marcos e os ícones de pasta são **combinados** (nada de outro aparelho se perde); as demais chaves
   ficam com a **edição mais recente** (pela hora da edição, não do envio).
 - Sem conexão, a mudança fica pendente neste navegador e é enviada depois.
+- **Conta e dispositivo**: aparência, idioma e densidade escolhidos **sem conta** (tela de entrada) são
+  as preferências do dispositivo. Ao sair, o navegador volta a elas — a próxima pessoa não vê o tema
+  nem o idioma da conta anterior. Uma conta sem preferências salvas começa das do dispositivo; uma
+  conta que volta recupera as próprias (da cópia na conta, aplicadas logo após entrar). Sem
+  preferências do dispositivo, só as necessidades de acessibilidade (tamanho do texto, contraste,
+  movimento, leitor de tela, fonte de leitura) ficam na tela de entrada.
 - Ao trocar de conta no mesmo navegador, as preferências não salvas da conta anterior esperam por ela
   e não vão para a nova conta.
-- A cópia local continua no navegador depois de sair da conta (em computadores compartilhados, use uma
-  janela anônima).
+- **Configurações › Sincronização e dados neste navegador** mostra o estado real (tudo salvo,
+  sincronizando, pendente, sem conexão, falha) a partir do que está pendente; "Sincronizar agora"
+  aparece só quando há o que enviar.
+- **Sair** não apaga nada do navegador. **Apagar dados desta conta neste navegador e sair** remove só
+  as cópias desta conta (localStorage e IndexedDB), nunca as de outras contas nem as preferências do
+  dispositivo; avisa se há mudanças não enviadas e oferece sincronizar antes.
+- Limite: "edição mais recente" usa a hora do aparelho; um relógio muito errado pode perder a disputa
+  (a hora do servidor exigiria uma função no banco — proposta no ROADMAP).
 
 ---
 

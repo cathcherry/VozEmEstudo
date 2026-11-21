@@ -63,7 +63,16 @@ async function withMedia(buffer, extension, callback) {
     const data = JSON.parse((await execute(ffprobe, ['-v', 'error', ...inputOptions, '-show_format', '-show_streams', '-of', 'json', input], { maxBytes: 1024 * 1024, timeoutMs: 30000 })).toString());
     const streams = data.streams || [];
     if (!streams.some((s) => s.codec_type === 'audio')) throw new AppError('NO_AUDIO', 'Este vídeo não tem uma faixa de áudio. Escolha uma gravação com som.', 422);
-    const duration = Number(data.format?.duration || streams.find((s) => s.codec_type === 'audio')?.duration);
+    let duration = Number(data.format?.duration || streams.find((s) => s.codec_type === 'audio')?.duration);
+    // Raw ADTS AAC has no duration field: ffprobe estimates it from the bitrate, which can be off
+    // by several hundred ms and varies between FFmpeg builds. Count the frames instead
+    // (1024 samples each), which is exact up to the encoder's priming frame.
+    if (data.format?.format_name === 'aac') {
+      const counted = JSON.parse((await execute(ffprobe, ['-v', 'error', '-count_packets', '-select_streams', 'a:0', '-show_entries', 'stream=nb_read_packets,sample_rate', '-of', 'json', input], { maxBytes: 1024 * 1024, timeoutMs: 30000 })).toString());
+      const stream = counted.streams?.[0];
+      const exact = (Number(stream?.nb_read_packets) * 1024) / Number(stream?.sample_rate);
+      if (Number.isFinite(exact) && exact > 0) duration = exact;
+    }
     if (!Number.isFinite(duration) || duration <= 0 || duration > 7200) throw new AppError('INVALID_DURATION', 'Escolha uma gravação de até duas horas e com duração identificável.', 422);
     const hasVideo = streams.some((s) => s.codec_type === 'video' && !s.disposition?.attached_pic);
     return await callback({ input, directory, duration, hasVideo });

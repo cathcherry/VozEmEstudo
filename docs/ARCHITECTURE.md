@@ -20,7 +20,10 @@ flowchart TD
 ```
 
 - **Frontend** (`frontend/`): páginas HTML estáticas e módulos ES, sem framework e sem etapa de
-  build. `theme-init.js` aplica preferências antes da página aparecer.
+  build. `theme-init.js` aplica preferências (inclusive idioma e densidade) antes da página
+  aparecer. `js/i18n/` traduz a interface (ver [IDIOMAS.md](IDIOMAS.md)). A personalização do
+  Início (`dashboard-layout.js`, `dashboard-customize.js`) e do perfil (`profile-editor.js`,
+  `profile-blocks.js`) grava pela mesma `profile-cloud.js`; não há outro armazenamento de widgets.
 - **API** (`backend/src/app.js`): Express 5 com helmet, CORS restrito a `APP_ORIGIN`, `x-request-id`
   em toda resposta e erros padronizados. Também entrega as páginas (`SERVE_FRONTEND`).
 - **Worker** (`backend/src/worker.js`): processo separado que busca tarefas na fila

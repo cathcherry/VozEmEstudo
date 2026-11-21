@@ -35,6 +35,7 @@ function renderWorksheet(data) {
 }
 function renderMaterial(data) {
   document.querySelector('[data-shared-title]').textContent = data.title;
+  document.title = `${data.title} | Voz em Estudo`;
   status.textContent = `${data.subject || 'Sem disciplina'} · revisão ${data.revision}${data.summaryVersion ? ' · resumo versão ' + data.summaryVersion : ''}`;
   for (const [key, title] of [['transcript', 'Transcrição'], ['summary', 'Resumo']])
     if (typeof data[key] === 'string') {
@@ -45,6 +46,7 @@ function renderMaterial(data) {
 }
 async function load() {
   retry.disabled = true;
+  retry.hidden = true;
   content.replaceChildren();
   print.hidden = true;
   try {
@@ -72,6 +74,8 @@ async function load() {
     nino.width = 120;
     nino.height = 120;
     content.append(nino, make('p', 'Peça um novo link a quem compartilhou com você.', 'shared-note'));
+    // Retrying only helps when the problem may be temporary (not an invalid or revoked link).
+    retry.hidden = !/Tente novamente/.test(error.message);
   } finally {
     retry.disabled = false;
   }

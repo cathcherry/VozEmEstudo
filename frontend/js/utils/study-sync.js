@@ -5,6 +5,8 @@ import { buildStudySync } from './study-sync-core.js';
 let sync=null, enabled=false, activeOwner='', timer;
 export const isStudySyncEnabled=()=>enabled;
 export const studySync=()=>sync;
+/** The account is leaving this browser: no further progress uploads or local queue writes. */
+export function stopStudySync() { enabled=false; sync=null; activeOwner=''; }
 export async function initStudySync(userId) {
   if(activeOwner===userId) return;
   sync?.stop();activeOwner=userId;clearInterval(timer);sync=null;enabled=false;
@@ -20,7 +22,7 @@ export async function initStudySync(userId) {
   });
   timer=setInterval(()=>{ if(document.visibilityState==='visible'&&navigator.onLine) void sync.flush(); },10000);
   window.addEventListener('online',()=>{ void sync?.flush(true); });
-  window.addEventListener('pagehide',()=>{ void sync?.flush(true); });
+  window.addEventListener('pagehide',()=>{ if(enabled) void sync?.flush(true); });
   void sync.flush();
 }
 export function importLocalProgress(materials) {

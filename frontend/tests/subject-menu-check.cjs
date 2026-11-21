@@ -221,7 +221,7 @@ const material = (id, title, subjectId, subject, unitId = null) => ({
     const rowMenu = page.locator('.material-row-actions .row-menu > summary').first();
     await rowMenu.focus();
     await page.keyboard.press('Enter');
-    await page.locator('.material-row-actions .row-menu[open] button', { hasText: 'Organizar' }).focus();
+    await page.locator('.material-row-actions .row-menu[open] button', { hasText: 'Editar informações' }).focus();
     await page.keyboard.press('Enter');
     await page.locator('#metadata-dialog[open]').waitFor();
     await page.keyboard.press('Escape');

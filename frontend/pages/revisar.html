@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Revisar</title>
+<script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/review.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/voz-redesign.css" /><link rel="stylesheet" href="/css/planning.css" /><link rel="stylesheet" href="/css/flashcards.css" />
+  
+<link rel="stylesheet" href="/css/study-tracking.css" />
+<link rel="stylesheet" href="/css/learning-tools.css" />
+<link rel="stylesheet" href="/css/tool-pages.css" />
+<link rel="stylesheet" href="/css/personalization.css" />
+</head><body class="app-page" data-page="review">
+<a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+<aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span><span class="brand-em">em</span><span class="brand-main">Estudo</span></span></a>
+<nav aria-label="Navegação principal" class="primary-navigation"><a href="./nova-transcricao.html" class="nav-create"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Nova transcrição</span></a><a href="./painel.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Início</span></a><a href="./historico.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/></svg><span>Biblioteca</span></a><a href="./revisar.html" class="active" aria-current="page" data-nav-feature="review"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v11"/><path d="m7 13 2 2 4-4"/></svg><span>Revisar</span></a><a href="./planejar.html" data-nav-feature="plan"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 15h3M8 18h6"/></svg><span>Planejar</span></a></nav><nav class="sidebar-settings" aria-label="Configurações"><a href="./configuracoes.html"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 3-.6 2-2 .9-2-.5-2 3.4 1.5 1.5v2.4L2.4 14l2 3.4 2-.6 2 .9L9 20h4l.6-2.3 2-.9 2 .6 2-3.4-1.5-1.3v-2.4L19.6 9l-2-3.4-2 .6-2-.9L13 3z"/><circle cx="11" cy="11.5" r="3"/></svg><span>Configurações</span></a></nav>
+</div></aside>
+<button class="menu-backdrop" data-menu-backdrop type="button" aria-label="Fechar menu"></button>
+<header class="site-header app-topbar"><div class="topbar-title"><button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="navigation" aria-label="Abrir menu"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="topbar-page-label">Revisar</span></div><form class="topbar-search" action="./painel.html" role="search"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input type="search" name="busca" minlength="2" aria-label="Buscar em aulas, questões, transcrições e anotações" placeholder="Buscar aulas, questões e transcrições" data-i18n-attr="aria-label:search.label;placeholder:search.placeholder"><button type="submit" class="sr-only">Buscar</button></form>
+<div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
+<button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg><span data-focus-toggle-label>Modo foco</span></button>
+<a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
+<main class="article-content tool-page" id="conteudo-principal" tabindex="-1">
+<header class="article-heading tool-heading"><div><h1 data-i18n="nav.review">Revisar</h1></div></header>
+<p class="tool-intro" data-i18n="review.intro">Revise flashcards, retome tentativas de questões e reencontre os trechos que você destacou nas aulas.</p>
+<div class="tool-tabs" role="tablist" aria-label="Seções da revisão" data-i18n-attr="aria-label:review.sections" data-tool-tabs>
+<button type="button" class="tool-tab" role="tab" id="tab-flashcards" aria-controls="flashcards" data-tab="flashcards" data-i18n="review.tabFlashcards">Flashcards</button>
+<button type="button" class="tool-tab" role="tab" id="tab-questoes" aria-controls="questoes" data-tab="questoes" data-i18n="review.tabQuestions">Questões</button>
+<button type="button" class="tool-tab" role="tab" id="tab-anotacoes" aria-controls="anotacoes" data-tab="anotacoes" data-i18n="review.tabNotes">Anotações</button>
+</div>
+<section class="tool-section" id="flashcards" role="tabpanel" aria-labelledby="tab-flashcards" hidden>
+<section class="flashcards-panel" data-flashcards-panel hidden aria-labelledby="flashcards-heading">
+<h2 id="flashcards-heading">Flashcards</h2>
+<div class="flashcard-columns">
+<div class="flashcard-column flashcard-review-column">
+<h3>Revisão de hoje</h3><p data-flashcard-count class="flashcard-muted"></p>
+<div data-flashcard-due-area aria-live="polite"></div>
+<p data-flashcard-review-status role="status" aria-live="polite"></p>
+</div>
+<div class="flashcard-column flashcard-create-column">
+<h3>Novos cartões</h3>
+<div class="flashcard-create-actions">
+<button type="button" class="flashcard-create-tile" data-flashcard-open="generate" aria-haspopup="dialog"><strong>Gerar cartões com IA</strong><span>Sugestões a partir da transcrição confirmada de uma aula.</span></button>
+<button type="button" class="flashcard-create-tile" data-flashcard-open="create" aria-haspopup="dialog"><strong>Criar cartão manualmente</strong><span>Escreva a pergunta e a resposta.</span></button>
+</div>
+<p class="flashcard-create-done" data-flashcard-create-done role="status" aria-live="polite"></p>
+<dialog class="app-dialog flashcard-dialog" data-flashcard-generate-disclosure aria-labelledby="flashcard-generate-title"><button type="button" class="dialog-close flashcard-dialog-close" data-flashcard-close aria-label="Fechar">×</button><h2 id="flashcard-generate-title">Gerar cartões com IA</h2><div data-flashcard-generator-slot></div></dialog>
+<dialog class="app-dialog flashcard-dialog" data-flashcard-create-disclosure aria-labelledby="flashcard-create-title"><button type="button" class="dialog-close flashcard-dialog-close" data-flashcard-close aria-label="Fechar">×</button><h2 id="flashcard-create-title">Criar cartão</h2>
+<form data-flashcard-create-form class="flashcard-form">
+<label for="flashcard-front">Pergunta ou conceito
+<textarea id="flashcard-front" name="front" maxlength="1000" rows="3" required></textarea></label>
+<label for="flashcard-back">Resposta ou explicação
+<textarea id="flashcard-back" name="back" maxlength="2000" rows="4" required></textarea></label>
+<label for="flashcard-material">Aula relacionada (opcional)
+<select id="flashcard-material" name="materialId"></select></label>
+<button type="submit" class="secondary-action">Criar cartão</button>
+</form><p data-flashcard-create-status role="status" aria-live="polite"></p></dialog>
+</div>
+</div>
+<details class="flashcard-management">
+<summary>Organizar meus cartões</summary>
+<form data-flashcard-manage-form class="flashcard-form">
+<label for="flashcard-manage-id">Cartão
+<select id="flashcard-manage-id" name="cardId" required></select></label>
+<label for="flashcard-manage-front">Frente
+<textarea id="flashcard-manage-front" name="front" maxlength="1000" rows="2" required disabled></textarea></label>
+<label for="flashcard-manage-back">Verso
+<textarea id="flashcard-manage-back" name="back" maxlength="2000" rows="3" required disabled></textarea></label>
+<label for="flashcard-manage-archive">Arquivar
+<input id="flashcard-manage-archive" type="checkbox" name="archived" disabled></label>
+<button type="submit" class="secondary-action" disabled>Salvar alterações</button>
+</form>
+<p data-flashcard-manage-limit class="flashcard-muted"></p>
+<p data-flashcard-manage-status role="status" aria-live="polite"></p>
+</details>
+</section>
+</section>
+<section class="tool-section" id="questoes" role="tabpanel" aria-labelledby="tab-questoes" hidden>
+<section class="quiz-history-panel" data-quiz-history-panel aria-labelledby="quiz-history-heading">
+<h2 id="quiz-history-heading">Suas tentativas de questões</h2>
+<p data-quiz-history-status role="status" aria-live="polite"></p>
+<div data-quiz-history-list></div>
+</section>
+</section>
+<section class="tool-section" id="anotacoes" role="tabpanel" aria-labelledby="tab-anotacoes" hidden>
+<section class="learning-tools-panel" data-note-search-panel hidden aria-label="Anotações e destaques"></section>
+</section>
+<div class="tool-unavailable" data-tool-unavailable hidden></div>
+</main>
+<footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>

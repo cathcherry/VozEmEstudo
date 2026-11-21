@@ -13,14 +13,14 @@ export function tagList(material) {
 }
 export function reviewLabel(material) {
   const state=studyFor(material.id);
-  if (state.completed) return 'Revisão concluída';
+  if (state.completed) return 'Aula estudada';
   if (state.openedAt) return 'Em estudo';
   return materialState(material)==='ready' ? 'Ainda não iniciado' : 'Preparando material';
 }
 export function progressNode(material) {
   const box=document.createElement('div'); box.className='study-progress';
   const state=studyFor(material.id), percent=listeningPercent(material.id);
-  const text=document.createElement('span'); text.textContent=state.playedAt ? `${percent}% do áudio ouvido${state.completed ? ' · revisão concluída' : ''}` : reviewLabel(material);
+  const text=document.createElement('span'); text.textContent=state.playedAt ? `${percent}% do áudio ouvido${state.completed ? ' · aula estudada' : ''}` : reviewLabel(material);
   if (state.playedAt) { const p=document.createElement('progress'); p.max=100; p.value=percent; p.setAttribute('aria-label',`Áudio ouvido de ${material.title}`); box.append(p); }
   box.append(text); return box;
 }
@@ -38,7 +38,7 @@ export function materialRow(material,{actions=true,compact=false}={}) {
     const links=document.createElement('div'); links.className='material-row-actions';
     const open=document.createElement('a'); open.className='secondary-action'; open.href=materialHref(material.id);
     const state=studyFor(material.id), phase=materialState(material);
-    open.textContent=phase==='processing'?'Ver andamento':phase==='failed'?'Ver erro':state.completed||playbackAtEnd(material)?'Revisar':state.openedAt?'Continuar':'Abrir';
+    open.textContent=phase==='processing'?'Ver andamento':phase==='failed'?'Ver erro':state.completed||playbackAtEnd(material)?'Rever aula':state.openedAt?'Continuar aula':'Abrir aula';
     open.setAttribute('aria-label',`${open.textContent} ${material.title}`); links.append(open);
     if (materialState(material)==='ready') { const q=document.createElement('a'); q.href=materialHref(material.id)+'#gerar-questoes'; q.textContent='Gerar questões'; q.setAttribute('aria-label',`Gerar novas questões para ${material.title}`); links.append(q); }
     card.append(links);

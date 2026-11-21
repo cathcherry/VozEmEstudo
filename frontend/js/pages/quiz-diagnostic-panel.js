@@ -5,6 +5,21 @@ import { isFeatureEnabled } from '../utils/feature-flags.js';
  * E11/E12: display a descriptive score and optionally start a new session
  * referencing only the mistakes in a completed attempt. Never infer results.
  */
+// A completed attempt never changes: one request per attempt while the page is open, instead of
+// one on every Anterior/Próxima. Failures are not kept, so a later render tries again.
+const diagnostics = new Map();
+export function loadDiagnostic(sessionId, fetcher = getQuizDiagnostic) {
+  if (!diagnostics.has(sessionId))
+    diagnostics.set(
+      sessionId,
+      fetcher(sessionId).catch((error) => {
+        diagnostics.delete(sessionId);
+        throw error;
+      }),
+    );
+  return diagnostics.get(sessionId);
+}
+
 export async function renderQuizDiagnosticPanel({ parent, session, materialId, batchId }) {
   if (session.status !== 'completed') return;
   const section = document.createElement('section');
@@ -20,9 +35,10 @@ export async function renderQuizDiagnosticPanel({ parent, session, materialId, b
   parent.append(section);
 
   try {
-    const diagnostic = await getQuizDiagnostic(session.id);
+    const diagnostic = await loadDiagnostic(session.id);
     if (!section.isConnected) return;
-    if (diagnostic.sessionId !== session.id) throw new Error('O diagnóstico não corresponde à tentativa.');
+    if (diagnostic.sessionId !== session.id)
+      throw new Error('O diagnóstico não corresponde à tentativa.');
     status.textContent = `${diagnostic.correct} de ${diagnostic.total} acertos (${diagnostic.percent}%). ${diagnostic.incorrect} ${diagnostic.incorrect === 1 ? 'erro' : 'erros'}.`;
 
     const interpretation = document.createElement('p');
@@ -83,6 +99,7 @@ export async function renderQuizDiagnosticPanel({ parent, session, materialId, b
     });
     section.append(button, notice);
   } catch (error) {
-    if (section.isConnected) status.textContent = error.message || 'Não foi possível carregar o diagnóstico.';
+    if (section.isConnected)
+      status.textContent = error.message || 'Não foi possível carregar o diagnóstico.';
   }
 }

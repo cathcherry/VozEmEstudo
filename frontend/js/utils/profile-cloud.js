@@ -13,6 +13,8 @@
 import { getSupabase } from '../api/supabase-browser.js';
 
 const queues = new Map();
+// Accounts whose data is being removed from this browser: nothing is written for them anymore.
+const leaving = new Set();
 const merges = new Map();
 const MAX_ATTEMPTS = 3;
 let clientFactory = getSupabase;
@@ -35,12 +37,22 @@ function cached(owner, key) {
     return null;
   }
 }
+/** Stops every later local copy and upload for `owner` (used before removing its data). */
+export function stopCloudWrites(owner) {
+  if (owner) leaving.add(owner);
+}
 function remember(owner, key, entry) {
+  if (leaving.has(owner)) return;
   try {
     localStorage.setItem(cacheKey(owner, key), JSON.stringify(entry));
   } catch {
     /* Full or blocked storage: the account copy remains the source of truth. */
   }
+}
+let inFlight = 0;
+/** Synchronization state for indicators: 'syncing', 'saved' or 'pending' (with the key). */
+function syncState(state, key) {
+  window.dispatchEvent(new CustomEvent('voz-sync-state', { detail: { state, key, inFlight } }));
 }
 function status(ok) {
   window.dispatchEvent(
@@ -99,20 +111,27 @@ async function writeEntry(owner, key, entry) {
 }
 
 function sync(owner, key, entry) {
+  if (leaving.has(owner)) return Promise.resolve(false);
   const queueKey = `${owner}:${key}`;
   const previous = queues.get(queueKey) || Promise.resolve();
   const task = previous
     .catch(() => {})
     .then(async () => {
+      inFlight += 1;
+      syncState('syncing', key);
       try {
         const stored = await writeEntry(owner, key, entry);
         // A newer local edit made meanwhile keeps its own pending entry.
         if (cached(owner, key)?.token === entry.token)
           remember(owner, key, { data: stored, pending: false, editedAt: entry.editedAt });
+        inFlight -= 1;
         status(true);
+        syncState('saved', key);
         return true;
       } catch {
+        inFlight -= 1;
         status(false);
+        syncState('pending', key);
         return false;
       }
     });
@@ -174,6 +193,11 @@ export async function loadCloudState(owner, key, fallback = null) {
     status(false);
     return local?.data ?? fallback;
   }
+}
+
+/** This browser's last copy of a key for `owner` (no network), e.g. to paint a layout at once. */
+export function cachedCloudState(owner, key) {
+  return cached(owner, key)?.data ?? null;
 }
 
 /** Retries every pending key of this account (e.g. when the browser comes back online). */

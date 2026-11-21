@@ -15,5 +15,5 @@ export function formatTimestamp(ms) {
 }
 
 export function formatDate(value) {
-  return value ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : '—';
+  return value ? new Intl.DateTimeFormat((globalThis.VOZ_LOCALE || 'pt-BR'), { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : '—';
 }

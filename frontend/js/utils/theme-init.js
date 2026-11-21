@@ -20,8 +20,14 @@
     speechRate: 'normal',
     // Minimal presentation for screen-reader users: no decoration, animation or own TTS.
     screenReaderMode: false,
+    // Card spacing in study pages: 'comfortable' (default) or 'compact' (more on screen).
+    density: 'comfortable',
+    // Interface language only (menus, buttons, messages); never lesson content.
+    language: 'pt-BR',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
+  const DENSITIES = ['comfortable', 'compact'];
+  const LANGUAGES = ['pt-BR', 'en', 'es', 'zh-CN'];
   const READ_ALOUD = ['off', 'icons', 'everywhere'];
   const SPEECH_RATES = ['slow', 'normal', 'fast', 'faster'];
   const RULERS = ['off', 'ruler', 'focus'];
@@ -79,6 +85,13 @@
         localStorage.setItem(key, value);
         if (SYNCED_KEYS.includes(key) || key.startsWith('voz-theme-profiles-v1:'))
           localStorage.setItem('voz-preferences-dirty', 'true');
+        // Signed out: this is a choice for the device (login page, before any account), kept
+        // apart so that signing out of an account brings it back (see preference-cloud.js).
+        if (SYNCED_KEYS.includes(key) && !localStorage.getItem('voz-preferences-owner')) {
+          const device = JSON.parse(localStorage.getItem('voz-preferences-device') || '{}');
+          device[key] = value;
+          localStorage.setItem('voz-preferences-device', JSON.stringify(device));
+        }
         return true;
       } catch {
         return false;
@@ -96,6 +109,9 @@
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
+    root.lang = prefs.language;
+    // Dates and times in the interface language (a language change reloads the page).
+    globalThis.VOZ_LOCALE = prefs.language;
     // Bottom dock navigation: always in focus mode (auto-hidden), or chosen as the normal
     // navigation in Aparência (always visible). The sidebar is not shown in either case.
     root.dataset.navDock = String(prefs.focusMode || prefs.navigation === 'dock');
@@ -220,6 +236,8 @@
     if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
+    if (DENSITIES.includes(value?.density)) result.density = value.density;
+    if (LANGUAGES.includes(value?.language)) result.language = value.language;
     if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
     else if (value?.readAloud === 'on') result.readAloud = 'icons';
     if (SPEECH_RATES.includes(value?.speechRate)) result.speechRate = value.speechRate;
@@ -290,13 +308,15 @@
     const profile = loadProfiles().find((p) => p.id === id);
     if (!profile) return;
     saveAppearance(profile.appearance);
-    // Read-aloud choices belong to the person, not to the theme: keep the current ones.
+    // Read-aloud choices and card density belong to the person, not to the theme: keep them.
     const current = loadUi();
     const ui = normalizeUi({
       ...profile.ui,
       readAloud: current.readAloud,
       speechRate: current.speechRate,
       screenReaderMode: current.screenReaderMode,
+      density: current.density,
+      language: current.language,
     });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);
@@ -362,6 +382,15 @@
   migrateLegacyAccessibility();
   applyAppearance(loadAppearance());
   applyUi(loadUi());
+  // Another interface language: keep the page hidden for a moment until it is translated, so
+  // Portuguese does not flash first (js/i18n/boot.js removes the mark; 1.5 s safety limit).
+  if (root.dataset.language && root.dataset.language !== 'pt-BR') {
+    root.setAttribute('data-i18n-pending', '');
+    const style = document.createElement('style');
+    style.textContent = 'html[data-i18n-pending] body{visibility:hidden}';
+    document.head.append(style);
+    setTimeout(() => root.removeAttribute('data-i18n-pending'), 1500);
+  }
   root.dataset.profile = storage.get('voz-active-theme-profile', '');
   const file = location.pathname.split('/').pop();
   const aliases =

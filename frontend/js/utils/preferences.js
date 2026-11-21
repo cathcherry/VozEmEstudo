@@ -2,9 +2,18 @@ import { toast } from './toast.js';
 import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
 import { initPageReader } from './page-reader.js';
+import { STUDY_PRESETS, applyStudyPreset, activeStudyPreset } from './study-presets.js';
+import { t } from '../i18n/i18n.js';
+import { bootTranslations } from '../i18n/boot.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
+// The page was translated for this language; another one (chosen here or synced from the
+// account) reloads the page so every message, including dynamic ones, changes together.
+const pageLanguage = uiPreferences.language;
+function reloadIfLanguageChanged() {
+  if (uiPreferences.language !== pageLanguage) location.reload();
+}
 let syncNavigation = () => {};
 let focusDock = null;
 let focusDockTrigger = null;
@@ -24,14 +33,14 @@ function updateControls() {
     }
   });
   document.querySelectorAll('[data-focus-toggle]').forEach((b) => {
-    const name = uiPreferences.focusMode ? 'Sair do modo foco' : 'Modo foco';
+    const name = uiPreferences.focusMode ? t('focus.exit') : t('focus.toggle');
     b.setAttribute('aria-pressed', String(uiPreferences.focusMode));
     b.setAttribute('aria-label', name);
     b.setAttribute('aria-keyshortcuts', 'Alt+F');
     b.dataset.tooltip = name;
     b.removeAttribute('title');
     const label = b.querySelector('[data-focus-toggle-label]');
-    if (label) label.textContent = 'Modo foco';
+    if (label) label.textContent = t('focus.toggle');
   });
   document.querySelectorAll('[data-focus-reading-tools]').forEach((n) => {
     n.hidden = !uiPreferences.focusMode;
@@ -46,14 +55,43 @@ function updateControls() {
           String(row.dataset.themeProfile === document.documentElement.dataset.profile),
         ),
     );
+  const preset = activeStudyPreset(uiPreferences);
+  document.querySelectorAll('[data-study-preset]').forEach((button) => {
+    button.setAttribute('aria-pressed', String(button.dataset.studyPreset === preset));
+  });
   syncNavigation();
   syncFocusDock();
   syncScreenReaderToggle();
 }
+/** Builds the "Modos de estudo" choices (Aparência); each applies a named set of preferences. */
+function renderStudyPresets() {
+  const host = document.querySelector('[data-study-presets]');
+  if (!host || host.childElementCount) return;
+  for (const id of Object.keys(STUDY_PRESETS)) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'study-preset';
+    button.dataset.studyPreset = id;
+    const name = document.createElement('strong');
+    name.textContent = t(`presets.${id}`);
+    const text = document.createElement('span');
+    text.textContent = t(`presets.${id}Text`);
+    button.append(name, text);
+    button.addEventListener('click', () => {
+      const saved = saveUi(applyStudyPreset(uiPreferences, id));
+      const status = document.querySelector('[data-study-preset-status]');
+      const applied = t('presets.applied', { label: t(`presets.${id}`) });
+      if (status) status.textContent = applied;
+      if (!saved) showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
+      else showToast(applied);
+    });
+    host.append(button);
+  }
+}
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
   // Focus mode and read-aloud choices are not part of a theme, so they never deselect one.
-  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode'];
+  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density', 'language'];
   const changesTheme = Object.keys(appearance.defaults).some(
     (key) => !notTheme.includes(key) && next[key] !== uiPreferences[key],
   );
@@ -69,6 +107,7 @@ function updateUiPreference(key, value) {
   if (!(key in appearance.defaults)) return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
+  if (key === 'language') reloadIfLanguageChanged();
 }
 function showToast(message, type = 'info') {
   toast(message, { type });
@@ -230,8 +269,10 @@ function syncFocusDock() {
 function initializeFocusDock() {
   if (!document.body.classList.contains('app-page')) return;
   const iconMarkup = {
-    dashboard:
-      '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+    dashboard: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/>',
+    review:
+      '<rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v11"/><path d="m7 13 2 2 4-4"/>',
+    plan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 15h3M8 18h6"/>',
     transcription: '<path d="M12 3v18M7 7v10M2 10v4M17 7v10M22 10v4"/>',
     library: '<path d="M4 4h4v16H4zM11 4h4v16h-4zM18 4l4 15-4 1-4-15z"/>',
     appearance: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
@@ -239,9 +280,11 @@ function initializeFocusDock() {
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',
   };
   const links = [
-    ['Painel', './painel.html', 'dashboard'],
+    ['Início', './painel.html', 'dashboard'],
     ['Nova transcrição', './nova-transcricao.html', 'transcription'],
     ['Biblioteca', './historico.html', 'library'],
+    ['Revisar', './revisar.html', 'review'],
+    ['Planejar', './planejar.html', 'plan'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');
@@ -258,6 +301,7 @@ function initializeFocusDock() {
     const link = document.createElement('a');
     link.href = href;
     link.className = 'focus-dock-link';
+    if (iconName === 'review' || iconName === 'plan') link.dataset.navFeature = iconName;
     link.setAttribute('aria-label', label);
     const path = location.pathname.split('/').at(-1) || 'painel.html';
     if (
@@ -344,7 +388,9 @@ function initializeAccessibilityEntryPoints() {
   toggle.addEventListener('click', () => {
     const next = !uiPreferences.screenReaderMode;
     updateUiPreference('screenReaderMode', next);
-    showToast(next ? 'Modo para leitores de tela ativado.' : 'Modo para leitores de tela desativado.');
+    showToast(
+      next ? 'Modo para leitores de tela ativado.' : 'Modo para leitores de tela desativado.',
+    );
     toggle.focus();
   });
   syncScreenReaderToggle();
@@ -358,6 +404,8 @@ function syncScreenReaderToggle() {
   toggle.setAttribute('aria-pressed', String(uiPreferences.screenReaderMode));
 }
 function initialize() {
+  // Before navigation reads link labels into aria-label/title.
+  void bootTranslations();
   initializeNavigation();
   if (document.body.classList.contains('app-page')) {
     initReadingRuler();
@@ -379,6 +427,11 @@ function initialize() {
       if (event.target === dialog) dialog.close();
     }),
   );
+  renderStudyPresets();
+  // Aparência: say plainly that other languages are not complete yet.
+  document.querySelectorAll('[data-language-partial]').forEach((note) => {
+    note.hidden = uiPreferences.language === 'pt-BR';
+  });
   updateControls();
   markTheme();
   document
@@ -633,6 +686,7 @@ function initialize() {
     markTheme();
     populateColors();
     renderProfiles();
+    reloadIfLanguageChanged();
   }
   window.addEventListener('voz-user-change', () => renderProfiles());
   window.addEventListener('voz-preferences-change', refresh);

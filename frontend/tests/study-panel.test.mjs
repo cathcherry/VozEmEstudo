@@ -18,8 +18,12 @@ test('study panel renders metrics and validates settings without breaking other 
   const init=factory(dom.window.document,dom.window,dom.window.Option,()=>1,()=>{},...Object.values(dependencies));
   try {
     await init();const panel=dom.window.document.querySelector('section');
-    assert.equal(panel.hidden,false);assert.match(panel.textContent,/10 min de estudo/);assert.match(panel.textContent,/Pausa de 5 minutos/);
+    assert.equal(panel.hidden,false);assert.match(panel.textContent,/10 de 120 min de estudo/);assert.match(panel.textContent,/Pausa de 5 minutos/);
     assert.equal(panel.querySelector('output').getAttribute('aria-live'),'off');
+    // One main button; goal, time zone and sync tools wait in a dialog behind the gear.
+    assert.equal(panel.querySelectorAll('.study-timer-controls button').length,1);
+    assert.ok(panel.querySelector('dialog form.study-settings'));
+    assert.equal(panel.querySelector('[role="radiogroup"] [aria-checked="true"]').dataset.mode,'pomodoro');
     assert.equal(dom.window.document.querySelector('#existing').textContent,'Biblioteca');
     const form=panel.querySelector('form');form.querySelector('[type="number"]').value='90';form.querySelector('input:not([type="number"])').value='America/Sao_Paulo';
     form.dispatchEvent(new dom.window.Event('submit',{cancelable:true,bubbles:true}));await new Promise((resolve)=>setImmediate(resolve));
@@ -27,7 +31,7 @@ test('study panel renders metrics and validates settings without breaking other 
   } finally {dom.window.close();}
 });
 test('tracking markers remain hidden by default and routes require explicit feature flag',()=>{
-  for(const file of ['painel','material']){
+  for(const file of ['planejar','material']){
     const html=readFileSync(new URL(`../pages/${file}.html`,import.meta.url),'utf8');
     assert.match(html,/data-study-tracking-panel hidden/);
   }
