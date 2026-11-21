@@ -21,7 +21,7 @@ import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState, ninoNote } from '../utils/material-ui.js';
 import { pollJob } from '../api/job.api.js';
 import { initTranscriptionReview } from '../utils/transcription-review.js';
-import { studyFor, visitMaterial, completeReview, trackPlayback } from '../utils/study-store.js';
+import { studyFor, visitMaterial, completeReview, trackPlayback, updateStudy } from '../utils/study-store.js';
 import { MediaPlayer } from '../utils/media-player.js';
 import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, getCaptions, removeOriginalVideo } from '../api/playback.api.js';
@@ -31,7 +31,7 @@ import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
 import { renderMarkdown } from '../utils/markdown.js';
-import { lessonProgress, renderLessonSteps } from '../utils/lesson-steps.js';
+import { lessonProgress, renderLessonSteps, lessonMode } from '../utils/lesson-steps.js';
 import { listFlashcardSets } from '../api/flashcard.api.js';
 import { listQuizSessions } from '../api/quiz-session.api.js';
 
@@ -48,10 +48,11 @@ let currentMaterial,
   editing = false,
   stopTracking,
   waveformController;
-let activeTab =
-  { '#resumo': 'summary', '#questoes': 'questions', '#gerar-questoes': 'questions' }[
-    location.hash
-  ] || 'transcription';
+const TAB_HASH = { transcription: 'transcricao', summary: 'resumo', questions: 'questoes', notes: 'anotacoes' };
+const hashTab = { '#resumo': 'summary', '#questoes': 'questions', '#gerar-questoes': 'questions', '#anotacoes': 'notes', '#transcricao': 'transcription' }[location.hash];
+let activeTab = hashTab || 'transcription';
+// The preparation guide reopened from "Guia da aula" while the lesson is already in study mode.
+let guideOpen = false;
 let waitingSince,
   initialRender = true,
   displayedSummary = null;
@@ -221,7 +222,9 @@ function layout() {
   $('[data-material-actions]').hidden = !showContent;
   $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
   $('.lesson-tools').hidden = !showContent;
-  for (const name of ['transcription', 'summary', 'questions']) {
+  $('[data-material-tab="notes"]').hidden = !notesEnabled;
+  if (activeTab === 'notes' && !notesEnabled) activeTab = 'transcription';
+  for (const name of ['transcription', 'summary', 'questions', 'notes']) {
     const tab = $(`[data-material-tab="${name}"]`);
     tab.setAttribute('aria-selected', String(activeTab === name));
     tab.tabIndex = activeTab === name ? 0 : -1;
@@ -262,11 +265,55 @@ async function loadLessonExtras() {
   };
   updateLessonSteps();
 }
+function currentLessonMode() {
+  const batches = currentMaterial?.questionBatches || [];
+  const questionIds = new Set(batches.flatMap((batch) => (batch.questions || []).map((q) => q.id)));
+  const study = studyFor(materialId);
+  return lessonMode({
+    ready: ready(),
+    summaries: (currentMaterial?.summaries || []).length,
+    lists: batches.length,
+    answered: lessonExtras.attempted || Object.keys(study.answers || {}).some((id) => questionIds.has(id)),
+    studied: Boolean(study.completed) || (study.intervals || []).length > 0,
+    dismissed: Boolean(study.guideDismissed),
+  });
+}
+// Preparation card: the guide while a lesson is being prepared, or when reopened on request.
+function updatePreparation(mode) {
+  const card = $('[data-lesson-prep]');
+  const transcript = Boolean(currentMaterial?.transcription);
+  const show = transcript && (mode === 'preparation' || guideOpen);
+  card.hidden = !show;
+  const guideButton = $('[data-open-lesson-guide]');
+  guideButton.hidden = !transcript || !ready() || mode !== 'study' || guideOpen;
+  guideButton.setAttribute('aria-expanded', String(guideOpen));
+  if (!show) return false;
+  const reopened = mode === 'study';
+  $('[data-lesson-prep-title]').textContent = !ready()
+    ? 'Prepare esta aula'
+    : reopened
+      ? 'Guia da aula'
+      : 'Aula pronta para estudar';
+  $('[data-lesson-prep-copy]').textContent = !ready()
+    ? 'Confira o texto reconhecido, corrija o que estiver errado e confirme. Resumo, questões e flashcards usam a versão confirmada.'
+    : reopened
+      ? 'As etapas desta aula e o próximo passo sugerido.'
+      : 'Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.';
+  $('[data-lesson-prep-close]').hidden = !reopened;
+  $('[data-lesson-prep-footer]').hidden = !ready() || reopened;
+  return true;
+}
 function updateLessonSteps() {
   const container = $('[data-lesson-steps]');
   if (!container) return;
   if (!currentMaterial?.transcription) {
     container.hidden = true;
+    $('[data-lesson-prep]').hidden = true;
+    return;
+  }
+  if (!updatePreparation(currentLessonMode())) {
+    container.hidden = true;
+    if (!lessonExtrasLoaded && ready()) void loadLessonExtras();
     return;
   }
   if (!lessonExtrasLoaded && ready()) void loadLessonExtras();
@@ -342,25 +389,44 @@ function selectTab(name, focus = false) {
   if (!ready() && name !== 'transcription') return;
   activeTab = name;
   layout();
-  history.replaceState(
-    null,
-    '',
-    '#' + { transcription: 'transcricao', summary: 'resumo', questions: 'questoes' }[name],
-  );
+  history.replaceState(null, '', '#' + TAB_HASH[name]);
+  // Coming back to the lesson opens the tab the student used last.
+  if (ready() && studyFor(materialId).lastTab !== name) updateStudy(materialId, { lastTab: name });
   if (focus) $(`[data-material-tab="${name}"]`).focus();
 }
+$('[data-open-lesson-guide]').addEventListener('click', () => {
+  guideOpen = true;
+  layout();
+  const title = $('[data-lesson-prep-title]');
+  title.tabIndex = -1;
+  title.focus();
+});
+$('[data-lesson-prep-close]').addEventListener('click', () => {
+  guideOpen = false;
+  layout();
+  $('[data-open-lesson-guide]').focus();
+});
+$('[data-start-studying]').addEventListener('click', () => {
+  updateStudy(materialId, { guideDismissed: true });
+  guideOpen = false;
+  layout();
+  $(`[data-material-tab="${activeTab}"]`)?.focus();
+});
 const tabs = [...document.querySelectorAll('[data-material-tab]')];
-tabs.forEach((tab, index) => {
+tabs.forEach((tab) => {
   tab.addEventListener('click', () => selectTab(tab.dataset.materialTab));
   tab.addEventListener('keydown', (e) => {
+    // Only the tabs on screen (Anotações is hidden when notes are off).
+    const shown = tabs.filter((item) => !item.hidden);
+    const index = shown.indexOf(tab);
     let next;
-    if (e.key === 'ArrowRight') next = (index + 1) % tabs.length;
-    if (e.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+    if (e.key === 'ArrowRight') next = (index + 1) % shown.length;
+    if (e.key === 'ArrowLeft') next = (index + shown.length - 1) % shown.length;
     if (e.key === 'Home') next = 0;
-    if (e.key === 'End') next = tabs.length - 1;
+    if (e.key === 'End') next = shown.length - 1;
     if (next !== undefined) {
       e.preventDefault();
-      selectTab(tabs[next].dataset.materialTab, true);
+      selectTab(shown[next].dataset.materialTab, true);
     }
   });
 });
@@ -686,6 +752,8 @@ function render(material) {
   if (initialRender) {
     visitMaterial(materialId);
     initialRender = false;
+    const lastTab = studyFor(materialId).lastTab;
+    if (!hashTab && ready() && TAB_HASH[lastTab] && lastTab !== 'notes') activeTab = lastTab;
     if (params.has('from') && !ready()) activeTab = 'transcription';
     // Library "Editar transcrição": Transcrição tab in edit mode (pending revisions already edit).
     if (params.get('edit') === 'transcricao' && material.transcription) {
@@ -729,6 +797,8 @@ function render(material) {
     })
       .then((tools) => {
         notesEnabled = tools.notesEnabled;
+        if (notesEnabled && !hashTab && studyFor(materialId).lastTab === 'notes' && ready()) activeTab = 'notes';
+        layout();
       })
       .catch((error) => {
         const panel = $('[data-material-tools]');

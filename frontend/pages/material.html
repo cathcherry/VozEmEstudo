@@ -138,7 +138,8 @@
           </div>
         </div>
         <div class="material-header-actions" data-material-actions hidden>
-          <a class="secondary-action" data-organize-material>Editar informações</a
+          <button type="button" class="text-action lesson-guide-button" data-open-lesson-guide aria-controls="lesson-prep-title" hidden>Guia da aula</button
+          ><a class="secondary-action" data-organize-material>Editar informações</a
           ><button class="secondary-action" type="button" data-open-export>Exportar</button
           ><button class="secondary-action" type="button" data-open-material-share hidden>Compartilhar</button>
         </div>
@@ -153,11 +154,25 @@
           <ol class="processing-steps" data-processing-events=""></ol>
         </details>
       </section>
-      <section class="article-section review-welcome" data-review-welcome hidden>
-        <h2>Sua transcrição está pronta</h2>
-        <button class="primary-action" type="button" data-check-transcription>
-          Conferir transcrição
-        </button>
+
+      <section class="lesson-prep" data-lesson-prep hidden aria-labelledby="lesson-prep-title">
+        <div class="lesson-prep-head">
+          <span class="lesson-prep-nino" aria-hidden="true"><img src="/assets/brand/avatars/reading.png?v=nino-20261118" alt="" width="56" height="56" /></span>
+          <div class="lesson-prep-text">
+            <h2 id="lesson-prep-title" data-lesson-prep-title>Prepare esta aula</h2>
+            <p data-lesson-prep-copy></p>
+          </div>
+          <button type="button" class="dialog-close lesson-prep-close" data-lesson-prep-close aria-label="Ocultar guia" hidden>×</button>
+        </div>
+        <div class="review-welcome" data-review-welcome hidden>
+          <button class="primary-action" type="button" data-check-transcription>
+            Conferir transcrição
+          </button>
+        </div>
+        <section class="lesson-steps" data-lesson-steps aria-label="Etapas de estudo desta aula" hidden></section>
+        <div class="lesson-prep-footer" data-lesson-prep-footer hidden>
+          <button type="button" class="secondary-action" data-start-studying>Começar a estudar</button>
+        </div>
       </section>
       <section class="material-recording" data-audio-section hidden aria-label="Gravação da aula">
         <div data-audio-player></div>
@@ -187,7 +202,6 @@
           <p data-playback-status role="status" aria-live="polite"></p>
         </div>
       </section>
-      <section class="lesson-steps" data-lesson-steps aria-label="Etapas de estudo desta aula" hidden></section>
       <nav class="material-tabs" role="tablist" aria-label="Conteúdo da aula" hidden>
         <button type="button" id="tab-transcription" role="tab" aria-controls="transcricao" data-material-tab="transcription">
           Transcrição
@@ -197,6 +211,9 @@
         </button>
         <button type="button" id="tab-questions" role="tab" aria-controls="questoes" data-material-tab="questions">
           Questões
+        </button>
+        <button type="button" id="tab-notes" role="tab" aria-controls="anotacoes" data-material-tab="notes" hidden>
+          Anotações
         </button>
       </nav>
       <section
@@ -310,12 +327,13 @@
         <p data-more-questions-message role="status" aria-live="polite"></p>
         <div class="question-batches" data-question-batches></div>
       </section>
+      <section class="article-section" id="anotacoes" role="tabpanel" aria-labelledby="tab-notes" data-notes-section hidden>
+        <h2 class="sr-only">Anotações</h2>
+        <section class="learning-tools-panel" data-annotations-panel hidden aria-label="Anotações e destaques"></section>
+      </section>
       <div class="lesson-tools">
         <details class="lesson-tool" open><summary>Cronômetro de estudo</summary>
         <section class="study-tracking-panel" data-study-tracking-panel hidden aria-label="Tempo e progresso de estudo"></section>
-        </details>
-        <details class="lesson-tool"><summary>Anotações e destaques desta aula</summary>
-        <section class="learning-tools-panel" data-annotations-panel hidden aria-label="Anotações e destaques"></section>
         </details>
       </div>
       <div class="material-study-tools" data-study-footer hidden>

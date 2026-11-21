@@ -104,3 +104,15 @@ export function renderLessonSteps(container, progress, { onStep, done }) {
   container.replaceChildren(list, next);
   container.hidden = false;
 }
+
+/**
+ * Which experience the lesson page opens in, from the lesson's real state (not where the user
+ * came from): 'preparation' while the transcript awaits confirmation, or right after it when
+ * nothing was generated or studied yet and the guide was not dismissed; 'study' otherwise.
+ * @param {{ready:boolean, summaries:number, lists:number, answered:boolean, studied:boolean, dismissed:boolean}} s
+ */
+export function lessonMode(s) {
+  if (!s.ready) return 'preparation';
+  const started = s.summaries > 0 || s.lists > 0 || s.answered || s.studied || s.dismissed;
+  return started ? 'study' : 'preparation';
+}

@@ -1189,3 +1189,61 @@ body.app-page[data-page='material'] .material-recording .video-preview {
 .lesson-next {
   border-top-style: dashed;
 }
+
+/* ---- Lesson preparation card (preparation mode, or "Guia da aula" reopened) ---------------- */
+.lesson-prep[hidden] { display: none; }
+.lesson-prep {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 20px clamp(18px, 2.4vw, 28px);
+  border: 1px solid var(--border-light);
+  border-width: 0 1px 1px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent-soft, var(--surface-alt)) 75%, transparent), transparent 60%),
+    var(--surface);
+}
+.lesson-prep-head { display: flex; align-items: flex-start; gap: 16px; }
+.lesson-prep-nino {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  background: var(--surface);
+}
+.lesson-prep-nino img { width: 50px; height: 50px; object-fit: contain; }
+.lesson-prep-text { flex: 1; min-width: 0; }
+.lesson-prep-text h2 { margin: 2px 0 4px; font-size: 1.3rem; }
+.lesson-prep-text h2:focus { outline: none; }
+.lesson-prep-text p { margin: 0; max-width: 62ch; color: var(--muted); }
+.lesson-prep-close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.lesson-prep .review-welcome { padding: 0; margin: 0; border: 0; background: none; text-align: start; }
+.lesson-prep .review-welcome[hidden] { display: none; }
+.lesson-prep .lesson-steps { margin: 0; padding: 0; border: 0; background: none; }
+.lesson-prep-footer { display: flex; justify-content: flex-end; }
+.lesson-prep-footer[hidden] { display: none; }
+.lesson-guide-button { white-space: nowrap; }
+@media (max-width: 520px) {
+  .lesson-prep-nino { width: 48px; height: 48px; }
+  .lesson-prep-nino img { width: 38px; height: 38px; }
+}
+/* An open player menu stays above the sticky lesson tabs, which now sit right under the player. */
+body.app-page[data-page='material'] .material-recording:has(.caption-menu:not([hidden])) {
+  position: relative;
+  z-index: 30;
+}

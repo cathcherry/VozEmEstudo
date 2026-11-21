@@ -39,7 +39,7 @@ const materials = [
   lesson('l-ondas', 'Ondas e som', 'Física', 12, 1290000),
 ];
 
-/** A lesson at a given point of the study path: 'pending' (unconfirmed), 'summary', 'questions'. */
+/** A lesson at a given point of the study path: 'pending' (unconfirmed), 'fresh' (confirmed, nothing generated), 'summary', 'questions'. */
 function lessonDetail(m, stage) {
   return {
     ...m,
@@ -73,7 +73,7 @@ function lessonDetail(m, stage) {
       ],
     },
     summaries:
-      stage === 'pending'
+      stage === 'pending' || stage === 'fresh'
         ? []
         : [
             {
