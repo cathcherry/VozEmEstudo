@@ -118,4 +118,4 @@ Nenhuma migration foi criada ou aplicada.
 
 | Marco | Commit |
 | --- | --- |
-| Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | (este commit) |
+| Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | `3bea961` |
