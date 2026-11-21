@@ -730,9 +730,9 @@ async function main() {
     );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
-    // Revisar and Planejar exist in the dock but stay hidden while their features are off.
+    // Revisar, Planejar and Focar exist in the dock but stay hidden while their features are off.
     assert.equal(await page.locator('#focus-dock a:visible').count(), 4);
-    assert.equal(await page.locator('#focus-dock a').count(), 6);
+    assert.equal(await page.locator('#focus-dock a').count(), 7);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
@@ -2144,6 +2144,15 @@ async function main() {
     await page.getByText('Informe uma quantidade inteira de 1 a 30.', { exact: true }).waitFor();
     assert(await page.locator('[data-questions-dialog][open]').isVisible());
     await page.locator('#custom-question-count').fill('7');
+    // Questões 3.0: a preset in the foreground; difficulty and skills under Opções avançadas.
+    assert.equal(await page.locator('[data-more-questions-form] [name=preset]:checked').getAttribute('value'), 'essential');
+    await page.locator('.question-preset', { hasText: 'Aplicar' }).click();
+    assert.deepEqual(
+      await page.locator('[data-more-questions-form] [name=difficulty]:checked').evaluateAll((n) => n.map((i) => i.value)),
+      ['intermediate', 'advanced'],
+    );
+    await page.locator('.question-preset', { hasText: 'Essencial' }).click();
+    await page.locator('[data-questions-advanced] > summary').click();
     await page.locator('[data-more-questions-form] [name=difficulty][value=basic]').uncheck();
     await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').uncheck();
     await page.locator('[data-more-questions-form] [type=submit]').click();
@@ -2151,7 +2160,7 @@ async function main() {
     await page.locator('[data-more-questions-form] [name=difficulty][value=advanced]').check();
     await page.locator('[data-more-questions-form] [name=difficulty][value=intermediate]').check();
     await page.locator('[data-more-questions-form] [name=skill][value=application]').check();
-    await page.locator('[data-questions-advanced] > summary').click();
+    assert.equal(await page.locator('[data-question-preset-hint]').textContent(), 'Personalizado nas opções avançadas.');
     await page.locator('[data-more-questions-form] [name=previousQuestions][value=prioritize_new]').check();
     await screenshot(page, output, 'question-list-dialog-desktop.png');
     await auditDialog('[data-questions-dialog]', 'question list dialog');
@@ -2169,7 +2178,7 @@ async function main() {
     });
     const newRow = page.locator('.question-batch-row').first();
     assert.match(await newRow.textContent(), /5 de 7 questões pedidas/);
-    assert.match(await newRow.textContent(), /a aula não sustenta mais questões distintas/);
+    assert.match(await newRow.textContent(), /a aula é curta demais para mais questões distintas/);
     assert.deepEqual(await newRow.locator('.list-tags li').allTextContents(), [
       'Intermediário', 'Avançado', 'Recordação', 'Compreensão conceitual', 'Aplicação',
     ]);

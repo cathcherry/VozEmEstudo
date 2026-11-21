@@ -1,0 +1,85 @@
+// One FocusSession per page for the signed-in account: it pumps once a second, hands the run over
+// when the page unloads, follows other tabs through `storage` events and plays the end-of-block
+// chime. Every view (Focar page, Planejar, side panel, capsule) uses `getFocusSession()`.
+import { createFocusSession } from './focus-session.js';
+import { startStudySession, tickStudySession } from '../api/study.api.js';
+
+let session = null;
+let resolveReady;
+const ready = new Promise((resolve) => {
+  resolveReady = resolve;
+});
+
+/** Resolves with the page's focus session once the account is known (or never, if tracking is off). */
+export const getFocusSession = () => ready;
+export const focusKey = (userId) => `voz-focus-v1:${userId}`;
+
+function chime() {
+  try {
+    const Context = window.AudioContext || window.webkitAudioContext;
+    if (!Context) return;
+    const context = new Context();
+    const notes = [659.25, 880];
+    notes.forEach((frequency, index) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      const start = context.currentTime + index * 0.18;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.12, start + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start(start);
+      oscillator.stop(start + 0.55);
+    });
+    setTimeout(() => void context.close(), 1500);
+  } catch {
+    /* sound is optional */
+  }
+}
+
+export function initFocusHost(userId) {
+  if (session || !userId) return session;
+  session = createFocusSession({
+    api: { start: startStudySession, tick: tickStudySession },
+    storage: localStorage,
+    key: focusKey(userId),
+    uuid: () => crypto.randomUUID(),
+    isVisible: () => document.visibilityState === 'visible',
+  });
+  let lastNotice = session.state().notice?.at || 0;
+  session.subscribe((state) => {
+    // The leader announces a finished block once, for every view of this page.
+    if (state.notice && state.notice.at > lastNotice) {
+      lastNotice = state.notice.at;
+      if (state.notice.kind.endsWith('_done') && state.settings.sound && state.isLeader !== false)
+        chime();
+      document.dispatchEvent(new CustomEvent('voz:focus-notice', { detail: state.notice }));
+    }
+  });
+  const pump = () => void session.pump().catch(() => {});
+  let timer = setInterval(pump, 1000);
+  document.addEventListener('visibilitychange', pump);
+  window.addEventListener('storage', (event) => session.onStorage(event));
+  window.addEventListener('pagehide', () => {
+    clearInterval(timer);
+    session.handOff();
+  });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      clearInterval(timer);
+      timer = setInterval(pump, 1000);
+      pump();
+    }
+  });
+  // Older controls (dashboard shortcuts) still ask through this event.
+  document.addEventListener('voz:tracking-command', (event) => {
+    const action = event.detail?.action;
+    if (action === 'start') void session.start().catch(() => {});
+    if (action === 'pause') void session.pause().catch(() => {});
+  });
+  pump();
+  resolveReady(session);
+  return session;
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { lessonProgress } from '../js/utils/lesson-steps.js';
+import { lessonProgress, lessonMode } from '../js/utils/lesson-steps.js';
 
 const base = { ready: true, summaries: 0, lists: 0, answered: false, flashcards: null };
 
@@ -43,4 +43,15 @@ test('exactly one step is current and completed steps are marked done', () => {
     p.steps.map((s) => s.state),
     ['done', 'done', 'current', 'todo'],
   );
+});
+
+test('the lesson opens in preparation only while it is being prepared', () => {
+  const fresh = { ready: true, summaries: 0, lists: 0, answered: false, studied: false, dismissed: false };
+  assert.equal(lessonMode({ ...fresh, ready: false, summaries: 2 }), 'preparation', 'unconfirmed transcript');
+  assert.equal(lessonMode(fresh), 'preparation', 'just confirmed, nothing generated or studied');
+  assert.equal(lessonMode({ ...fresh, summaries: 1 }), 'study');
+  assert.equal(lessonMode({ ...fresh, lists: 1 }), 'study');
+  assert.equal(lessonMode({ ...fresh, answered: true }), 'study');
+  assert.equal(lessonMode({ ...fresh, studied: true }), 'study', 'listened or marked as studied');
+  assert.equal(lessonMode({ ...fresh, dismissed: true }), 'study', '"Começar a estudar" chosen');
 });

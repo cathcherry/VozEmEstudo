@@ -5,8 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { JSDOM } from 'jsdom';
 import {
-  FLASHCARD_RATINGS, formatFlashcardDue, flashcardSummary,
+  FLASHCARD_RATINGS,
+  formatFlashcardDue,
+  flashcardSummary,
 } from '../js/utils/flashcard-view.js';
+import { CARD_TEMPLATES, templateFor } from '../js/utils/card-templates.js';
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const html = readFileSync(resolve(frontend, 'pages/revisar.html'), 'utf8');
@@ -30,7 +33,8 @@ test('create, reveal, rate, edit, and archive controls have labels and statuses'
     'data-flashcard-manage-form',
     'data-flashcard-manage-status role="status" aria-live="polite"',
     'data-flashcard-due-area',
-  ]) assert(html.includes(marker), marker);
+  ])
+    assert(html.includes(marker), marker);
   assert.match(code, /Revelar resposta/);
   assert.match(code, /reviewFlashcard/);
   assert.match(code, /crypto\.randomUUID\(\)/);
@@ -40,9 +44,14 @@ test('create, reveal, rate, edit, and archive controls have labels and statuses'
 });
 
 test('review choices and dates are grounded and formatting is deterministic', () => {
-  assert.deepEqual(FLASHCARD_RATINGS.map((rating) => rating.value), [0, 1, 2, 3]);
-  assert.deepEqual(FLASHCARD_RATINGS.map((rating) => rating.label),
-    ['De novo', 'Difícil', 'Bom', 'Fácil']);
+  assert.deepEqual(
+    FLASHCARD_RATINGS.map((rating) => rating.value),
+    [0, 1, 2, 3],
+  );
+  assert.deepEqual(
+    FLASHCARD_RATINGS.map((rating) => rating.label),
+    ['De novo', 'Difícil', 'Bom', 'Fácil'],
+  );
   assert.equal(flashcardSummary(0), '0 cartões para revisar');
   assert.equal(flashcardSummary(1), '1 cartão para revisar');
   assert.equal(formatFlashcardDue('not a date'), 'Data indisponível');
@@ -50,8 +59,12 @@ test('review choices and dates are grounded and formatting is deterministic', ()
 });
 
 const sampleCard = (id) => ({
-  id, front_text: `Pergunta ${id}`, back_text: 'Resposta', status: 'active',
-  due_at: '2026-11-05T12:00:00Z', material_id: 'lesson-a',
+  id,
+  front_text: `Pergunta ${id}`,
+  back_text: 'Resposta',
+  status: 'active',
+  due_at: '2026-11-05T12:00:00Z',
+  material_id: 'lesson-a',
 });
 
 async function harness(overrides = {}) {
@@ -63,24 +76,40 @@ async function harness(overrides = {}) {
     deleteFlashcard: async () => ({}),
     initFlashcardSetsPanel: () => ({ load: async () => [] }),
     confirm: () => true,
-    ninoNote: (text) => { const note = new JSDOM('').window.document.createElement('p'); note.textContent = text; return note; },
-    setStatus: (element, message) => { element.textContent = message; },
+    ninoNote: (text) => {
+      const note = new JSDOM('').window.document.createElement('p');
+      note.textContent = text;
+      return note;
+    },
+    setStatus: (element, message) => {
+      element.textContent = message;
+    },
     listFlashcards: async () => ({ cards: [], total: 0, limit: 100, offset: 0 }),
     createFlashcard: async () => ({}),
     updateFlashcard: async () => ({}),
     reviewFlashcard: async () => ({ dueAt: '2026-11-06T12:00:00Z' }),
     listFlashcardReviews: async () => [],
-    getFlashcardSource: async () => ({ review: { state: 'ready_to_generate', sourceRevisionId: 'source-a' } }),
+    getFlashcardSource: async () => ({
+      review: { state: 'ready_to_generate', sourceRevisionId: 'source-a' },
+    }),
     previewFlashcards: async () => ({ cards: [], revision: 1 }),
-    FLASHCARD_RATINGS, formatFlashcardDue, flashcardSummary,
+    FLASHCARD_RATINGS,
+    formatFlashcardDue,
+    flashcardSummary,
+    CARD_TEMPLATES,
+    templateFor,
     ...overrides,
   };
   // Evaluate the real page module against an isolated DOM and controlled API responses.
-  const source = code.replace(/import \{[\s\S]*?\} from '[^']+';/gu, '')
+  const source = code
+    .replace(/import \{[\s\S]*?\} from '[^']+';/gu, '')
     .replace('export async function initFlashcardsPanel', 'async function initFlashcardsPanel');
-  const init = new Function('document', 'Option', ...Object.keys(dependencies),
-    `${source}\nreturn initFlashcardsPanel;`)(dom.window.document, dom.window.Option,
-    ...Object.values(dependencies));
+  const init = new Function(
+    'document',
+    'Option',
+    ...Object.keys(dependencies),
+    `${source}\nreturn initFlashcardsPanel;`,
+  )(dom.window.document, dom.window.Option, ...Object.values(dependencies));
   await init({ materials: [{ id: 'lesson-a', title: 'Aula A' }] });
   const document = dom.window.document;
   return {
@@ -105,16 +134,29 @@ test('AI preview shows evidence, does not save automatically, and copies a sugge
   let writes = 0;
   let requested;
   const ui = await harness({
-    createFlashcard: async () => { writes++; },
+    createFlashcard: async () => {
+      writes++;
+    },
     previewFlashcards: async (input) => {
       requested = input;
-      return { revision: 3, cards: [{ front: '<img src=x onerror=alert(1)>', back: 'Resposta para conferir', evidence: 'Trecho literal da aula.' }] };
+      return {
+        revision: 3,
+        cards: [
+          {
+            front: '<img src=x onerror=alert(1)>',
+            back: 'Resposta para conferir',
+            evidence: 'Trecho literal da aula.',
+          },
+        ],
+      };
     },
   });
   try {
     const form = ui.document.querySelector('.flashcard-generator form');
     form.querySelector('select').value = 'lesson-a';
-    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    form.dispatchEvent(
+      new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }),
+    );
     await until(() => ui.document.querySelector('.flashcard-draft'));
     assert.deepEqual(requested, { materialId: 'lesson-a', sourceRevisionId: 'source-a', count: 5 });
     assert.equal(writes, 0);
@@ -126,38 +168,62 @@ test('AI preview shows evidence, does not save automatically, and copies a sugge
     assert.equal(create.querySelector('[name="back"]').value, 'Resposta para conferir');
     assert.equal(create.querySelector('[name="materialId"]').value, 'lesson-a');
     assert.equal(writes, 0);
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
 test('AI preview blocks an unconfirmed lesson and leaves a retryable error', async () => {
   let previews = 0;
   const ui = await harness({
     getFlashcardSource: async () => ({ review: { state: 'awaiting_review' } }),
-    previewFlashcards: async () => { previews++; },
+    previewFlashcards: async () => {
+      previews++;
+    },
   });
   try {
     const form = ui.document.querySelector('.flashcard-generator form');
     form.querySelector('select').value = 'lesson-a';
-    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
-    await until(() => /confirme/.test(ui.document.querySelector('.flashcard-generator [role="status"]').textContent));
+    form.dispatchEvent(
+      new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }),
+    );
+    await until(() =>
+      /confirme/.test(
+        ui.document.querySelector('.flashcard-generator [role="status"]').textContent,
+      ),
+    );
     assert.equal(previews, 0);
     assert.equal(form.querySelector('button').disabled, false);
     assert.equal(ui.document.querySelector('.flashcard-draft'), null);
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
 test('provider failure unlocks AI preview and preserves the manual creation form', async () => {
-  const ui = await harness({ previewFlashcards: async () => { throw new Error('Provedor indisponível'); } });
+  const ui = await harness({
+    previewFlashcards: async () => {
+      throw new Error('Provedor indisponível');
+    },
+  });
   try {
     const createFront = ui.document.querySelector('[data-flashcard-create-form] [name="front"]');
     createFront.value = 'Meu cartão';
     const form = ui.document.querySelector('.flashcard-generator form');
     form.querySelector('select').value = 'lesson-a';
-    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
-    await until(() => /Provedor indisponível/.test(ui.document.querySelector('.flashcard-generator [role="status"]').textContent));
+    form.dispatchEvent(
+      new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }),
+    );
+    await until(() =>
+      /Provedor indisponível/.test(
+        ui.document.querySelector('.flashcard-generator [role="status"]').textContent,
+      ),
+    );
     assert.equal(form.querySelector('button').disabled, false);
     assert.equal(createFront.value, 'Meu cartão');
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
 test('manager reaches card 101 and resets pagination when filtering by lesson or archive status', async () => {
@@ -168,8 +234,14 @@ test('manager reaches card 101 and resets pagination when filtering by lesson or
       if (filter === 'due') return { cards: [], total: 0, limit: 100 };
       const total = options.materialId || options.status === 'archived' ? 1 : 101;
       const start = options.offset || 0;
-      return { cards: Array.from({ length: Math.min(100, total - start) }, (_, i) => sampleCard(`card-${start + i + 1}`)),
-        total, limit: 100, offset: start };
+      return {
+        cards: Array.from({ length: Math.min(100, total - start) }, (_, i) =>
+          sampleCard(`card-${start + i + 1}`),
+        ),
+        total,
+        limit: 100,
+        offset: start,
+      };
     },
   });
   try {
@@ -192,18 +264,29 @@ test('manager reaches card 101 and resets pagination when filtering by lesson or
     await until(() => !status.disabled);
     assert.equal(calls.at(-1).status, 'archived');
     assert.match(nav.textContent, /1–1 de 1/);
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
 test('late history responses cannot replace the selected card', async () => {
   let resolveFirst;
   const ui = await harness({
     async listFlashcards(filter) {
-      return { cards: filter === 'all' ? [sampleCard('one'), sampleCard('two')] : [], total: filter === 'all' ? 2 : 0, limit: 100 };
+      return {
+        cards: filter === 'all' ? [sampleCard('one'), sampleCard('two')] : [],
+        total: filter === 'all' ? 2 : 0,
+        limit: 100,
+      };
     },
     listFlashcardReviews(id) {
-      if (id === 'one') return new Promise((done) => { resolveFirst = done; });
-      return Promise.resolve([{ reviewed_at: '2026-11-05T12:00:00Z', rating: 3, due_at: '2026-11-06T12:00:00Z' }]);
+      if (id === 'one')
+        return new Promise((done) => {
+          resolveFirst = done;
+        });
+      return Promise.resolve([
+        { reviewed_at: '2026-11-05T12:00:00Z', rating: 3, due_at: '2026-11-06T12:00:00Z' },
+      ]);
     },
   });
   try {
@@ -212,13 +295,17 @@ test('late history responses cannot replace the selected card', async () => {
     ui.change(select, 'two');
     const history = ui.document.querySelector('.flashcard-history');
     await until(() => history.textContent.includes('Fácil'));
-    resolveFirst([{ reviewed_at: '2026-11-05T12:00:00Z', rating: 0, due_at: '2026-11-05T12:10:00Z' }]);
+    resolveFirst([
+      { reviewed_at: '2026-11-05T12:00:00Z', rating: 0, due_at: '2026-11-05T12:10:00Z' },
+    ]);
     await new Promise((done) => setImmediate(done));
     assert.match(history.textContent, /Fácil/);
     assert.doesNotMatch(history.textContent, /De novo/);
     ui.change(select, '');
     assert.equal(history.textContent, '');
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
 test('a confirmed review is removed even if refreshing the queue fails', async () => {
@@ -239,11 +326,20 @@ test('a confirmed review is removed even if refreshing the queue fails', async (
     const area = ui.document.querySelector('[data-flashcard-due-area]');
     area.querySelector('button').click();
     area.querySelectorAll('button')[2].click();
-    await until(() => ui.document.querySelector('[data-flashcard-review-status]').textContent.includes('lista não pôde'));
+    await until(() =>
+      ui.document
+        .querySelector('[data-flashcard-review-status]')
+        .textContent.includes('lista não pôde'),
+    );
     assert.equal(writes, 1);
     assert.equal(area.querySelector('button'), null);
-    assert.doesNotMatch(ui.document.querySelector('[data-flashcard-review-status]').textContent, /Repita/);
-  } finally { ui.close(); }
+    assert.doesNotMatch(
+      ui.document.querySelector('[data-flashcard-review-status]').textContent,
+      /Repita/,
+    );
+  } finally {
+    ui.close();
+  }
 });
 
 test('an uncertain review locks filters and retries the same request ID and rating', async () => {
@@ -266,7 +362,11 @@ test('an uncertain review locks filters and retries the same request ID and rati
     area.querySelector('button').click();
     area.querySelectorAll('button')[2].click();
     await until(() => status.textContent.includes('Repita'));
-    assert([...ui.document.querySelectorAll('.flashcard-filters select')].every((select) => select.disabled));
+    assert(
+      [...ui.document.querySelectorAll('.flashcard-filters select')].every(
+        (select) => select.disabled,
+      ),
+    );
     assert(ui.document.querySelector('[data-flashcard-create-form] button').disabled);
     const buttons = area.querySelectorAll('button');
     assert(buttons[0].disabled);
@@ -276,12 +376,15 @@ test('an uncertain review locks filters and retries the same request ID and rati
     assert.equal(requests.length, 2);
     assert.deepEqual(requests[0], requests[1]);
     await until(() => !ui.document.querySelector('.flashcard-filters select').disabled);
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
 });
 
-
 test('Flashcards 2.0: set filter, manual card into a set and confirmed card deletion', async () => {
-  const listed = [], added = [], deleted = [];
+  const listed = [],
+    added = [],
+    deleted = [];
   let confirmations = 0;
   const ui = await harness({
     isFeatureEnabled: async () => true,
@@ -290,13 +393,24 @@ test('Flashcards 2.0: set filter, manual card into a set and confirmed card dele
       listed.push({ filter, ...options });
       return { cards: [sampleCard('c1')], total: 1, limit: 100, offset: 0 };
     },
-    addFlashcardSetCards: async (setId, cards) => { added.push({ setId, cards }); return { added: 1 }; },
-    deleteFlashcard: async (id) => { deleted.push(id); },
-    confirm: () => { confirmations++; return confirmations > 1; },
+    addFlashcardSetCards: async (setId, cards) => {
+      added.push({ setId, cards });
+      return { added: 1 };
+    },
+    deleteFlashcard: async (id) => {
+      deleted.push(id);
+    },
+    confirm: () => {
+      confirmations++;
+      return confirmations > 1;
+    },
   });
   try {
     const setFilter = [...ui.document.querySelectorAll('.flashcard-filters select')].at(-1);
-    assert.deepEqual([...setFilter.options].map((o) => o.textContent), ['Todos os conjuntos', 'Conjunto A']);
+    assert.deepEqual(
+      [...setFilter.options].map((o) => o.textContent),
+      ['Todos os conjuntos', 'Conjunto A'],
+    );
     ui.change(setFilter, 'set-1');
     await until(() => listed.some((call) => call.setId === 'set-1'));
     const create = ui.document.querySelector('[data-flashcard-create-form]');
@@ -304,17 +418,53 @@ test('Flashcards 2.0: set filter, manual card into a set and confirmed card dele
     create.querySelector('[name="front"]').value = 'Frente manual';
     create.querySelector('[name="back"]').value = 'Verso manual';
     create.querySelector('[name="setId"]').value = 'set-1';
-    create.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    create.dispatchEvent(
+      new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }),
+    );
     await until(() => added.length === 1);
-    assert.deepEqual(added[0], { setId: 'set-1', cards: [{ front: 'Frente manual', back: 'Verso manual' }] });
+    assert.deepEqual(added[0], {
+      setId: 'set-1',
+      cards: [{ front: 'Frente manual', back: 'Verso manual' }],
+    });
     const manager = ui.document.querySelector('[data-flashcard-manage-form]');
-    await until(() => !manager.querySelector('[name="cardId"]').disabled && manager.querySelector('[name="cardId"] option[value="c1"]'));
+    await until(
+      () =>
+        !manager.querySelector('[name="cardId"]').disabled &&
+        manager.querySelector('[name="cardId"] option[value="c1"]'),
+    );
     ui.change(manager.querySelector('[name="cardId"]'), 'c1');
-    const remove = [...manager.querySelectorAll('button')].find((b) => b.textContent === 'Excluir cartão');
+    const remove = [...manager.querySelectorAll('button')].find(
+      (b) => b.textContent === 'Excluir cartão',
+    );
     remove.click();
     assert.equal(deleted.length, 0, 'cancelled confirmation deletes nothing');
     remove.click();
     await until(() => deleted.length === 1);
     assert.deepEqual(deleted, ['c1']);
-  } finally { ui.close(); }
+  } finally {
+    ui.close();
+  }
+});
+
+test('card templates are appearance only: chosen per account and per set, never content', () => {
+  assert.equal(templateFor({}), 'classic');
+  assert.equal(templateFor({ preferences: { cardTemplate: 'notebook' } }), 'notebook');
+  assert.equal(
+    templateFor({
+      setId: 's1',
+      preferences: { cardTemplate: 'notebook', setTemplates: { s1: 'polaroid' } },
+    }),
+    'polaroid',
+  );
+  assert.equal(
+    templateFor({ setId: 's2', preferences: { cardTemplate: 'bogus', setTemplates: { s2: 'x' } } }),
+    'classic',
+  );
+  assert.equal(new Set(CARD_TEMPLATES.map(([key]) => key)).size, CARD_TEMPLATES.length);
+  // The panel sets only a data attribute: no request, no change to the card's text.
+  assert.match(code, /article\.dataset\.cardTemplate = templateFor/);
+  assert.doesNotMatch(
+    code.split('Flashcards 3.0: card appearance')[1].split('fillSetOptions')[0],
+    /createFlashcard|updateFlashcard|previewFlashcards/,
+  );
 });

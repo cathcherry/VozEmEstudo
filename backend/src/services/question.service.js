@@ -66,6 +66,7 @@ async function previousQuestions(materialId) {
       options: question.options,
       correctIndex: question.correct_index,
       concept: question.metadata?.concept || null,
+      facet: question.metadata?.facet || null,
       skill: question.metadata?.skill || null,
     })),
   );

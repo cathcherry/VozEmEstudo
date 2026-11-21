@@ -42,6 +42,67 @@ async function main() {
     record(
       'Tema noturno e contrastes claro e escuro: 8 páginas sem violações do axe (WCAG 2.2 A/AA)',
     );
+    // Personalização 3.0: the new themes with wallpapers and glass surfaces stay accessible.
+    for (const [theme, wallpaper, surfaces] of [
+      ['matcha', 'meadow', 'glass'],
+      ['desktop', 'desktop', 'glass'],
+      ['planner', 'grid', 'solid'],
+    ]) {
+      const { page, context } = await openApp(browser, base, allFlags, state());
+      await page.addInitScript(
+        ([value, ui]) => {
+          localStorage.setItem('audioestudo-theme', value);
+          localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(ui));
+        },
+        [theme, { wallpaper, surfaces }],
+      );
+      for (const url of [...PAGES, 'focar.html']) {
+        await page.goto(`${base}/${url}`);
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(400);
+        const root = await page.evaluate(() => ({ ...document.documentElement.dataset }));
+        assert.equal(root.theme, theme);
+        assert.equal(root.wallpaper, wallpaper);
+        await axeCheck(page, 'body', `${url} (${theme}, ${wallpaper}, ${surfaces})`);
+      }
+      await context.close();
+    }
+    record('Temas Matcha, Mesa digital e Planner com fundos e superfícies de vidro: sem violações do axe');
+    // Per-page wallpaper, unknown values ignored, and a reset that keeps reading settings.
+    {
+      const { page, context } = await openApp(browser, base, allFlags, state());
+      await page.addInitScript(() => {
+        if (sessionStorage.getItem('seeded')) return;
+        sessionStorage.setItem('seeded', '1');
+        localStorage.setItem('audioestudo-theme', 'planner');
+        localStorage.setItem(
+          'audioestudo-ui-preferences',
+          JSON.stringify({
+            wallpaper: 'dots',
+            textSize: 'large',
+            pageWallpapers: { focus: 'stars', library: 'javascript:alert(1)', unknown: 'grid' },
+          }),
+        );
+      });
+      await page.goto(`${base}/focar.html`);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.wallpaper), 'stars');
+      await page.goto(`${base}/historico.html`);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.wallpaper), 'dots', 'invalid override ignored');
+      await page.goto(`${base}/aparencia.html`);
+      await page.locator('[data-reset-visual]').click();
+      const after = await page.evaluate(() => ({
+        theme: document.documentElement.dataset.theme,
+        wallpaper: document.documentElement.dataset.wallpaper,
+        textSize: document.documentElement.dataset.textSize,
+        saved: JSON.parse(localStorage.getItem('audioestudo-ui-preferences')),
+      }));
+      assert.equal(after.theme, 'paper');
+      assert.equal(after.wallpaper, 'none');
+      assert.equal(after.textSize, 'large', 'reading settings are kept');
+      assert.deepEqual(after.saved.pageWallpapers, {});
+      await context.close();
+    }
+    record('Fundo por página, valores desconhecidos ignorados e "Restaurar visual padrão" sem mexer na leitura');
   } finally {
     await browser.close();
     server.close();

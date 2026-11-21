@@ -628,3 +628,347 @@ body[data-profile-editing] .account-page .profile-block-grid > .is-hidden-block,
   gap: 10px;
   margin-top: 20px;
 }
+
+/* ---- Study utility shell: side panel, bottom sheet and floating capsule (Focar 3.0) -------- */
+.utility-trigger {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-end: 6px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+.utility-trigger[aria-expanded='true'] { border-color: var(--accent-strong); color: var(--accent-strong); }
+.utility-trigger-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-strong);
+  box-shadow: 0 0 0 2px var(--surface);
+  opacity: 0;
+}
+.utility-trigger.is-active .utility-trigger-dot { opacity: 1; }
+.utility-trigger[data-state='paused'] .utility-trigger-dot { background: var(--muted); }
+
+.utility-panel[hidden], .focus-capsule[hidden] { display: none !important; }
+.utility-panel {
+  position: fixed;
+  z-index: 60;
+  top: calc(var(--topbar-height, 64px) + 12px);
+  right: 16px;
+  display: flex;
+  max-height: calc(100vh - var(--topbar-height, 64px) - 28px);
+  flex-direction: column;
+  width: 320px;
+  overflow: auto;
+  border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
+  border-radius: 22px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 18px 50px rgb(30 24 60 / 18%);
+}
+/* Wide screens: the content narrows beside the panel instead of being covered. */
+body.utility-open { padding-right: 344px; }
+.utility-panel[data-sheet='true'] {
+  top: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: auto;
+  max-height: min(78vh, 560px);
+  border-radius: 22px 22px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.utility-panel-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 14px 10px 18px;
+  background: inherit;
+}
+.utility-panel-head h2 { flex: 1; margin: 0; font-size: 1.05rem; }
+.utility-panel-head h2:focus { outline: none; }
+.utility-link { margin-inline-end: 4px; font-size: .88rem; font-weight: 600; }
+.utility-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  cursor: pointer;
+}
+.utility-icon:disabled { opacity: .5; cursor: default; }
+.utility-panel-body { display: grid; gap: 14px; justify-items: center; padding: 4px 18px 20px; }
+.utility-modes {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--surface-alt);
+}
+.utility-mode {
+  min-height: 34px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.utility-mode[aria-checked='true'] { color: var(--accent-contrast, #fff); background: var(--accent-strong); }
+.utility-mode:disabled:not([aria-checked='true']) { opacity: .5; cursor: default; }
+.utility-face { position: relative; display: grid; place-items: center; width: 200px; aspect-ratio: 1; }
+.utility-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, var(--surface) 84%, transparent 85% 100%),
+    conic-gradient(var(--accent-strong) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 14%, var(--surface-alt)) 0);
+}
+[data-mode='short'] .utility-ring, [data-mode='long'] .utility-ring {
+  background:
+    radial-gradient(closest-side, var(--surface) 84%, transparent 85% 100%),
+    conic-gradient(color-mix(in srgb, var(--accent-strong) 55%, #4aa38a) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 14%, var(--surface-alt)) 0);
+}
+.utility-time {
+  position: relative;
+  font-family: var(--ue-serif, Georgia, serif);
+  font-size: 2.6rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.utility-caption { position: absolute; bottom: 52px; margin: 0; color: var(--muted); font-size: .78rem; text-align: center; }
+.utility-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.utility-primary { min-width: 9rem; }
+.utility-stop[hidden] { display: none; }
+.utility-cycles, .utility-status { margin: 0; color: var(--muted); font-size: .84rem; text-align: center; }
+.utility-status:empty { display: none; }
+
+/* Capsule: a small floating pill; never over the content's main actions (bottom right). */
+.focus-capsule {
+  position: fixed;
+  z-index: 55;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
+  border-radius: 999px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 10px 30px rgb(30 24 60 / 18%);
+}
+.focus-capsule-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, var(--surface) 62%, transparent 64% 100%),
+    conic-gradient(var(--accent-strong) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 16%, var(--surface-alt)) 0);
+}
+.focus-capsule-time { font-family: var(--ue-serif, Georgia, serif); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.focus-capsule-mode { color: var(--muted); font-size: .78rem; font-weight: 600; }
+.focus-capsule .utility-icon { width: 32px; height: 32px; }
+.focus-capsule-toggle { color: var(--accent-contrast, #fff) !important; background: var(--accent-strong) !important; border-color: transparent !important; }
+.focus-capsule[data-state='paused'] .focus-capsule-time { opacity: .7; }
+@media (max-width: 520px) {
+  .focus-capsule { right: 12px; bottom: 12px; }
+  .focus-capsule-mode { display: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduced-motion='true']) .focus-capsule:not([hidden]) { animation: capsule-in .22s ease-out; }
+  html:not([data-reduced-motion='true']) .utility-panel:not([hidden]) { animation: capsule-in .18s ease-out; }
+}
+@keyframes capsule-in { from { opacity: 0; transform: translateY(8px); } }
+@media (forced-colors: active) {
+  .utility-ring, .focus-capsule-dot { background: Canvas; border: 2px solid Highlight; }
+}
+[data-screen-reader-mode='true'] .focus-capsule { position: static; margin: 12px; }
+@media print { .utility-panel, .focus-capsule, .utility-trigger { display: none !important; } }
+body.utility-open .material-header { flex-wrap: wrap; }
+body.utility-open .material-header-actions { flex-wrap: wrap; }
+
+/* ==== Personalização 3.0: themes from the visual references ================================
+   Matcha (cozy café), Mesa digital (soft desktop / window glass) and Planner (paper & pastel).
+   Tokens only, so every component follows; contrast of text, muted text and buttons ≥ 4.5:1. */
+[data-theme='matcha'] {
+  --background: #f3f6ea;
+  --surface: #fdfdf7;
+  --surface-alt: #e6eed6;
+  --text: #26331d;
+  --muted: #4f5d44;
+  --border: #b6c69d;
+  --border-light: #d9e3c6;
+  --accent: #5e8c45;
+  --accent-strong: #3d6729;
+  --accent-soft: #e3eed6;
+  --accent-contrast: #ffffff;
+  --button-background: #e0ebd1;
+  --button-text: #355a24;
+  --studio-sprinkle: #e7a3ad;
+  color-scheme: light;
+}
+[data-theme='desktop'] {
+  --background: #e9f1fb;
+  --surface: #ffffff;
+  --surface-alt: #dfeaf8;
+  --text: #1b2a44;
+  --muted: #475873;
+  --border: #a9c3e6;
+  --border-light: #d2e1f5;
+  --accent: #2f6fd0;
+  --accent-strong: #1f56ab;
+  --accent-soft: #dce9fb;
+  --accent-contrast: #ffffff;
+  --button-background: #d9e7fb;
+  --button-text: #1d4c95;
+  --studio-sprinkle: #8fc1f4;
+  color-scheme: light;
+}
+[data-theme='planner'] {
+  --background: #fbf6e6;
+  --surface: #fffdf6;
+  --surface-alt: #f3eacb;
+  --text: #2d2a3e;
+  --muted: #59546a;
+  --border: #d6c690;
+  --border-light: #ebe0bb;
+  --accent: #5a5fc8;
+  --accent-strong: #4246a6;
+  --accent-soft: #e7e6fa;
+  --accent-contrast: #ffffff;
+  --button-background: #e7e5fb;
+  --button-text: #3d419c;
+  --studio-sprinkle: #f2b8c6;
+  color-scheme: light;
+}
+/* Mesa digital: window-like cards with a light top sheen (Aqua-inspired, original). */
+[data-theme='desktop'] :is(.dash-card, .focus-card, .week-card, .calendar-month, .planning-goal, .flashcard-review-card) {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 85%), rgb(255 255 255 / 0%) 46px);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 90%) inset, 0 8px 24px rgb(31 86 171 / 10%);
+}
+/* Planner: a washi-tape corner on the main study cards. */
+[data-theme='planner'] :is(.focus-card, .week-card, .dash-card:not(.dash-card .dash-card)) { position: relative; }
+[data-theme='planner'] :is(.focus-card, .week-card, .dash-card:not(.dash-card .dash-card))::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 22px;
+  width: 64px;
+  height: 18px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--studio-sprinkle) 70%, transparent);
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+
+/* ==== Wallpapers: CSS patterns from the theme's colours (no uploads, no scripts) ========= */
+html[data-wallpaper='dots'] body {
+  background-image: radial-gradient(color-mix(in srgb, var(--accent) 22%, transparent) 1.6px, transparent 1.8px);
+  background-size: 22px 22px;
+}
+html[data-wallpaper='grid'] body {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--accent) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+html[data-wallpaper='clouds'] body {
+  background-image:
+    radial-gradient(40% 30% at 12% 18%, color-mix(in srgb, var(--accent-soft) 95%, white) 0 60%, transparent 61%),
+    radial-gradient(35% 28% at 88% 12%, color-mix(in srgb, var(--studio-sprinkle, var(--accent-soft)) 45%, transparent) 0 55%, transparent 56%),
+    radial-gradient(45% 35% at 70% 92%, color-mix(in srgb, var(--accent-soft) 80%, transparent) 0 58%, transparent 59%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent-soft) 60%, var(--background)), var(--background));
+  background-attachment: fixed;
+}
+html[data-wallpaper='desktop'] body {
+  background-image:
+    linear-gradient(160deg, rgb(255 255 255 / 55%) 0 22%, transparent 22% 100%),
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent) 30%, var(--background)), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 18%, var(--background)), var(--background));
+  background-attachment: fixed;
+}
+html[data-wallpaper='meadow'] body {
+  background-image:
+    radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--studio-sprinkle, var(--accent)) 35%, transparent) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, color-mix(in srgb, var(--accent) 25%, transparent) 0 2.5px, transparent 3.5px),
+    linear-gradient(180deg, var(--background), color-mix(in srgb, var(--accent) 14%, var(--background)));
+  background-size: 120px 120px, 90px 90px, auto;
+  background-attachment: fixed;
+}
+html[data-wallpaper='stars'] body {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 40%, transparent) 0 1px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--text) 22%, transparent) 0 0.8px, transparent 1.2px);
+  background-size: 140px 140px, 60px 60px;
+  background-position: 0 0, 30px 40px;
+}
+/* Decoration steps aside when the student asks for less. */
+html:is([data-low-stimulation='true'], [data-screen-reader-mode='true'], [data-high-contrast='true']) body {
+  background-image: none !important;
+}
+
+/* ==== Glass surfaces: translucent cards over the wallpaper (opt-in) ====================== */
+html[data-surfaces='glass']:not([data-high-contrast='true']):not([data-low-stimulation='true'])
+  :is(.dash-card, .focus-card, .week-card, .calendar-month, .planning-goal, .flashcard-review-card, .flashcard-create-tile, .nino-note, .material-header, .lesson-prep, .article-section.studio-section) {
+  background-color: color-mix(in srgb, var(--surface) 74%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+}
+
+/* ==== Estúdio visual (Aparência) ============================================================ */
+.studio-section .studio-intro { max-width: 70ch; color: var(--muted); }
+.studio-grid { display: grid; gap: 18px; align-items: start; }
+@media (min-width: 900px) { .studio-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } }
+.wallpaper-choices { margin: 0; padding: 0; border: 0; }
+.wallpaper-choices legend { margin-bottom: 10px; font-weight: 700; }
+.wallpaper-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+.wallpaper-option { position: relative; display: grid; gap: 6px; justify-items: center; font-size: .86rem; font-weight: 600; cursor: pointer; }
+.wallpaper-option input { position: absolute; opacity: 0; pointer-events: none; }
+.wallpaper-preview {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--border-light);
+  border-radius: 14px;
+  background-color: var(--background);
+}
+.wallpaper-option input:checked + .wallpaper-preview { border-color: var(--accent-strong); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-strong) 25%, transparent); }
+.wallpaper-option input:focus-visible + .wallpaper-preview { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+[data-wallpaper-preview='dots'] { background-image: radial-gradient(color-mix(in srgb, var(--accent) 35%, transparent) 1.6px, transparent 1.8px); background-size: 12px 12px; }
+[data-wallpaper-preview='grid'] { background-image: linear-gradient(color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--accent) 22%, transparent) 1px, transparent 1px); background-size: 12px 12px; }
+[data-wallpaper-preview='clouds'] { background-image: radial-gradient(45% 35% at 25% 30%, var(--accent-soft) 0 60%, transparent 61%), radial-gradient(40% 30% at 80% 75%, color-mix(in srgb, var(--studio-sprinkle, var(--accent-soft)) 55%, transparent) 0 55%, transparent 56%); }
+[data-wallpaper-preview='desktop'] { background-image: linear-gradient(160deg, rgb(255 255 255 / 55%) 0 25%, transparent 25%), linear-gradient(180deg, color-mix(in srgb, var(--accent) 35%, var(--background)), var(--background)); }
+[data-wallpaper-preview='meadow'] { background-image: radial-gradient(circle at 30% 35%, color-mix(in srgb, var(--studio-sprinkle, var(--accent)) 50%, transparent) 0 3px, transparent 4px), radial-gradient(circle at 70% 65%, color-mix(in srgb, var(--accent) 40%, transparent) 0 2.5px, transparent 3.5px), linear-gradient(180deg, var(--background), color-mix(in srgb, var(--accent) 20%, var(--background))); background-size: 40px 40px, 30px 30px, auto; }
+[data-wallpaper-preview='stars'] { background-color: color-mix(in srgb, var(--text) 85%, var(--accent)); background-image: radial-gradient(circle, rgb(255 255 255 / 80%) 0 1px, transparent 1.5px); background-size: 16px 16px; }
+.studio-side { display: grid; gap: 12px; align-content: start; }
+.studio-pages > summary { min-height: 44px; padding: 10px 0; font-weight: 600; cursor: pointer; }
+.studio-page-list { display: grid; gap: 8px; }
+.dash-card-head .focus-shortcut { margin-inline-start: auto; margin-inline-end: 12px; font-variant-numeric: tabular-nums; }

@@ -65,13 +65,17 @@ export function compareQuestions(a, b) {
     tokenScore >= PARAPHRASE_TOKENS
   )
     return 'paraphrase';
-  // Same planned concept and same skill: the same knowledge with the same cognitive purpose.
+  // Same planned concept, skill and facet: the same knowledge with the same cognitive purpose.
+  // A different facet (what it is × how it works × its consequences…) is a different question.
+  // Questions without a facet (older lists) are compared conservatively.
+  const sameFacet = !a.facet || !b.facet || a.facet === b.facet;
   if (
     a.concept &&
     b.concept &&
     conceptKey(a.concept) === conceptKey(b.concept) &&
     a.skill &&
-    a.skill === b.skill
+    a.skill === b.skill &&
+    sameFacet
   )
     return 'same_knowledge';
   const answerA = answerOf(a),

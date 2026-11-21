@@ -165,6 +165,73 @@ async function main() {
     await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
     record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
 
+    // ---------- Flashcards 3.0: the look changes, the content and the server do not ----------
+    await page.goto(base + '/revisar.html#flashcards');
+    const review = page.locator('.flashcard-review-card');
+    await review.waitFor();
+    const front = await review.locator('.flashcard-content').first().textContent();
+    const writes = [];
+    page.on('request', (r) => {
+      if (/\/api\/flashcards/.test(r.url()) && r.method() !== 'GET') writes.push(r.url());
+    });
+    for (const template of ['notebook', 'sticky', 'window', 'polaroid']) {
+      await page.locator('[data-card-template-picker]').selectOption(template);
+      assert.equal(await review.getAttribute('data-card-template'), template);
+      assert.equal(await review.locator('.flashcard-content').first().textContent(), front);
+      await settle(page);
+      await axeCheck(page, '.flashcard-review-card', `Cartão (${template})`);
+      await shot(page, `cartao-${template}`, false);
+    }
+    assert.deepEqual(writes, [], 'changing the look sends nothing to the flashcard API');
+    await page.reload();
+    await page.locator('.flashcard-review-card[data-card-template="polaroid"]').waitFor();
+    record('Flashcards 3.0: aparência do cartão (5 modelos) muda só o visual; conteúdo intacto, nenhuma chamada à API, escolha lembrada');
+
+    // ---------- Notes 3.0: highlight and comment straight from the reading view --------------
+    await page.goto(base + '/material.html?id=l-foto');
+    const paragraph = page.locator('.transcription-segment .segment-text').first();
+    await paragraph.waitFor();
+    const select = (words) =>
+      paragraph.evaluate((node, target) => {
+        const text = node.firstChild;
+        const start = text.textContent.indexOf(target);
+        const range = document.createRange();
+        range.setStart(text, start);
+        range.setEnd(text, start + target.length);
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        node.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      }, words);
+    await select('energia luminosa');
+    const popover = page.locator('.selection-popover:not([hidden])');
+    await popover.waitFor();
+    await settle(page);
+    await axeCheck(page, '.selection-popover', 'Popover de destaque');
+    await popover.getByRole('button', { name: 'Destacar' }).click();
+    await page.waitForFunction(() => true);
+    await page.locator('[data-notes-section] .annotation-card blockquote', { hasText: 'energia luminosa' }).first().waitFor({ state: 'attached' });
+    const highlight = data.savedNotes.at(-1).body;
+    assert.equal(highlight.quote, 'energia luminosa');
+    assert.equal(highlight.segmentPosition, 0);
+    assert.equal(highlight.endOffset - highlight.startOffset, 'energia luminosa'.length);
+    assert.equal(highlight.startMs, undefined, 'only stored anchor fields are sent');
+    await select('energia química');
+    await popover.getByRole('button', { name: 'Comentar' }).click();
+    await page.locator('#tab-notes[aria-selected="true"]').waitFor();
+    await page.waitForFunction(() => document.activeElement?.tagName === 'TEXTAREA', null, { timeout: 3000 });
+    await page.keyboard.type('Produto da fase clara.');
+    await page.locator('[data-notes-section] form [type=submit]').first().click();
+    await page.locator('[data-notes-section] [role=status]', { hasText: 'Anotação salva' }).waitFor();
+    assert.equal(data.savedNotes.at(-1).body.noteText, 'Produto da fase clara.');
+    assert.equal(data.savedNotes.at(-1).body.quote, 'energia química');
+    const noteCard = page.locator('[data-notes-section] .annotation-card', { hasText: 'energia química' }).first();
+    assert(await noteCard.getByRole('button', { name: /^Ouvir 00:00$/ }).count(), 'a timestamp to listen to the passage');
+    await noteCard.getByRole('button', { name: 'Ir ao destaque' }).click();
+    await page.locator('#tab-transcription[aria-selected="true"]').waitFor();
+    assert.equal(await page.evaluate(() => getSelection().toString()), 'energia química');
+    record('Anotações 3.0: selecionar no texto da transcrição abre Destacar/Comentar; o caderno guarda trecho e tempo e volta ao destaque');
+
     await context.close();
 
     // ---------- One tool fails: its tab says so, the others work -------------------------

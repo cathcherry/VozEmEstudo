@@ -972,7 +972,8 @@ html[data-screen-reader-mode='true'] :is(.library-dashboard, .dashboard-library-
 .side-navigation nav a.nav-create:hover { color: var(--button-text); background: var(--button-background); filter: brightness(.95); }
 .side-navigation nav a.nav-create.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent-strong); }
 html:not([data-nav-review='true']) [data-nav-feature='review'],
-html:not([data-nav-plan='true']) [data-nav-feature='plan'] { display: none !important; }
+html:not([data-nav-plan='true']) [data-nav-feature='plan'],
+html:not([data-nav-focus='true']) [data-nav-feature='focus'] { display: none !important; }
 @media (forced-colors: active) { .side-navigation nav a.nav-create { border: 2px solid ButtonText; } }
 /* With the sidebar visible, "Nova transcrição" lives at its top; the page-heading copy stays only
    where the sidebar is folded into the menu (narrow screens and focus mode). */

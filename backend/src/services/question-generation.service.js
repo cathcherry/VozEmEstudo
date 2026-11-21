@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AppError } from '../domain/errors.js';
 import { createEvidenceLocator } from '../domain/evidence-match.js';
-import { conceptKey, planCoverage } from '../domain/question-plan.js';
+import { conceptKey, planCoverage, sourceCapacity } from '../domain/question-plan.js';
 import { filterRedundant, normalizeText } from '../domain/question-redundancy.js';
 import { buildConceptMessages, buildPlannedQuestionMessages } from '../prompts/questions.v2.js';
 
@@ -10,7 +10,7 @@ export const MAX_MODEL_CALLS = 3;
 const MAX_CONCEPTS = 60;
 const MIN_CONCEPTS = 8;
 
-/** Enough concepts for the plan (at most two questions each) plus spares for rejections. */
+/** Enough concepts for a varied plan plus spares for rejections. */
 export function conceptTarget(count) {
   return Math.min(MAX_CONCEPTS, Math.max(MIN_CONCEPTS, Math.ceil(count * 1.5)));
 }
@@ -73,6 +73,17 @@ export function buildQuestionGenerator({ complete }) {
       if (found) return found.text;
       return normalizedSource.includes(value) ? String(quote).trim().slice(0, 400) : null;
     };
+    const sourceWords = new Set(normalizedSource.split(' '));
+    /** Most of the label's meaningful words occur in the transcript (stems of 5 letters). */
+    const labelInSource = (label) => {
+      const words = normalizeText(label)
+        .split(' ')
+        .filter((word) => word.length > 3);
+      if (!words.length) return false;
+      const stems = [...sourceWords].map((word) => word.slice(0, 5));
+      const found = words.filter((word) => stems.includes(word.slice(0, 5))).length;
+      return found / words.length >= 0.5;
+    };
     let calls = 0;
     const call = async (stage, messages, maxTokens) => {
       if (calls >= MAX_MODEL_CALLS) throw new Error('Model call budget exceeded.');
@@ -95,24 +106,41 @@ export function buildQuestionGenerator({ complete }) {
     if (!analysis.success) throw invalidOutput();
     const concepts = [];
     const seen = new Set();
+    let conceptsWithoutQuote = 0;
     for (const item of analysis.data.concepts) {
       const label = String(item.label).trim().slice(0, 120),
         key = conceptKey(label);
-      const evidence = key && !seen.has(key) ? evidenceFor(item.evidence) : null;
-      if (!evidence) continue;
+      if (!key || key.length < 3 || seen.has(key)) continue;
+      // A paraphrased quote does not make the concept invalid: questions still need their own
+      // literal evidence, checked below. Keep it, without a quote, after the quoted ones.
+      const evidence = evidenceFor(item.evidence);
+      if (!evidence && !labelInSource(label)) continue; // invented, not paraphrased
       seen.add(key);
+      if (!evidence) conceptsWithoutQuote += 1;
       concepts.push({ key, label, evidence });
     }
-    if (!concepts.length)
+    concepts.sort((a, b) => Number(!a.evidence) - Number(!b.evidence));
+    if (!concepts.some((concept) => concept.evidence))
       throw new AppError(
         'INSUFFICIENT_SOURCE_CONTENT',
         'A transcrição confirmada não tem conteúdo suficiente para gerar questões fundamentadas.',
         422,
       );
+    const words = text.split(/\s+/u).filter(Boolean).length;
+    const capacity = sourceCapacity({ words, concepts: concepts.length });
 
     // 2. Coverage plan by concept, skill and difficulty, consulting earlier lists.
     const testedConcepts = previous.map((question) => question.concept).filter(Boolean);
-    const slots = planCoverage({ count, concepts, config, testedConcepts });
+    // A few spare slots absorb items rejected later, so one bad answer does not shorten the list.
+    const slots = planCoverage({
+      count,
+      concepts,
+      config,
+      testedConcepts,
+      words,
+      spare: Math.min(6, Math.ceil(count / 4)),
+    });
+    const planned = slots.filter((slot) => !slot.spare).length;
     const bySlot = new Map(slots.map((slot) => [slot.id, slot]));
     const rejectedReasons = {};
     const reject = (reason) => {
@@ -163,6 +191,7 @@ export function buildQuestionGenerator({ complete }) {
           evidence,
           concept: slot.concept.label,
           skill: slot.skill,
+          facet: slot.facet,
           difficulty: slot.difficulty,
           slotId: slot.id,
         });
@@ -180,9 +209,10 @@ export function buildQuestionGenerator({ complete }) {
     }
 
     await round('questions', slots, avoidStatements);
-    // 3. One bounded replacement round for slots left empty by invalid or redundant items.
+    // 3. One bounded replacement round when the list is still short: every slot left empty
+    //    (spares included) is asked again, avoiding what was already accepted.
     const missing = slots.filter((slot) => !filled.has(slot.id));
-    if (missing.length && calls < MAX_MODEL_CALLS)
+    if (accepted.length < planned && missing.length && calls < MAX_MODEL_CALLS)
       await round('replacement', missing, [
         ...avoidStatements,
         ...accepted.map((q) => q.statement),
@@ -199,32 +229,56 @@ export function buildQuestionGenerator({ complete }) {
       metadata: {
         difficulty: item.difficulty,
         skill: item.skill,
+        facet: item.facet,
         concept: item.concept,
         evidence: item.evidence,
         sourceRefs: sourceReferences(item.evidence, source.segments_snapshot || []),
       },
     });
     const questions = accepted.slice(0, count).map(toQuestion);
-    const shortfall =
-      questions.length >= count
-        ? null
-        : slots.length < count
-          ? 'insufficient_content'
-          : 'redundancy';
     return {
       questions,
       coverage: {
         requested: count,
         generated: questions.length,
-        planned: slots.length,
+        planned,
+        capacity,
+        words,
         concepts: [...new Set(questions.map((q) => q.metadata.concept))],
         distinctConcepts: concepts.length,
+        conceptsWithoutQuote,
         rejected: rejectedReasons,
         modelCalls: calls,
-        shortfall,
+        shortfall: shortfallReason({
+          generated: questions.length,
+          count,
+          planned,
+          rejected: rejectedReasons,
+        }),
       },
     };
   };
+}
+
+/**
+ * Why a list is shorter than requested. Only a plan limited by the transcript's size is
+ * "insufficient content"; otherwise the cause is named (answers without literal support,
+ * malformed answers, repeats, or slots the model skipped) so the interface does not blame the
+ * lesson for an algorithmic or provider problem.
+ */
+export function shortfallReason({ generated, count, planned, rejected = {} }) {
+  if (generated >= count) return null;
+  if (planned < count && generated >= planned) return 'insufficient_content';
+  // Everything else the filter rejects (same answer, paraphrase, earlier list…) is a repeat.
+  const repeats = Object.entries(rejected)
+    .filter(([reason]) => reason !== 'unsupported' && reason !== 'invalid')
+    .reduce((sum, [, n]) => sum + n, 0);
+  const ranked = [
+    ['unsupported', rejected.unsupported || 0],
+    ['invalid', rejected.invalid || 0],
+    ['redundancy', repeats],
+  ].sort((a, b) => b[1] - a[1]);
+  return ranked[0][1] > 0 ? ranked[0][0] : 'model_omitted';
 }
 
 /** Deterministic stand-in used with MOCK_EXTERNAL_SERVICES: questions quote the transcript. */

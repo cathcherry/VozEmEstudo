@@ -29,8 +29,12 @@ function updateControls() {
     const key = c.dataset.uiSetting;
     if (key in uiPreferences) {
       if (c.type === 'checkbox') c.checked = uiPreferences[key];
+      else if (c.type === 'radio') c.checked = c.value === uiPreferences[key];
       else c.value = uiPreferences[key];
     }
+  });
+  document.querySelectorAll('[data-page-wallpaper]').forEach((select) => {
+    select.value = uiPreferences.pageWallpapers?.[select.dataset.pageWallpaper] || '';
   });
   document.querySelectorAll('[data-focus-toggle]').forEach((b) => {
     const name = uiPreferences.focusMode ? t('focus.exit') : t('focus.toggle');
@@ -103,11 +107,86 @@ function saveUi(next) {
   return saved;
 }
 /** The visible control already reflects the change; only a failed save needs a message. */
+/** For page modules: change one appearance preference (saved, synced and applied). */
+export function setUiPreference(key, value) {
+  updateUiPreference(key, value);
+}
+export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
-  if (!(key in appearance.defaults)) return;
+  if (!(key in appearance.defaults) && key !== 'pageWallpapers' && key !== 'setTemplates') return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
   if (key === 'language') reloadIfLanguageChanged();
+}
+// ---- Estúdio visual (Personalização 3.0): wallpapers, surfaces and per-page wallpapers -----
+const WALLPAPER_CHOICES = [
+  ['none', 'Liso'],
+  ['dots', 'Bolinhas'],
+  ['grid', 'Quadriculado'],
+  ['clouds', 'Nuvens'],
+  ['desktop', 'Mesa digital'],
+  ['meadow', 'Campo'],
+  ['stars', 'Estrelas'],
+];
+const STUDIO_PAGES = [
+  ['dashboard', 'Início'],
+  ['library', 'Biblioteca'],
+  ['material', 'Aula'],
+  ['review', 'Revisar'],
+  ['plan', 'Planejar'],
+  ['focus', 'Focar'],
+];
+function initVisualStudio() {
+  const options = document.querySelector('[data-wallpaper-options]');
+  if (!options) return;
+  for (const [value, label] of WALLPAPER_CHOICES) {
+    const option = document.createElement('label');
+    option.className = 'wallpaper-option';
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'wallpaper';
+    input.value = value;
+    input.dataset.uiSetting = 'wallpaper';
+    const preview = document.createElement('span');
+    preview.className = 'wallpaper-preview';
+    preview.dataset.wallpaperPreview = value;
+    preview.setAttribute('aria-hidden', 'true');
+    const name = document.createElement('span');
+    name.textContent = label;
+    option.append(input, preview, name);
+    options.append(option);
+    input.addEventListener('change', () => updateUiPreference('wallpaper', value));
+  }
+  const pages = document.querySelector('[data-page-wallpapers]');
+  for (const [page, label] of STUDIO_PAGES) {
+    const row = document.createElement('label');
+    row.className = 'setting-select-row';
+    const text = document.createElement('span');
+    const strong = document.createElement('strong');
+    strong.textContent = label;
+    text.append(strong);
+    const select = document.createElement('select');
+    select.dataset.pageWallpaper = page;
+    select.append(new Option('Igual ao geral', ''));
+    for (const [value, name] of WALLPAPER_CHOICES) select.append(new Option(name, value));
+    select.addEventListener('change', () => {
+      const next = { ...(uiPreferences.pageWallpapers || {}) };
+      if (select.value) next[page] = select.value;
+      else delete next[page];
+      updateUiPreference('pageWallpapers', next);
+    });
+    row.append(text, select);
+    pages.append(row);
+  }
+  document.querySelector('[data-reset-visual]')?.addEventListener('click', () => {
+    // Visual choices only: reading, accessibility and language settings stay as they are.
+    appearance.saveAppearance({ ...appearance.loadAppearance(), theme: 'paper' });
+    appearance.applyAppearance(appearance.loadAppearance());
+    saveUi({ ...uiPreferences, wallpaper: 'none', surfaces: 'solid', pageWallpapers: {} });
+    markTheme();
+    updateControls();
+    showToast('Visual padrão restaurado.');
+  });
 }
 function showToast(message, type = 'info') {
   toast(message, { type });
@@ -285,6 +364,7 @@ function initializeFocusDock() {
     ['Biblioteca', './historico.html', 'library'],
     ['Revisar', './revisar.html', 'review'],
     ['Planejar', './planejar.html', 'plan'],
+    ['Focar', './focar.html', 'plan'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');
@@ -413,6 +493,8 @@ function initialize() {
   }
   initializeFocusDock();
   initializeAccessibilityEntryPoints();
+  initVisualStudio();
+  updateControls();
   document.querySelectorAll('[data-open-dialog]').forEach((button) =>
     button.addEventListener('click', () => {
       const dialog = document.getElementById(button.dataset.openDialog);

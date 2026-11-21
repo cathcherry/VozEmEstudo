@@ -1,5 +1,11 @@
 import { formatDate } from '../utils/format.js';
-import { listName, listDetails, recommendQuestionCount } from '../utils/authoring.js';
+import {
+  listName,
+  listDetails,
+  recommendQuestionCount,
+  QUESTION_GOALS,
+  presetFor,
+} from '../utils/authoring.js';
 import { ninoNote } from '../utils/material-ui.js';
 
 const el = (tag, text, className) => {
@@ -30,6 +36,53 @@ export function initQuestionDialog({ flags, maxCount, material }) {
   }
   form.querySelector('[data-feedback-choice]').hidden = !(authoring && flags.quiz_v2);
   custom.max = String(maxCount);
+  // Presets: one choice in the foreground; the detailed controls stay under "Opções avançadas".
+  const presetBox = form.querySelector('[data-question-preset-options]');
+  const presetHint = form.querySelector('[data-question-preset-hint]');
+  const applyPreset = (key) => {
+    const preset = QUESTION_GOALS[key];
+    if (!preset) return;
+    for (const box of form.querySelectorAll('[name=difficulty]'))
+      box.checked = preset.difficulties.includes(box.value);
+    for (const box of form.querySelectorAll('[name=skill]'))
+      box.checked = preset.skills.includes(box.value);
+    const order = form.querySelector(`[name=distribution][value=${preset.distribution}]`);
+    if (order) order.checked = true;
+  };
+  const syncPreset = () => {
+    const data = new FormData(form);
+    const key = presetFor({
+      difficulties: data.getAll('difficulty'),
+      skills: data.getAll('skill'),
+      distribution: data.get('distribution') || 'balanced',
+    });
+    for (const input of presetBox?.querySelectorAll('input') || [])
+      input.checked = input.value === key;
+    if (presetHint)
+      presetHint.textContent =
+        key === 'custom' ? 'Personalizado nas opções avançadas.' : QUESTION_GOALS[key].hint;
+  };
+  if (presetBox && authoring) {
+    for (const [key, preset] of Object.entries(QUESTION_GOALS)) {
+      const label = el('label', null, 'question-preset');
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'preset';
+      input.value = key;
+      label.append(input, el('span', preset.label));
+      presetBox.append(label);
+    }
+    presetBox.addEventListener('change', (event) => {
+      if (event.target.name !== 'preset') return;
+      applyPreset(event.target.value);
+      syncPreset();
+    });
+    form.addEventListener('change', (event) => {
+      if (['difficulty', 'skill', 'distribution'].includes(event.target.name)) syncPreset();
+    });
+    applyPreset('essential');
+    syncPreset();
+  }
   const syncCustom = () => {
     customLabel.hidden = select.value !== 'custom';
     custom.required = select.value === 'custom';
@@ -130,9 +183,15 @@ export function initQuestionDialog({ flags, maxCount, material }) {
   };
 }
 
+// Why a list came out shorter. Only "insufficient_content" blames the lesson; the others are
+// generation problems that another attempt (Gerar mais questões) usually solves.
 const COVERAGE_NOTES = {
-  insufficient_content: 'a aula não sustenta mais questões distintas',
-  redundancy: 'questões repetidas ou sem fonte foram descartadas',
+  insufficient_content: 'a aula é curta demais para mais questões distintas',
+  redundancy: 'algumas saíram repetidas e foram descartadas; gere mais para completar',
+  unsupported:
+    'algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar',
+  invalid: 'o modelo devolveu algumas em formato inválido; gere mais para completar',
+  model_omitted: 'o modelo não respondeu todas as posições pedidas; gere mais para completar',
 };
 
 /** Compact list rows; questions and results stay one click away. */
@@ -154,7 +213,9 @@ export function renderQuestionLists({
     ? `${batches.length} ${batches.length === 1 ? 'lista' : 'listas'} · ${total} questões`
     : 'Ainda não há questões desta aula.';
   if (!batches.length)
-    container.append(ninoNote('Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.', 'rest'));
+    container.append(
+      ninoNote('Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.', 'rest'),
+    );
   batches.forEach((batch, index) => {
     const questions = batch.questions || [];
     const results = questions.map((q) => answers[q.id]);
@@ -207,8 +268,9 @@ export function renderQuestionLists({
           'close',
           () => {
             const target =
-              document.querySelector(`.row-menu[data-batch-id="${CSS.escape(String(batch.id))}"] > summary`) ||
-              summary;
+              document.querySelector(
+                `.row-menu[data-batch-id="${CSS.escape(String(batch.id))}"] > summary`,
+              ) || summary;
             if (target.isConnected) target.focus();
           },
           { once: true },

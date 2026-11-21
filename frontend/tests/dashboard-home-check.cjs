@@ -227,7 +227,15 @@ async function main() {
     // ---------- Question practice from the lesson: steps and the next action -------------
     data.lessonStage = { 'l-foto': 'summary', 'l-rev': 'pending', 'l-func': 'questions' };
     await page.goto(base + '/material.html?id=l-foto');
+    // A lesson already in study opens in the workspace; the guide is one click away.
+    await page.locator('[data-open-lesson-guide]:not([hidden])').waitFor();
+    assert(await page.locator('[data-lesson-prep]').isHidden(), 'no guide above a prepared lesson');
+    await page.locator('#tab-summary').click();
+    await page.goto(base + '/material.html?id=l-foto');
+    await page.locator('#tab-summary[aria-selected="true"]').waitFor();
+    await page.locator('[data-open-lesson-guide]').click();
     await page.locator('[data-lesson-steps]:not([hidden]) .lesson-next button').waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'lesson-prep-title');
     assert.deepEqual(
       await page
         .locator('.lesson-step')
@@ -235,13 +243,9 @@ async function main() {
       ['is-done', 'is-done', 'is-current', 'is-todo'],
     );
     assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
-    assert.equal(
-      await page.locator('.lesson-tools .lesson-tool[open] > summary').first().textContent(),
-      'Cronômetro de estudo',
-    );
-    const stepsBox = await page.locator('[data-lesson-steps]').boundingBox();
-    const toolsBox = await page.locator('.lesson-tools').boundingBox();
-    assert(toolsBox.y > stepsBox.y, 'timer and annotations come after the lesson content');
+    // The timer is no longer a block in the lesson: it lives in the utility panel and capsule.
+    assert.equal(await page.locator('.lesson-tools').count(), 0);
+    assert.equal(await page.locator('[data-utility-trigger]').count(), 1);
     await settle(page);
     await axeCheck(page, 'main', 'Aula › etapas');
     await shot(page, 'aula-etapas-1440');
@@ -250,6 +254,7 @@ async function main() {
     assert.equal(await page.locator('#tab-questions').getAttribute('aria-selected'), 'true');
     await page.keyboard.press('Escape');
     await page.goto(base + '/material.html?id=l-func');
+    await page.locator('[data-open-lesson-guide]').click();
     await page.locator('.lesson-next button', { hasText: 'Responder a lista' }).waitFor();
     await page.goto(base + '/material.html?id=l-rev');
     await page.locator('[data-lesson-steps]:not([hidden])').waitFor();
@@ -263,8 +268,18 @@ async function main() {
       'summary waits for confirmation',
     );
     await shot(page, 'aula-pendente-1440');
+    // Just confirmed, nothing generated yet: the guide offers generation or going straight to study.
+    data.lessonStage['l-ondas'] = 'fresh';
+    await page.goto(base + '/material.html?id=l-ondas');
+    await page.locator('[data-lesson-prep-title]', { hasText: 'Aula pronta para estudar' }).waitFor();
+    await page.locator('.lesson-next button', { hasText: 'Gerar resumo' }).waitFor();
+    await page.getByRole('button', { name: 'Começar a estudar' }).click();
+    assert(await page.locator('[data-lesson-prep]').isHidden(), 'guide closes');
+    await page.reload();
+    await page.locator('[data-open-lesson-guide]:not([hidden])').waitFor();
+    assert(await page.locator('[data-lesson-prep]').isHidden(), 'and stays closed for this lesson');
     record(
-      'Jornada de questões: a aula mostra as etapas e o próximo passo (Criar questões abre a lista; Responder a lista; etapas travadas até confirmar)',
+      'Aula: preparação só enquanto a aula não está pronta; aula em estudo abre no espaço de estudo (última aba), com "Guia da aula" para ver as etapas e o próximo passo',
     );
 
     // ---------- Widths, zoom, themes, screen-reader mode ---------------------------------
