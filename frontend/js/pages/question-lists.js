@@ -332,7 +332,7 @@ export function renderQuestionLists({
             'question-result',
           ),
         );
-        if (q.id) item.append(reportControl({ questionId: q.id, materialId, batchId: batch.id, compact: true }));
+        if (q.id) item.append(reportControl({ questionId: q.id, materialId, batchId: batch.id, statement: q.statement, compact: true }));
         list.append(item);
       });
       const listen = actions.listen?.(card);

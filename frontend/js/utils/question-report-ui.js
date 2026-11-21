@@ -17,7 +17,7 @@ const make = (tag, text, className) => {
 };
 
 /** Modal with the reasons and an optional note. Resolves true when saved. */
-export function openReportDialog({ questionId, materialId, batchId, opener }) {
+export function openReportDialog({ questionId, materialId, batchId, statement = '', opener }) {
   const id = `report-dialog-${++counter}`;
   const current = reportFor(questionId);
   const dialog = make('dialog', null, 'settings-dialog app-dialog report-dialog');
@@ -71,7 +71,7 @@ export function openReportDialog({ questionId, materialId, batchId, opener }) {
       const reason = form.querySelector('input[type=radio]:checked')?.value;
       save.disabled = true;
       try {
-        await saveReport(questionId, { reason, note: note.value, materialId, batchId });
+        await saveReport(questionId, { reason, note: note.value, materialId, batchId, statement });
         saved = true;
         dialog.close();
       } catch (problem) {
@@ -98,7 +98,7 @@ export function openReportDialog({ questionId, materialId, batchId, opener }) {
  * A small block: "Reportar problema" or, when flagged, "Você marcou: …" with Editar/Desfazer.
  * It updates itself when the report changes (on this page or after the account copy loads).
  */
-export function reportControl({ questionId, materialId = null, batchId = null, compact = false }) {
+export function reportControl({ questionId, materialId = null, batchId = null, statement = '', compact = false }) {
   const box = make('div', null, `question-report${compact ? ' is-compact' : ''}`);
   box.dataset.questionId = questionId;
   const live = make('span', '', 'sr-only');
@@ -115,7 +115,7 @@ export function reportControl({ questionId, materialId = null, batchId = null, c
       const edit = make('button', 'Editar', 'text-action');
       edit.type = 'button';
       edit.addEventListener('click', async () => {
-        if (await openReportDialog({ questionId, materialId, batchId, opener: edit })) render('edit');
+        if (await openReportDialog({ questionId, materialId, batchId, statement, opener: edit })) render('edit');
       });
       const undo = make('button', 'Desfazer', 'text-action');
       undo.type = 'button';
@@ -130,7 +130,7 @@ export function reportControl({ questionId, materialId = null, batchId = null, c
       const open = make('button', 'Reportar problema', 'text-action question-report-open');
       open.type = 'button';
       open.addEventListener('click', async () => {
-        if (await openReportDialog({ questionId, materialId, batchId, opener: open })) {
+        if (await openReportDialog({ questionId, materialId, batchId, statement, opener: open })) {
           live.textContent = 'Questão marcada.';
           render('edit');
         }

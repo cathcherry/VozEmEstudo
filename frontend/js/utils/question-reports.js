@@ -39,6 +39,8 @@ export function normalizeReport(input = {}) {
     note: String(input.note || '').trim().slice(0, 500),
     materialId: input.materialId ? String(input.materialId).slice(0, 64) : null,
     batchId: input.batchId ? String(input.batchId).slice(0, 64) : null,
+    // A short copy of the statement, so Revisar can list flagged questions without refetching.
+    statement: String(input.statement || '').trim().slice(0, 300),
   };
 }
 

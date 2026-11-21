@@ -209,7 +209,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       heading,
       ...(currentListen ? [currentListen.element] : []),
       form,
-      reportControl({ questionId: question.id, materialId, batchId: session.batch_id }),
+      reportControl({ questionId: question.id, materialId, batchId: session.batch_id, statement: question.statement }),
     );
     main.replaceChildren(progressSection);
     main.append(card);

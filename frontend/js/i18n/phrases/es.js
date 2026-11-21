@@ -1470,10 +1470,13 @@ export default {
   "questão": "pregunta",
   "Questão de múltipla escolha": "Pregunta de opción múltiple",
   "Questão marcada.": "Pregunta marcada.",
+  "Questão sem enunciado salvo": "Pregunta sin enunciado guardado",
   "questões": "preguntas",
   "Questões": "Preguntas",
   "Questões de listas anteriores": "Preguntas de listas anteriores",
+  "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "Preguntas en las que marcaste un problema. Revísalas con la clase y deshaz la marca cuando esté resuelto.",
   "questões marcadas": "preguntas marcadas",
+  "Questões marcadas": "Preguntas marcadas",
   "Questões para retomar": "Preguntas para retomar",
   "questões repetidas ou sem fonte foram descartadas": "se descartaron preguntas repetidas o sin fuente",
   "Qui": "Jue",
@@ -2348,6 +2351,10 @@ export default {
    "Horario movido a {0}."
   ],
   [
+   "Desfazer a marcação: {0}",
+   "Deshacer la marca: {0}"
+  ],
+  [
    "{0}% do áudio ouvido{1}",
    "{0}% del audio escuchado{1}"
   ],
@@ -2706,6 +2713,10 @@ export default {
   [
    "Mover {0}",
    "Mover {0}"
+  ],
+  [
+   "Abrir {0}",
+   "Abrir {0}"
   ],
   [
    "{0} aula",

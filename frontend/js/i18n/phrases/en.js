@@ -1470,10 +1470,13 @@ export default {
   "questão": "question",
   "Questão de múltipla escolha": "Multiple-choice question",
   "Questão marcada.": "Question marked.",
+  "Questão sem enunciado salvo": "Question without a saved statement",
   "questões": "questions",
   "Questões": "Questions",
   "Questões de listas anteriores": "Questions from previous lists",
+  "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "Questions where you marked a problem. Check them against the lesson and undo when it is resolved.",
   "questões marcadas": "marked questions",
+  "Questões marcadas": "Marked questions",
   "Questões para retomar": "Questions to revisit",
   "questões repetidas ou sem fonte foram descartadas": "repeated or unsourced questions were discarded",
   "Qui": "Thu",
@@ -2348,6 +2351,10 @@ export default {
    "Time moved to {0}."
   ],
   [
+   "Desfazer a marcação: {0}",
+   "Undo the mark: {0}"
+  ],
+  [
    "{0}% do áudio ouvido{1}",
    "{0}% of audio played{1}"
   ],
@@ -2706,6 +2713,10 @@ export default {
   [
    "Mover {0}",
    "Move {0}"
+  ],
+  [
+   "Abrir {0}",
+   "Open {0}"
   ],
   [
    "{0} aula",

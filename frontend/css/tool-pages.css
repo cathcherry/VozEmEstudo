@@ -752,3 +752,15 @@ body.app-page .tool-page .calendar-week .week-move > summary { box-sizing: borde
 body.app-page .tool-page .calendar-week .week-event-open { display: grid; align-content: start; justify-items: start; min-height: 0; width: 100%; padding: 3px 28px 3px 6px; border: 0; box-shadow: none; line-height: 1.25; }
 body.app-page .tool-page .calendar-week .week-event-open strong,
 body.app-page .tool-page .calendar-week .week-event-open span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---- Revisar › Questões › Questões marcadas ------------------------------------------------- */
+.tool-page .question-reports-panel { margin-top: 28px; }
+.tool-page .question-reports-panel[hidden] { display: none; }
+body.app-page .tool-page .question-reports-panel > h2 { padding: 0 0 4px; font-size: clamp(1.15rem, 1.8vw, 1.3rem); }
+.question-reports-intro { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+.question-reports-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.question-report-row { padding: 12px 14px; border: 1px solid var(--border-light); border-left: 3px solid var(--danger, #b3261e); border-radius: 12px; background: var(--surface); }
+.question-report-statement { margin: 0 0 4px; font-weight: 650; overflow-wrap: anywhere; }
+.question-report-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 6px; color: var(--muted); font-size: .86rem; }
+.question-report-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.question-report-actions a { font-weight: 600; }

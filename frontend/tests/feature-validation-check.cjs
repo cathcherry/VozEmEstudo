@@ -115,6 +115,18 @@ async function main() {
         { reason: saved.reason, note: saved.note, materialId: saved.materialId, batchId: saved.batchId },
         { reason: 'not_in_lesson', note: 'Ribossomo não foi citado.', materialId: 'l-foto', batchId: 'b1' },
       );
+      assert.equal(saved.statement, 'Onde ocorre a fotossíntese?');
+      // Revisar › Questões lists it with the lesson.
+      await p.goto(base + '/revisar.html#questoes');
+      const flagged = p.locator('[data-question-reports]');
+      await flagged.locator('.question-report-row', { hasText: 'Onde ocorre a fotossíntese?' }).waitFor();
+      assert.match(await flagged.textContent(), /Não está na aula/);
+      assert.equal(
+        await flagged.getByRole('link', { name: 'Abrir Fotossíntese e respiração celular' }).getAttribute('href'),
+        './material.html?id=l-foto#questoes',
+      );
+      await settle(p);
+      await axeCheck(p, '[data-question-reports]', 'Questões marcadas');
       // Another device (fresh browser, same account) sees the flag; undo keeps a dated removal.
       const other = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
       await other.page.goto(base + '/material.html?id=l-foto#questoes');

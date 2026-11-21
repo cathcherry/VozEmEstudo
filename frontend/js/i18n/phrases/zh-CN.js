@@ -1470,10 +1470,13 @@ export default {
   "questão": "道题目",
   "Questão de múltipla escolha": "单选题",
   "Questão marcada.": "已标记此题。",
+  "Questão sem enunciado salvo": "未保存题干的题目",
   "questões": "道题目",
   "Questões": "题目",
   "Questões de listas anteriores": "以往列表中的题目",
+  "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "你标记了问题的题目。请对照课程检查，解决后撤销标记。",
   "questões marcadas": "已标记的题目",
+  "Questões marcadas": "已标记的题目",
   "Questões para retomar": "待重做的题目",
   "questões repetidas ou sem fonte foram descartadas": "已舍弃重复或无出处的题目",
   "Qui": "周四",
@@ -2348,6 +2351,10 @@ export default {
    "时间已移至 {0}。"
   ],
   [
+   "Desfazer a marcação: {0}",
+   "撤销标记：{0}"
+  ],
+  [
    "{0}% do áudio ouvido{1}",
    "已收听 {0}% 音频{1}"
   ],
@@ -2706,6 +2713,10 @@ export default {
   [
    "Mover {0}",
    "移动 {0}"
+  ],
+  [
+   "Abrir {0}",
+   "打开 {0}"
   ],
   [
    "{0} aula",
