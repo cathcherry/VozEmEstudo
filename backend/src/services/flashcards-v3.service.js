@@ -201,6 +201,7 @@ export function buildFlashcardsV3Service({
         const result = await store.createDeck(userId, options.id, {
           name: options.name || pack.deckName.slice(0, 160),
           config: { origin: { kind: 'apkg', deck: pack.deckName.slice(0, 160) } },
+          templateId: options.templateId || null,
           templateBase: options.templateBase || null,
           cards: notes.map(({ images, ...note }) => ({
             ...note,

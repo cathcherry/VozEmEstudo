@@ -12,7 +12,7 @@ import {
   listCardTemplates,
 } from '../api/flashcard.api.js';
 import { fillLookOptions } from '../utils/card-looks.js';
-import { parseCardFile, mergeCards, chunk, IMPORT_MAX } from '../utils/deck-tools.js';
+import { parseCardFile, mergeCards, saveNewSet as saveSetInParts, IMPORT_MAX } from '../utils/deck-tools.js';
 
 const FILE_MAX = 2 * 1024 * 1024;
 let counter = 0;
@@ -25,24 +25,9 @@ const make = (tag, text, className) => {
 };
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
-/** Creates the set with the first 100 cards, then adds the rest 100 at a time. */
-export async function saveNewSet({ name, cards, origin }, api = { createFlashcardSet, addFlashcardSetCards }) {
-  const [first, ...rest] = chunk(cards);
-  const id = crypto.randomUUID();
-  await api.createFlashcardSet({ id, name, materialId: null, config: { origin }, cards: first });
-  let saved = first.length;
-  try {
-    for (const part of rest) {
-      await api.addFlashcardSetCards(id, part);
-      saved += part.length;
-    }
-  } catch (error) {
-    error.saved = saved;
-    error.setId = id;
-    throw error;
-  }
-  return { id, saved };
-}
+/** Saves a new set through the 3.2 set API, safe to retry with the same id (see deck-tools.js). */
+export const saveNewSet = (input, api = { createFlashcardSet, addFlashcardSetCards, getFlashcardSet }) =>
+  saveSetInParts(input, api);
 
 /** A readable message for a failed request; says plainly that nothing was created. */
 export function problemText(error, fallback) {
@@ -201,10 +186,18 @@ function run({ dialog, form, confirm, alert, cancel }, opener, submit) {
         result = await submit();
         dialog.close();
       } catch (error) {
-        const done = error.saved
-          ? ` ${plural(error.saved, 'cartão foi salvo', 'cartões foram salvos')} no conjunto novo.`
-          : '';
-        alert.textContent = `${problemText(error, 'Não foi possível criar o conjunto.')}${done}`;
+        // Without an answer the request may still have reached the server. The dialog keeps one
+        // set id, so trying again resumes that set and never makes a second one.
+        if (error.saved && !error.status)
+          alert.textContent = `Sem conexão com o servidor. ${plural(error.saved, 'cartão já está', 'cartões já estão')} no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.`;
+        else if (!error.status)
+          alert.textContent = 'Sem conexão com o servidor. Verifique a internet e tente de novo; o conjunto não será criado duas vezes.';
+        else {
+          const done = error.saved
+            ? ` ${plural(error.saved, 'cartão foi salvo', 'cartões foram salvos')} no conjunto novo.`
+            : '';
+          alert.textContent = `${problemText(error, 'Não foi possível criar o conjunto.')}${done}`;
+        }
         confirm.disabled = false;
         confirm.textContent = 'Criar conjunto';
         confirm.focus();
@@ -442,6 +435,7 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
       };
     }
     const result = await saveNewSet({
+      id: deckId,
       name: deckName,
       cards: merged.cards,
       origin: { kind: 'merge', sets: picked.map((s) => ({ id: s.id, name: s.name })) },
@@ -477,6 +471,9 @@ export function openImportDialog({ opener, v3 = false }) {
   fileLabel.append(file);
   const name = nameField(ui.id, '');
   ui.body.append(fileLabel, name.label);
+  // Flashcards 3.0: one look (a base or one of the student's templates) for the whole new deck.
+  const look = v3 ? lookSelect(ui.id) : null;
+  if (look) ui.body.append(look.label);
   let parsed = null;
   let source = '';
   // The first cards are shown outside the live region: only the counts are announced.
@@ -550,7 +547,7 @@ export function openImportDialog({ opener, v3 = false }) {
   return run(ui, opener, async () => {
     const deckName = name.input.value.trim() || 'Cartões importados';
     if (v3 && parsed.apkg) {
-      const created = await importApkg(parsed.apkg, { mode: 'create', id: deckId, name: deckName });
+      const created = await importApkg(parsed.apkg, { mode: 'create', id: deckId, name: deckName, ...look.value() });
       return imported(created.id, created.replayed ? parsed.report.notes : created.added);
     }
     if (v3) {
@@ -559,6 +556,7 @@ export function openImportDialog({ opener, v3 = false }) {
         id: deckId,
         name: deckName,
         origin: 'text_import',
+        ...look.value(),
         cards: parsed.cards.map((card) =>
           card.clozeText
             ? { noteType: 'cloze', fields: { text: card.clozeText, ...(card.extra ? { extra: card.extra } : {}) } }
@@ -568,6 +566,7 @@ export function openImportDialog({ opener, v3 = false }) {
       return imported(created.id, created.replayed ? parsed.cards.length : created.added);
     }
     const result = await saveNewSet({
+      id: deckId,
       name: deckName,
       cards: parsed.cards,
       origin: { kind: 'import', file: source.slice(0, 160), format: parsed.format },

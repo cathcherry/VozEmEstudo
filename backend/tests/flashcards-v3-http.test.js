@@ -161,6 +161,18 @@ test('Flashcards 3.0 over HTTP: typed decks, templates, merge with decisions, An
       assert.equal(row.origin_kind, 'apkg');
       assert.equal(row.media.length, 1);
       assert.match(row.media[0].path, new RegExp(`^${identities.a.id}/${id}/[0-9a-f]{32}\\.png$`));
+      // One of the student's templates for the whole imported deck (a template or a base, not both).
+      const templateId = randomUUID();
+      const template = await request('/api/flashcards/templates/' + templateId, 'PUT', { version: 0, requestId: randomUUID(), body: { name: 'Anki', base: 'window' } });
+      assert.equal(template.status, 200, JSON.stringify(template.body));
+      const styled = randomUUID();
+      const withTemplate = await request(`/api/flashcards/import/apkg?mode=create&id=${styled}&templateId=${templateId}`, 'POST', null, 'a', bytes);
+      assert.equal(withTemplate.status, 201, JSON.stringify(withTemplate.body));
+      assert.equal(withTemplate.body.template_id, templateId);
+      const both = await request(`/api/flashcards/import/apkg?mode=create&id=${randomUUID()}&templateId=${templateId}&templateBase=sticky`, 'POST', null, 'a', bytes);
+      assert.equal(both.status, 400);
+      const foreign = await request(`/api/flashcards/import/apkg?mode=create&id=${randomUUID()}&templateId=${templateId}`, 'POST', null, 'b', bytes);
+      assert.notEqual(foreign.status, 201, "another account's template cannot be used");
       const broken = await request('/api/flashcards/import/apkg?mode=preview', 'POST', null, 'a', Buffer.from('nope'));
       assert.equal(broken.status, 400);
     });

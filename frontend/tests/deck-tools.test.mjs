@@ -8,6 +8,7 @@ import {
   clozeCard,
   cardKey,
   IMPORT_MAX,
+  saveNewSet,
 } from '../js/utils/deck-tools.js';
 import { toFlashcardCsv } from '../js/utils/flashcard-csv.js';
 
@@ -88,4 +89,71 @@ test('merging keeps one copy of exact duplicates and reports same question, diff
   assert.equal(cardKey('Fotossíntese!'), cardKey('fotossintese'));
   assert.deepEqual(chunk([1, 2, 3, 4, 5], 2), [[1, 2], [3, 4], [5]]);
   assert.equal(mergeCards([a, b], { limit: 2 }).overLimit, 1);
+});
+
+/** A stand-in for the 3.2 set API with the database's rules (replay by id, one front per set). */
+function fakeSetApi({ dropAfterCommit = {} } = {}) {
+  const sets = new Map();
+  const calls = [];
+  const key = (text) => text.trim().toLowerCase();
+  const add = (set, cards) => {
+    let added = 0;
+    for (const card of cards)
+      if (!set.cards.some((c) => key(c.front_text) === key(card.front))) {
+        set.cards.push({ front_text: card.front, back_text: card.back });
+        added += 1;
+      }
+    return added;
+  };
+  const answer = (kind, body) => {
+    if (dropAfterCommit[kind] > 0) {
+      dropAfterCommit[kind] -= 1;
+      throw new TypeError('Failed to fetch'); // saved, but the answer never arrived
+    }
+    return body;
+  };
+  return {
+    sets,
+    calls,
+    async createFlashcardSet({ id, name, cards }) {
+      calls.push('create');
+      if (sets.has(id)) return answer('create', { id, added: 0, replayed: true });
+      const set = { id, name, cards: [] };
+      sets.set(id, set);
+      return answer('create', { id, added: add(set, cards), replayed: false });
+    },
+    async addFlashcardSetCards(id, cards) {
+      calls.push('add');
+      return answer('cards', { added: add(sets.get(id), cards) });
+    },
+    async getFlashcardSet(id) {
+      calls.push('get');
+      return structuredClone(sets.get(id));
+    },
+  };
+}
+const manyCards = (n) => Array.from({ length: n }, (_, i) => ({ front: `Pergunta ${i}?`, back: `Resposta ${i}` }));
+
+test('saveNewSet (3.2 path): a retry after a dropped answer resumes the same set', async () => {
+  const api = fakeSetApi({ dropAfterCommit: { cards: 1 } });
+  const input = { id: 'set-1', name: 'Mesclado', cards: manyCards(250), origin: { kind: 'merge' } };
+  await assert.rejects(saveNewSet(input, api), (error) => error.saved === 100 && error.setId === 'set-1');
+  assert.equal(api.sets.get('set-1').cards.length, 200, 'the dropped part did reach the server');
+  const done = await saveNewSet(input, api);
+  assert.deepEqual(done, { id: 'set-1', saved: 250 });
+  assert.equal(api.sets.size, 1, 'never a second set');
+  assert.equal(api.sets.get('set-1').cards.length, 250, 'no card twice');
+  assert.deepEqual(api.calls, ['create', 'add', 'create', 'get', 'add'], 'only the 50 missing cards are sent again');
+});
+
+test('saveNewSet: a dropped create is replayed, not duplicated; a first try sends every part', async () => {
+  const api = fakeSetApi({ dropAfterCommit: { create: 1 } });
+  const input = { id: 'set-2', name: 'Importado', cards: manyCards(120), origin: { kind: 'import' } };
+  await assert.rejects(saveNewSet(input, api), (error) => !error.saved);
+  assert.deepEqual(await saveNewSet(input, api), { id: 'set-2', saved: 120 });
+  assert.equal(api.sets.size, 1);
+  assert.equal(api.sets.get('set-2').cards.length, 120);
+  const fresh = fakeSetApi();
+  assert.deepEqual(await saveNewSet({ ...input, id: 'set-3' }, fresh), { id: 'set-3', saved: 120 });
+  assert.deepEqual(fresh.calls, ['create', 'add'], 'no extra read when nothing was replayed');
 });

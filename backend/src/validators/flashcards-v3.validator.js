@@ -94,8 +94,10 @@ export const validateApkgQuery = (query) =>
       mode: z.enum(['preview', 'create']).default('preview'),
       id: uuid.optional(),
       name: z.string().trim().min(1).max(160).optional(),
+      templateId: uuid.optional(),
       templateBase: z.enum(TEMPLATE_BASES).optional(),
     })
     .strict()
     .refine((v) => v.mode === 'preview' || v.id, 'Informe o id do conjunto.')
+    .refine((v) => !(v.templateId && v.templateBase), 'Escolha um modelo ou uma base, não os dois.')
     .parse(query);
