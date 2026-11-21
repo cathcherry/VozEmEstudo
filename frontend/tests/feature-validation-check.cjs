@@ -112,6 +112,42 @@ async function main() {
     record(
       'Anotações: paginação segue o tamanho informado pelo servidor; "Abrir no trecho da aula" leva à busca do destaque',
     );
+    // ---------- Renaming a flashcard set: an app dialog, not the browser's prompt -----------
+    data.sets = [
+      { id: 'set-1', name: 'Biologia 1', card_count: 3, due_count: 1, status: 'active' },
+    ];
+    await page.goto(base + '/revisar.html#flashcards');
+    const setsPanel = page.locator('details', { hasText: 'Conjuntos de flashcards' }).last();
+    await setsPanel.locator('summary').click();
+    const rename = setsPanel.getByRole('button', { name: 'Renomear' });
+    await rename.click();
+    const dialog = page.getByRole('dialog', { name: 'Renomear conjunto' });
+    await dialog.waitFor();
+    const field = dialog.getByLabel('Nome do conjunto');
+    assert.equal(
+      await page.evaluate(() => document.activeElement.id),
+      await field.getAttribute('id'),
+    );
+    assert.equal(await field.inputValue(), 'Biologia 1');
+    await settle(page);
+    await axeCheck(page, 'dialog[open]', 'Renomear conjunto');
+    await page.keyboard.press('Escape');
+    assert(await dialog.isHidden(), 'Escape cancels');
+    assert.equal(data.sets[0].name, 'Biologia 1');
+    assert.equal(
+      await page.evaluate(() => document.activeElement.textContent),
+      'Renomear',
+      'focus back',
+    );
+    await rename.click();
+    await field.fill('Biologia — revisão');
+    await page.keyboard.press('Enter');
+    await setsPanel.locator('h4', { hasText: 'Biologia — revisão' }).waitFor();
+    assert.equal(data.sets[0].name, 'Biologia — revisão');
+    record(
+      'Renomear conjunto: diálogo do app com foco no campo, Esc cancela e devolve o foco, Enter salva',
+    );
+
     await context.close();
 
     // ---------- One tool fails: its tab says so, the others work -------------------------

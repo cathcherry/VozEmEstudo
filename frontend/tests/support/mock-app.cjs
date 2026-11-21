@@ -388,7 +388,12 @@ async function setup(context, base, flags, data, options = {}) {
       data.tasks.push(task);
       return json(task, 201);
     }
-    if (p === '/api/flashcards/sets') return json([]);
+    if (p === '/api/flashcards/sets') return json(data.sets || []);
+    if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'PATCH') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      Object.assign(set, request.postDataJSON());
+      return json(set);
+    }
     if (p === '/api/flashcards' && method === 'GET') {
       const filter = url.searchParams.get('filter');
       const cards = filter === 'due' ? data.dueCards : (data.allCards ?? data.dueCards);

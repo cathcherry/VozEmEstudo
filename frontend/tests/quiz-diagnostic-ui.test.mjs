@@ -11,7 +11,8 @@ const api = readFileSync(resolve(dir, 'js/api/quiz-session.api.js'), 'utf8');
 
 test('diagnostic is requested only for completed attempts and never computed in the browser', () => {
   assert.match(panel, /session\.status !== 'completed'/);
-  assert.match(panel, /getQuizDiagnostic\(session\.id\)/);
+  assert.match(panel, /loadDiagnostic\(session\.id\)/);
+  assert.match(panel, /fetcher = getQuizDiagnostic/);
   assert.match(panel, /diagnostic\.interpretation/);
   assert.match(quiz, /renderQuizDiagnosticPanel/);
   assert.doesNotMatch(panel, /innerHTML/);
@@ -23,4 +24,19 @@ test('review action is gated and uses a source session, not client-supplied wron
   assert.match(api, /\/diagnostic/);
   assert.match(api, /\/review/);
   assert.doesNotMatch(panel, /correctIndex.*fetch/);
+});
+
+test('a completed attempt is diagnosed once per page; a failure is retried', async () => {
+  const { loadDiagnostic } = await import('../js/pages/quiz-diagnostic-panel.js');
+  let calls = 0;
+  const fetcher = async (id) => {
+    calls += 1;
+    if (calls === 1) throw new Error('offline');
+    return { sessionId: id };
+  };
+  await assert.rejects(loadDiagnostic('s-1', fetcher));
+  assert.equal((await loadDiagnostic('s-1', fetcher)).sessionId, 's-1');
+  await loadDiagnostic('s-1', fetcher);
+  assert.equal(calls, 2, 'cached after success, not after failure');
+  assert.equal((await loadDiagnostic('s-2', fetcher)).sessionId, 's-2', 'per attempt');
 });

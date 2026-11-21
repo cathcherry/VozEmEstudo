@@ -588,3 +588,43 @@ body[data-profile-editing] .account-page .profile-block-grid > .is-hidden-block,
   color: var(--text);
   font-weight: 600;
 }
+
+/* ---- App dialogs (askText) --------------------------------------------------------------- */
+.app-dialog {
+  width: min(460px, calc(100vw - 32px));
+  padding: 24px;
+  border: 1px solid var(--border-light);
+  border-radius: 18px;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 20px 50px rgb(20 24 32 / 22%);
+}
+.app-dialog::backdrop {
+  background: rgb(20 24 32 / 30%);
+}
+.app-dialog h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+.app-dialog label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.app-dialog input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 400;
+}
+.app-dialog .app-dialog-hint {
+  color: var(--muted);
+}
+.app-dialog .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

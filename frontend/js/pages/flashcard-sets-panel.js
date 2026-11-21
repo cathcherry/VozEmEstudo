@@ -1,3 +1,4 @@
+import { askText } from '../utils/app-dialog.js';
 import {
   listFlashcardSets,
   getFlashcardSet,
@@ -65,7 +66,8 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
 
   function render() {
     list.replaceChildren();
-    if (!sets.length) list.append(ninoNote('Ainda não há conjuntos. Crie um na aba Resumo de uma aula.', 'rest'));
+    if (!sets.length)
+      list.append(ninoNote('Ainda não há conjuntos. Crie um na aba Resumo de uma aula.', 'rest'));
     for (const set of sets) {
       const row = make('article', null, 'flashcard-set-row');
       row.dataset.setId = set.id;
@@ -97,9 +99,15 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
       };
       button('Ver cartões', async () => onSelect(set.id));
       button('Renomear', async () => {
-        const name = prompt('Novo nome do conjunto', set.name);
-        if (!name?.trim()) return;
-        await updateFlashcardSet(set.id, { name: name.trim() });
+        const name = await askText({
+          title: 'Renomear conjunto',
+          label: 'Nome do conjunto',
+          value: set.name,
+          confirmLabel: 'Salvar nome',
+          maxLength: 120,
+        });
+        if (!name || name === set.name) return;
+        await updateFlashcardSet(set.id, { name });
         status.textContent = 'Conjunto renomeado.';
         await load();
       });
