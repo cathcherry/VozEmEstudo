@@ -1,6 +1,6 @@
 # Sessão autônoma noturna — Voz em Estudo 3.0
 
-Registro vivo da sessão. Atualizado a cada marco para que outra sessão possa continuar.
+Registro vivo da sessão. É atualizado a cada marco para que outra sessão possa continuar o trabalho.
 
 ## Estado inicial (21/11/2026, ~04:50 UTC)
 
@@ -9,45 +9,87 @@ Registro vivo da sessão. Atualizado a cada marco para que outra sessão possa c
 | Branch de trabalho anterior | `feat/personalization-2-0` |
 | SHA inicial | `cc7ec56` (CI Quality verde) |
 | `main` antes da sessão | `47b64bf` |
-| Referência de segurança | branch `backup/pre-voz-3-0` → `cc7ec56` (tags são recusadas pelo proxy) |
-| Branch de integração desta sessão | `feat/voz-3-0` (a partir de `cc7ec56`) |
+| Referência de segurança | branch `backup/pre-voz-3-0` → `cc7ec56` (o proxy recusa tags) |
+| Branch de integração desta sessão | `feat/voz-3-0`, a partir de `cc7ec56` |
+| PR desta sessão | [cathcherry/VozEmEstudo#8](https://github.com/cathcherry/VozEmEstudo/pull/8) (rascunho, base `main`) |
 
 ## Marcos
 
-| # | Marco | Situação | Commits |
+| # | Marco | Situação | Commit |
 | --- | --- | --- | --- |
-| M0 | Integrar PR #7 em `main` | **Feito** — merge `fee4222` (CI verde no SHA `cc7ec56`) | `fee4222` |
-| M1 | Material 3.0: preparação × espaço de estudo | Implementado e testado (mock) | ver abaixo |
-| M3 | Questões 3.0: falsa insuficiência | Implementado e testado (unidade + HTTP mock) | ver abaixo |
-| M2 | Focar 3.0: sessão única, painel e cápsula | Em seguida | — |
-| M4 | Personalização 3.0 (fundações) | Pendente | — |
-| M5 | Plano diretor 3.0 + relatório | Pendente | — |
+| M0 | Integrar o PR #7 em `main` | **Feito**: merge `fee4222` (CI verde em `cc7ec56`) | `fee4222` |
+| M1 | Material 3.0: preparação × espaço de estudo | Implementado e com testes automáticos (mock) | `1acde64` |
+| M3a | Questões 3.0: falsa insuficiência (backend) | Implementado e com testes automáticos (unidade + HTTP com mock) | `8fad422` |
+| M2 | Focar 3.0: sessão única, painel lateral e cápsula, página Focar | Implementado e com testes automáticos (8 de unidade + jornada) | `5501d38` |
+| M3b | Questões 3.0: objetivos (presets) e opções avançadas | Implementado e com testes automáticos | `b8b4b63` |
+| M4 | Personalização 3.0: 3 temas, fundos, vidro, fundo por página | Implementado e com testes automáticos (axe) | `1a07155` |
+| M6 | Anotações 3.0 (caderno da aula) | Próximo | — |
+| M5 | Plano diretor 3.0 + relatório final | Pendente | — |
+
+O CI do `5501d38` falhou por uma contagem de links no dock do modo foco, que mudou com o novo item "Focar". Isso foi corrigido em `b8b4b63`.
 
 ## Decisões de arquitetura
 
-- **Modo da aula pelo estado real** (`lessonMode` em `frontend/js/utils/lesson-steps.js`):
-  transcrição não confirmada → preparação; confirmada sem resumo, lista, resposta, escuta ou
-  "Começar a estudar" → preparação ("Aula pronta para estudar"); caso contrário → espaço de estudo.
-  A escolha "Começar a estudar" e a última aba ficam em `voz-study-v1` (sincronizado pela
-  `profile_state` existente), sem migration.
-- **Questões 3.0**: plano por conceito × habilidade × faceta (definição, mecanismo, relação,
-  causa/efeito, aplicação, implicação), limitado pelo tamanho da transcrição
-  (`WORDS_PER_QUESTION = 60`), não por "no máximo 2 por conceito". Vagas extras (spare) absorvem
-  rejeições sem nova chamada; uma rodada de reposição limitada (máx. 3 chamadas). Motivo da falta
-  classificado: `insufficient_content` só quando o plano foi limitado pela fonte; senão
-  `unsupported`, `invalid`, `redundancy` ou `model_omitted`. Prompt `questions-v2.2`.
+### Modo da aula pelo estado real
 
-## Testes
+- A função `lessonMode`, em `frontend/js/utils/lesson-steps.js`, decide o modo da aula.
+- Transcrição não confirmada → preparação.
+- Transcrição confirmada sem resumo, lista, resposta, escuta ou "Começar a estudar" → preparação, com o título "Aula pronta para estudar".
+- Nos demais casos → espaço de estudo.
+- A escolha "Começar a estudar" e a última aba ficam em `voz-study-v1`, já sincronizado pela `profile_state`.
 
-Ver seção de cada marco no relatório final. Distinção: unidade/HTTP com mock ≠ integração real ≠
-produção. Nenhuma chamada paga a provedores de IA foi feita.
+### Questões 3.0
 
-## Migrations
+- O plano combina conceito × habilidade × faceta: definição, mecanismo, relação, causa/efeito, aplicação e implicação.
+- O tamanho do plano é limitado pela transcrição (cerca de 60 palavras por questão), e não por "no máximo 2 por conceito".
+- Vagas reserva absorvem as rejeições.
+- Há uma única rodada de reposição, com no máximo 3 chamadas ao modelo.
+- O motivo da falta é classificado: `insufficient_content` só quando a fonte limitou o plano; caso contrário, `unsupported`, `invalid`, `redundancy` ou `model_omitted`.
+- O filtro de redundância passou a considerar a faceta.
+- Conceitos com citação parafraseada são mantidos se as palavras do rótulo estiverem na aula.
+- Versão do prompt: `questions-v2.2`.
 
-Nenhuma nova até agora.
+### Focar 3.0
 
-## Próximos passos
+- Uma sessão por conta, em `localStorage` (`voz-focus-v1:<userId>`), calculada a partir de horários de relógio.
+- Uma aba líder, visível, envia o heartbeat ao servidor.
+- Os ticks são gravados antes do envio. Assim, a próxima página reenvia o mesmo tick, e o servidor o aceita de forma idempotente.
+- Uma execução não confirmada por 20 s para nesse ponto, e o intervalo oculto não recebe crédito.
+- O crédito continua 100% no servidor, que usa os próprios horários e credita no máximo 30 s por tick.
+- O shell de utilidades (`utility-shell.js`) oferece:
+  - botão no topo;
+  - painel à direita que estreita o conteúdo em telas largas (folha inferior no celular);
+  - cápsula flutuante.
 
-1. Focar 3.0 (M2): uma sessão autoritativa entre páginas/abas, painel direito e cápsula.
-2. Presets de questões (Essencial, Compreender, Aplicar, Equilibrado, Prova) na UI.
-3. Plano diretor 3.0.
+  Esconder qualquer um deles nunca para a sessão.
+
+### Personalização 3.0
+
+- Novos temas `matcha`, `desktop` e `planner`.
+- Fundos declarativos: `wallpaper` (CSS com as cores do tema), mais `pageWallpapers` por página e `surfaces` (sólidas ou vidro).
+- Tudo fica em `audioestudo-ui-preferences`, já sincronizado. Não foi criado novo armazenamento.
+
+Nenhuma migration foi criada ou aplicada.
+
+## Testes (contêiner, API simulada)
+
+- Backend: suíte completa verde. Inclui `question-generation` (11) e `study-authoring-http` (7).
+- Front end, unidade: `test:dom`, `test:study-tracking` (com `focus-session` 8/8), `test:planning-ui`, `test:personalization`, `test:study-authoring`, `test:flashcards-ui`, `test:learning-tools` e `test:quality`.
+- Navegador:
+  - `browser-check` (57);
+  - `dashboard-home` (9);
+  - `navigation`;
+  - `personalization` (8);
+  - `feature-validation` (6);
+  - `focus-check` (5, novo);
+  - `i18n-check`;
+  - `account-privacy` (6);
+  - `theme-check` (3 casos, com os temas novos).
+- Nenhuma chamada paga. Login, Supabase e provedores reais **não** foram testados.
+
+## Próximos passos (em ordem)
+
+1. Anotações 3.0: caderno da aula (comentários com trecho e tempo, ouvir o trecho) e desenho do modelo de âncoras com vários segmentos e de documentos ricos.
+2. Plano diretor 3.0 (`docs/PLANO_DIRETOR_VOZ_EM_ESTUDO_3_0.md`).
+3. Flashcards 3.0: separação entre conteúdo e template (fundação).
+4. Revisar o CI do PR #8 e, com tudo verde, decidir o merge.
