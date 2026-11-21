@@ -96,3 +96,34 @@ test('lists are named or numbered and expose skills/difficulty labels', () => {
   );
   assert.deepEqual(listDetails({}), { levels: [], skills: [] });
 });
+
+test('question presets map to valid settings and are recognised back', async () => {
+  const { QUESTION_GOALS, presetFor } = await import('../js/utils/authoring.js');
+  const skills = [
+    'recall',
+    'understanding',
+    'interpretation',
+    'application',
+    'analysis',
+    'cause_effect',
+    'evaluation',
+    'synthesis',
+  ];
+  for (const [key, preset] of Object.entries(QUESTION_GOALS)) {
+    assert(preset.difficulties.length && preset.skills.length, key);
+    assert(
+      preset.skills.every((skill) => skills.includes(skill)),
+      key,
+    );
+    assert.equal(presetFor(preset), key, `${key} round-trips`);
+  }
+  assert.equal(
+    presetFor({ difficulties: ['basic'], skills: ['recall'], distribution: 'balanced' }),
+    'custom',
+  );
+  assert.equal(
+    presetFor({ ...QUESTION_GOALS.exam, distribution: 'balanced' }),
+    'custom',
+    'order matters',
+  );
+});

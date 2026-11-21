@@ -456,13 +456,20 @@
               ><input id="custom-question-count" name="customCount" type="number" min="1" max="40" step="1" inputmode="numeric"
             /></label>
           </div>
-          <fieldset class="choice-row" data-authoring-only>
+          <fieldset class="question-presets" data-question-presets data-authoring-only>
+            <legend>Objetivo da lista</legend>
+            <div class="question-preset-options" data-question-preset-options></div>
+            <p class="field-note" data-question-preset-hint></p>
+          </fieldset>
+          <details class="advanced-options" data-questions-advanced data-authoring-only>
+            <summary>Opções avançadas</summary>
+          <fieldset class="choice-row">
             <legend>Dificuldade</legend>
             <label><input type="checkbox" name="difficulty" value="basic" checked /> Básico</label>
             <label><input type="checkbox" name="difficulty" value="intermediate" checked /> Intermediário</label>
             <label><input type="checkbox" name="difficulty" value="advanced" /> Avançado</label>
           </fieldset>
-          <fieldset class="choice-grid" data-authoring-only>
+          <fieldset class="choice-grid">
             <legend>Habilidades cognitivas</legend>
             <label><input type="checkbox" name="skill" value="recall" checked /> Recordação</label>
             <label><input type="checkbox" name="skill" value="understanding" checked /> Compreensão conceitual</label>
@@ -473,12 +480,10 @@
             <label><input type="checkbox" name="skill" value="evaluation" /> Avaliação crítica, quando a aula sustentar</label>
             <label><input type="checkbox" name="skill" value="synthesis" /> Síntese, quando a aula sustentar</label>
           </fieldset>
-          <p class="field-note" data-authoring-only>
+          <p class="field-note">
             Cada questão continua com uma única alternativa correta; as habilidades definem o tipo
             de raciocínio pedido.
           </p>
-          <details class="advanced-options" data-questions-advanced data-authoring-only>
-            <summary>Opções avançadas</summary>
             <label
               >Foco temático <span class="optional-hint">(opcional)</span
               ><input name="topicFocus" maxlength="300" placeholder="Ex.: causas da Independência"

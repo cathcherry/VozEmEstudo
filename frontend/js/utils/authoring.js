@@ -129,3 +129,57 @@ export function recommendQuestionCount({ durationMs = 0, text = '', skills = 1, 
     );
   return { min: bottom, max: top, terms, minutes: Math.round(minutes), notes };
 }
+
+/**
+ * Question presets (Questões 3.0): one choice sets difficulty, skills and order; the detailed
+ * controls stay under "Opções avançadas" and any manual change there makes the list "custom".
+ */
+export const QUESTION_GOALS = {
+  essential: {
+    label: 'Essencial',
+    hint: 'Conceitos centrais e definições que importam.',
+    difficulties: ['basic', 'intermediate'],
+    skills: ['recall', 'understanding'],
+    distribution: 'balanced',
+  },
+  understand: {
+    label: 'Compreender',
+    hint: 'Por quê e como: explicações, causas e consequências.',
+    difficulties: ['basic', 'intermediate', 'advanced'],
+    skills: ['understanding', 'interpretation', 'cause_effect'],
+    distribution: 'balanced',
+  },
+  apply: {
+    label: 'Aplicar',
+    hint: 'Situações novas, comparações e resolução de problemas.',
+    difficulties: ['intermediate', 'advanced'],
+    skills: ['application', 'analysis'],
+    distribution: 'balanced',
+  },
+  balanced: {
+    label: 'Equilibrado',
+    hint: 'Um pouco de tudo, em níveis intercalados.',
+    difficulties: ['basic', 'intermediate', 'advanced'],
+    skills: ['recall', 'understanding', 'application', 'analysis'],
+    distribution: 'balanced',
+  },
+  exam: {
+    label: 'Preparação para prova',
+    hint: 'Do mais fácil ao mais difícil, cobrindo vários tipos de raciocínio.',
+    difficulties: ['basic', 'intermediate', 'advanced'],
+    skills: ['recall', 'understanding', 'application', 'analysis', 'cause_effect'],
+    distribution: 'progressive',
+  },
+};
+
+/** The preset matching a configuration exactly, or 'custom'. */
+export function presetFor({ difficulties = [], skills = [], distribution = 'balanced' }) {
+  const same = (a, b) => a.length === b.length && a.every((item) => b.includes(item));
+  const found = Object.entries(QUESTION_GOALS).find(
+    ([, preset]) =>
+      same(preset.difficulties, difficulties) &&
+      same(preset.skills, skills) &&
+      preset.distribution === distribution,
+  );
+  return found ? found[0] : 'custom';
+}
