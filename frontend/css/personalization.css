@@ -154,7 +154,7 @@ html[data-density='compact'] body.app-page :is(.study-section, .tool-section > s
   display: grid;
   gap: 20px;
 }
-.dash-customize .customize-group h3 {
+body.app-page .dash-customize .customize-group h3 {
   margin: 0 0 8px;
   font-family: Inter, 'Segoe UI', Arial, sans-serif;
   color: var(--muted);
@@ -353,19 +353,19 @@ body[data-profile-editing] .account-page .profile-block-grid > .profile-block {
   outline: 1px dashed color-mix(in srgb, var(--accent) 45%, transparent);
   outline-offset: 3px;
 }
-.account-page .is-hidden-block,
+/* Hidden while editing: marked by a dashed outline and a badge, never by transparency (which
+   would lower the text contrast). */
+body[data-profile-editing] .account-page .profile-block-grid > .is-hidden-block,
 .account-page .is-hidden-section {
-  opacity: 0.6;
-}
-.account-page .is-hidden-section {
-  border-style: dashed !important;
+  outline: 2px dashed var(--muted);
+  outline-offset: 3px;
 }
 .account-page .profile-hidden-badge {
   display: inline-block;
   padding: 1px 8px;
   border-radius: 999px;
-  color: var(--text);
-  background: var(--surface-alt);
+  color: var(--surface);
+  background: var(--text);
   font-family: Inter, 'Segoe UI', Arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 700;

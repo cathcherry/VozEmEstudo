@@ -461,6 +461,37 @@ async function main() {
       );
     }
 
+    // ---------- Themes: new controls stay readable --------------------------------------------
+    for (const theme of ['night', 'wine']) {
+      const themed = state();
+      themed.profileState = [
+        {
+          user_id: 'user-dashboard',
+          key: 'profile-blocks',
+          updated_at: new Date().toISOString(),
+          data: [{ id: 'h1', title: 'Oculto', type: 'text', content: 'x', hidden: true }],
+        },
+      ];
+      const view = await openApp(browser, base, allFlags, themed);
+      await view.page.addInitScript(
+        (value) => localStorage.setItem('audioestudo-theme', value),
+        theme,
+      );
+      await view.page.goto(base + '/painel.html');
+      await ready(view.page);
+      await openSheet(view.page);
+      await axeCheck(view.page, '[data-dashboard-customize-dialog]', `Personalizar (${theme})`);
+      await view.page.goto(base + '/conta.html');
+      await view.page.locator('[data-profile-edit-toggle]').click();
+      await view.page.locator('.is-hidden-block .profile-hidden-badge').waitFor();
+      await settle(view.page);
+      await axeCheck(view.page, 'main', `Perfil em edição (${theme})`);
+      await view.context.close();
+    }
+    record(
+      'Temas noturno e vinho: folha de personalização e perfil em edição sem violações do axe',
+    );
+
     // ---------- Phone: the sheet fits and the essential card stays -------------------------
     const phone = await openApp(browser, base, allFlags, state(), { width: 390, height: 844 });
     await phone.page.goto(base + '/painel.html');

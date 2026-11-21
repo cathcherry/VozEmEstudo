@@ -31,6 +31,19 @@ const make = (tag, text, className) => {
 
 let materialsRequest = null;
 const materials = () => (materialsRequest ||= listMaterials().catch(() => null));
+// One request per page for each source: re-rendering after a move or resize reuses it.
+let planningRequest = null;
+let overviewRequest = null;
+const planning = () =>
+  (planningRequest ||= getPlanning().catch((error) => {
+    planningRequest = null;
+    throw error;
+  }));
+const overview = () =>
+  (overviewRequest ||= getStudyOverview().catch((error) => {
+    overviewRequest = null;
+    throw error;
+  }));
 const quiet = (text) => make('p', text, 'profile-data-empty');
 
 /** Renders the body of a data block. Always resolves to an element (an empty or error state). */
@@ -80,7 +93,7 @@ export async function renderDataBlock(source) {
       return ol;
     }
     if (source === 'goals') {
-      const { goals = [], tasks = [] } = await getPlanning();
+      const { goals = [], tasks = [] } = await planning();
       const active = goals.filter((goal) => goal.status === 'active').slice(0, 5);
       if (!active.length) {
         const box = make('div');
@@ -106,7 +119,7 @@ export async function renderDataBlock(source) {
       return ul;
     }
     if (source === 'week') {
-      const data = await getStudyOverview();
+      const data = await overview();
       const minutes = Math.floor(Number(data.weekSeconds) / 60);
       const box = make('div', null, 'profile-data-week');
       const value = make('strong', String(minutes));
