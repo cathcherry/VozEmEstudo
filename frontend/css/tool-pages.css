@@ -779,3 +779,144 @@ body.app-page .tool-page .question-reports-panel > h2 { padding: 0 0 4px; font-s
 .unit-plan-more { list-style: none; margin-left: -1.4rem; }
 .unit-plan-error { margin: 8px 0 0; color: var(--danger); }
 }
+
+/* ==== Tool pages 3.5 (Revisar, Planejar, Focar, Turmas, Material integrado) ================
+ * Title and lead, underline tabs, then the work. Filters read as one toolbar band; folded
+ * sections are disclosure rows with a chevron; working surfaces are single panels. */
+@layer pages {
+  body.app-page .tool-page .tool-heading {
+    margin-bottom: var(--space-6);
+  }
+  body.app-page .tool-page .flashcard-looks label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    white-space: nowrap;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .tool-page .flashcard-looks select {
+    width: auto;
+    min-height: 2.125rem;
+    font-size: var(--step-ui);
+  }
+  body.app-page .tool-page .tool-intro {
+    max-width: 62ch;
+    margin: var(--space-2) 0 0;
+    color: var(--ink-muted);
+  }
+  body.app-page .tool-page .tool-tabs {
+    margin-bottom: var(--space-5);
+  }
+  body.app-page .tool-page :is(.tool-section, [role='tabpanel']) > section > h2,
+  body.app-page .tool-page .tool-section h2 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 480;
+    font-size: var(--step-2);
+    letter-spacing: -0.01em;
+  }
+  body.app-page .tool-page .tool-section h3 {
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  /* Filters: one band of labelled controls. */
+  body.app-page .tool-page .flashcard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin: 0 0 var(--space-5);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: color-mix(in srgb, var(--paper-sunken) 55%, var(--paper));
+  }
+  body.app-page .tool-page .flashcard-filters label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 550;
+  }
+  body.app-page .tool-page .flashcard-filters select {
+    width: auto;
+    min-height: 2.125rem;
+    font-size: var(--step-ui);
+  }
+  /* Review card: the card is the hero of the page. */
+  body.app-page .tool-page .flashcard-review-card[data-card-template='classic'] {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .tool-page .flashcard-review-card[data-card-template='classic'] .flashcard-content {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 430;
+    line-height: 1.25;
+  }
+  body.app-page .tool-page .flashcard-create-tile {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+    text-align: left;
+  }
+  body.app-page .tool-page .flashcard-create-tile:hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+    background: color-mix(in srgb, var(--paper-raised) 94%, var(--brand));
+  }
+  /* Folded sections: disclosure rows. */
+  body.app-page main details.flashcard-management {
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page main details.flashcard-management > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 3rem;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-panel);
+    font-size: var(--step-0);
+    font-weight: 600;
+    list-style: none;
+  }
+  body.app-page main details.flashcard-management > summary::-webkit-details-marker {
+    display: none;
+  }
+  body.app-page main details.flashcard-management > summary::before {
+    content: '';
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 1.5px solid var(--ink-muted);
+    border-bottom: 1.5px solid var(--ink-muted);
+    transform: rotate(-45deg);
+    transition: transform var(--dur) var(--ease);
+  }
+  body.app-page main details.flashcard-management[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  body.app-page main details.flashcard-management > summary:hover {
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+  body.app-page main details.flashcard-management[open] > summary {
+    border-bottom: 1px solid var(--line);
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+  }
+  body.app-page main details.flashcard-management > :not(summary) {
+    margin-inline: var(--space-4);
+  }
+  body.app-page main details.flashcard-management[open] {
+    padding-bottom: var(--space-4);
+  }
+}

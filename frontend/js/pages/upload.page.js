@@ -139,7 +139,8 @@ function updateVideoRetentionChoice() {
     input = document.querySelector('#keep-original-video');
   choice.hidden = availability === 'none';
   input.disabled = availability !== 'available';
-  if (input.disabled) input.checked = false;
+  // Segmented "Não guardar | Guardar": an unavailable video is never kept.
+  if (input.disabled) document.querySelector('#discard-original-video').checked = true;
   choice.classList.toggle('is-unavailable', availability !== 'available');
   document.querySelector('[data-video-retention-note]').textContent =
     VIDEO_NOTES[availability] || '';
@@ -302,7 +303,7 @@ async function chooseFile() {
   const token = ++generation;
   analysisController?.abort();
   info = null;
-  document.querySelector('#keep-original-video').checked = false;
+  document.querySelector('#discard-original-video').checked = true;
   updateVideoRetentionChoice();
   createdMaterial = null;
   reviewedChoices = null;

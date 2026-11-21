@@ -496,7 +496,7 @@ body.app-page[data-page='transcription'] .segmented input:focus-visible + span {
   outline-offset: 1px;
 }
 
-/* Lista agrupada com interruptores. */
+/* Lista agrupada com controles segmentados. */
 body.app-page[data-page='transcription'] .settings-group {
   border: 1px solid var(--border-light);
   border-radius: 12px;
@@ -528,48 +528,6 @@ body.app-page[data-page='transcription'] .setting-text small:empty {
 }
 body.app-page[data-page='transcription'] .setting-row.is-unavailable {
   color: var(--muted);
-  cursor: not-allowed;
-}
-body.app-page[data-page='transcription'] input.switch {
-  appearance: none;
-  position: relative;
-  flex-shrink: 0;
-  width: 42px;
-  height: 26px;
-  margin: 0;
-  border: 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--border) 65%, var(--surface-alt));
-  box-shadow: var(--ue-recessed);
-  cursor: pointer;
-  transition: background-color 0.18s ease;
-}
-body.app-page[data-page='transcription'] input.switch::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow:
-    0 1px 2px rgb(16 24 48 / 0.25),
-    0 2px 6px rgb(16 24 48 / 0.12);
-  transition: transform 0.18s ease;
-}
-body.app-page[data-page='transcription'] input.switch:checked {
-  background: var(--accent);
-}
-body.app-page[data-page='transcription'] input.switch:checked::before {
-  transform: translateX(16px);
-}
-body.app-page[data-page='transcription'] input.switch:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-body.app-page[data-page='transcription'] input.switch:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -828,8 +786,7 @@ body.app-page .processing-status [data-wait-error-actions] :is(.primary-action, 
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.app-page[data-page='transcription'] :is(.upload-dropzone, input.switch, .segmented span),
-  body.app-page[data-page='transcription'] input.switch::before,
+  body.app-page[data-page='transcription'] :is(.upload-dropzone, .segmented span),
   body.app-page[data-page='transcription'] .upload-disclosure summary::before {
     transition: none;
     animation: none;
