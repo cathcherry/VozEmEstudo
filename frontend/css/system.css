@@ -202,6 +202,13 @@
     --desk-wall: color-mix(in srgb, var(--paper-sunken) 72%, var(--paper));
     --desk-top: color-mix(in srgb, #c9a27e 70%, var(--paper));
     --desk-edge: color-mix(in srgb, #9c7656 72%, var(--paper));
+    /* Window frame and shelf: light paint on a light wall; lifted wood on a dark one. */
+    --desk-frame: var(--paper-raised);
+    --desk-shelf: var(--desk-edge);
+  }
+  :root:is([data-theme='night'], [data-theme='custom']) {
+    --desk-frame: color-mix(in srgb, var(--desk-top), #ffffff 22%);
+    --desk-shelf: color-mix(in srgb, var(--desk-top), #ffffff 10%);
   }
   :root:is([data-theme='contrast-light'], [data-theme='contrast-dark'], [data-high-contrast='true']) {
     --desk-wall: var(--paper);

@@ -11,15 +11,21 @@ import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { listAnnotations } from '../api/learning-tools.api.js';
 import { initDashboardCustomize } from './dashboard-customize.js';
 import { t, intlLocale } from '../i18n/i18n.js';
+import { initDeskScene, setDeskContext } from './desk-scene.js';
+import { isToday } from '../utils/desk.js';
+import { initRailTabs } from './dashboard-rail-tabs.js';
 
 const session=await initAuthenticatedShell();
+// The escrivaninha (atmosphere, objects, Lume) and, on narrow screens, the margin notes as tabs.
+void initDeskScene({ owner: session.user.id }).catch(() => { /* decoration only */ });
+initRailTabs();
 // Saved layout first, so the cards appear where the person put them.
 void initDashboardCustomize({ owner: session.user.id }).catch(() => { /* The default layout stays usable. */ });
 // Summary cards for the study tools (each links to Revisar or Planejar).
 initDashboardHome();
 // Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.
 const searchForm=document.querySelector('.topbar-search');
-if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading'),
+if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.desk-scene')||document.querySelector('.dashboard-heading'),
   notes:async(q)=>(await isFeatureEnabled('annotations').catch(()=>false))?listAnnotations({q,offset:0}):null,
   openNotes:(q)=>{location.href=`./revisar.html?busca=${encodeURIComponent(q)}#anotacoes`;}});
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
@@ -140,13 +146,17 @@ async function load() {
     if (last.length) for (const material of last) {
       continued.append(dashboardLesson(material));
     } else continued.append(emptyState(t(materials.length?'dashboard.noActive':'dashboard.emptyLibrary'),t(materials.length?'dashboard.noActiveHint':'dashboard.emptyLibraryHint'),{href:materials.length?'./historico.html':'./nova-transcricao.html',action:t(materials.length?'dashboard.openLibrary':'nav.newTranscription'),mascot:materials.length?'reading':'laptop'}));
+    // Lume reads along while a lesson is in progress and is happy after a lesson studied today.
+    setDeskContext({ lessonInProgress: active.length > 0, reviewedToday: materials.some((m)=>isToday(studyFor(m.id).reviewedAt)) });
     const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,6);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
     for (const material of recentMaterials) recent.append(dashboardLesson(material));
     const shelf=document.querySelector('[data-subject-list]'); shelf.replaceChildren();
     const subjects=new Map(); for(const m of materials) { const subject=m.subject||t('lesson.noSubject'); const list=subjects.get(subject)||[]; list.push(m); subjects.set(subject,list); }
+    // Folder tones cycle in the same order as the Biblioteca's folders (lavender, matcha, honey, mist, rose).
+    const tones=['lavender','matcha','honey','mist','rose']; let toneIndex=0;
     for(const [subject,items] of [...subjects].sort((a,b)=>a[0].localeCompare(b[0],intlLocale()))) {
-      const link=document.createElement('a'); link.className='subject-folder'; link.href='./historico.html?subject='+encodeURIComponent(subject);
+      const link=document.createElement('a'); link.className='subject-folder'; link.dataset.folderTone=tones[toneIndex++%tones.length]; link.href='./historico.html?subject='+encodeURIComponent(subject);
       const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.textContent='📁'; icon.setAttribute('aria-hidden','true');
       const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=t('dashboard.subjectLessons',{count:items.length})+(reviewed?' · '+t('dashboard.subjectStudied',{count:reviewed}):''); copy.append(title,detail); link.append(icon,copy); shelf.append(link);
     }

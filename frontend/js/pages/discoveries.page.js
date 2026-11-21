@@ -2,12 +2,13 @@
 // question, quotes checked against the lesson, the student's explanation (every version), links
 // to their own material by reference, connections to other discoveries, reflections and the
 // meaningful revisits. Stamps are shown as art slots ([data-game-ui]: hidden in quiet mode).
-import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
 import { applyExperienceMode, artSlot, describeCollectible, formatDay, passageHref } from '../utils/collectibles.js';
 import * as api from '../api/discovery.api.js';
+import { getUiPreferences } from '../utils/preferences.js';
+import { resolveAtmosphere, availableCovers } from '../utils/atmospheres.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const uuid = () => crypto.randomUUID();
@@ -268,6 +269,14 @@ if (!flags.discoveries) {
   box.hidden = false;
   box.append(emptyState('O Arquivo de Descobertas ainda não está ativo', 'Ele aparece aqui quando for ativado neste servidor.', { href: './historico.html', action: 'Voltar à Biblioteca', mascot: 'rest' }));
 } else {
+  // The notebook's cover (Aparência > Estúdio); a collectible cover only once it was found.
+  const cover = $('[data-discoveries-cover]');
+  const paint = (unlocks) => {
+    const look = resolveAtmosphere(getUiPreferences(), { available: { covers: availableCovers(unlocks) } });
+    cover.dataset.artId = look.cover;
+  };
+  paint([]);
+  void api.getCollection().then((c) => paint(c.unlocks || [])).catch(() => {});
   const id = new URLSearchParams(location.search).get('id');
   if (id) await showDetail(id);
   else await showHome();

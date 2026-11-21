@@ -57,7 +57,7 @@ mark.search-hit {
 }
 
 /* While results are open, the rest of the dashboard steps aside. */
-main[data-searching='true'] > :not(.dashboard-heading):not([data-search-results]) {
+main[data-searching='true'] > :not(.dashboard-heading):not(.desk-scene):not([data-search-results]) {
   display: none !important;
 }
 .global-search-results {
