@@ -1,7 +1,11 @@
+import { limitPerAccount } from '../middleware/rate-limit.middleware.js';
+import { env } from '../config/env.js';
 import express from 'express';
 import { inspectMedia, convertMedia } from '../services/media.service.js';
 
 export const mediaRouter = express.Router();
+// FFmpeg work is CPU-bound: a per-account ceiling besides the two-job concurrency limit.
+mediaRouter.use(limitPerAccount({ name: 'media', max: env.rateLimitMediaPerMinute, windowMs: 60000 }));
 mediaRouter.use(express.raw({ type: 'application/octet-stream', limit: '100mb' }));
 mediaRouter.post('/inspect', async (req, res, next) => {
   try { res.json(await inspectMedia(req.body, req.query.extension)); }

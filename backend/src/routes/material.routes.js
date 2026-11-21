@@ -1,3 +1,5 @@
+import { limitPerAccount } from '../middleware/rate-limit.middleware.js';
+import { env } from '../config/env.js';
 import * as review from '../controllers/review.controller.js';
 import { Router } from 'express';
 import * as material from '../controllers/material.controller.js';
@@ -9,12 +11,15 @@ import { isFeatureEnabled } from '../config/feature-flags.js';
 import { questionShareRouter } from './question-share.routes.js';
 
 export const materialRouter = Router();
+// Paid provider calls: a per-account ceiling (see limitPerAccount).
+const transcriptionLimit = limitPerAccount({ name: 'transcription', max: env.rateLimitTranscriptionsPerDay, windowMs: 24 * 3600000 });
+const generationLimit = limitPerAccount({ name: 'generation', max: env.rateLimitGenerationsPerHour, windowMs: 3600000 });
 materialRouter.get('/', material.list);
 materialRouter.post('/', material.create);
 materialRouter.get('/:materialId', material.get);
 materialRouter.patch('/:materialId', material.patch);
 materialRouter.delete('/:materialId', material.remove);
-materialRouter.post('/:materialId/process', material.processInitial);
+materialRouter.post('/:materialId/process', transcriptionLimit, material.processInitial);
 materialRouter.get('/:materialId/playback', playback.playback);
 materialRouter.get('/:materialId/captions', playback.captions);
 if (isFeatureEnabled('mp4_retention')) {
@@ -28,11 +33,11 @@ materialRouter.get('/:materialId/transcription/versions', transcription.versions
 materialRouter.post('/:materialId/transcription/versions/:revision/restore', transcription.restore);
 
 materialRouter.get('/:materialId/summaries', summary.list);
-materialRouter.post('/:materialId/summaries', summary.regenerate);
+materialRouter.post('/:materialId/summaries', generationLimit, summary.regenerate);
 if (isFeatureEnabled('study_authoring'))
   materialRouter.patch('/:materialId/summaries/:summaryId', summary.rename);
 materialRouter.get('/:materialId/question-batches', question.listBatchesController);
-materialRouter.post('/:materialId/question-batches', question.createBatch);
+materialRouter.post('/:materialId/question-batches', generationLimit, question.createBatch);
 materialRouter.get('/:materialId/question-batches/:batchId/answer-key', question.answerKey);
 if (isFeatureEnabled('study_authoring'))
   materialRouter.patch('/:materialId/question-batches/:batchId', question.rename);

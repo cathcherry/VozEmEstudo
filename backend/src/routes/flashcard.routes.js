@@ -1,3 +1,5 @@
+import { limitPerAccount } from '../middleware/rate-limit.middleware.js';
+import { env } from '../config/env.js';
 import { Router } from 'express';
 import * as cards from '../controllers/flashcard.controller.js';
 import { preview } from '../controllers/flashcard-generation.controller.js';
@@ -13,7 +15,7 @@ export const flashcardRouter = Router();
 
 flashcardRouter.get('/', cards.list);
 flashcardRouter.post('/', cards.create);
-flashcardRouter.post('/preview', preview);
+flashcardRouter.post('/preview', limitPerAccount({ name: 'flashcard-preview', max: env.rateLimitGenerationsPerHour, windowMs: 3600000 }), preview);
 if (isFeatureEnabled('flashcard_sets')) {
   flashcardRouter.get('/sets', action((r) => sets.list(r.user.id, r.query)));
   flashcardRouter.post('/sets', action((r) => sets.create(r.user.id, r.body), 201));

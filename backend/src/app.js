@@ -31,7 +31,38 @@ const processingDisclosure = () => disclosureLabels(getAiRegistry().config);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const app = express();
 
-app.use(helmet({ contentSecurityPolicy: false }));
+// Policy for the static front end (scripts are local files; styles use inline attributes;
+// Supabase API, storage uploads and realtime; blob/data media; YouTube/Spotify profile embeds).
+// Off by default until checked against the real project: see docs/HOSPEDAGEM.md.
+export function contentSecurityDirectives(supabaseUrl) {
+  const supabase = supabaseUrl ? [supabaseUrl, supabaseUrl.replace(/^http/, 'ws')] : [];
+  return {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: ["'self'", 'data:', 'blob:', ...supabase],
+    mediaSrc: ["'self'", 'blob:', ...supabase],
+    connectSrc: ["'self'", ...supabase],
+    fontSrc: ["'self'", 'data:'],
+    frameSrc: ["'self'", 'https://www.youtube-nocookie.com', 'https://www.youtube.com', 'https://open.spotify.com'],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+    frameAncestors: ["'self'"],
+  };
+}
+app.use(
+  helmet({
+    contentSecurityPolicy:
+      env.contentSecurityPolicy === 'off'
+        ? false
+        : {
+            useDefaults: false,
+            reportOnly: env.contentSecurityPolicy === 'report-only',
+            directives: contentSecurityDirectives(env.supabaseUrl),
+          },
+  }),
+);
 app.use(cors({ origin: env.appOrigin, credentials: false }));
 app.use(requestIdMiddleware);
 app.use(express.json({ limit: '2mb' }));
