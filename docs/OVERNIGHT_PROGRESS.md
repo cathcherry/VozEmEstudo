@@ -119,4 +119,4 @@ Nenhuma migration foi criada ou aplicada.
 | Marco | Commit |
 | --- | --- |
 | Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | `3bea961` |
-| "Seu ritmo": 12 semanas contra a meta, aulas mais estudadas e mapa do ano (`GET /api/study/history`, sem tabela nova) | (este commit) |
+| "Seu ritmo": 12 semanas contra a meta, aulas mais estudadas e mapa do ano (`GET /api/study/history`, sem tabela nova) | `0296300` |
