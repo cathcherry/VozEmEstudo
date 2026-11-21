@@ -1998,6 +1998,7 @@ export default {
   "Sem aula vinculada": "Sin clase vinculada",
   "Sem conexão — guardado neste aparelho. Tentaremos de novo.": "Sin conexión — guardado en este dispositivo. Lo intentaremos de nuevo.",
   "Sem conexão com o servidor. Verifique a internet e tente de novo; nada foi criado.": "Sin conexión con el servidor. Revisa tu internet e inténtalo de nuevo; no se creó nada.",
+  "Sem conexão com o servidor. Verifique a internet e tente de novo; o conjunto não será criado duas vezes.": "Sin conexión con el servidor. Revisa internet e inténtalo de nuevo; el conjunto no se creará dos veces.",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "Sin conexión: los cambios están guardados en este navegador y se enviarán cuando vuelva la conexión.",
   "Sem conexão.": "Sin conexión.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "Sin confirmación de la cuenta. El progreso sigue en este navegador y el envío se repetirá con la misma identificación.",
@@ -2379,8 +2380,16 @@ export default {
    "Horarios en la zona horaria de este dispositivo: {0}. Las fechas límite de tareas aparecen como eventos de día completo. Exportar ICS no envía invitaciones ni modifica otros calendarios."
   ],
   [
+   "Sem conexão com o servidor. {0} cartões já estão no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "Sin conexión con el servidor. {0} tarjetas ya están en el conjunto nuevo. Inténtalo de nuevo para guardar el resto, sin duplicar el conjunto."
+  ],
+  [
    "Revisão anterior: esta referência aponta para a revisão {0}; a aula está na revisão {1}. O trecho citado continua legível aqui.",
    "Revisión anterior: esta referencia apunta a la revisión {0}; la clase está en la revisión {1}. El fragmento citado sigue legible aquí."
+  ],
+  [
+   "Sem conexão com o servidor. {0} cartão já está no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "Sin conexión con el servidor. {0} tarjeta ya está en el conjunto nuevo. Inténtalo de nuevo para guardar el resto, sin duplicar el conjunto."
   ],
   [
    "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",

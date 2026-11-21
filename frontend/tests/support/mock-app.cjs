@@ -535,29 +535,54 @@ async function setup(context, base, flags, data, options = {}) {
       const report = { deckName: 'Química::Orgânica', notes: 2, types: { basic: 1, cloze: 1 }, images: 1, skipped: { empty: 0, unsupported: 0, overLimit: 0, audio: 1, imagesSkipped: 0 },
         sample: [{ noteType: 'basic', front: 'Fórmula do metano?', back: 'CH4' }, { noteType: 'cloze', front: 'O carbono faz […] ligações.', back: 'O carbono faz 4 ligações.' }] };
       if (mode === 'preview') return json(report, 200);
-      const set = newSet(url.searchParams.get('id'), url.searchParams.get('name') || report.deckName, report.sample.map((c) => ({ front: c.front, back: c.back, noteType: c.noteType, originLabel: report.deckName })));
+      const set = newSet(url.searchParams.get('id'), url.searchParams.get('name') || report.deckName, report.sample.map((c) => ({ front: c.front, back: c.back, noteType: c.noteType, originLabel: report.deckName })), {
+        templateId: url.searchParams.get('templateId'),
+        templateBase: url.searchParams.get('templateBase'),
+      });
       data.apkgImports = (data.apkgImports || 0) + 1;
       return json({ ...report, ...set, added: 2 }, 201);
     }
+    // Like the database: a create with an existing id replays it; a front already in the set
+    // (trimmed, any case) is skipped. `data.dropAfterCommit = { create, cards }` makes the next
+    // N such requests be saved and then lose their answer (a connection dropped mid-response).
+    const committed = (kind, body, status) => {
+      const drop = data.dropAfterCommit || {};
+      if (drop[kind] > 0) {
+        drop[kind] -= 1;
+        return route.abort('connectionreset');
+      }
+      return json(body, status);
+    };
+    const frontKey = (text) => String(text ?? '').trim().toLowerCase();
+    const addToSet = (set, cards) => {
+      let added = 0;
+      for (const c of cards) {
+        if (set.cards.some((x) => frontKey(x.front_text) === frontKey(c.front))) continue;
+        set.cards.push({ id: `${set.id}-${set.cards.length}`, front_text: c.front, back_text: c.back });
+        added += 1;
+      }
+      set.card_count = set.due_count = set.cards.length;
+      return added;
+    };
     if (p === '/api/flashcards/sets' && method === 'POST') {
       const body = request.postDataJSON();
+      data.setRequests = (data.setRequests || 0) + 1;
+      const existing = (data.sets || []).find((item) => item.id === body.id);
+      if (existing) return committed('create', { ...existing, added: 0, replayed: true }, 201);
       const set = {
         id: body.id, name: body.name, material_id: body.materialId, config: body.config,
-        status: 'active', card_count: body.cards.length, due_count: body.cards.length,
-        cards: body.cards.map((c, i) => ({ id: `${body.id}-${i}`, front_text: c.front, back_text: c.back })),
+        status: 'active', card_count: 0, due_count: 0, cards: [],
       };
+      const added = addToSet(set, body.cards);
       data.sets = [...(data.sets || []), set];
-      data.setRequests = (data.setRequests || 0) + 1;
-      return json(set, 201);
+      return committed('create', { ...set, added, replayed: false }, 201);
     }
     if (/^\/api\/flashcards\/sets\/[^/]+\/cards$/.test(p) && method === 'POST') {
       const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
       const { cards } = request.postDataJSON();
       if (cards.length > 100) return json({ error: { code: 'VALIDATION', message: 'too many' } }, 400);
-      set.cards.push(...cards.map((c, i) => ({ id: `${set.id}-${set.cards.length + i}`, front_text: c.front, back_text: c.back })));
-      set.card_count = set.due_count = set.cards.length;
       data.setRequests = (data.setRequests || 0) + 1;
-      return json({ added: cards.length }, 201);
+      return committed('cards', { added: addToSet(set, cards) }, 201);
     }
     if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'GET') {
       const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
@@ -909,9 +934,12 @@ async function startServer() {
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
-  app.get('/__fixture.wav', (_req, res) =>
-    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav'), { dotfiles: 'allow' }),
-  );
+  // browser-check.cjs writes a real fixture; other checks may run first, so fall back to 1 s of silence.
+  app.get('/__fixture.wav', (_req, res) => {
+    const file = path.join(root, 'tests', 'artifacts', 'fixture.wav');
+    if (require('node:fs').existsSync(file)) return res.sendFile(file, { dotfiles: 'allow' });
+    res.type('audio/wav').send(silentWav(1));
+  });
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
   return { server, base: `http://127.0.0.1:${server.address().port}` };
@@ -948,3 +976,22 @@ module.exports = {
   startServer,
   launchBrowser,
 };
+
+/** Mono 8 kHz 16-bit PCM silence. */
+function silentWav(seconds) {
+  const samples = 8000 * seconds;
+  const buffer = Buffer.alloc(44 + samples * 2);
+  buffer.write('RIFF', 0);
+  buffer.writeUInt32LE(36 + samples * 2, 4);
+  buffer.write('WAVEfmt ', 8);
+  buffer.writeUInt32LE(16, 16);
+  buffer.writeUInt16LE(1, 20);
+  buffer.writeUInt16LE(1, 22);
+  buffer.writeUInt32LE(8000, 24);
+  buffer.writeUInt32LE(16000, 28);
+  buffer.writeUInt16LE(2, 32);
+  buffer.writeUInt16LE(16, 34);
+  buffer.write('data', 36);
+  buffer.writeUInt32LE(samples * 2, 40);
+  return buffer;
+}

@@ -4,7 +4,7 @@
 // Both steps answer strict JSON that the server validates (zod) and whose evidence it checks
 // against the revision's segments_snapshot before anything is saved.
 export const KNOWLEDGE_MAP_PROMPT_VERSION = 'knowledge-map-v1';
-export const MULTI_LESSON_PROMPT_VERSION = 'multi-lesson-v1';
+export const MULTI_LESSON_PROMPT_VERSION = 'multi-lesson-v2';
 
 const SOURCE_RULES = [
   'Use exclusivamente o material fornecido; não use conhecimento externo.',
@@ -50,7 +50,7 @@ const OUTPUT_GUIDE = {
   summary:
     '"summary": {"sections":[{"heading":"...","text":"...","citations":[{"lesson":"A1","position":0,"quote":"..."}]}]} — resumo integrado em seções temáticas que ATRAVESSAM as aulas (relacione o que cada aula acrescenta); cada seção cita pelo menos um trecho.',
   questions:
-    '"questions": [{"statement":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"...","citations":[{"lesson":"A1","position":0,"quote":"..."}]}] — questões de múltipla escolha que, quando possível, integram conceitos de aulas diferentes; uma única alternativa correta.',
+    '"questions": [{"statement":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"...","citations":[{"lesson":"A1","position":0,"quote":"..."}]}] — questões de múltipla escolha que, quando possível, integram conceitos de aulas diferentes; uma única alternativa correta; o enunciado fala do conteúdo, como numa prova, sem mencionar "a transcrição", "o texto" ou "o trecho".',
   flashcards:
     '"flashcards": [{"front":"...","back":"...","citations":[{"lesson":"A1","position":0,"quote":"..."}]}] — cartões curtos de revisão.',
 };

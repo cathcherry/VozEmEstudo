@@ -126,8 +126,19 @@ test('Flashcards 3.0 over HTTP: typed decks, templates, merge with decisions, An
         body: { name: 'X', base: 'classic', tokens: { css: 'body{display:none}' } },
       });
       assert.equal(hostile.status, 400, 'no free CSS in a template');
+      const twin = await request('/api/flashcards/templates/' + randomUUID(), 'PUT', {
+        version: 0,
+        requestId: randomUUID(),
+        body: { name: '  matcha ', base: 'classic' },
+      });
+      assert.equal(twin.status, 409, 'a second template with the same name (case and spaces aside) is refused');
+      assert.equal(twin.body.error.code, 'FLASHCARD_TEMPLATE_NAME_TAKEN');
+      const resave = await request('/api/flashcards/templates/' + templateId, 'PUT', { version: 1, requestId: randomUUID(), body: { name: 'Matcha', base: 'sticky' } });
+      assert.equal(resave.status, 200, 'the template itself keeps its name');
+      const otherAccount = await request('/api/flashcards/templates/' + randomUUID(), 'PUT', { version: 0, requestId: randomUUID(), body: { name: 'Matcha', base: 'classic' } }, 'b');
+      assert.equal(otherAccount.status, 200, 'names are unique per account only');
       assert.equal((await request('/api/flashcards/templates')).body.length, 1);
-      assert.equal((await request('/api/flashcards/templates', 'GET', null, 'b')).body.length, 0);
+      assert.equal((await request('/api/flashcards/templates', 'GET', null, 'b')).body.length, 1, 'b sees only its own template');
       const applied = await request(`/api/flashcards/sets/${deckA}/template`, 'PUT', { templateId });
       assert.equal(applied.body.template_id, templateId);
       assert.equal((await request(`/api/flashcards/sets/${deckA}/template`, 'PUT', { templateId }, 'b')).status, 404);
@@ -150,6 +161,18 @@ test('Flashcards 3.0 over HTTP: typed decks, templates, merge with decisions, An
       assert.equal(row.origin_kind, 'apkg');
       assert.equal(row.media.length, 1);
       assert.match(row.media[0].path, new RegExp(`^${identities.a.id}/${id}/[0-9a-f]{32}\\.png$`));
+      // One of the student's templates for the whole imported deck (a template or a base, not both).
+      const templateId = randomUUID();
+      const template = await request('/api/flashcards/templates/' + templateId, 'PUT', { version: 0, requestId: randomUUID(), body: { name: 'Anki', base: 'window' } });
+      assert.equal(template.status, 200, JSON.stringify(template.body));
+      const styled = randomUUID();
+      const withTemplate = await request(`/api/flashcards/import/apkg?mode=create&id=${styled}&templateId=${templateId}`, 'POST', null, 'a', bytes);
+      assert.equal(withTemplate.status, 201, JSON.stringify(withTemplate.body));
+      assert.equal(withTemplate.body.template_id, templateId);
+      const both = await request(`/api/flashcards/import/apkg?mode=create&id=${randomUUID()}&templateId=${templateId}&templateBase=sticky`, 'POST', null, 'a', bytes);
+      assert.equal(both.status, 400);
+      const foreign = await request(`/api/flashcards/import/apkg?mode=create&id=${randomUUID()}&templateId=${templateId}`, 'POST', null, 'b', bytes);
+      assert.notEqual(foreign.status, 201, "another account's template cannot be used");
       const broken = await request('/api/flashcards/import/apkg?mode=preview', 'POST', null, 'a', Buffer.from('nope'));
       assert.equal(broken.status, 400);
     });

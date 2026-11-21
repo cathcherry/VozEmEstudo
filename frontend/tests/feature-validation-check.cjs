@@ -420,6 +420,51 @@ async function main() {
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => document.activeElement?.textContent === 'Importar cartões', null, { timeout: 3000 });
       record('Mesclar conjuntos (repetidos de fora, mais de 100 cartões em partes, originais intactos) e importar arquivo do Anki (HTML, cloze, .apkg explicado)');
+
+      // Flashcards 3.0 off: a retry after a dropped connection resumes the same set.
+      const before = data.sets.length;
+      data.setRequests = 0;
+      // The part with the last 11 cards is saved, but its answer never arrives.
+      data.dropAfterCommit = { cards: 1 };
+      await deckTools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
+      await mergeDialog.waitFor();
+      await mergeDialog.getByRole('checkbox', { name: /^Ana/ }).check();
+      await mergeDialog.getByRole('checkbox', { name: /^Bruno/ }).check();
+      await mergeDialog.locator('.deck-preview', { hasText: '111 cartões no conjunto novo' }).waitFor();
+      await mergeDialog.getByLabel('Nome do novo conjunto').fill('Revisão final');
+      await mergeDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await mergeDialog
+        .getByRole('alert')
+        .filter({ hasText: '100 cartões já estão no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.' })
+        .waitFor();
+      assert.equal(data.sets.length, before + 1);
+      assert.equal(data.sets.at(-1).cards.length, 111, 'the server did save the dropped part');
+      await mergeDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await deckTools.locator('.deck-tools-result', { hasText: 'Conjunto mesclado criado com 111 cartões.' }).waitFor();
+      assert.equal(data.sets.length, before + 1, 'the retry did not create a second set');
+      assert.equal(data.sets.filter((set) => set.name === 'Revisão final').length, 1);
+      assert.equal(data.sets.at(-1).cards.length, 111, 'no card twice');
+      assert.equal(data.setRequests, 3, 'create, add (dropped), then only the replayed create: nothing was missing');
+      // Import: the create itself is saved without an answer; the retry finds it and sends the rest.
+      const many = Array.from({ length: 150 }, (_, i) => `Termo ${i}\tSignificado ${i}`).join('\n');
+      data.dropAfterCommit = { create: 1 };
+      data.setRequests = 0;
+      await deckTools.getByRole('button', { name: 'Importar cartões' }).click();
+      await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'Glossário.txt', mimeType: 'text/plain', buffer: Buffer.from(many) });
+      await importDialog.locator('.deck-preview', { hasText: '150 cartões encontrados' }).waitFor();
+      assert.equal(await importDialog.getByLabel('Aparência do conjunto novo').count(), 0, 'no look selector without Flashcards 3.0');
+      await importDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await importDialog.getByRole('alert').filter({ hasText: 'o conjunto não será criado duas vezes' }).waitFor();
+      await settle(page);
+      await axeCheck(page, 'dialog[open]', 'Importar cartões: nova tentativa sem duplicar');
+      await importDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await deckTools.locator('.deck-tools-result', { hasText: '150 cartões importados para um conjunto novo.' }).waitFor();
+      const glossary = data.sets.filter((set) => set.name === 'Glossário');
+      assert.equal(glossary.length, 1, 'one set after the retry');
+      assert.equal(glossary[0].cards.length, 150);
+      assert.equal(new Set(glossary[0].cards.map((c) => c.front_text)).size, 150, 'no card twice');
+      assert.equal(data.setRequests, 3, 'create (dropped), replayed create, then the 50 missing cards');
+      record('Sem Flashcards 3.0: mesclar ou importar de novo após a conexão cair retoma o mesmo conjunto (nada duplicado, só os cartões que faltam); sem seletor de aparência');
     }
 
     // ---------- Lesson › Flashcards tab: the lesson's sets, review one now -------------------

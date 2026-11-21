@@ -1998,6 +1998,7 @@ export default {
   "Sem aula vinculada": "未关联课程",
   "Sem conexão — guardado neste aparelho. Tentaremos de novo.": "无网络连接 — 已保存在此设备上。我们会再次尝试。",
   "Sem conexão com o servidor. Verifique a internet e tente de novo; nada foi criado.": "无法连接服务器。请检查网络后重试；没有创建任何内容。",
+  "Sem conexão com o servidor. Verifique a internet e tente de novo; o conjunto não será criado duas vezes.": "无法连接服务器。请检查网络后重试；卡组不会被重复创建。",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "无网络连接：更改已保存在本浏览器中，联网后会自动上传。",
   "Sem conexão.": "无网络连接。",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "账户未确认。进度仍保存在此浏览器中，将以相同标识重新提交。",
@@ -2379,8 +2380,16 @@ export default {
    "时间按本设备时区显示：{0}。任务截止日期显示为全天日程。导出 ICS 不会发送邀请，也不会更改其他日历。"
   ],
   [
+   "Sem conexão com o servidor. {0} cartões já estão no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "无法连接服务器。已有 {0} 张卡片保存在新卡组中。请重试以保存其余卡片，卡组不会重复。"
+  ],
+  [
    "Revisão anterior: esta referência aponta para a revisão {0}; a aula está na revisão {1}. O trecho citado continua legível aqui.",
    "早期修订版：此引用指向修订版 {0}；本课当前为修订版 {1}。引用的片段在这里仍可阅读。"
+  ],
+  [
+   "Sem conexão com o servidor. {0} cartão já está no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "无法连接服务器。已有 {0} 张卡片保存在新卡组中。请重试以保存其余卡片，卡组不会重复。"
   ],
   [
    "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",

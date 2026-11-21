@@ -1,0 +1,52 @@
+name: Staging browser login and Storage (no privileged key)
+
+# Proves normal browser login and Storage RLS against STAGING with only the publishable key.
+# The API runs WITHOUT SUPABASE_SECRET_KEY, so no privileged credential exists in this job at all.
+# Manual only; uses synthetic @example.test accounts kept in the protected environment.
+on:
+  workflow_dispatch:
+    inputs:
+      authorization:
+        description: 'Type APPROVE_STAGING_BROWSER after confirming the protected staging environment'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  browser-auth-storage:
+    if: ${{ inputs.authorization == 'APPROVE_STAGING_BROWSER' }}
+    environment: staging-browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24.19.0
+      - name: Install backend and browser dependencies without postinstall downloads
+        run: |
+          npm ci --prefix backend --ignore-scripts --no-audit --no-fund
+          npm ci --prefix frontend --ignore-scripts --no-audit --no-fund
+          npm ci --ignore-scripts --no-audit --no-fund
+          npx --prefix frontend playwright install --with-deps chromium
+      - name: Start the API with the publishable key only
+        run: |
+          node backend/src/server.js > api.log 2>&1 &
+          for i in $(seq 1 30); do curl -fs http://localhost:3400/api/health && break; sleep 1; done
+        env:
+          PORT: '3400'
+          APP_ORIGIN: http://localhost:3400
+          SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ''
+          MOCK_EXTERNAL_SERVICES: 'true'
+      - name: Browser login, Storage RLS and key hygiene
+        run: node scripts/staging/browser-auth-storage-check.mjs
+        env:
+          NODE_PATH: frontend/node_modules
+          E2E_BASE_URL: http://localhost:3400
+          E2E_ACCOUNTS_JSON: ${{ secrets.STAGING_SYNTHETIC_ACCOUNTS }}

@@ -1,0 +1,119 @@
+{
+  "release": "3.4",
+  "description": "Migrations da 3.3 e 3.4 para produção, na ordem de dependência. Gerado a partir do Git; confira com scripts/release/verify-release.mjs.",
+  "before": [
+    "database/checks/production-state-3-4.sql",
+    "database/checks/backup-fingerprint.sql"
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "migration": "database/migrations/20261121130000_notes_3_0.sql",
+      "sha256": "6a40b0ce5492fdd594ecf96c2d70a91d5d1c33f62a525b29bd4ebccd0782dc80",
+      "optional": false,
+      "transformsData": true,
+      "dependsOn": [],
+      "preflight": "database/checks/notes-3-0-preflight.sql",
+      "postflight": "database/checks/notes-3-0-postflight.sql",
+      "rollback": "database/rollback/notes-3-0-rollback.md",
+      "guide": "docs/migrations/NOTES_3_0.md"
+    },
+    {
+      "order": 2,
+      "migration": "database/migrations/20261121140000_classrooms.sql",
+      "sha256": "1e80554a00e4a1c3c5e1584d9bc43b4e2198c30ca98d224c25862659dff0a217",
+      "optional": false,
+      "transformsData": false,
+      "dependsOn": [],
+      "preflight": "database/checks/classrooms-preflight.sql",
+      "postflight": "database/checks/classrooms-postflight.sql",
+      "rollback": "database/rollback/classrooms-rollback.md",
+      "guide": "docs/migrations/CLASSROOMS.md"
+    },
+    {
+      "order": 3,
+      "migration": "database/migrations/20261121150000_flashcards_3_0.sql",
+      "sha256": "c4f6acce640e022abf976c3c75f131fe56c3097bf6b00ca33c70ca7876a2fe9c",
+      "optional": false,
+      "transformsData": true,
+      "dependsOn": [],
+      "preflight": "database/checks/flashcards-3-0-preflight.sql",
+      "postflight": "database/checks/flashcards-3-0-postflight.sql",
+      "rollback": "database/rollback/flashcards-3-0-rollback.md",
+      "guide": "docs/migrations/FLASHCARDS_3_0.md"
+    },
+    {
+      "order": 4,
+      "migration": "database/migrations/20261121160000_generation_reuse.sql",
+      "sha256": "4cce6a0a897c67c3f27ed49b65abeca7b94ce3e297046003c843bb60c08fd498",
+      "optional": false,
+      "transformsData": false,
+      "dependsOn": [
+        "database/migrations/20261121140000_classrooms.sql"
+      ],
+      "preflight": "database/checks/generation-reuse-preflight.sql",
+      "postflight": "database/checks/generation-reuse-postflight.sql",
+      "rollback": "database/rollback/generation-reuse-rollback.md",
+      "guide": "docs/migrations/GENERATION_REUSE.md"
+    },
+    {
+      "order": 5,
+      "migration": "database/migrations/20261121170000_multi_lesson.sql",
+      "sha256": "a4a9e617ad13f033cbe893d17b7cf3993a01185033f71ab140a3873e699df18a",
+      "optional": false,
+      "transformsData": false,
+      "dependsOn": [
+        "database/migrations/20261121160000_generation_reuse.sql"
+      ],
+      "preflight": "database/checks/multi-lesson-preflight.sql",
+      "postflight": "database/checks/multi-lesson-postflight.sql",
+      "rollback": "database/rollback/multi-lesson-rollback.md",
+      "guide": "docs/migrations/MULTI_LESSON.md"
+    },
+    {
+      "order": 6,
+      "migration": "database/migrations/20261121171000_knowledge_map_cache.sql",
+      "sha256": "c278acec91f5f5dfdea099e9835072cee70730d0547b2ed8cd537e73b901913b",
+      "optional": true,
+      "transformsData": false,
+      "dependsOn": [],
+      "preflight": "database/checks/multi-lesson-preflight.sql",
+      "postflight": "database/checks/multi-lesson-postflight.sql",
+      "rollback": "database/rollback/multi-lesson-rollback.md",
+      "guide": "docs/migrations/MULTI_LESSON.md"
+    },
+    {
+      "order": 7,
+      "migration": "database/migrations/20261121180000_multi_lesson_exports.sql",
+      "sha256": "04162aa5341c69b647d2fe0afd2b8dc286aedb3838513d3909b8912d4eda0388",
+      "optional": false,
+      "transformsData": false,
+      "dependsOn": [
+        "database/migrations/20261121170000_multi_lesson.sql",
+        "database/migrations/20261121150000_flashcards_3_0.sql"
+      ],
+      "preflight": "database/checks/multi-lesson-exports-preflight.sql",
+      "postflight": "database/checks/multi-lesson-exports-postflight.sql",
+      "rollback": "database/rollback/multi-lesson-exports-rollback.md",
+      "guide": "docs/migrations/MULTI_LESSON_EXPORTS.md"
+    },
+    {
+      "order": 8,
+      "migration": "database/migrations/20261122090000_classroom_contributions.sql",
+      "sha256": "0f84509c060481e19c0e2cadcf6aef0dc68b4fbc565d949f6350239e51f1bbdd",
+      "optional": false,
+      "transformsData": false,
+      "dependsOn": [
+        "database/migrations/20261121140000_classrooms.sql",
+        "database/migrations/20261121170000_multi_lesson.sql"
+      ],
+      "preflight": "database/checks/classroom-contributions-preflight.sql",
+      "postflight": "database/checks/classroom-contributions-postflight.sql",
+      "rollback": "database/rollback/classroom-contributions-rollback.md",
+      "guide": "docs/migrations/CLASSROOM_CONTRIBUTIONS.md"
+    }
+  ],
+  "after": [
+    "database/checks/production-state-3-4.sql"
+  ]
+}

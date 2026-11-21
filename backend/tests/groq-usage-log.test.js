@@ -49,3 +49,12 @@ test('gpt-oss gets reasoning_effort; json_validate_failed becomes a repairable i
   await assert.rejects(provider.completeJson({ model: 'llama-x', messages: [] }));
   assert.equal(sent[1].reasoning_effort, undefined, 'non-reasoning models get no reasoning_effort');
 });
+
+test('question prompts ask for exam-style statements that never mention the transcript', async () => {
+  const { buildPlannedQuestionMessages, QUESTIONS_V2_PROMPT_VERSION } = await import('../src/prompts/questions.v2.js');
+  const { MULTI_LESSON_PROMPT_VERSION } = await import('../src/prompts/multi-lesson.v1.js');
+  const system = buildPlannedQuestionMessages([{ position: 0, text: 'x' }], { slots: [{ id: 's1', skill: 'recall', difficulty: 'easy', concept: { label: 'fotossíntese', evidence: null } }] })[0].content;
+  assert.match(system, /nunca mencione "a transcrição"/);
+  assert.equal(QUESTIONS_V2_PROMPT_VERSION, 'questions-v2.3', 'a new prompt version invalidates reuse of older lists');
+  assert.equal(MULTI_LESSON_PROMPT_VERSION, 'multi-lesson-v2');
+});

@@ -62,10 +62,11 @@ export const previewFlashcardMerge = (sources) =>
   apiFetch('/api/flashcards/merge/preview', { method: 'POST', body: JSON.stringify({ sources }) });
 export const mergeFlashcardSets = (data) =>
   apiFetch('/api/flashcards/merge', { method: 'POST', body: JSON.stringify(data) });
-export function importApkg(file, { mode = 'preview', id, name, templateBase } = {}) {
+export function importApkg(file, { mode = 'preview', id, name, templateId, templateBase } = {}) {
   const params = new URLSearchParams({ mode });
   if (id) params.set('id', id);
   if (name) params.set('name', name);
+  if (templateId) params.set('templateId', templateId);
   if (templateBase) params.set('templateBase', templateBase);
   return apiFetch(`/api/flashcards/import/apkg?${params}`, {
     method: 'POST',
