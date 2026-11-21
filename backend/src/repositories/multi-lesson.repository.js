@@ -75,8 +75,9 @@ export function createExportsCaller(db = getAdminSupabase) {
   return async function exportsRpc(name, params) {
     const { data, error, status } = await db().rpc(name, params);
     if (!error) return data;
+    // 42501: execution revoked on purpose (rollback step 1) — the same answer as a missing schema.
     throw mapError(
-      error,
+      error?.code === '42501' ? { ...error, code: '42883' } : error,
       status,
       'MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED',
       'Salvar o material integrado como lista ou conjunto ainda não foi habilitado no banco.',

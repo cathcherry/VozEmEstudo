@@ -7,7 +7,7 @@ import { buildMultiLessonExportService, exportLinks } from '../src/services/mult
 const fakeDb = (error, status = 404) => () => ({ rpc: async () => ({ data: null, error, status }) });
 
 test('without the exports migration the caller answers a scoped 503, not the multi-lesson one', async () => {
-  for (const code of ['PGRST202', 'PGRST205', '42883']) {
+  for (const code of ['PGRST202', 'PGRST205', '42883', '42501']) {
     const call = createExportsCaller(fakeDb({ code, message: 'missing' }));
     await assert.rejects(call('multi_lesson_exports_admin', {}), (error) => {
       assert.equal(error.code, 'MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED');
