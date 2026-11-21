@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Finder-inspired library. Scoped so the shared application shell stays consistent. */
 body.app-page[data-page='history'] .material-row-actions > a.secondary-action,
 body.app-page[data-page='history'] .material-row-actions > a.secondary-action:is(:hover,:focus-visible,:active) {
@@ -221,3 +223,4 @@ body[data-page='history'].library-selecting .library-material { padding-left: 52
 }
 .library-selection-bar[hidden] { display: none; }
 .library-selection-bar p { margin: 0; font-weight: 650; }
+}

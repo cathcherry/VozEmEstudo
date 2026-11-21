@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Study authoring: generation dialogs, named versions/lists, export and sharing. Uses the
    existing tokens (navy serif headings, blue-gray canvas, white surfaces, restrained controls). */
 
@@ -427,4 +429,5 @@ body.app-page[data-page='material'] .question-batch-row {
 }
 .material-share-dialog form button[type='submit'] {
   justify-self: start;
+}
 }
