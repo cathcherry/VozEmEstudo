@@ -443,6 +443,25 @@ async function setup(context, base, flags, data, options = {}) {
       data.events.push({ kind: 'event', id: body.id, version: 1, ...body.body });
       return json({ id: body.id, version: 1 });
     }
+    if (p === '/api/annotations' && method === 'PUT') {
+      const body = request.postDataJSON();
+      data.savedNotes = [...(data.savedNotes || []), body];
+      const existing = data.notes.find((n) => n.id === body.id);
+      if (!existing)
+        data.notes.unshift({
+          id: body.id,
+          material_id: body.materialId,
+          source_revision: 1,
+          segment_position: body.body.segmentPosition ?? null,
+          start_offset: body.body.startOffset ?? null,
+          end_offset: body.body.endOffset ?? null,
+          quote: body.body.quote || '',
+          note_text: body.body.noteText || '',
+          color: body.body.color || 'yellow',
+          version: 1,
+        });
+      return json({ id: body.id, version: (existing?.version || 0) + 1 });
+    }
     if (p === '/api/annotations') {
       const q = (url.searchParams.get('q') || '').toLowerCase();
       const notes = data.notes.filter(

@@ -85,6 +85,7 @@ export default {
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "在资料库中查看转写、摘要和题目。",
   "Acesso": "登录",
   "Ações da lista": "列表操作",
+  "Ações do trecho selecionado": "所选片段的操作",
   "Acompanhe a transcrição": "查看转写进度",
   "Adequação educacional": "教育适宜性",
   "Adicionar": "添加",
@@ -347,6 +348,7 @@ export default {
   "Começar meu material de estudo": "开始制作我的学习资料",
   "Começar o próximo bloco sozinho": "自动开始下一个时段",
   "Começar tentativa": "开始作答",
+  "Comentar": "评论",
   "Como as questões ajudam na revisão?": "题目如何帮助复习？",
   "Como estudar": "如何学习",
   "Como funciona": "使用方法",
@@ -507,7 +509,9 @@ export default {
   "Desligada": "关闭",
   "Desligadas": "关闭",
   "Desligado": "关闭",
+  "Destacar": "高亮",
   "Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.": "逐词标记不可用：此版本没有有效的词语时间信息。",
+  "Destaque salvo no caderno da aula.": "高亮已保存到课程笔记。",
   "Desvincular tarefa": "取消关联任务",
   "Detalhado": "详细",
   "Detalhes": "详情",
@@ -1290,6 +1294,7 @@ export default {
   "Pontos e conquistas são calculados neste navegador a partir do seu uso e servem como incentivo; ainda não são verificados pelo servidor.": "积分和里程碑根据你在此浏览器中的使用情况计算，仅作激励之用，服务器尚未验证。",
   "Pontos para conferir": "待核对要点",
   "Por aula": "按课程",
+  "Por enquanto, destaque dentro de um único trecho.": "目前请在单个片段内高亮。",
   "Por enquanto, os embeds aceitam links do YouTube e Spotify.": "目前嵌入内容仅支持 YouTube 和 Spotify 链接。",
   "Por quê e como: explicações, causas e consequências.": "为什么和怎样：解释、原因与结果。",
   "Por tipo de recurso": "按资源类型",
@@ -1513,6 +1518,7 @@ export default {
   "Selecione um mês válido.": "请选择有效的月份。",
   "Selecione um objetivo": "选择一个目标",
   "Selecione um trecho da transcrição salva. Salve alterações antes de destacar.": "请选择已保存转写中的片段。标记前请先保存更改。",
+  "Selecione um trecho do texto da transcrição.": "请选择转写文本中的一段。",
   "Selecione uma alternativa.": "请选择一个选项。",
   "Selecione uma aula": "选择课程",
   "Sem aula": "无课程",
@@ -2396,6 +2402,10 @@ export default {
   [
    "{0} aulas",
    "{0} 节课"
+  ],
+  [
+   "Ouvir {0}",
+   "收听 {0}"
   ],
   [
    "{0} aula",

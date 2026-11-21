@@ -406,6 +406,11 @@ $('[data-start-studying]').addEventListener('click', () => {
   layout();
   $(`[data-material-tab="${activeTab}"]`)?.focus();
 });
+// The notes panel asks to show its tab (Comentar) or the transcript (Ir ao destaque).
+document.addEventListener('voz:open-notes', () => {
+  if (notesEnabled) selectTab('notes');
+});
+document.addEventListener('voz:open-transcript', () => selectTab('transcription'));
 const tabs = [...document.querySelectorAll('[data-material-tab]')];
 tabs.forEach((tab) => {
   tab.addEventListener('click', () => selectTab(tab.dataset.materialTab));

@@ -85,6 +85,7 @@ export default {
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "Accede a la transcripción, el resumen y las preguntas desde la Biblioteca.",
   "Acesso": "Acceso",
   "Ações da lista": "Acciones de la lista",
+  "Ações do trecho selecionado": "Acciones del fragmento seleccionado",
   "Acompanhe a transcrição": "Sigue la transcripción",
   "Adequação educacional": "Adecuación educativa",
   "Adicionar": "Añadir",
@@ -347,6 +348,7 @@ export default {
   "Começar meu material de estudo": "Empezar mi material de estudio",
   "Começar o próximo bloco sozinho": "Empezar el siguiente bloque solo",
   "Começar tentativa": "Empezar intento",
+  "Comentar": "Comentar",
   "Como as questões ajudam na revisão?": "¿Cómo ayudan las preguntas a repasar?",
   "Como estudar": "Cómo estudiar",
   "Como funciona": "Cómo funciona",
@@ -507,7 +509,9 @@ export default {
   "Desligada": "Desactivada",
   "Desligadas": "Desactivados",
   "Desligado": "Desactivado",
+  "Destacar": "Resaltar",
   "Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.": "Resaltado por palabra no disponible: no hay tiempos de palabra válidos para esta versión.",
+  "Destaque salvo no caderno da aula.": "Resaltado guardado en el cuaderno de la clase.",
   "Desvincular tarefa": "Desvincular tarea",
   "Detalhado": "Detallado",
   "Detalhes": "Detalles",
@@ -1290,6 +1294,7 @@ export default {
   "Pontos e conquistas são calculados neste navegador a partir do seu uso e servem como incentivo; ainda não são verificados pelo servidor.": "Los puntos e hitos se calculan en este navegador a partir de tu uso y sirven de incentivo; el servidor todavía no los verifica.",
   "Pontos para conferir": "Puntos para revisar",
   "Por aula": "Por clase",
+  "Por enquanto, destaque dentro de um único trecho.": "Por ahora, resalta dentro de un solo fragmento.",
   "Por enquanto, os embeds aceitam links do YouTube e Spotify.": "Por ahora, los embeds aceptan enlaces de YouTube y Spotify.",
   "Por quê e como: explicações, causas e consequências.": "Por qué y cómo: explicaciones, causas y consecuencias.",
   "Por tipo de recurso": "Por tipo de recurso",
@@ -1513,6 +1518,7 @@ export default {
   "Selecione um mês válido.": "Selecciona un mes válido.",
   "Selecione um objetivo": "Selecciona un objetivo",
   "Selecione um trecho da transcrição salva. Salve alterações antes de destacar.": "Selecciona un fragmento de la transcripción guardada. Guarda los cambios antes de resaltar.",
+  "Selecione um trecho do texto da transcrição.": "Selecciona un fragmento del texto de la transcripción.",
   "Selecione uma alternativa.": "Selecciona una opción.",
   "Selecione uma aula": "Selecciona una clase",
   "Sem aula": "Sin clase",
@@ -2396,6 +2402,10 @@ export default {
   [
    "{0} aulas",
    "{0} clases"
+  ],
+  [
+   "Ouvir {0}",
+   "Escuchar {0}"
   ],
   [
    "{0} aula",

@@ -3,14 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { webcrypto } from 'node:crypto';
 import { JSDOM } from 'jsdom';
-import { selectionAnchor,focusAnnotation } from '../js/utils/annotation-anchor.js';
+import { selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation } from '../js/utils/annotation-anchor.js';
 import { pendingMutation } from '../js/utils/pending-mutation.js';
 import { monthRange,localDay,itemOnDay,calendarIcs } from '../js/utils/calendar-export.js';
 const code=(name)=>readFileSync(new URL(`../js/pages/${name}.js`,import.meta.url),'utf8').replace(/import \{[\s\S]*?\} from '[^']+';/gu,'').replace(/export /gu,'');
 async function until(predicate){for(let n=0;n<30;n++){if(predicate())return;await new Promise((resolve)=>setImmediate(resolve));}assert(predicate());}
 test('annotations capture a saved selection with its revision and preserve text while saving',async()=>{
   const dom=new JSDOM('<section id="panel" hidden></section><div id="segments"><article class="transcription-segment" data-segment-position="0"><textarea>Energia conservada</textarea></article></div>');let received;
-  const dependencies={listAnnotations:async()=>({notes:[],total:0}),saveAnnotation:async(body)=>{received=body;return {version:1};},selectionAnchor,focusAnnotation,pendingMutation};
+  const dependencies={listAnnotations:async()=>({notes:[],total:0}),saveAnnotation:async(body)=>{received=body;return {version:1};},selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation,pendingMutation};
   const factory=new Function('document','Option','crypto','confirm',...Object.keys(dependencies),`${code('annotations-panel')};return initAnnotationsPanel;`);
   try{const doc=dom.window.document,context=()=>({review:{sourceRevisionId:'source-a'},transcription:{current_revision:1,transcription_segments:[{position:0,current_text:'Energia conservada'}]}});
     await factory(doc,dom.window.Option,webcrypto,()=>true,...Object.values(dependencies))({panel:doc.querySelector('#panel'),materialId:'material-a',context,segments:doc.querySelector('#segments')});

@@ -85,6 +85,7 @@ export default {
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "Access the transcript, summary and questions from the Library.",
   "Acesso": "Access",
   "Ações da lista": "List actions",
+  "Ações do trecho selecionado": "Actions for the selected passage",
   "Acompanhe a transcrição": "Follow the transcription",
   "Adequação educacional": "Educational suitability",
   "Adicionar": "Add",
@@ -347,6 +348,7 @@ export default {
   "Começar meu material de estudo": "Start my study material",
   "Começar o próximo bloco sozinho": "Start the next block automatically",
   "Começar tentativa": "Start attempt",
+  "Comentar": "Comment",
   "Como as questões ajudam na revisão?": "How do the questions help with review?",
   "Como estudar": "How to study",
   "Como funciona": "How it works",
@@ -507,7 +509,9 @@ export default {
   "Desligada": "Off",
   "Desligadas": "Off",
   "Desligado": "Off",
+  "Destacar": "Highlight",
   "Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.": "Word highlighting unavailable: no valid word timings for this version.",
+  "Destaque salvo no caderno da aula.": "Highlight saved in the lesson notebook.",
   "Desvincular tarefa": "Unlink task",
   "Detalhado": "Detailed",
   "Detalhes": "Details",
@@ -1290,6 +1294,7 @@ export default {
   "Pontos e conquistas são calculados neste navegador a partir do seu uso e servem como incentivo; ainda não são verificados pelo servidor.": "Points and milestones are calculated in this browser from your use and are meant as encouragement; the server does not verify them yet.",
   "Pontos para conferir": "Points to check",
   "Por aula": "By lesson",
+  "Por enquanto, destaque dentro de um único trecho.": "For now, highlight within a single passage.",
   "Por enquanto, os embeds aceitam links do YouTube e Spotify.": "For now, embeds accept YouTube and Spotify links.",
   "Por quê e como: explicações, causas e consequências.": "Why and how: explanations, causes and consequences.",
   "Por tipo de recurso": "By resource type",
@@ -1513,6 +1518,7 @@ export default {
   "Selecione um mês válido.": "Select a valid month.",
   "Selecione um objetivo": "Select a goal",
   "Selecione um trecho da transcrição salva. Salve alterações antes de destacar.": "Select an excerpt of the saved transcript. Save changes before highlighting.",
+  "Selecione um trecho do texto da transcrição.": "Select a passage of the transcript text.",
   "Selecione uma alternativa.": "Select an option.",
   "Selecione uma aula": "Select a lesson",
   "Sem aula": "No lesson",
@@ -2396,6 +2402,10 @@ export default {
   [
    "{0} aulas",
    "{0} lessons"
+  ],
+  [
+   "Ouvir {0}",
+   "Listen {0}"
   ],
   [
    "{0} aula",

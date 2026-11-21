@@ -21,3 +21,40 @@
 .question-preset input:focus-visible + span { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
 .question-presets .field-note { margin: 8px 0 0; }
 .question-preset-options .question-preset { margin: 0; }
+
+/* Notes 3.0: contextual popover over a transcript selection, and the passage being shown. */
+.selection-popover {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
+  border-radius: 999px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 26px rgb(30 24 60 / 18%);
+}
+.selection-popover[hidden] { display: none; }
+.selection-popover button {
+  min-height: 34px;
+  margin: 0;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+.selection-popover button:first-child { color: var(--accent-contrast, #fff); background: var(--accent-strong); }
+.selection-popover button[hidden] { display: none; }
+.selection-popover-note { padding: 4px 12px; font-size: .84rem; }
+.selection-popover-note[hidden] { display: none; }
+.transcription-segment.is-annotation-target { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); outline-offset: 4px; border-radius: 10px; }
+.annotation-listen { font-variant-numeric: tabular-nums; }
