@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createReadinessChecks, featureSchema, readinessFlagErrors, runReadinessChecks } from '../../backend/src/diagnostics/readiness.js';
+import { createReadinessChecks, featureSchema, optionalSchema, readinessFlagErrors, runReadinessChecks } from '../../backend/src/diagnostics/readiness.js';
 
 function fixture({ missing, publicVideo = false } = {}) {
   const queries = [];
@@ -83,4 +83,18 @@ test('multi-lesson: its tables and generation reuse are probed; the flag needs c
   assert(!results.some((r) => r.label.includes('knowledge_maps')));
   assert.deepEqual(readinessFlagErrors(flags), []);
   assert.match(readinessFlagErrors({ multi_lesson: true }).join(' '), /FEATURE_MULTI_LESSON exige FEATURE_CATALOG_UNITS/);
+});
+
+test('classroom contributions: an optional probe that reports but never blocks', async () => {
+  assert.equal(optionalSchema.classroom_contributions.flag, 'classrooms');
+  const { db } = fixture({ missing: 'classroom_contributions' });
+  const off = createReadinessChecks(db, { flashcards: true, flashcard_sets: true }, 'audios', 'test-version');
+  assert(!off.some((check) => check.label.includes('classroom_contributions')), 'not probed with the flag off');
+  const flags = { flashcards: true, flashcard_sets: true, classrooms: true };
+  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
+  const probe = results.find((r) => r.label.includes('classroom_contributions'));
+  assert.equal(probe.ok, false);
+  assert.equal(probe.optional, true);
+  assert.match(probe.label, /20261122090000_classroom_contributions\.sql/);
+  assert(results.filter((r) => !r.optional).every((r) => r.ok), 'required probes are unaffected');
 });

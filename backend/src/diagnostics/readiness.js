@@ -19,6 +19,14 @@ export const featureSchema = Object.freeze({
   notebooks: { migration: '20261121130000_notes_3_0.sql', tables: { study_notebooks: 'id,user_id,material_id,version,visibility', study_annotations: 'id,end_segment_position,anchor_version,visibility' } },
 });
 
+/**
+ * Optional sub-features of an active flag: probed and reported, but a missing migration does not
+ * block startup; the API answers a scoped 503 for that sub-feature only.
+ */
+export const optionalSchema = Object.freeze({
+  classroom_contributions: { flag: 'classrooms', migration: '20261122090000_classroom_contributions.sql', tables: { classroom_contributions: 'id,status,feedback,integrated_material_id,shared_item_id' } },
+});
+
 /** Not flags, but configuration with its own schema (checked when the setting is active). */
 export const configSchema = Object.freeze({
   assemblyai: { migration: '20261119030000_ai_executions.sql', tables: { ai_job_executions: 'job_id,state', transcription_word_alignments: 'transcription_version_id' } },
@@ -50,6 +58,12 @@ export function createReadinessChecks(db, flags, audioBucket, permissionVersion,
       checks.push(table(`${flag}: ${name} — conferir ${module.migration}`, name, columns));
     }
   }
+  for (const [name, module] of Object.entries(optionalSchema)) {
+    if (!flags[module.flag]) continue;
+    for (const [tableName, columns] of Object.entries(module.tables)) {
+      checks.push({ ...table(`${module.flag} (opcional, ${name}): ${tableName} — conferir ${module.migration}`, tableName, columns), optional: true });
+    }
+  }
   if (asrProvider === 'assemblyai')
     for (const [name, columns] of Object.entries(configSchema.assemblyai.tables))
       checks.push(table(`ASR_PROVIDER=assemblyai: ${name} — conferir ${configSchema.assemblyai.migration}`, name, columns));
@@ -63,7 +77,14 @@ export function createReadinessChecks(db, flags, audioBucket, permissionVersion,
 }
 
 export async function runReadinessChecks(checks, timeoutMs = 20000) {
-  return Promise.all(checks.map(async ({ label, run, validate }) => {
+  return Promise.all(checks.map(async ({ label, run, validate, optional }) => {
+    const result = await runOne({ label, run, validate }, timeoutMs);
+    return optional ? { ...result, optional: true } : result;
+  }));
+}
+
+async function runOne({ label, run, validate }, timeoutMs) {
+  {
     let timer;
     try {
       const result = await Promise.race([
@@ -79,5 +100,5 @@ export async function runReadinessChecks(checks, timeoutMs = 20000) {
     } finally {
       clearTimeout(timer);
     }
-  }));
+  }
 }

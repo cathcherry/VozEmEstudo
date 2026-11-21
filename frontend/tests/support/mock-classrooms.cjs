@@ -1,6 +1,7 @@
 // Simulated /api/classrooms for browser checks (no real server or database). It mirrors the
 // contract of backend/src/services/classroom.service.js closely enough for the journeys: roles,
-// invites by code, published lessons, the submission state machine and shared flashcard sets.
+// invites by code, published lessons, the submission state machine, shared flashcard sets and the
+// reviewed contributions (flashcard sets and integrated materials).
 // The real permission rules are tested against Postgres in backend/tests/classrooms-*.test.js.
 const crypto = require('node:crypto');
 
@@ -126,6 +127,9 @@ async function handleClassrooms({ request, p, method, json, user, data, material
   if (section === 'leave') {
     me.status = 'left';
     room.shared = room.shared.filter((s) => s.ownerId !== user.id);
+    for (const c of room.contributions || [])
+      if (c.ownerId === user.id && ['pending', 'approved'].includes(c.status))
+        c.status = c.status === 'pending' ? 'withdrawn' : 'revoked';
     return json({ status: 'left' });
   }
   if (section === 'members' && method === 'GET')
@@ -246,6 +250,15 @@ async function handleClassrooms({ request, p, method, json, user, data, material
         studentId: user.id,
         status: 'submitted',
         note: body.note,
+        events: [
+          {
+            fromStatus: null,
+            toStatus: 'submitted',
+            actorRole: 'student',
+            note: null,
+            at: new Date().toISOString(),
+          },
+        ],
       };
       room.submissions.unshift(s);
       return json(submissionRow(room, s), 201);
@@ -256,6 +269,7 @@ async function handleClassrooms({ request, p, method, json, user, data, material
     if (method === 'GET')
       return json({
         ...submissionRow(room, s),
+        events: s.events || [],
         review: ['processing', 'transcription_confirmed', 'published'].includes(s.status)
           ? {
               revisionId: 'rev-sub',
@@ -285,8 +299,18 @@ async function handleClassrooms({ request, p, method, json, user, data, material
         room.lessons.unshift(lesson);
         s.lessonId = lesson.id;
       }
+      s.events = [
+        ...(s.events || []),
+        {
+          fromStatus: s.status,
+          toStatus: body.to,
+          actorRole: actor === 'manager' ? me.role : 'student',
+          note: body.note || null,
+          at: new Date().toISOString(),
+        },
+      ];
       s.status = body.to;
-      if (body.note) s.decisionNote = body.note;
+      if (body.note && actor === 'manager') s.decisionNote = body.note;
       data.transitions = [...(data.transitions || []), { to: body.to, by: user.id }];
       return json(submissionRow(room, s));
     }
@@ -342,6 +366,165 @@ async function handleClassrooms({ request, p, method, json, user, data, material
     }
     room.shared = room.shared.filter((item) => item.id !== itemId);
     return json({ sharedId: itemId, revoked: true });
+  }
+  // Contributions (20261122090000_classroom_contributions.sql): students' wait for review.
+  if (section === 'contributions' || section === 'integrated-materials') {
+    if (data.classroomContributionsMissing)
+      return error(
+        'CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED',
+        'Contribuições e materiais integrados nas turmas ainda não foram habilitados no banco.',
+        503,
+      );
+    room.contributions ||= [];
+    const record = (c) => (data.multiLessons || []).find((r) => r.id === c.itemId);
+    const set = (c) => (data.sets || []).find((x) => x.id === c.itemId);
+    const visibleTo = (c) => manager(me) || c.ownerId === user.id;
+    const contributionRow = (c) => ({
+      id: c.id,
+      kind: c.kind,
+      title: c.kind === 'flashcard_set' ? set(c)?.name : record(c)?.title,
+      status: c.status,
+      note: c.note || null,
+      feedback: c.feedback || null,
+      reviewedRole: c.reviewedRole || null,
+      sharedId: c.status === 'approved' ? c.sharedId || null : null,
+      isMine: c.ownerId === user.id,
+      itemId: c.ownerId === user.id ? c.itemId : null,
+      author: { userId: c.ownerId, displayName: name(room, c.ownerId) },
+      actions: [
+        ...(c.status === 'pending' && manager(me) && c.ownerId !== user.id
+          ? ['approve', 'reject']
+          : []),
+        ...(c.status === 'pending' && c.ownerId === user.id ? ['withdraw'] : []),
+        ...(c.status === 'approved' && (c.ownerId === user.id || manager(me)) ? ['revoke'] : []),
+      ],
+    });
+    // Members read the generated content only (never the owner's report, model or lesson ids).
+    const content = (r) => {
+      const cite = (list = []) =>
+        list.map(({ lessonTitle, position, quote }) => ({ lessonTitle, position, quote }));
+      const out = {};
+      if (r.result?.summary)
+        out.summary = {
+          sections: r.result.summary.sections.map((s) => ({
+            heading: s.heading,
+            text: s.text,
+            citations: cite(s.citations),
+          })),
+        };
+      if (r.result?.questions)
+        out.questions = r.result.questions.map((q) => ({
+          statement: q.statement,
+          options: q.options,
+          correctIndex: q.correctIndex,
+          explanation: q.explanation,
+          citations: cite(q.citations),
+        }));
+      if (r.result?.flashcards)
+        out.flashcards = r.result.flashcards.map((f) => ({
+          front: f.front,
+          back: f.back,
+          citations: cite(f.citations),
+        }));
+      return {
+        sources: r.sources.map((s) => ({ title: s.title, revision: 1 })),
+        content: out,
+      };
+    };
+    const shareSetNow = (c) => {
+      const owned = set(c);
+      c.sharedId = crypto.randomUUID();
+      room.shared.unshift({
+        id: c.sharedId,
+        setId: c.itemId,
+        name: owned.name,
+        ownerId: c.ownerId,
+        cards: [
+          { id: 'sc1', front: 'O que é clorofila?', back: 'Pigmento verde.' },
+          { id: 'sc2', front: 'Onde ocorre o ciclo de Calvin?', back: 'No estroma.' },
+        ],
+      });
+    };
+    if (section === 'integrated-materials') {
+      const shared = room.contributions.filter(
+        (c) => c.kind === 'integrated_material' && c.status === 'approved',
+      );
+      if (method === 'GET' && !itemId)
+        return json(
+          shared.map((c) => ({
+            id: c.id,
+            title: record(c).title,
+            sourceCount: record(c).sources.length,
+            isMine: c.ownerId === user.id,
+            author: { userId: c.ownerId, displayName: name(room, c.ownerId) },
+          })),
+        );
+      const c = shared.find((x) => x.id === itemId);
+      if (!c) return error('CLASSROOM_NOT_FOUND', 'Turma ou item não encontrado.', 404);
+      return json({
+        id: c.id,
+        status: c.status,
+        title: record(c).title,
+        isMine: c.ownerId === user.id,
+        author: { userId: c.ownerId, displayName: name(room, c.ownerId) },
+        ...content(record(c)),
+      });
+    }
+    if (method === 'GET' && !itemId)
+      return json(room.contributions.filter(visibleTo).map(contributionRow));
+    if (method === 'POST' && !itemId) {
+      const c = {
+        id: body.id,
+        kind: body.kind,
+        itemId: body.itemId,
+        note: body.note,
+        ownerId: user.id,
+        status: manager(me) ? 'approved' : 'pending',
+      };
+      if (c.kind === 'integrated_material' && record(c)?.status !== 'ready')
+        return error(
+          'CLASSROOM_ITEM_NOT_READY',
+          'Este material integrado ainda não está pronto.',
+          409,
+        );
+      room.contributions.unshift(c);
+      if (c.status === 'approved' && c.kind === 'flashcard_set') shareSetNow(c);
+      data.contributionBodies = [...(data.contributionBodies || []), body];
+      return json(contributionRow(c), 201);
+    }
+    const c = room.contributions.find((x) => x.id === itemId);
+    if (!c || !visibleTo(c))
+      return error('CLASSROOM_NOT_FOUND', 'Turma ou item não encontrado.', 404);
+    if (method === 'GET')
+      return json({
+        ...contributionRow(c),
+        preview: !['pending', 'approved'].includes(c.status)
+          ? null
+          : c.kind === 'flashcard_set'
+            ? { cards: [{ front: 'O que é clorofila?', back: 'Pigmento verde.' }] }
+            : content(record(c)),
+      });
+    if (extra === 'review') {
+      if (!manager(me) || c.ownerId === user.id) return forbid();
+      if (c.status !== 'pending')
+        return error('CLASSROOM_ILLEGAL_TRANSITION', 'Esta etapa não pode ser feita agora.', 409);
+      c.status = body.decision;
+      c.feedback = body.feedback || null;
+      c.reviewedRole = me.role;
+      if (c.status === 'approved' && c.kind === 'flashcard_set') shareSetNow(c);
+      data.reviews = [
+        ...(data.reviews || []),
+        { decision: body.decision, feedback: body.feedback },
+      ];
+      return json(contributionRow(c));
+    }
+    if (method === 'DELETE') {
+      if (c.status === 'pending' && c.ownerId !== user.id) return forbid();
+      if (['pending', 'approved'].includes(c.status))
+        c.status = c.status === 'pending' ? 'withdrawn' : 'revoked';
+      room.shared = room.shared.filter((x) => x.id !== c.sharedId);
+      return json(contributionRow(c));
+    }
   }
   if (section === 'resources') {
     if (method === 'GET') return json(room.resources);
