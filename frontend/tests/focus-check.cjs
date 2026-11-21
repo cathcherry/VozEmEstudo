@@ -183,12 +183,12 @@ async function main() {
       await one.page.locator('.focus-settings-dialog [type=number]').first().fill('50');
       await one.page.locator('.focus-settings-dialog [type=submit]').click();
       await one.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
-      const saved = await one.page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences')).focusSettings);
-      assert.equal(saved.focus, 50, 'saved with the synced preferences');
+      const durations = await one.page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences')).focusSettings);
+      assert.equal(durations.focus, 50, 'saved with the synced preferences');
       await one.context.close();
       // A fresh browser that only has the account's preferences (as after a cloud pull).
       const two = await openApp(browser, base, allFlags, data, { width: 1280, height: 900 });
-      await two.page.addInitScript((prefs) => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs)), { focusSettings: saved });
+      await two.page.addInitScript((prefs) => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs)), { focusSettings: durations });
       await two.page.goto(base + '/focar.html');
       await two.page.locator('.focus-caption', { hasText: 'Foco de 50 minutos' }).waitFor();
       assert.equal(await two.page.locator('.focus-time').textContent(), '50:00');
