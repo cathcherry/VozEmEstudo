@@ -566,7 +566,7 @@ async function main() {
     assert.equal(highlight.endOffset - highlight.startOffset, 'energia luminosa'.length);
     assert.equal(highlight.startMs, undefined, 'only stored anchor fields are sent');
     await select('energia química');
-    await popover.getByRole('button', { name: 'Comentar' }).click();
+    await popover.getByRole('button', { name: 'Anotar' }).click();
     await page.locator('#tab-notes[aria-selected="true"]').waitFor();
     await page.waitForFunction(() => document.activeElement?.tagName === 'TEXTAREA', null, { timeout: 3000 });
     await page.keyboard.type('Produto da fase clara.');

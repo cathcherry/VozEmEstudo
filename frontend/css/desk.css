@@ -390,11 +390,12 @@
       background-position: 100% 0;
     }
   }
-  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) body[data-page='dashboard'] .desk-weather {
+  /* Reduced motion: the window, the drawer, a placed object and a new stamp simply appear. */
+  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) body[data-page='dashboard'] .desk-scene :is(.desk-weather[data-motion], .desk-tray, .desk-slot-object, .desk-unlock-stamp) {
     animation: none;
   }
   @media (prefers-reduced-motion: reduce) {
-    body[data-page='dashboard'] .desk-weather {
+    body[data-page='dashboard'] .desk-scene :is(.desk-weather[data-motion], .desk-tray, .desk-slot-object, .desk-unlock-stamp) {
       animation: none;
     }
   }

@@ -1462,3 +1462,153 @@ body.app-page[data-page='material'] .material-recording:has(.caption-menu:not([h
     }
   }
 }
+
+/* ==== Selection toolbar (3.5, Milestone 8) — js/pages/selection-toolbar.js ================
+ * A small floating toolbar in ink over the paper: icon and word for each action, a caret
+ * pointing at the selection, placed above it (below for touch, or when there is no room).
+ * It never covers the selected words. Reduced motion: it simply appears. */
+@layer pages {
+  .selection-toolbar {
+    position: fixed;
+    z-index: 70;
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 4px;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: var(--elev-3);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    animation: selection-toolbar-in 140ms var(--ease);
+  }
+  .selection-toolbar[hidden] {
+    display: none;
+  }
+  /* The caret: a small rotated square under (or over) the toolbar, at --caret-x. */
+  .selection-toolbar::after {
+    content: '';
+    position: absolute;
+    left: var(--caret-x, 50%);
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    background: inherit;
+    rotate: 45deg;
+    pointer-events: none;
+  }
+  .selection-toolbar[data-side='above']::after {
+    bottom: -4px;
+  }
+  .selection-toolbar[data-side='below']::after {
+    top: -4px;
+  }
+  .selection-toolbar[data-side='docked']::after {
+    display: none;
+  }
+  .selection-toolbar .selection-toolbar-action {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.25rem;
+    margin: 0;
+    padding: 0 var(--space-3) 0 var(--space-2);
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font: 600 var(--step-ui) / 1 var(--font-ui);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .selection-toolbar .selection-toolbar-action[hidden] {
+    display: none;
+  }
+  .selection-toolbar .selection-toolbar-action:hover {
+    background: color-mix(in srgb, var(--paper) 14%, transparent);
+  }
+  .selection-toolbar .selection-toolbar-action:focus-visible {
+    outline: 2px solid var(--paper);
+    outline-offset: -2px;
+  }
+  .selection-toolbar .selection-toolbar-action + .selection-toolbar-action::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: color-mix(in srgb, var(--paper) 22%, transparent);
+  }
+  .selection-toolbar-icon {
+    display: inline-grid;
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  .selection-toolbar-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  .selection-toolbar .selection-toolbar-action[data-action='highlight'] .selection-toolbar-icon {
+    color: var(--honey);
+  }
+  .selection-toolbar .selection-toolbar-action[data-action='investigate'] .selection-toolbar-icon {
+    color: color-mix(in srgb, var(--lavender) 70%, var(--paper));
+  }
+  .selection-toolbar .selection-popover-note {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--step-ui);
+  }
+  .selection-toolbar .selection-popover-note[hidden] {
+    display: none;
+  }
+  @keyframes selection-toolbar-in {
+    from {
+      opacity: 0;
+      transform: translateY(3px) scale(0.98);
+    }
+  }
+  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) .selection-toolbar {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .selection-toolbar {
+      animation: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .selection-toolbar {
+      border: 1px solid CanvasText;
+    }
+  }
+  /* The keyboard fallback, right before the text: only while a selection is usable, and only
+     visible when focused (like a skip link), so selecting with the mouse never moves the text. */
+  body.app-page .selection-toolbar-trigger {
+    display: inline-flex;
+    margin: 0 0 var(--space-2);
+    font-size: var(--step-ui);
+  }
+  body.app-page .selection-toolbar-trigger:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body.app-page .selection-toolbar-trigger[hidden] {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .selection-toolbar .selection-toolbar-action {
+      min-height: 2.75rem;
+      padding-inline: var(--space-3);
+    }
+  }
+}
