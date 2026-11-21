@@ -1103,14 +1103,6 @@ body.app-page[data-page='material'] .material-recording .video-preview {
 }
 
 /* Timer and annotations sit after the lesson content, folded when not in use. */
-.lesson-tools[hidden] {
-  display: none;
-}
-.lesson-tools {
-  display: grid;
-  gap: 12px;
-  margin: 24px 0 8px;
-}
 .lesson-tool {
   border: 1px solid var(--border-light);
   border-radius: 12px;

@@ -307,7 +307,6 @@ body[data-page='history'] .row-menu-content > :is(button, a) {
   font-size: .76rem;
 }
 
-body[data-page='history'] .library-empty-state,
 body[data-page='history'] [data-library-state] > .empty-state-card {
   border-radius: 12px;
   background: var(--surface-alt);

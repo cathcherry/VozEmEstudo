@@ -1,8 +1,6 @@
 /* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
 @layer legacy {
-.upload-choice-review,
-.transcription-review-box,
-.content-warning-panel {
+.upload-choice-review {
   margin-block: 1.25rem;
   padding: 1rem;
   border: 1px solid var(--border, #d9d7d2);
@@ -20,20 +18,6 @@
 }
 .upload-choice-review dd {
   margin: 0;
-}
-.content-warning-panel summary {
-  cursor: pointer;
-  font-weight: 600;
-}
-.content-warning-panel article {
-  padding-block: 0.75rem;
-  border-block-end: 1px solid var(--border, #d9d7d2);
-}
-.content-warning-panel article:last-child {
-  border-block-end: 0;
-}
-.content-warning-panel h3 {
-  font-size: 1em;
 }
 [data-warning-preview] {
   margin-block-start: 1rem;
@@ -180,12 +164,6 @@ body[data-page='transcription'] .file-field label {
   font-weight: 700;
 }
 
-body[data-page='transcription'] .file-requirements {
-  margin-top: 4px;
-  font-size: 0.87rem;
-  line-height: 1.5;
-  color: var(--muted);
-}
 
 body[data-page='transcription'] .file-field input[type='file'] {
   font-size: 0.93rem;
@@ -195,19 +173,8 @@ body[data-page='transcription'] input[type='file']::file-selector-button {
   border-radius: 4px;
 }
 
-body[data-page='transcription'] .drop-hint {
-  gap: 9px;
-  margin-top: 14px;
-  font-size: 0.86rem;
-}
 
-body[data-page='transcription'] .drop-hint strong {
-  font-size: 0.92rem;
-}
 
-body[data-page='transcription'] .drop-hint .ui-icon {
-  width: 22px;
-}
 
 body[data-page='transcription'] .form-grid label,
 body[data-page='transcription'] .storage-choice {
@@ -228,9 +195,7 @@ body[data-page='transcription'] select {
 }
 
 body[data-page='transcription'] .primary-action,
-body[data-page='transcription'] .secondary-action,
-body[data-page='transcription'] .small-action,
-body[data-page='transcription'] .table-button {
+body[data-page='transcription'] .secondary-action {
   min-height: 46px;
   padding: 11px 17px;
   border-radius: 5px;
@@ -242,21 +207,10 @@ body[data-page='transcription'] .primary-action::before {
 }
 
 body[data-page='transcription'] .selected-file-summary,
-body[data-page='transcription'] .plain-note,
-body[data-page='transcription'] .notice-box,
-body[data-page='transcription'] .upload-choice-review,
-body[data-page='transcription'] .transcription-review-box,
-body[data-page='transcription'] .content-warning-panel {
+body[data-page='transcription'] .upload-choice-review {
   border-radius: 5px;
 }
 
-body[data-page='transcription'] .plain-note,
-body[data-page='transcription'] .notice-box {
-  padding: 13px 15px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-alt);
-  color: var(--muted);
-}
 
 body[data-page='transcription'] .upload-choice-review {
   padding: 18px;
