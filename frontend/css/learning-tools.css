@@ -58,3 +58,42 @@
 .selection-popover-note[hidden] { display: none; }
 .transcription-segment.is-annotation-target { outline: 3px solid color-mix(in srgb, var(--accent-strong) 45%, transparent); outline-offset: 4px; border-radius: 10px; }
 .annotation-listen { font-variant-numeric: tabular-nums; }
+
+/* Notes 3.0: lesson notebook ("Caderno da aula") in the Anotações tab. */
+.lesson-notebook { display: grid; gap: 12px; margin-block: 1rem 1.5rem; padding: 16px; border: 1px solid var(--border-light, var(--border)); border-radius: 14px; background: var(--surface); min-width: 0; }
+.lesson-notebook[hidden], .lesson-notebook [hidden] { display: none; }
+.lesson-notebook h2 { margin: 0; }
+.notebook-header { display: grid; gap: 4px; }
+.notebook-privacy { margin: 0; font-size: .88rem; color: var(--muted, var(--text)); }
+.notebook-status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.notebook-status { margin: 0; font-size: .9rem; font-weight: 650; }
+.notebook-status[data-state='retrying'], .notebook-status[data-state='invalid'], .notebook-status[data-state='conflict'] { padding-inline-start: 8px; border-inline-start: 4px solid var(--danger, #9b1c1c); }
+.notebook-field { display: grid; gap: 4px; min-width: 0; font-weight: 600; }
+.notebook-field input, .notebook-field textarea, .notebook-field select, .notebook-checklist input[type='text'] { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; font: inherit; font-weight: 400; }
+.notebook-blocks { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.notebook-block fieldset { display: grid; gap: 8px; min-width: 0; margin: 0; padding: 10px 12px; border: 1px solid var(--border-light, var(--border)); border-radius: 10px; }
+.notebook-block legend { padding-inline: 4px; font-size: .82rem; font-weight: 700; }
+.notebook-block-tools, .notebook-add, .notebook-conflict-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.notebook-add-label { font-weight: 650; }
+.lesson-notebook button { margin: 0; }
+.notebook-tool { min-height: 36px; padding: 4px 12px; border: 1px solid var(--border-light, var(--border)); border-radius: 999px; color: var(--text); background: transparent; font: inherit; font-size: .86rem; cursor: pointer; }
+.notebook-tool:disabled { opacity: .5; cursor: default; }
+.lesson-notebook :is(button, input, textarea, select):focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 2px; }
+.notebook-checklist ul { display: grid; gap: 6px; margin: 0 0 6px; padding: 0; list-style: none; }
+.notebook-checklist li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px; }
+.notebook-checklist input[type='checkbox'] { width: 20px; height: 20px; }
+.notebook-reference { display: grid; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.notebook-ref-quote { margin: 0; padding-inline-start: 12px; border-inline-start: 4px solid #8b6b16; white-space: pre-wrap; }
+.notebook-ref-quote.annotation-green { border-color: #32694a; }
+.notebook-ref-quote.annotation-blue { border-color: #315d86; }
+.notebook-ref-meta, .notebook-ref-comment { margin: 0; font-size: .88rem; }
+.notebook-ref-notice { margin: 0; padding: 6px 10px; border-radius: 8px; font-size: .88rem; background: color-mix(in srgb, var(--accent-strong) 10%, transparent); }
+.notebook-empty { margin: 0; font-size: .92rem; }
+.notebook-conflict { display: grid; gap: 8px; padding: 12px; border: 2px solid var(--danger, #9b1c1c); border-radius: 10px; }
+.notebook-conflict h3, .notebook-conflict p { margin: 0; }
+.annotation-range blockquote { white-space: pre-wrap; }
+@media (max-width: 520px) {
+  .lesson-notebook { padding: 12px; }
+  .notebook-checklist li { grid-template-columns: auto minmax(0, 1fr); }
+  .notebook-checklist li button { grid-column: 2; justify-self: start; }
+}

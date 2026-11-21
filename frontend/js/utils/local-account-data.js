@@ -3,7 +3,12 @@
 // and other accounts' data are never touched. Unsynchronized changes are reported so they are
 // never deleted silently.
 
-const accountPrefixes = (owner) => [`voz-cloud-v1:${owner}:`, `voz-media-pending:${owner}:`];
+const accountPrefixes = (owner) => [
+  `voz-cloud-v1:${owner}:`,
+  `voz-media-pending:${owner}:`,
+  // Lesson notebook edits not yet saved to the account (Notes 3.0).
+  `voz-notebook-pending-v1:${owner}:`,
+];
 const accountKeys = (owner) => [
   `voz-study-v1:${owner}`,
   `voz-study-outbox-v1:${owner}`,
@@ -53,6 +58,7 @@ export function pendingAccountChanges(owner) {
     if (key.startsWith(`voz-cloud-v1:${owner}:`) && read(key)?.pending)
       pending.push({ kind: 'preferences', key: key.slice(`voz-cloud-v1:${owner}:`.length) });
     if (key.startsWith(`voz-media-pending:${owner}:`)) pending.push({ kind: 'media', key });
+    if (key.startsWith(`voz-notebook-pending-v1:${owner}:`)) pending.push({ kind: 'notebook', key });
   }
   const outbox = read(`voz-study-outbox-v1:${owner}`);
   const queued = Array.isArray(outbox)

@@ -14,6 +14,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'calendar',
   'study_authoring',
   'flashcard_sets',
+  'notebooks',
 ]);
 
 export function normalizeFeatureFlags(source = {}) {
