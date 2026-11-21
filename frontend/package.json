@@ -5,7 +5,7 @@
   "description": "Front-end estático do Voz em Estudo; npm é usado somente nos testes opcionais.",
   "scripts": {
     "test": "node tests/browser-check.cjs",
-    "test:browser": "node tests/browser-check.cjs && node tests/subject-menu-check.cjs && node tests/password-signup-check.cjs && node tests/dashboard-home-check.cjs && node tests/navigation-check.cjs && node tests/personalization-check.cjs && node tests/feature-validation-check.cjs && node tests/focus-check.cjs && node tests/flashcards-v3-check.cjs && node tests/classrooms-check.cjs && node tests/multi-lesson-check.cjs && node tests/discoveries-check.cjs && node tests/i18n-check.cjs && node tests/account-privacy-check.cjs && node tests/theme-check.cjs && node tests/art-check.cjs",
+    "test:browser": "node tests/browser-check.cjs && node tests/subject-menu-check.cjs && node tests/password-signup-check.cjs && node tests/dashboard-home-check.cjs && node tests/navigation-check.cjs && node tests/personalization-check.cjs && node tests/feature-validation-check.cjs && node tests/focus-check.cjs && node tests/soundscape-check.cjs && node tests/flashcards-v3-check.cjs && node tests/classrooms-check.cjs && node tests/multi-lesson-check.cjs && node tests/discoveries-check.cjs && node tests/i18n-check.cjs && node tests/account-privacy-check.cjs && node tests/theme-check.cjs && node tests/art-check.cjs",
     "test:dom": "node tests/dom-check.cjs",
     "check:syntax": "python ../scripts/static-check.py"
   },

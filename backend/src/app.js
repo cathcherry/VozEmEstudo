@@ -36,7 +36,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const app = express();
 
 // Policy for the static front end (scripts are local files; styles use inline attributes;
-// Supabase API, storage uploads and realtime; blob/data media; YouTube/Spotify profile embeds).
+// Supabase API, storage uploads and realtime; blob/data media; YouTube/Spotify embeds of the
+// profile and of the soundscape music player — see docs/AUDIO_E_MUSICA.md).
 // Off by default until checked against the real project: see docs/HOSPEDAGEM.md.
 export function contentSecurityDirectives(supabaseUrl) {
   const supabase = supabaseUrl ? [supabaseUrl, supabaseUrl.replace(/^http/, 'ws')] : [];

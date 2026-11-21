@@ -1,14 +1,13 @@
 // The study utility shell: one place for auxiliary tools beside the content. Today it hosts the
-// focus timer; notes and music plug into the same panel later (TOOLS below) instead of adding
-// competing sidebars. Three presentations of the same focus session:
+// focus timer; ambient sound and music live in the top-bar soundscape mixer (soundscape-ui.js),
+// which follows the focus timer when the student asks for it. Three presentations of the same focus session:
 //   • panel   — right side panel on wide screens (the page content narrows beside it) or a bottom
 //               sheet on phones;
 //   • capsule — a small floating pill with the time, pause/resume and expand;
 //   • hidden  — nothing on screen; the session keeps running and the topbar button shows a dot.
 // Hiding or closing a presentation never stops the session.
 import { getFocusSession } from './focus-host.js';
-import { createAmbientPlayer, SOUNDS, normalizeAmbient } from './ambient-sound.js';
-import { toast } from './toast.js';
+import { getSoundscape } from './soundscape-ui.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 const MODES = [
@@ -67,8 +66,6 @@ const iconButton = (name, label, className) => {
   return button;
 };
 
-/** Tools of the shell. Notes and music will register here; each renders into the panel body. */
-const TOOLS = { focus: { label: 'Foco' }, sound: { label: 'Som ambiente' } };
 
 export async function initUtilityShell({ userId, materialId = null } = {}) {
   if (
@@ -135,29 +132,14 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   panel.setAttribute('aria-labelledby', 'utility-panel-title');
   panel.hidden = true;
   const head = make('div', null, 'utility-panel-head');
-  const title = make('h2', TOOLS.focus.label);
+  const title = make('h2', 'Foco');
   title.id = 'utility-panel-title';
   title.tabIndex = -1;
   const openPage = make('a', 'Abrir Focar', 'utility-link');
   openPage.href = './focar.html';
   const minimize = iconButton('minimize', 'Minimizar em cápsula');
   const close = iconButton('close', 'Fechar painel (o cronômetro continua na cápsula)');
-  // Tool switcher: the same panel hosts the focus timer and ambient sound.
-  const tools = make('div', null, 'utility-tools');
-  tools.setAttribute('role', 'group');
-  tools.setAttribute('aria-label', 'Ferramenta do painel');
-  const toolButtons = {};
-  for (const [key, label] of [
-    ['focus', 'Foco'],
-    ['sound', 'Som'],
-  ]) {
-    const button = make('button', label, 'utility-tool');
-    button.type = 'button';
-    button.dataset.utilityTool = key;
-    toolButtons[key] = button;
-    tools.append(button);
-  }
-  head.append(title, tools, openPage, minimize, close);
+  head.append(title, openPage, minimize, close);
   const body = make('div', null, 'utility-panel-body');
   const modes = make('div', null, 'utility-modes');
   modes.setAttribute('role', 'radiogroup');
@@ -194,134 +176,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   status.setAttribute('aria-live', 'polite');
   const cycles = make('p', null, 'utility-cycles');
   body.append(modes, face, lesson, actions, cycles, status);
-  // ---- ambient sound tool ----------------------------------------------------------------
-  const soundBody = make('div', null, 'utility-panel-body utility-sound');
-  soundBody.hidden = true;
-  const ambientKey = `voz-ambient-v1:${userId}`;
-  const readAmbient = () => {
-    try {
-      return normalizeAmbient(JSON.parse(localStorage.getItem(ambientKey) || '{}'));
-    } catch {
-      return normalizeAmbient();
-    }
-  };
-  const remembered = readAmbient();
-  const soundList = make('div', null, 'utility-sounds');
-  soundList.setAttribute('role', 'radiogroup');
-  soundList.setAttribute('aria-label', 'Som');
-  const soundButtons = new Map();
-  for (const [key, label, hint] of SOUNDS) {
-    const button = make('button', null, 'utility-sound-option');
-    button.type = 'button';
-    button.setAttribute('role', 'radio');
-    button.dataset.sound = key;
-    button.append(make('strong', label), make('span', hint));
-    soundList.append(button);
-    soundButtons.set(key, button);
-  }
-  const soundToggle = make('button', 'Tocar', 'primary-action utility-sound-toggle');
-  soundToggle.type = 'button';
-  const volumeLabel = make('label', null, 'utility-volume');
-  const volume = make('input');
-  volume.type = 'range';
-  volume.min = '0';
-  volume.max = '100';
-  volume.step = '5';
-  volumeLabel.append(make('span', 'Volume'), volume);
-  const duckLabel = make('label', null, 'utility-duck');
-  const duck = make('input');
-  duck.type = 'checkbox';
-  duckLabel.append(duck, make('span', 'Baixar enquanto a gravação da aula toca'));
-  const followLabel = make('label', null, 'utility-duck');
-  const followFocus = make('input');
-  followFocus.type = 'checkbox';
-  followLabel.append(followFocus, make('span', 'Tocar junto com o foco (pausa nas pausas)'));
-  const soundNote = make(
-    'p',
-    'Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.',
-    'utility-cycles',
-  );
-  soundBody.append(soundList, soundToggle, volumeLabel, duckLabel, followLabel, soundNote);
-  const ambient = createAmbientPlayer({
-    initial: remembered,
-    onChange: (state) => {
-      try {
-        localStorage.setItem(
-          ambientKey,
-          JSON.stringify({
-            kind: state.kind,
-            volume: state.volume,
-            duck: state.duck,
-            withFocus: state.withFocus,
-            playing: state.playing,
-          }),
-        );
-      } catch {
-        /* per-device convenience */
-      }
-      for (const [key, button] of soundButtons) {
-        button.setAttribute('aria-checked', String(key === state.kind));
-        button.tabIndex = key === state.kind ? 0 : -1;
-      }
-      soundToggle.textContent = state.playing ? 'Pausar som' : 'Tocar';
-      soundToggle.setAttribute('aria-pressed', String(state.playing));
-      volume.value = String(Math.round(state.volume * 100));
-      duck.checked = state.duck;
-      followFocus.checked = state.withFocus;
-      panel.dataset.sound = state.playing ? (state.ducked ? 'ducked' : 'playing') : 'off';
-      trigger.classList.toggle('has-sound', state.playing);
-    },
-  });
-  for (const [key, button] of soundButtons)
-    button.addEventListener('click', () => void ambient.setKind(key));
-  soundToggle.addEventListener('click', () => {
-    if (ambient.state().playing) ambient.pause();
-    else void ambient.play().catch((error) => toast(error.message, { type: 'error' }));
-  });
-  volume.addEventListener('input', () => ambient.setVolume(Number(volume.value) / 100));
-  duck.addEventListener('change', () => ambient.setDuck(duck.checked));
-  followFocus.addEventListener('change', () => ambient.setWithFocus(followFocus.checked));
-  ambient.setVolume(remembered.volume);
-  // Ducking: any lesson audio or video on the page.
-  const playingMedia = () =>
-    [...document.querySelectorAll('audio, video')].some((media) => !media.paused && !media.ended);
-  document.addEventListener(
-    'play',
-    (event) => {
-      if (/^(AUDIO|VIDEO)$/.test(event.target?.tagName)) ambient.duck(true);
-    },
-    true,
-  );
-  for (const type of ['pause', 'ended'])
-    document.addEventListener(
-      type,
-      (event) => {
-        if (/^(AUDIO|VIDEO)$/.test(event.target?.tagName) && !playingMedia()) ambient.duck(false);
-      },
-      true,
-    );
-  // Sound was playing on the previous page: offer to continue (browsers need a click).
-  if (remembered.playing)
-    toast('O som ambiente parou ao trocar de página.', {
-      action: { label: 'Retomar som', onClick: () => void ambient.play().catch(() => {}) },
-      duration: 12000,
-    });
-
-  let tool = readPref().tool === 'sound' ? 'sound' : 'focus';
-  const showTool = (next) => {
-    tool = next;
-    savePref({ tool });
-    body.hidden = tool !== 'focus';
-    soundBody.hidden = tool !== 'sound';
-    title.textContent = TOOLS[tool].label;
-    openPage.hidden = tool !== 'focus';
-    for (const [key, button] of Object.entries(toolButtons))
-      button.setAttribute('aria-pressed', String(key === tool));
-  };
-  for (const [key, button] of Object.entries(toolButtons))
-    button.addEventListener('click', () => showTool(key));
-  showTool(tool);
-  panel.append(head, body, soundBody);
+  panel.append(head, body);
 
   // ---- capsule ----------------------------------------------------------------------------
   const capsule = make('div', null, 'focus-capsule');
@@ -500,17 +355,20 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     layout(state);
   }
   session.subscribe(render);
-  // "Tocar junto com o foco": only the tab in front plays (each tab has its own player).
-  let focusRunning = session.state().status === 'running' && session.state().mode !== 'short' && session.state().mode !== 'long';
-  session.subscribe((state) => {
-    const studying = state.status === 'running' && state.mode !== 'short' && state.mode !== 'long';
-    if (studying === focusRunning) return;
-    focusRunning = studying;
-    if (!ambient.state().withFocus || !document.hasFocus()) return;
-    if (studying && !ambient.state().playing)
-      void ambient.play().catch(() => toast('Toque em "Tocar" para começar o som.'));
-    else if (!studying && ambient.state().playing) ambient.pause();
-  });
+  // "Tocar junto com o foco" (soundscape mixer): focus blocks start and pause the ambience.
+  const soundscape = getSoundscape();
+  if (soundscape) {
+    soundscape.showFocusOption();
+    const studying = (state) => state.status === 'running' && state.mode !== 'short' && state.mode !== 'long';
+    let focusRunning = studying(session.state());
+    session.subscribe((state) => {
+      const now = studying(state);
+      if (now === focusRunning) return;
+      focusRunning = now;
+      // Only the tab in front follows (each tab has its own player).
+      if (document.hasFocus()) soundscape.controller.followFocus(now);
+    });
+  }
   window
     .matchMedia('(min-width: 1280px)')
     .addEventListener?.('change', () => layout(session.state()));
