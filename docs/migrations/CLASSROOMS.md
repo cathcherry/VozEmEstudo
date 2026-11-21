@@ -1,7 +1,7 @@
 # Turmas privadas — migration `20261121140000_classrooms.sql`
 
-Status: **candidata, não aplicada** em nenhum ambiente. Testada apenas com PGlite (Postgres real
-em processo) nos testes do backend. Flag: `FEATURE_CLASSROOMS` (padrão `false`).
+Status: Onde foi aplicada (21/11): PGlite nos testes, Postgres 16.15 local (cadeia completa, com concorrência real) e staging Supabase `voz-em-estudo-staging` (arquivo idêntico ao do commit `cbec226`, MD5 conferido; postflight ok). **Não foi aplicada em produção (`audioestudo`).** Detalhes em `docs/OVERNIGHT_PROGRESS.md`, seção 3.3.
+Flag: `FEATURE_CLASSROOMS` (padrão `false`).
 
 Tudo é privado aos membros da turma. Não existe página pública, descoberta de turmas, biblioteca
 indexável nem link que dê acesso sem conta: o link de convite só serve para uma conta entrar, e

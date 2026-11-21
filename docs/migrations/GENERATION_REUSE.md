@@ -1,6 +1,6 @@
 # Gerações de IA reutilizáveis — `20261121160000_generation_reuse.sql`
 
-**Situação:** está versionada no Git e foi testada em PGlite e no Postgres 16 local, inclusive com concorrência real. **Não foi aplicada em produção.**
+**Situação:** versionada no Git. Onde foi aplicada (21/11): PGlite nos testes, Postgres 16.15 local (cadeia completa, com concorrência real) e staging Supabase `voz-em-estudo-staging` (arquivo idêntico ao do commit `cbec226`, MD5 conferido; postflight ok). **Não foi aplicada em produção (`audioestudo`).** Detalhes em `docs/OVERNIGHT_PROGRESS.md`, seção 3.3.
 
 ## O que resolve
 

@@ -159,7 +159,7 @@ O dono autorizou criar e testar migrations; produção só com backup e nova aut
 | --- | --- |
 | PGlite (testes) | 5 testes de SQL real: backfill, agenda e histórico intactos, procedência, modelos, RLS e escrita concorrente. |
 | **Postgres 16.15 local** | Cadeia completa aplicada em ordem (`001` → `profile_state_hardening`, mais `proposals/profile-gamification.sql`, que cria `profile_state` em produção). Dados inseridos antes da migration. Detalhes abaixo. |
-| Staging Supabase | Ainda não aplicada. O projeto `voz-em-estudo-staging` está pausado. |
+| Staging Supabase | Aplicada em 21/11. Ver "Validação no staging Supabase real". |
 | **Produção** | **Não aplicada.** |
 
 Resultado no Postgres 16.15 local:
@@ -197,4 +197,72 @@ Depois apliquei as quatro migrations novas, na ordem de implantação:
 | 5 pedidos de geração equivalentes ao mesmo tempo | 1 `start` e 4 `join`; uma única linha, ou seja, um único job pago |
 | 2 escritores no mesmo caderno, na versão 1 | um salvou (v2) e o outro recebeu `LEARNING_VERSION_CONFLICT`; nada foi perdido em silêncio |
 
-**Produção: nenhuma destas migrations foi aplicada.** Staging também não.
+**Produção: nenhuma destas migrations foi aplicada.**
+
+### Validação no staging Supabase real (`voz-em-estudo-staging`, 21/11)
+
+O projeto de staging estava pausado e vazio: sem migrations e sem tabelas. Reativei o projeto e montei o banco do zero, na mesma ordem de produção:
+
+1. as 19 migrations existentes, mais a proposta `profile_state`;
+2. dados sintéticos pelas funções antigas (sem nenhum dado real):
+   - 2 contas `qa-a@example.test` e `qa-b@example.test`;
+   - uma aula com revisão confirmada;
+   - um destaque E14;
+   - uma nota solta;
+   - um cartão `term_definition`;
+3. os preflights;
+4. as quatro migrations novas;
+5. os postflights.
+
+O texto de cada migration foi lido do GitHub no commit `cbec226`. O MD5 de cada arquivo lido é igual ao MD5 do arquivo local no Git, então o que rodou é exatamente o que está versionado.
+
+| Verificação (postflight) | Resultado |
+| --- | --- |
+| anotações depois do backfill | 2, iguais ao preflight; `legacy_not_backfilled = 0` |
+| anotações compartilhadas | 0 (privado por padrão) |
+| cartões depois da migration | 1; `term_cards = 1` |
+| RLS em todas as tabelas novas | sim |
+| tabelas novas legíveis pelo navegador (`anon`/`authenticated`) | 0 |
+| funções novas chamáveis pelo navegador | 0 |
+| bucket `flashcard-media` público | não |
+
+**Advisors do Supabase (lint real do projeto):**
+
+- **Segurança:**
+  - `rls_enabled_no_policy` (INFO) nas tabelas novas: é intencional. Essas tabelas só são acessadas pelo servidor (`service_role`) e não têm grants para o navegador.
+  - `authenticated_security_definer_function_executable` em `storage_owns_material`: é anterior à 3.3 (`20261120090000`) e intencional, porque as políticas do Storage precisam dela.
+  - `function_search_path_mutable` em `qa.apply_git_migration`: é o auxiliar que usei só no staging (detalhes abaixo).
+  - Proteção contra senhas vazadas desligada: é uma configuração do Auth, não de migration.
+  - Nenhum achado de segurança nos objetos novos.
+- **Desempenho:** só INFO.
+  - Índices nunca usados: esperado num banco recém-criado.
+  - Chaves estrangeiras sem índice de cobertura: algumas são das tabelas novas, por exemplo `ai_generations.material_id` e as chaves `classroom_lessons.*`. Nenhuma está num caminho de leitura quente. Elas só pesam em exclusões em cascata. Se o volume crescer, fica como recomendação para uma migration aditiva futura de índices.
+
+**Teste funcional no staging**, chamando as funções do servidor com as contas sintéticas:
+
+| Passo | Resultado |
+| --- | --- |
+| professora cria a turma e um convite de 1 uso | ok |
+| aluna entra pelo convite | `student` |
+| professora usa o mesmo convite | `alreadyMember`, sem gastar o uso |
+| geração nova, depois o mesmo pedido de novo | `start`, depois `join` (um único job) |
+| depois de concluir, um pedido que aceita reuso | `reuse` |
+| outra conta usa a revisão da professora | `GENERATION_SOURCE_FORBIDDEN` |
+| geração na turma sobre uma aula não publicada | `GENERATION_SOURCE_FORBIDDEN` |
+| salvar o caderno | versão 1 |
+| escrita com versão velha | `LEARNING_VERSION_CONFLICT` |
+| outra conta salva o caderno da aula | `LEARNING_NOT_FOUND` |
+
+**Auxiliar de staging:** para aplicar os arquivos exatamente como estão no Git, criei no staging:
+
+- a extensão `http`;
+- o schema `qa`, com `qa.apply_git_migration(commit, caminho)`.
+
+Isso existe **só no staging**. Não faz parte de nenhuma migration e não deve ir para produção.
+
+| Banco | Notes 3.0 | Turmas | Flashcards 3.0 | Gerações reutilizáveis |
+| --- | --- | --- | --- | --- |
+| PGlite (testes) | aplicada | aplicada | aplicada | aplicada |
+| Postgres 16.15 local | aplicada | aplicada | aplicada | aplicada |
+| Staging Supabase | aplicada | aplicada | aplicada | aplicada |
+| **Produção (`audioestudo`)** | **não** | **não** | **não** | **não** |

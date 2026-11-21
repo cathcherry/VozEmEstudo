@@ -1,8 +1,9 @@
 # Migration Notes 3.0 — `20261121130000_notes_3_0.sql`
 
 Milestone A do plano diretor (§7): destaques e comentários em vários trechos, caderno da aula
-privado e salvamento automático confiável. **Aprovada pela responsável; não aplicada em nenhum
-ambiente por este repositório.** Testada apenas em PGlite (Postgres real, em processo).
+privado e salvamento automático confiável. **Aprovada pela responsável.**
+
+Onde foi aplicada (21/11): PGlite nos testes, Postgres 16.15 local (cadeia completa, com concorrência real) e staging Supabase `voz-em-estudo-staging` (arquivo idêntico ao do commit `cbec226`, MD5 conferido; postflight ok). **Não foi aplicada em produção (`audioestudo`).** Detalhes em `docs/OVERNIGHT_PROGRESS.md`, seção 3.3.
 
 ## Dependências e ordem
 

@@ -1,6 +1,6 @@
 # Flashcards 3.0 — migration `20261121150000_flashcards_3_0.sql`
 
-**Situação:** arquivo versionado no Git e testado em Postgres (PGlite nos testes e Postgres 16 local). **Não foi aplicado em produção.** A seção "Onde foi aplicada", no fim, diz exatamente em quais bancos a migration rodou.
+**Situação:** arquivo versionado no Git e testado em Postgres (PGlite nos testes e Postgres 16 local) e aplicado no staging Supabase. **Não foi aplicado em produção.** A seção "Onde foi aplicada", no fim, diz exatamente em quais bancos a migration rodou.
 
 ## O que cria
 
@@ -58,5 +58,5 @@ Veja `database/rollback/flashcards-3-0-rollback.md`. Em resumo:
 | --- | --- |
 | PGlite (testes automatizados) | aplicada a cada execução de `npm run check` |
 | Postgres 16 local (cadeia completa de migrations) | ver `OVERNIGHT_PROGRESS.md`, seção 3.3 |
-| Staging Supabase (`voz-em-estudo-staging`) | ver `OVERNIGHT_PROGRESS.md` |
+| Staging Supabase (`voz-em-estudo-staging`) | **aplicada em 21/11**, com o arquivo idêntico ao do commit `cbec226` (MD5 conferido); postflight ok |
 | Produção (`audioestudo`) | **não aplicada** |
