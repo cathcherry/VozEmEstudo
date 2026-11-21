@@ -372,8 +372,9 @@ async function main() {
       await page.reload(); // same URL: goto alone only changes the hash
       const panel = page.locator('details.flashcard-sets');
       await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
-      if (!(await panel.evaluate((node) => node.open))) await panel.locator('summary').click();
-      await panel.getByRole('button', { name: 'Mesclar conjuntos' }).click();
+      // Merge and import sit next to "Novos cartões", visible without opening the sets section.
+      const deckTools = page.locator('.flashcard-create-column .deck-tools');
+      await deckTools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
       const mergeDialog = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
       await mergeDialog.waitFor();
       await mergeDialog.getByRole('checkbox', { name: /Ana/ }).check();
@@ -386,16 +387,16 @@ async function main() {
       await settle(page);
       await axeCheck(page, 'dialog[open]', 'Mesclar conjuntos');
       await mergeDialog.getByRole('button', { name: 'Criar conjunto' }).click();
-      await panel.locator('[role=status]', { hasText: 'Conjunto mesclado criado com 111 cartões.' }).waitFor();
+      await deckTools.locator('.deck-tools-result', { hasText: 'Conjunto mesclado criado com 111 cartões.' }).waitFor();
       const created = data.sets.at(-1);
       assert.equal(created.cards.length, 111);
       assert.equal(created.material_id, null);
       assert.deepEqual(created.config.origin.sets.map((x) => x.name), ['Ana', 'Bruno']);
       assert.equal(data.setRequests, 2, 'one create (100) and one add (11)');
       assert.equal(data.sets[0].cards.length, 70, 'sources unchanged');
-      await panel.locator('h4', { hasText: 'Mesclado: Ana + Bruno' }).waitFor();
+      await panel.locator('h4', { hasText: 'Mesclado: Ana + Bruno' }).waitFor({ state: 'attached' });
 
-      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      await deckTools.getByRole('button', { name: 'Importar cartões' }).click();
       const importDialog = page.getByRole('dialog', { name: 'Importar cartões' });
       await importDialog.waitFor();
       const anki = ['#separator:tab', '#html:true', 'O que é <b>ATP</b>?\tMoeda de energia', 'A {{c1::clorofila}} absorve luz.\t', 'Só frente\t'].join('\n');
@@ -406,13 +407,13 @@ async function main() {
       await settle(page);
       await axeCheck(page, 'dialog[open]', 'Importar cartões');
       await importDialog.getByRole('button', { name: 'Criar conjunto' }).click();
-      await panel.locator('[role=status]', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
+      await deckTools.locator('.deck-tools-result', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
       assert.deepEqual(
         data.sets.at(-1).cards.map((c) => [c.front_text, c.back_text]),
         [['O que é ATP?', 'Moeda de energia'], ['A […] absorve luz.', 'A clorofila absorve luz.']],
       );
       // An .apkg package is explained, not sent anywhere.
-      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      await deckTools.getByRole('button', { name: 'Importar cartões' }).click();
       await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'deck.apkg', mimeType: 'application/zip', buffer: Buffer.from('PK') });
       await importDialog.locator('.deck-error', { hasText: 'Notas em texto simples' }).waitFor();
       assert(await importDialog.getByRole('button', { name: 'Criar conjunto' }).isDisabled());

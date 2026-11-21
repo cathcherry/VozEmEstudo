@@ -108,6 +108,7 @@ export default {
   "Abrir menu": "Open menu",
   "Abrir no trecho da aula": "Open at this passage",
   "Abrir o conjunto": "Open the set",
+  "Abrir o conjunto novo": "Open the new set",
   "Abrir painel do cronômetro": "Open timer panel",
   "Abrir perfil": "Open profile",
   "Acervo em construção": "Growing collection",
@@ -281,6 +282,7 @@ export default {
   "Atualizar": "Update",
   "Atualizar calendário": "Refresh calendar",
   "Atualizar indicadores": "Refresh indicators",
+  "Atualizar prévia": "Refresh preview",
   "Áudio": "Audio",
   "Áudio do trecho": "Clip audio",
   "Áudio e revisão": "Audio and review",
@@ -462,6 +464,7 @@ export default {
   "Comparativo": "Comparison",
   "Compartilhado com a turma": "Shared with the class",
   "Compartilhado por": "Shared by",
+  "Compartilhados nas turmas": "Shared in classes",
   "Compartilhar": "Share",
   "Compartilhar conjunto": "Share a set",
   "Compartilhar lista": "Share list",
@@ -492,6 +495,7 @@ export default {
   "Conferir transcrição": "Check transcript",
   "Conferir trecho ·": "Check excerpt ·",
   "Configurações": "Settings",
+  "Confira a prévia": "Check the preview",
   "Confira e confirme a revisão atual antes de criar o link.": "Check and confirm the current version before creating the link.",
   "Confira e confirme a transcrição antes de gerar cartões.": "Check and confirm the transcript before generating cards.",
   "Confira e confirme a transcrição desta aula antes de publicar.": "Check and confirm this lesson's transcript before publishing.",
@@ -527,6 +531,7 @@ export default {
   "Conjunto renomeado.": "Set renamed.",
   "Conjuntos": "Sets",
   "Conjuntos de flashcards": "Flashcard sets",
+  "Conjuntos para juntar (dois ou mais)": "Sets to combine (two or more)",
   "Conquistada": "Earned",
   "Conquistadas": "Earned",
   "Conquistas": "Achievements",
@@ -575,6 +580,7 @@ export default {
   "Creme quente e terracota.": "Warm cream and terracotta.",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "Creates a read-only link with a frozen copy of the questions and options. Answers, explanations, transcript, recording and notes are not part of the link.",
   "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "Creates a task for each lesson of the unit, inside a goal. If the unit gets new lessons, use it again: only the missing ones are added.",
+  "Criam um conjunto novo; os originais não mudam.": "Both create a new set; the originals do not change.",
   "Criando a lista…": "Creating the list…",
   "Criando conta...": "Creating account...",
   "Criando tarefa de geração...": "Creating generation job...",
@@ -601,6 +607,7 @@ export default {
   "Criar um objetivo": "Create a goal",
   "Criar uma conta": "Create an account",
   "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Flashcards tab, merge sets or import cards from a file. Here you organize, review by set and export.",
+  "Crie conjuntos na aba Flashcards de cada aula. Para mesclar conjuntos ou importar cartões, use “Juntar ou trazer conjuntos”, em Novos cartões. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Flashcards tab. To merge sets or import cards, use “Combine or bring in sets” under New cards. Here you organize, review by set and export.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Summary tab. Here you organize, review by set and export.",
   "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "Create a goal first (for example, \"Biology exam\") and come back here.",
   "Crie uma turma ou entre com o código que o professor enviou.": "Create a class or join with the code your teacher sent.",
@@ -626,6 +633,7 @@ export default {
   "Dê contexto à aula": "Give the lesson context",
   "De novo": "Again",
   "Dê o play na curiosidade.": "Press play on curiosity.",
+  "Dê um nome ao conjunto novo.": "Give the new set a name.",
   "Dê um nome ao material.": "Give the material a name.",
   "Dê um nome ao novo conjunto.": "Name the new set.",
   "Dê um nome ao seu tema.": "Give your theme a name.",
@@ -776,8 +784,10 @@ export default {
   "Escolha até 3. Eles aparecem ao lado do título de cada página e somem com menos estímulos visuais.": "Choose up to 3. They appear next to each page's title and disappear with fewer visual stimuli.",
   "Escolha como deseja responder": "Choose how you want to answer",
   "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "Choose two or more sets. A new set is created with their cards; the originals do not change and review history is not copied.",
+  "Escolha mais um conjunto para ver a prévia.": "Choose one more set to see the preview.",
   "Escolha o motivo do problema.": "Choose the reason for the problem.",
   "Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.": "Choose what appears and in what order. Changes show up right away and are saved to your account.",
+  "Escolha os conjuntos": "Choose the sets",
   "Escolha pelo menos dois conjuntos.": "Choose at least two sets.",
   "Escolha pelo menos um item para gerar.": "Choose at least one item to generate.",
   "Escolha pelo menos uma dificuldade e um foco.": "Choose at least one difficulty and one focus.",
@@ -1085,6 +1095,7 @@ export default {
   "Janela": "Window",
   "jeito de estudar.": "way of studying.",
   "Juntar as respostas em um cartão": "Combine the answers in one card",
+  "Juntar ou trazer conjuntos": "Combine or bring in sets",
   "Lacunas (cloze)": "Cloze (fill in the blanks)",
   "Lacunas alinhadas à esquerda": "Blanks aligned left",
   "Lápis": "Pencil",
@@ -1205,6 +1216,7 @@ export default {
   "MEU RITMO DE ESTUDO": "MY STUDY PACE",
   "Meu universo": "My universe",
   "Meus cards": "My cards",
+  "Meus conjuntos": "My sets",
   "Meus materiais integrados": "My integrated materials",
   "Meus modelos": "My templates",
   "Meus objetivos": "My goals",
@@ -1278,6 +1290,7 @@ export default {
   "Não foi possível abrir a aula.": "Couldn't open the lesson.",
   "Não foi possível abrir a cópia. Tente novamente.": "Couldn't open the copy. Try again.",
   "Não foi possível abrir a tentativa.": "Couldn't open the attempt.",
+  "Não foi possível abrir agora. Tente de novo.": "Could not open it now. Try again.",
   "Não foi possível abrir este PNG. Escolha outra imagem.": "Couldn't open this PNG. Choose another image.",
   "Não foi possível abrir o armazenamento local.": "Couldn't open local storage.",
   "Não foi possível abrir o material.": "Couldn't open the material.",
@@ -1437,6 +1450,7 @@ export default {
   "Nome do novo conjunto": "Name of the new set",
   "Nome do subobjetivo": "Subgoal name",
   "Nome do tema": "Theme name",
+  "Nome e aparência": "Name and look",
   "Nome exibido": "Display name",
   "nome@exemplo.com": "name@example.com",
   "Normal": "Normal",
@@ -1567,6 +1581,9 @@ export default {
   "Organizar meus cartões": "Organize my cards",
   "Orientação": "Guidance",
   "Os arquivos e materiais são armazenados no Supabase. Você pode conservar o áudio do trecho transcrito e, separadamente, o MP4 original inteiro, incluindo partes fora do recorte. Quando você não conserva o áudio, ele é removido do nosso armazenamento após a transcrição; os textos continuam disponíveis. O vídeo conservado pode ser removido na aula.": "Files and materials are stored in Supabase. You can keep the audio of the transcribed clip and, separately, the whole original MP4, including parts outside the clip. When you don't keep the audio, it is removed from our storage after transcription; the texts remain available. A kept video can be removed from the lesson.",
+  "Os cartões começam do zero na revisão.": "The cards start from scratch in review.",
+  "Os conjuntos escolhidos não têm cartões ativos.": "The chosen sets have no active cards.",
+  "Os conjuntos originais não mudaram.": "The original sets did not change.",
   "Os flashcards estão indisponíveis.": "Flashcards are unavailable.",
   "Os flashcards estão indisponíveis. Nenhuma alteração foi feita.": "Flashcards are unavailable. No changes were made.",
   "Os materiais estarão disponíveis quando o acesso for restabelecido.": "Materials will be available when access is restored.",
@@ -1605,9 +1622,11 @@ export default {
   "para ajustar o conforto de leitura. As preferências são sincronizadas com a sua conta.": "to adjust reading comfort. Your preferences are synced with your account.",
   "Para aprender com você.": "To learn with you.",
   "para as dúvidas.": "for questions.",
+  "Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.": "For each question, keep one of the answers or combine them all in one card. Without a choice, the answers are combined: nothing is lost.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "To fix the lesson text, use “Edit transcript”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "To create a new list, open a lesson in the Library and use the Questions tab.",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "To merge, you need at least two sets with cards.",
+  "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões. Crie um conjunto na aba Flashcards de uma aula ou importe cartões de um arquivo.": "To merge, you need at least two sets with cards. Create a set in a lesson's Flashcards tab or import cards from a file.",
   "para mudar o tema e": "to change the theme and",
   "Para revisar": "To review",
   "para saber o que é salvo na conta ou neste dispositivo.": "to learn what is saved in your account or on this device.",
@@ -1842,6 +1861,7 @@ export default {
   "Reproduzir a partir deste trecho": "Play from this excerpt",
   "Reproduzir ou pausar": "Play or pause",
   "Reservar um momento para estudar hoje.": "Set aside a moment to study today.",
+  "Resolva as perguntas com respostas diferentes": "Resolve questions with different answers",
   "Responda às questões, consulte as explicações e volte ao material para revisar suas dúvidas.": "Answer the questions, read the explanations and go back to the material to review your doubts.",
   "Responda estas questões como uma lista comum, com placar e revisão dos erros. A lista fica guardada na primeira aula usada.": "Answer these questions as a regular list, with a score and a review of your mistakes. The list is kept in the first lesson used.",
   "Responder": "Answer",
@@ -1977,6 +1997,7 @@ export default {
   "Sem aula": "No lesson",
   "Sem aula vinculada": "No linked lesson",
   "Sem conexão — guardado neste aparelho. Tentaremos de novo.": "Offline — kept on this device. We will try again.",
+  "Sem conexão com o servidor. Verifique a internet e tente de novo; nada foi criado.": "No connection to the server. Check your internet and try again; nothing was created.",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "No connection: your changes are saved in this browser and will be sent when the connection returns.",
   "Sem conexão.": "No connection.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "No confirmation from the account. Progress stays in this browser and the submission will be retried with the same ID.",
@@ -2207,8 +2228,10 @@ export default {
   "um caderno de aula": "a lesson notebook",
   "Um cantinho para a sua curiosidade": "A little corner for your curiosity",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "One click adjusts several preferences at once. Then fine-tune each one in Reading and focus. Modes never make text smaller or turn off accessibility options you turned on.",
+  "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "A new set, yours only, is created with the cards of the chosen sets. The originals (yours and those shared by classmates) are never changed, and review history is not copied: the new set starts from scratch.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "One timer for your whole account: it keeps going when you open a lesson, the Library or Review, and shows in a small capsule in the corner of the screen.",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "A cited highlight does not belong to this lesson or changed revision. Reload the notebook.",
+  "Um dos conjuntos não está mais disponível (foi excluído ou deixou de ser compartilhado). Atualize a prévia.": "One of the sets is no longer available (it was deleted or is no longer shared). Refresh the preview.",
   "Um espaço para descobrir.": "A space to discover.",
   "Um lembrete por linha": "One reminder per line",
   "Um número": "One number",
@@ -2218,6 +2241,7 @@ export default {
   "Um resumo e questões que relacionam as aulas escolhidas. Só entram aulas com a transcrição atual conferida e confirmada; cada item cita o trecho da aula que o sustenta.": "A summary and questions that connect the chosen lessons. Only lessons whose current transcript was reviewed and confirmed are included; each item cites the lesson passage that supports it.",
   "Um símbolo (ex.: ! @ # ?)": "One symbol (e.g. ! @ # ?)",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "An excerpt that makes sense. An idea that sticks. A question that opens new paths.",
+  "Um único modelo visual vale para todos os cartões do conjunto novo. Dá para trocar depois.": "One visual template applies to every card in the new set. You can change it later.",
   "Uma aula por dia": "One lesson a day",
   "Uma aula por semana": "One lesson a week",
   "Uma aula.": "One lesson.",
@@ -2251,6 +2275,7 @@ export default {
   "Use o menu": "Use the menu",
   "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "Use a .txt, .tsv or .csv file: from Anki (File › Export › \"Notes in Plain Text\"), the CSV export from here, or a list with question and answer in two columns.",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Use a Spotify song, album, playlist, episode or show link.",
+  "Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas. Um conjunto novo é criado; nada que você já tem muda.": "Use an Anki package (.apkg), a .txt, .tsv or .csv file from Anki (File › Export › \"Notes in Plain Text\"), the CSV export from here or a list with question and answer in two columns. A new set is created; nothing you already have changes.",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "Use a PNG, JPEG, WebP or GIF image.",
   "Validade": "Expires after",
   "Validando seu link de recuperação...": "Validating your recovery link...",
@@ -2304,6 +2329,7 @@ export default {
   "Você ainda não tem material integrado pronto. Crie um em Material integrado, a partir de aulas com a transcrição confirmada.": "You don't have a ready integrated material yet. Create one in Integrated material, from lessons with a confirmed transcript.",
   "Você deixa de ver o conteúdo desta turma. Os conjuntos que você compartilhou deixam de aparecer para a turma e seus envios em aberto são retirados. Seus materiais continuam na sua biblioteca.": "You will no longer see this class's content. The sets you shared stop appearing to the class and your open submissions are withdrawn. Your materials stay in your library.",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "You choose the content and follow each step of preparing the material.",
+  "Você já tem um modelo com esse nome. Escolha outro nome para diferenciar os dois.": "You already have a template with this name. Choose another name to tell them apart.",
   "Você já tem um tema com esse nome. Escolha outro nome ou use Atualizar.": "You already have a theme with that name. Choose another name or use Update.",
   "Você lê o que o professor escolheu publicar. Para estudar com suas notas e revisões, use a sua Biblioteca: nada do que você faz aqui é visto pela turma.": "You read what the teacher chose to publish. To study with your notes and reviews, use your Library: nothing you do here is seen by the class.",
   "Você não participa desta turma, ou ela não existe mais.": "You are not in this class, or it no longer exists.",
@@ -2445,8 +2471,16 @@ export default {
    "{0} items without a supporting lesson passage were discarded."
   ],
   [
+   "{0} perguntas aparecem com respostas diferentes: escolha no passo 3.",
+   "{0} questions appear with different answers: choose in step 3."
+  ],
+  [
    "{0} cartão repetido fica de fora (mesma pergunta e mesma resposta).",
    "{0} repeated card is left out (same question and same answer)."
+  ],
+  [
+   "{0} pergunta aparece com respostas diferentes: escolha no passo 3.",
+   "{0} question appears with different answers: choose in step 3."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
@@ -2485,6 +2519,10 @@ export default {
    "{0} lessons are no longer available and were ignored."
   ],
   [
+   "Limite de {0} cartões por conjunto: {1} ficam de fora.",
+   "Limit of {0} cards per set: {1} are left out."
+  ],
+  [
    "{0} cartões salvos. Eles entram na revisão do Painel.",
    "{0} cards saved. They join your review on Home."
   ],
@@ -2521,6 +2559,10 @@ export default {
    "{0} notes skipped: missing question or answer."
   ],
   [
+   "{0} perguntas com respostas diferentes resolvidas.",
+   "{0} questions with different answers resolved."
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "Incorrect answer. The expected answer is {0}.{1}"
   ],
@@ -2547,6 +2589,10 @@ export default {
   [
    "{0} nota ignorada: sem pergunta ou sem resposta.",
    "{0} note skipped: missing question or answer."
+  ],
+  [
+   "{0} pergunta com respostas diferentes resolvida.",
+   "{0} question with different answers resolved."
   ],
   [
    "Tema {0} atualizado com as preferências atuais.",
@@ -2613,6 +2659,10 @@ export default {
    "{0} lines skipped: over the limit of {1}."
   ],
   [
+   "{0} cartões sem repetição entram como estão.",
+   "{0} cards without repeats go in as they are."
+  ],
+  [
    "{0} cartão importado para um conjunto novo.",
    "{0} card imported into a new set."
   ],
@@ -2639,6 +2689,10 @@ export default {
   [
    "Mesma pergunta, respostas diferentes: {0}",
    "Same question, different answers: {0}"
+  ],
+  [
+   "{0} cartão sem repetição entra como está.",
+   "{0} card without repeats goes in as is."
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2675,6 +2729,10 @@ export default {
   [
    "{0} aulas prontas para estudar juntas.",
    "{0} lessons ready to study together."
+  ],
+  [
+   "{0} cartões repetidos ficaram de fora.",
+   "{0} repeated cards were left out."
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",
@@ -2717,6 +2775,10 @@ export default {
    "Spans {0} transcript passages"
   ],
   [
+   "{0} cartão repetido ficou de fora.",
+   "{0} repeated card was left out."
+  ],
+  [
    "Revisão registrada. Próxima: {0}.",
    "Review recorded. Next: {0}."
   ],
@@ -2755,6 +2817,10 @@ export default {
   [
    "Bloco movido para a posição {0}.",
    "Block moved to position {0}."
+  ],
+  [
+   "Até {0} conjuntos por mesclagem.",
+   "Up to {0} sets per merge."
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -3043,6 +3109,10 @@ export default {
   [
    "Manter a de {0}: {1}",
    "Keep {0}'s: {1}"
+  ],
+  [
+   "{0} Nada foi criado.",
+   "{0} Nothing was created."
   ],
   [
    "{0} · expira em {1}",

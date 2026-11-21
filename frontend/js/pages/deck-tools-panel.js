@@ -11,7 +11,7 @@ import {
   importApkg,
   listCardTemplates,
 } from '../api/flashcard.api.js';
-import { CARD_TEMPLATES } from '../utils/card-templates.js';
+import { fillLookOptions } from '../utils/card-looks.js';
 import { parseCardFile, mergeCards, chunk, IMPORT_MAX } from '../utils/deck-tools.js';
 
 const FILE_MAX = 2 * 1024 * 1024;
@@ -44,19 +44,35 @@ export async function saveNewSet({ name, cards, origin }, api = { createFlashcar
   return { id, saved };
 }
 
+/** A readable message for a failed request; says plainly that nothing was created. */
+export function problemText(error, fallback) {
+  if (!error?.status) return 'Sem conexão com o servidor. Verifique a internet e tente de novo; nada foi criado.';
+  if (error.status === 409) return `${error.message || fallback} Nada foi criado.`;
+  if (error.status === 404)
+    return 'Um dos conjuntos não está mais disponível (foi excluído ou deixou de ser compartilhado). Atualize a prévia.';
+  return error.message || fallback;
+}
+
 function dialogShell(title, hint) {
   const id = `deck-dialog-${++counter}`;
   const dialog = make('dialog', null, 'settings-dialog app-dialog deck-dialog');
   dialog.setAttribute('aria-labelledby', `${id}-title`);
+  dialog.setAttribute('aria-describedby', `${id}-hint`);
   const form = make('form');
   form.method = 'dialog';
+  form.noValidate = true;
   const heading = make('h2', title);
   heading.id = `${id}-title`;
   const help = make('p', hint, 'app-dialog-hint');
+  help.id = `${id}-hint`;
   const body = make('div', null, 'deck-dialog-body');
+  // Only short summaries go to the live region; long lists and choices stay out of it.
   const preview = make('div', null, 'deck-preview');
   preview.setAttribute('role', 'status');
   preview.setAttribute('aria-live', 'polite');
+  const extra = make('div', null, 'deck-dialog-body deck-dialog-extra');
+  const alert = make('p', null, 'deck-error deck-submit-error');
+  alert.setAttribute('role', 'alert');
   const actions = make('div', null, 'form-actions');
   const cancel = make('button', 'Cancelar', 'secondary-action');
   cancel.type = 'button';
@@ -64,11 +80,11 @@ function dialogShell(title, hint) {
   confirm.type = 'submit';
   confirm.disabled = true;
   actions.append(cancel, confirm);
-  form.append(heading, help, body, preview, actions);
+  form.append(heading, help, body, preview, extra, alert, actions);
   dialog.append(form);
   document.body.append(dialog);
   cancel.addEventListener('click', () => dialog.close());
-  return { id, dialog, form, body, preview, confirm };
+  return { id, dialog, form, body, preview, extra, alert, confirm, cancel };
 }
 
 function nameField(id, value) {
@@ -85,21 +101,29 @@ function nameField(id, value) {
 }
 
 /** "Aparência do conjunto novo": favourite, a built-in base or one of the student's templates. */
-async function lookSelect(id) {
+function lookSelect(id) {
   const label = make('label', 'Aparência do conjunto novo');
   label.htmlFor = `${id}-look`;
   const select = make('select');
   select.id = `${id}-look`;
-  select.append(new Option('Igual à favorita', ''));
-  for (const [value, name] of CARD_TEMPLATES) select.append(new Option(name, `base:${value}`));
-  const templates = await listCardTemplates().catch(() => []);
-  if (templates.length) {
-    const group = document.createElement('optgroup');
-    group.label = 'Meus modelos';
-    for (const t of templates) group.append(new Option(t.name, `template:${t.id}`));
-    select.append(group);
-  }
-  label.append(select);
+  select.setAttribute('aria-describedby', `${id}-look-hint`);
+  fillLookOptions(select, []);
+  const hint = make(
+    'span',
+    'Um único modelo visual vale para todos os cartões do conjunto novo. Dá para trocar depois.',
+    'deck-field-hint',
+  );
+  hint.id = `${id}-look-hint`;
+  label.append(select, hint);
+  // The student's own templates arrive a moment later; a choice made meanwhile is kept.
+  void listCardTemplates()
+    .catch(() => [])
+    .then((templates) => {
+      if (!templates?.length) return;
+      const chosen = select.value;
+      fillLookOptions(select, templates);
+      select.value = chosen;
+    });
   const value = () => {
     const [kind, key] = select.value.split(':');
     return kind === 'template' ? { templateId: key } : kind === 'base' ? { templateBase: key } : {};
@@ -140,109 +164,228 @@ function summaryList(items) {
   return list;
 }
 
+function step(number, title) {
+  const section = make('section', null, 'deck-step');
+  const id = `deck-step-${++counter}`;
+  section.setAttribute('aria-labelledby', id);
+  const heading = make('h3', null, 'deck-step-title');
+  heading.id = id;
+  const badge = make('span', String(number), 'deck-step-number');
+  badge.setAttribute('aria-hidden', 'true');
+  heading.append(badge, make('span', title));
+  section.append(heading);
+  return section;
+}
+
 /** Runs one dialog to completion; resolves with the saved set or null when cancelled. */
-function run({ dialog, form, confirm }, opener, submit) {
+function run({ dialog, form, confirm, alert, cancel }, opener, submit) {
   return new Promise((resolve) => {
     let result = null;
     let busy = false;
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (busy || confirm.disabled) return;
+      const invalid = form.querySelector('input:invalid');
+      if (invalid) {
+        alert.textContent = 'Dê um nome ao conjunto novo.';
+        invalid.focus();
+        return;
+      }
       busy = true;
       confirm.disabled = true;
+      cancel.disabled = true;
+      form.setAttribute('aria-busy', 'true');
       confirm.textContent = 'Criando…';
+      alert.textContent = '';
       try {
         result = await submit();
         dialog.close();
       } catch (error) {
-        const done = error.saved ? ` ${plural(error.saved, 'cartão foi salvo', 'cartões foram salvos')} no conjunto novo.` : '';
-        form.querySelector('.deck-preview').append(
-          make('p', `${error.message || 'Não foi possível criar o conjunto.'}${done}`, 'deck-error'),
-        );
+        const done = error.saved
+          ? ` ${plural(error.saved, 'cartão foi salvo', 'cartões foram salvos')} no conjunto novo.`
+          : '';
+        alert.textContent = `${problemText(error, 'Não foi possível criar o conjunto.')}${done}`;
         confirm.disabled = false;
         confirm.textContent = 'Criar conjunto';
+        confirm.focus();
       } finally {
         busy = false;
+        cancel.disabled = false;
+        form.removeAttribute('aria-busy');
       }
+    });
+    // Escape while saving would hide a request that is still running.
+    dialog.addEventListener('cancel', (event) => {
+      if (busy) event.preventDefault();
     });
     dialog.addEventListener('close', () => {
       dialog.remove();
-      opener?.focus?.();
+      // After a success the caller moves focus to the confirmation; otherwise back to the opener.
+      if (!result) opener?.focus?.();
       resolve(result);
     });
     dialog.showModal();
   });
 }
 
-/** "Mesclar conjuntos": pick 2+ sets, see what happens to repeated cards, create the new set. */
+export const SOURCES_MAX = 12; // sets per merge (server rule)
+
+/**
+ * "Mesclar conjuntos" in steps: choose the sets (own and, with Turmas, shared by classmates) →
+ * see what happens to repeated cards → decide each "same question, different answers" → name
+ * and ONE look for the whole new set. The sources are only read, never changed.
+ */
 export function openMergeDialog({ sets, opener, v3 = false }) {
   const ui = dialogShell(
     'Mesclar conjuntos',
-    'Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.',
+    'Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.',
   );
+  // One id per dialog: retrying after a dropped connection never creates two sets.
+  const deckId = crypto.randomUUID();
+  const chooseStep = step(1, 'Escolha os conjuntos');
   const box = make('fieldset', null, 'deck-sources');
-  box.append(make('legend', 'Conjuntos'));
+  box.append(make('legend', 'Conjuntos para juntar (dois ou mais)'));
   const chosen = new Map();
-  const cache = new Map();
-  for (const set of sets) {
-    const label = make('label', null, 'deck-source');
-    const check = make('input');
-    check.type = 'checkbox';
-    check.value = set.id;
-    label.append(check, make('span', `${set.name} (${plural(set.card_count ?? 0, 'cartão', 'cartões')})`));
-    box.append(label);
-    check.addEventListener('change', () => {
-      if (check.checked) chosen.set(set.id, set);
-      else chosen.delete(set.id);
-      void update();
-    });
+  const checks = [];
+  const limitNote = make('p', null, 'flashcard-muted deck-limit-note');
+  const groups = [
+    ['Meus conjuntos', sets.filter((set) => !set.classroomId)],
+    ['Compartilhados nas turmas', sets.filter((set) => set.classroomId)],
+  ].filter(([, list]) => list.length);
+  for (const [title, list] of groups) {
+    if (groups.length > 1) box.append(make('p', title, 'deck-source-group'));
+    for (const set of list) {
+      const label = make('label', null, 'deck-source');
+      const check = make('input');
+      check.type = 'checkbox';
+      check.value = set.id;
+      const text = make('span', null, 'deck-source-text');
+      // Names are the students' own words: never run through the interface translation.
+      const setName = make('span', set.name, 'deck-source-name');
+      setName.translate = false;
+      const meta = make('span', null, 'deck-source-meta');
+      meta.append(make('span', plural(set.card_count ?? 0, 'cartão', 'cartões')));
+      if (set.classroomId) {
+        const who = make('span', ` · ${set.authorName || 'colega'} · ${set.classroomName || 'turma'}`);
+        who.translate = false;
+        meta.append(who);
+      }
+      text.append(setName, meta);
+      label.append(check, text);
+      box.append(label);
+      checks.push(check);
+      check.addEventListener('change', () => {
+        if (check.checked) chosen.set(set.id, set);
+        else chosen.delete(set.id);
+        const full = chosen.size >= SOURCES_MAX;
+        for (const other of checks) other.disabled = full && !other.checked;
+        limitNote.textContent = full ? `Até ${SOURCES_MAX} conjuntos por mesclagem.` : '';
+        void update();
+      });
+    }
   }
-  const name = nameField(ui.id, '');
-  ui.body.append(box, name.label);
+  chooseStep.append(box, limitNote);
+  const previewStep = step(2, 'Confira a prévia');
+  previewStep.append(ui.preview);
+  const conflictStep = step(3, 'Resolva as perguntas com respostas diferentes');
+  conflictStep.append(
+    make(
+      'p',
+      'Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.',
+      'flashcard-muted',
+    ),
+  );
+  const conflictSlot = make('div');
+  conflictStep.append(conflictSlot);
+  conflictStep.hidden = true;
   // Flashcards 3.0: the server plans the merge (also for sets shared in a class) and the student
   // decides every "same question, different answers" case.
+  const finishStep = step(v3 ? 4 : 3, v3 ? 'Nome e aparência' : 'Nome');
+  const name = nameField(ui.id, '');
+  finishStep.append(name.label);
+  const look = v3 ? lookSelect(ui.id) : null;
+  if (look) finishStep.append(look.label);
+  ui.body.append(chooseStep, previewStep);
+  ui.extra.append(conflictStep, finishStep);
+  const retry = make('button', 'Atualizar prévia', 'secondary-action deck-retry');
+  retry.type = 'button';
+  retry.addEventListener('click', () => void update());
   const decisions = {};
-  let look = null;
-  if (v3)
-    void lookSelect(ui.id).then((control) => {
-      look = control;
-      ui.body.append(control.label);
-    });
+  const cache = new Map();
   let merged = null;
   let ticket = 0;
+  const showProblem = (text) => {
+    ui.preview.replaceChildren(make('p', text, 'deck-error'));
+    previewStep.append(retry);
+  };
+  const lines = ({ resulting, fresh, duplicates, conflicts, overLimit, v3: typed }) => {
+    const out = [plural(resulting, 'cartão no conjunto novo', 'cartões no conjunto novo')];
+    if (fresh !== null) out.push(`${plural(fresh, 'cartão sem repetição entra como está', 'cartões sem repetição entram como estão')}.`);
+    if (duplicates)
+      out.push(
+        `${plural(duplicates, 'cartão repetido fica', 'cartões repetidos ficam')} de fora (mesma pergunta e mesma resposta).`,
+      );
+    if (conflicts && typed)
+      out.push(`${plural(conflicts, 'pergunta aparece', 'perguntas aparecem')} com respostas diferentes: escolha no passo 3.`);
+    else if (conflicts)
+      out.push(
+        `${plural(conflicts, 'pergunta aparece', 'perguntas aparecem')} com respostas diferentes; ${conflicts === 1 ? 'as duas ficam' : 'todas ficam'} para você decidir depois.`,
+      );
+    if (overLimit) out.push(`Limite de ${IMPORT_MAX} cartões por conjunto: ${overLimit} ficam de fora.`);
+    return summaryList(out);
+  };
   async function update() {
     const mine = ++ticket;
     merged = null;
     ui.confirm.disabled = true;
+    retry.remove();
+    ui.alert.textContent = '';
+    conflictStep.hidden = true;
+    conflictSlot.replaceChildren();
     const picked = [...chosen.values()];
     if (!name.input.dataset.edited)
       name.input.value = picked.length ? `Mesclado: ${picked.map((s) => s.name).join(' + ')}`.slice(0, 120) : '';
     if (picked.length < 2) {
-      ui.preview.replaceChildren(make('p', 'Escolha pelo menos dois conjuntos.', 'flashcard-muted'));
+      ui.preview.removeAttribute('aria-busy');
+      ui.preview.replaceChildren(
+        make(
+          'p',
+          picked.length ? 'Escolha mais um conjunto para ver a prévia.' : 'Escolha pelo menos dois conjuntos.',
+          'flashcard-muted',
+        ),
+      );
       return;
     }
+    ui.preview.setAttribute('aria-busy', 'true');
     ui.preview.replaceChildren(make('p', 'Lendo os cartões…', 'flashcard-muted'));
-    if (v3) {
-      try {
-        const sources = picked.map((set) => (set.classroomId ? { classroomId: set.classroomId, sharedId: set.sharedId } : { setId: set.id }));
+    try {
+      if (v3) {
+        const sources = picked.map((set) =>
+          set.classroomId ? { classroomId: set.classroomId, sharedId: set.sharedId } : { setId: set.id },
+        );
         const preview = await previewFlashcardMerge(sources);
         if (mine !== ticket) return;
         merged = { sources, preview };
-        const lines = [plural(preview.resulting, 'cartão no conjunto novo', 'cartões no conjunto novo')];
-        if (preview.duplicates)
-          lines.push(`${plural(preview.duplicates, 'cartão repetido fica', 'cartões repetidos ficam')} de fora (mesma pergunta e mesma resposta).`);
-        if (preview.conflicts.length)
-          lines.push(`${plural(preview.conflicts.length, 'pergunta aparece', 'perguntas aparecem')} com respostas diferentes: escolha abaixo.`);
-        if (preview.overLimit) lines.push(`Limite de ${IMPORT_MAX} cartões: ${preview.overLimit} ficam de fora.`);
+        const inConflict = preview.conflicts.reduce((sum, c) => sum + c.options.length, 0);
+        ui.preview.replaceChildren(
+          lines({
+            resulting: preview.resulting,
+            fresh: Math.max(0, preview.total - preview.duplicates - inConflict),
+            duplicates: preview.duplicates,
+            conflicts: preview.conflicts.length,
+            overLimit: preview.overLimit,
+            v3: true,
+          }),
+        );
         for (const key of Object.keys(decisions)) delete decisions[key];
-        ui.preview.replaceChildren(summaryList(lines), conflictChoices(preview.conflicts, decisions));
+        if (preview.conflicts.length) {
+          conflictSlot.append(conflictChoices(preview.conflicts, decisions));
+          conflictStep.hidden = false;
+        }
+        if (!preview.resulting) ui.preview.append(make('p', 'Os conjuntos escolhidos não têm cartões ativos.', 'deck-error'));
         ui.confirm.disabled = preview.resulting === 0;
-      } catch (error) {
-        if (mine === ticket) ui.preview.replaceChildren(make('p', error.message || 'Não foi possível ler os conjuntos.', 'deck-error'));
+        return;
       }
-      return;
-    }
-    try {
       const full = await Promise.all(
         picked.map(async (set) => {
           if (!cache.has(set.id)) cache.set(set.id, await getFlashcardSet(set.id));
@@ -251,19 +394,20 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
       );
       if (mine !== ticket) return;
       merged = mergeCards(full);
-      const lines = [plural(merged.cards.length, 'cartão no conjunto novo', 'cartões no conjunto novo')];
-      if (merged.duplicates)
-        lines.push(`${plural(merged.duplicates, 'cartão repetido fica', 'cartões repetidos ficam')} de fora (mesma pergunta e mesma resposta).`);
-      if (merged.sameQuestion.length)
-        lines.push(
-          `${plural(merged.sameQuestion.length, 'pergunta aparece', 'perguntas aparecem')} com respostas diferentes; ${merged.sameQuestion.length === 1 ? 'as duas ficam' : 'todas ficam'} para você decidir depois.`,
-        );
-      if (merged.overLimit) lines.push(`Limite de ${IMPORT_MAX} cartões: ${merged.overLimit} ficam de fora.`);
-      ui.preview.replaceChildren(summaryList(lines));
+      ui.preview.replaceChildren(
+        lines({
+          resulting: merged.cards.length,
+          fresh: null,
+          duplicates: merged.duplicates,
+          conflicts: merged.sameQuestion.length,
+          overLimit: merged.overLimit,
+        }),
+      );
       ui.confirm.disabled = merged.cards.length === 0;
     } catch (error) {
-      if (mine === ticket)
-        ui.preview.replaceChildren(make('p', error.message || 'Não foi possível ler os conjuntos.', 'deck-error'));
+      if (mine === ticket) showProblem(problemText(error, 'Não foi possível ler os conjuntos.'));
+    } finally {
+      if (mine === ticket) ui.preview.removeAttribute('aria-busy');
     }
   }
   name.input.addEventListener('input', () => {
@@ -273,22 +417,45 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
   setTimeout(() => box.querySelector('input')?.focus());
   return run(ui, opener, async () => {
     const picked = [...chosen.values()];
+    const deckName = name.input.value.trim() || 'Conjunto mesclado';
     if (v3) {
+      const { preview } = merged;
       const created = await mergeFlashcardSets({
-        id: crypto.randomUUID(),
-        name: name.input.value.trim() || 'Conjunto mesclado',
+        id: deckId,
+        name: deckName,
         sources: merged.sources,
         decisions,
         ...(look ? look.value() : {}),
       });
-      return { id: created.id, saved: created.added, message: `Conjunto mesclado criado com ${plural(created.added, 'cartão', 'cartões')}.` };
+      // A replay (an earlier try did reach the server) reports 0 added: the preview has the count.
+      const added = created.replayed ? preview.resulting : created.added;
+      const details = [];
+      if (preview.duplicates)
+        details.push(`${plural(preview.duplicates, 'cartão repetido ficou', 'cartões repetidos ficaram')} de fora.`);
+      if (preview.conflicts.length)
+        details.push(`${plural(preview.conflicts.length, 'pergunta com respostas diferentes resolvida', 'perguntas com respostas diferentes resolvidas')}.`);
+      return {
+        id: created.id || deckId,
+        saved: added,
+        message: `Conjunto mesclado criado com ${plural(added, 'cartão', 'cartões')}.`,
+        details: [...details, 'Os conjuntos originais não mudaram.'],
+      };
     }
     const result = await saveNewSet({
-      name: name.input.value.trim() || 'Conjunto mesclado',
+      name: deckName,
       cards: merged.cards,
       origin: { kind: 'merge', sets: picked.map((s) => ({ id: s.id, name: s.name })) },
     });
-    return { ...result, message: `Conjunto mesclado criado com ${plural(result.saved, 'cartão', 'cartões')}.` };
+    return {
+      ...result,
+      message: `Conjunto mesclado criado com ${plural(result.saved, 'cartão', 'cartões')}.`,
+      details: [
+        ...(merged.duplicates
+          ? [`${plural(merged.duplicates, 'cartão repetido ficou', 'cartões repetidos ficaram')} de fora.`]
+          : []),
+        'Os conjuntos originais não mudaram.',
+      ],
+    };
   });
 }
 
@@ -296,8 +463,11 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
 export function openImportDialog({ opener, v3 = false }) {
   const ui = dialogShell(
     'Importar cartões',
-    'Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.',
+    v3
+      ? 'Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas. Um conjunto novo é criado; nada que você já tem muda.'
+      : 'Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.',
   );
+  const deckId = crypto.randomUUID(); // one per dialog: a retry never creates two sets
   const fileLabel = make('label', 'Arquivo');
   fileLabel.htmlFor = `${ui.id}-file`;
   const file = make('input');
@@ -309,14 +479,25 @@ export function openImportDialog({ opener, v3 = false }) {
   ui.body.append(fileLabel, name.label);
   let parsed = null;
   let source = '';
+  // The first cards are shown outside the live region: only the counts are announced.
+  const showSample = (cards = []) => {
+    if (!cards.length) return;
+    const sample = make('dl', null, 'deck-sample');
+    for (const card of cards.slice(0, 3)) sample.append(make('dt', card.front), make('dd', card.back));
+    ui.extra.replaceChildren(make('p', 'Primeiros cartões:', 'flashcard-muted'), sample);
+  };
   file.addEventListener('change', async () => {
     parsed = null;
     ui.confirm.disabled = true;
+    ui.alert.textContent = '';
+    ui.extra.replaceChildren();
     const chosen = file.files?.[0];
     if (!chosen) return ui.preview.replaceChildren();
     source = chosen.name;
     if (v3 && /\.(apkg|colpkg)$/i.test(chosen.name)) {
       ui.preview.replaceChildren(make('p', 'Lendo o pacote do Anki…', 'flashcard-muted'));
+      ui.preview.setAttribute('aria-busy', 'true');
+      file.disabled = true;
       try {
         const report = await importApkg(chosen, { mode: 'preview' });
         parsed = { apkg: chosen, report };
@@ -327,16 +508,14 @@ export function openImportDialog({ opener, v3 = false }) {
         if (report.skipped.empty) lines.push(`${plural(report.skipped.empty, 'nota ignorada', 'notas ignoradas')}: sem pergunta ou sem resposta.`);
         if (report.skipped.unsupported) lines.push(`${plural(report.skipped.unsupported, 'nota ignorada', 'notas ignoradas')}: tipo de nota desconhecido.`);
         if (report.skipped.overLimit) lines.push(`${plural(report.skipped.overLimit, 'nota ficou', 'notas ficaram')} de fora: limite de ${IMPORT_MAX} cartões por conjunto.`);
-        const nodes = [summaryList(lines)];
-        if (report.sample?.length) {
-          const sample = make('dl', null, 'deck-sample');
-          for (const card of report.sample) sample.append(make('dt', card.front), make('dd', card.back));
-          nodes.push(make('p', 'Primeiros cartões:', 'flashcard-muted'), sample);
-        }
-        ui.preview.replaceChildren(...nodes);
+        ui.preview.replaceChildren(summaryList(lines));
+        showSample(report.sample);
         ui.confirm.disabled = report.notes === 0;
       } catch (error) {
-        ui.preview.replaceChildren(make('p', error.message || 'Não foi possível ler o pacote.', 'deck-error'));
+        ui.preview.replaceChildren(make('p', problemText(error, 'Não foi possível ler o pacote.'), 'deck-error'));
+      } finally {
+        ui.preview.removeAttribute('aria-busy');
+        file.disabled = false;
       }
       return;
     }
@@ -354,29 +533,30 @@ export function openImportDialog({ opener, v3 = false }) {
       const count = parsed.skipped.filter((item) => item.reason === reason).length;
       if (count) lines.push(`${plural(count, 'linha ignorada', 'linhas ignoradas')}: ${text}.`);
     }
-    const nodes = [summaryList(lines)];
-    if (parsed.cards.length) {
-      const sample = make('dl', null, 'deck-sample');
-      for (const card of parsed.cards.slice(0, 3)) sample.append(make('dt', card.front), make('dd', card.back));
-      nodes.push(make('p', 'Primeiros cartões:', 'flashcard-muted'), sample);
-    }
-    ui.preview.replaceChildren(...nodes);
+    ui.preview.replaceChildren(summaryList(lines));
+    showSample(parsed.cards);
     ui.confirm.disabled = parsed.cards.length === 0;
   });
   name.input.addEventListener('input', () => {
     name.input.dataset.edited = '1';
   });
   setTimeout(() => file.focus());
+  const imported = (id, saved) => ({
+    id: id || deckId,
+    saved,
+    message: `${plural(saved, 'cartão importado', 'cartões importados')} para um conjunto novo.`,
+    details: ['Os cartões começam do zero na revisão.'],
+  });
   return run(ui, opener, async () => {
     const deckName = name.input.value.trim() || 'Cartões importados';
     if (v3 && parsed.apkg) {
-      const created = await importApkg(parsed.apkg, { mode: 'create', id: crypto.randomUUID(), name: deckName });
-      return { id: created.id, saved: created.added, message: `${plural(created.added, 'cartão importado', 'cartões importados')} para um conjunto novo.` };
+      const created = await importApkg(parsed.apkg, { mode: 'create', id: deckId, name: deckName });
+      return imported(created.id, created.replayed ? parsed.report.notes : created.added);
     }
     if (v3) {
       // Typed: a cloze line stays a cloze note (rendered by the server).
       const created = await createFlashcardDeck({
-        id: crypto.randomUUID(),
+        id: deckId,
         name: deckName,
         origin: 'text_import',
         cards: parsed.cards.map((card) =>
@@ -385,13 +565,13 @@ export function openImportDialog({ opener, v3 = false }) {
             : { noteType: 'basic', fields: { front: card.front, back: card.back } },
         ),
       });
-      return { id: created.id, saved: created.added, message: `${plural(created.added, 'cartão importado', 'cartões importados')} para um conjunto novo.` };
+      return imported(created.id, created.replayed ? parsed.cards.length : created.added);
     }
     const result = await saveNewSet({
       name: deckName,
       cards: parsed.cards,
       origin: { kind: 'import', file: source.slice(0, 160), format: parsed.format },
     });
-    return { ...result, message: `${plural(result.saved, 'cartão importado', 'cartões importados')} para um conjunto novo.` };
+    return imported(result.id, result.saved);
   });
 }

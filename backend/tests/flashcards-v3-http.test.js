@@ -136,7 +136,7 @@ test('Flashcards 3.0 over HTTP: typed decks, templates, merge with decisions, An
     await t.test('Anki package: preview reports, create stores the deck and its image', async () => {
       const bytes = legacyApkg();
       const preview = await request('/api/flashcards/import/apkg?mode=preview', 'POST', null, 'a', bytes);
-      assert.equal(preview.status, 201, JSON.stringify(preview.body));
+      assert.equal(preview.status, 200, 'a preview creates nothing: ' + JSON.stringify(preview.body));
       assert.equal(preview.body.notes, 3);
       assert.deepEqual(preview.body.types, { basic: 2, cloze: 1 });
       assert.equal(preview.body.images, 1);

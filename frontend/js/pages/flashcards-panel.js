@@ -582,11 +582,16 @@ export async function initFlashcardsPanel({ materials }) {
   if (setsEnabled) {
     const setsPanel = initFlashcardSetsPanel({
       container: manager.closest('details'),
+      // Merge and import stay visible next to "Novos cartões" instead of inside a closed section.
+      toolsSlot: panel.querySelector('.flashcard-create-column'),
       materials,
       onChange: refresh,
       onSelect: (setId) => {
+        // A set created a moment ago (merge, import) may not be in the chooser yet.
+        if (![...setFilter.options].some((option) => option.value === setId)) fillSetOptions(setsPanel.sets());
         setFilter.value = setId;
-        changeView(0);
+        // Same as choosing it in the filter: the look of the set and its cards follow.
+        setFilter.dispatchEvent(new Event('change'));
         manager.closest('details').open = true;
         setFilter.focus();
       },

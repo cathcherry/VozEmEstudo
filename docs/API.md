@@ -272,7 +272,7 @@ Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, 
 | POST | `/api/flashcards/decks` | `{id, name, origin:'manual'|'text_import', cards:[{noteType, fields}], templateId?, templateBase?}` |
 | POST | `/api/flashcards/merge/preview` | `{sources:[{setId, classroomId?}]}` → `{total, duplicates, resulting, overLimit, conflicts:[{key, front, options:[{cardId, back, label}]}]}` |
 | POST | `/api/flashcards/merge` | `{id, name, sources, decisions:{[key]: 'combine'|'keep:<cardId>'}, templateId?, templateBase?}` → conjunto novo |
-| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê; `create` guarda as imagens e o baralho |
+| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê e responde 200; `create` guarda as imagens e o baralho e responde 201 |
 
 `GET /api/flashcards/sets/:id` e a fila de revisão passam a incluir `note_type`, `note_fields`, `origin_label` e `media:[{name, mime, url}]`, com URL assinada válida por 1 h.
 
