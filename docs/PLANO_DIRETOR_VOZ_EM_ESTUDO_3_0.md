@@ -193,7 +193,31 @@ Pendente:
 - As âncoras usam as coordenadas já validadas pelo servidor: revisão, segmento, offsets em code points e citação.
 - No caderno, cada destaque tem **Ouvir mm:ss** (toca o trecho) e **Ir ao destaque** (seleciona as palavras e recusa revisões diferentes).
 
-**Desenho** (exige migrations; não aplicadas):
+**Milestone A — Notes 3.0: implementado e testado automaticamente** (migration aprovada, ainda
+não aplicada em nenhum ambiente; flag `FEATURE_NOTEBOOKS`, exige `FEATURE_ANNOTATIONS`).
+Detalhes: `docs/migrations/NOTES_3_0.md`.
+
+- [x] Âncoras em vários trechos: início `(segment_position, start_offset)`, fim
+  `(end_segment_position, end_offset)`; citação conferida no servidor contra o `segments_snapshot`
+  imutável da revisão confirmada (pedaços unidos por quebra de linha; até 50 trechos).
+- [x] Comentários em vários trechos (mesmo modelo de âncora).
+- [x] Destaques antigos preservados: backfill explícito `end_segment_position = segment_position`;
+  funções E14 intactas; testado com linhas criadas antes da migration (PGlite).
+- [x] Caderno da aula (`study_notebooks`): um por aula e conta, documento de blocos (títulos,
+  parágrafos, listas, checklist, citação, referência a destaque); esquema validado no servidor,
+  só texto (HTML recusado), limites de tamanho.
+- [x] Salvamento automático confiável: `version` + `last_request_id`, retry idempotente, cópia
+  pendente no navegador, estados “Salvo / Salvando… / Não salvo — tentar de novo”, conflito com
+  escolha explícita (manter as duas versões, a do outro aparelho ou a deste).
+- [x] Referências cientes de revisão: o bloco guarda a revisão; a interface avisa “Revisão anterior”
+  e a citação continua legível (também se o destaque for excluído).
+- [x] Privado por padrão: `visibility = 'private'` com constraint que só aceita `private`.
+  Compartilhamento (Milestone E) virá por tabela própria de compartilhamento e relaxando a
+  constraint de forma explícita — nada disso foi implementado.
+- [ ] Pendente: escopos de caderno por unidade/disciplina/pessoal; tabela, link, imagem, código e
+  callout; edição colaborativa; validação manual com contas reais.
+
+**Desenho original** (referência; o implementado segue a migration `20261121130000_notes_3_0.sql`):
 
 ```sql
 -- Âncoras com vários segmentos (aditiva; mantém as colunas atuais para destaques antigos).

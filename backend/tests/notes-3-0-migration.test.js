@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { createAcademicDatabase, revisionIds } from './fixtures/academic-db.fixture.js';
 import { migrateLearningTools } from './fixtures/learning-db.fixture.js';
 import { identities, resourceIds } from './fixtures/ownership.fixture.js';
@@ -325,6 +326,45 @@ test('references keep the revision they were made in and stay readable after a n
     // Deleting the lesson removes its notebook (cascade), never another lesson's.
     await db.query('delete from public.materials where id=$1', [A]);
     assert.equal((await db.query('select count(*)::int n from public.study_notebooks')).rows[0].n, 0);
+  } finally {
+    await f.db.close();
+  }
+});
+
+test('preflight and postflight checks run read-only; the documented rollback keeps E14 working', async () => {
+  const read = (path) => readFileSync(new URL(`../../database/${path}`, import.meta.url), 'utf8');
+  const row = (results, key) => results.find((r) => r.rows[0] && key in r.rows[0]).rows[0];
+  const f = await createAcademicDatabase();
+  try {
+    const { db, call } = f;
+    await migrateLearningTools(db);
+    await call('study_save_annotation_admin', [a, randomUUID(), A, 0, randomUUID(), JSON.stringify({
+      sourceRevisionId: revisionIds.a, segmentPosition: 0, startOffset: 0, endOffset: 7, quote: 'Energia',
+    })]);
+    const pre = await db.exec(read('checks/notes-3-0-preflight.sql'));
+    const prereq = row(pre, 'has_e14_annotations');
+    assert(Object.values(prereq).every(Boolean), JSON.stringify(prereq));
+    assert.deepEqual(row(pre, 'notebooks_must_be_null'), { notebooks_must_be_null: null, range_column_must_be_false: false });
+    const before = row(pre, 'anchored_annotations');
+    await db.exec(migration);
+    const post = await db.exec(read('checks/notes-3-0-postflight.sql'));
+    const objects = row(post, 'has_notebooks');
+    assert(Object.values(objects).every((value) => value === true), JSON.stringify(objects));
+    const counts = row(post, 'legacy_rows_not_backfilled_must_be_0');
+    for (const key of ['annotations', 'anchored_annotations', 'deleted_annotations', 'annotation_owners'])
+      assert.equal(Number(counts[key]), Number(before[key]), key);
+    assert.equal(Number(counts.legacy_rows_not_backfilled_must_be_0), 0);
+    assert.equal(Number(counts.shared_annotations_must_be_0), 0);
+    // Section 3 of the rollback document (its SQL block), run after the export.
+    const rollback = read('rollback/notes-3-0-rollback.md').split('## 3.')[1].match(/```sql\n([\s\S]*?)```/)[1];
+    await db.exec(rollback);
+    assert.equal((await db.query("select to_regclass('public.study_notebooks') t")).rows[0].t, null);
+    const after = await call('study_save_annotation_admin', [a, randomUUID(), A, 0, randomUUID(), JSON.stringify({
+      sourceRevisionId: revisionIds.a, segmentPosition: 0, startOffset: 8, endOffset: 9, quote: 'é',
+    })]);
+    assert.equal(after.quote, 'é', 'E14 keeps working after the rollback');
+    await assert.rejects(db.exec(migration), /NOTES_3_0_ABORT: estruturas ja existem/, 'kept columns block a blind reapply');
+    await db.exec('rollback');
   } finally {
     await f.db.close();
   }

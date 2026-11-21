@@ -83,6 +83,7 @@ recebe o estado pelas `featureFlags` de `/api/config`.
 | `FEATURE_FLASHCARD_SETS`  | Conjuntos, "Criar flashcards" no resumo, CSV                      | E13 + `flashcard_sets`                        | Não                          |
 | `FEATURE_STUDY_TRACKING`  | Tempo e progresso de estudo sincronizados                         | E08/E09                                       | Não                          |
 | `FEATURE_ANNOTATIONS`     | Destaques e anotações                                             | E14/E15                                       | Não                          |
+| `FEATURE_NOTEBOOKS`       | Caderno da aula; destaques em vários trechos (exige ANNOTATIONS)  | E14 + `20261121130000_notes_3_0.sql`          | Não                          |
 | `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                      | E18/E19                                       | Não                          |
 | `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                               | —                                             | —                            |
 
