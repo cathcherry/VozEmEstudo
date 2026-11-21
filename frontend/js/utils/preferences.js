@@ -1,4 +1,5 @@
 import { toast } from './toast.js';
+import { STICKERS, STICKER_MAX, normalizeStickers, stickerName, stickerSvg } from './stickers.js';
 import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
 import { initPageReader } from './page-reader.js';
@@ -114,10 +115,11 @@ export function setUiPreference(key, value) {
 export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
   if (key === 'wallpaper' || key === 'pageWallpapers') queueMicrotask(() => window.dispatchEvent(new Event('voz-wallpaper-change')));
-  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings'].includes(key)) return;
+  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings', 'stickers'].includes(key)) return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
   if (key === 'language') reloadIfLanguageChanged();
+  if (key === 'stickers') window.dispatchEvent(new Event('voz-stickers-change'));
 }
 // ---- Estúdio visual (Personalização 3.0): wallpapers, surfaces and per-page wallpapers -----
 const WALLPAPER_CHOICES = [
@@ -180,11 +182,41 @@ function initVisualStudio() {
     row.append(text, select);
     pages.append(row);
   }
+  const stickerHost = document.querySelector('[data-sticker-options]');
+  if (stickerHost) {
+    const buttons = STICKERS.map((kind) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'sticker-option';
+      button.dataset.sticker = kind;
+      button.append(stickerSvg(kind), Object.assign(document.createElement('span'), { textContent: stickerName(kind) }));
+      button.addEventListener('click', () => {
+        const current = normalizeStickers(uiPreferences.stickers);
+        const on = current.includes(kind);
+        if (!on && current.length >= STICKER_MAX) {
+          showToast(`Até ${STICKER_MAX} adesivos. Tire um para escolher outro.`);
+          return;
+        }
+        updateUiPreference('stickers', on ? current.filter((k) => k !== kind) : [...current, kind]);
+        syncStickers();
+      });
+      stickerHost.append(button);
+      return button;
+    });
+    const syncStickers = () => {
+      const current = normalizeStickers(uiPreferences.stickers);
+      for (const button of buttons) button.setAttribute('aria-pressed', String(current.includes(button.dataset.sticker)));
+    };
+    syncStickers();
+    window.addEventListener('voz-preferences-change', syncStickers);
+    window.addEventListener('voz-stickers-change', syncStickers);
+  }
   document.querySelector('[data-reset-visual]')?.addEventListener('click', () => {
     // Visual choices only: reading, accessibility and language settings stay as they are.
     appearance.saveAppearance({ ...appearance.loadAppearance(), theme: 'paper' });
     appearance.applyAppearance(appearance.loadAppearance());
-    saveUi({ ...uiPreferences, wallpaper: 'none', surfaces: 'solid', pageWallpapers: {} });
+    saveUi({ ...uiPreferences, wallpaper: 'none', surfaces: 'solid', pageWallpapers: {}, stickers: [] });
+    window.dispatchEvent(new Event('voz-stickers-change'));
     markTheme();
     updateControls();
     showToast('Visual padrão restaurado.');

@@ -344,6 +344,12 @@ Já existe:
 
 - temas, perfis de tema salvos, modos de estudo;
 - Estúdio visual (fundos, fundo por página, vidro, restaurar);
+- imagem ou GIF próprio como fundo e tipografia dos títulos (3.1);
+- **adesivos originais** ao lado do título de cada página:
+  - 8 desenhos próprios em SVG: estrela, coração, matcha, nuvem, folha, brilho, livro e lápis;
+  - até 3, salvos em `stickers` nas preferências sincronizadas;
+  - decorativos (`aria-hidden`): o título lido continua o mesmo;
+  - somem com menos estímulos, no modo para leitores de tela e na impressão;
 - tudo em `audioestudo-ui-preferences` e `audioestudo-theme`, sincronizados por conta.
 
 **Desenho** do esquema declarativo versionado (`voz-studio-v1`), dentro de `profile_state`:

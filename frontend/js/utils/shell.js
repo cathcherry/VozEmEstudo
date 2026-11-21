@@ -5,6 +5,7 @@ import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
 import { initUtilityShell } from './utility-shell.js';
 import { initWallpaperImage } from './wallpaper-image.js';
+import { initPageStickers } from './page-stickers.js';
 import { readProfileMedia } from './profile-storage.js';
 import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
@@ -53,6 +54,7 @@ export async function initAuthenticatedShell() {
   try { await initStudySync(session.user.id); } catch { /* Optional sync must never block access. */ }
   // The student's own wallpaper image (if chosen), from this device's copy first.
   void initWallpaperImage(session.user.id).catch(() => { /* decoration only */ });
+  try { initPageStickers(); } catch { /* decoration only */ }
   // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);
