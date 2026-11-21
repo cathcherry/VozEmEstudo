@@ -45,11 +45,11 @@ export async function initCalendarPanel({panel,materials=[]}){
     for(const item of visible){
       const card=make('article');card.className='calendar-entry';card.append(make('h4',item.title));
       if(item.kind==='task'){
-        card.append(make('p',`Prazo de tarefa · ${new Date(item.date+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'})}`));const schedule=make('button','Agendar horário para esta tarefa');schedule.type='button';
+        card.append(make('p',`Prazo de tarefa · ${new Date(item.date+'T00:00:00').toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR'),{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'})}`));const schedule=make('button','Agendar horário para esta tarefa');schedule.type='button';
         schedule.addEventListener('click',()=>{reset();fields.title.value=item.title;taskId=item.id;material.value=item.materialId||'';taskLabel.textContent=`Tarefa: ${item.title}`;unlink.hidden=false;fields.startsAt.value=item.date+'T09:00';fields.endsAt.value=item.date+'T10:00';compose.open=true;fields.startsAt.focus();});card.append(schedule);
       }else{
         const when={weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'};
-        card.append(make('p',`${new Date(item.startsAt).toLocaleString('pt-BR',when)} – ${new Date(item.endsAt).toLocaleString('pt-BR',when)}`));if(item.description)card.append(make('p',item.description));
+        card.append(make('p',`${new Date(item.startsAt).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'),when)} – ${new Date(item.endsAt).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'),when)}`));if(item.description)card.append(make('p',item.description));
         const change=make('button','Editar horário'),remove=make('button','Remover horário');change.type=remove.type='button';change.addEventListener('click',()=>edit(item));
         const archive=pendingMutation(saveCalendarEvent,()=>crypto.randomUUID());remove.addEventListener('click',()=>{if(!confirm('Remover este horário do calendário?'))return;remove.disabled=true;void archive({id:item.id,version:item.version,body:{deleted:true}}).then(()=>{signal('calendar',{changed:true});return load(true);}).catch((e)=>{status.textContent=e.message;remove.disabled=false;});});card.append(change,remove);
       }

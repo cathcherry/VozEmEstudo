@@ -49,7 +49,7 @@ export async function initQuizHistoryPanel({ materials = [] }) {
         make('strong', titles.get(session.material_id) || 'Aula'),
         make(
           'small',
-          `${session.kind === 'review' ? 'Revisão dos erros' : 'Lista completa'} · ${new Date(session.created_at).toLocaleDateString('pt-BR')}`,
+          `${session.kind === 'review' ? 'Revisão dos erros' : 'Lista completa'} · ${new Date(session.created_at).toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR'))}`,
         ),
       );
       const link = make('a', action, 'secondary-action button-link');

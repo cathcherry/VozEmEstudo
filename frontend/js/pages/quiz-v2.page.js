@@ -84,7 +84,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       for (const item of previous) {
         const row = el('li');
         const link = el('a',
-          `${item.status === 'completed' ? 'Concluída' : 'Em andamento'} · ${item.kind === 'review' ? 'Revisão de erros' : 'Lista completa'} · ${new Date(item.created_at).toLocaleDateString('pt-BR')}`,
+          `${item.status === 'completed' ? 'Concluída' : 'Em andamento'} · ${item.kind === 'review' ? 'Revisão de erros' : 'Lista completa'} · ${new Date(item.created_at).toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR'))}`,
         );
         link.href = `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(item.batch_id)}&session=${encodeURIComponent(item.id)}`;
         row.append(link);

@@ -258,9 +258,10 @@ maybeSingle(){q.single=true;return run();},then(res,rej){return run().then(res,r
 
 const sdk = (user, withDb = false) =>
   `${withDb ? dbClient : ''}export function createClient(){const user=${JSON.stringify(user)};return {auth:{
-getSession:async()=>({data:{session:{user,access_token:'mock-token'}},error:null}),
+getSession:async()=>({data:{session:localStorage.getItem('mock-signed-out')?null:{user,access_token:'mock-token'}},error:null}),
 getUser:async()=>({data:{user},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
-signOut:async()=>({error:null}),updateUser:async()=>({data:{user},error:null})},
+signInWithPassword:async()=>{localStorage.removeItem('mock-signed-out');return {data:{user,session:{user,access_token:'mock-token'}},error:null}},
+signOut:async()=>{localStorage.setItem('mock-signed-out','1');return {error:null}},updateUser:async()=>({data:{user},error:null})},
 ${withDb ? 'from:db,' : ''}storage:{from:()=>({upload:async()=>({error:null}),remove:async()=>({error:null}),createSignedUrl:async()=>({data:{signedUrl:''},error:null})})}}}`;
 
 /**
@@ -525,7 +526,7 @@ async function setup(context, base, flags, data, options = {}) {
         [ids[1]]: { openedAt: now - 86400000, visits: 2, tags: ['revolução industrial'] },
         [ids[3]]: { openedAt: now - 5 * 86400000, completed: true, visits: 3, tags: [] },
       };
-      if (!localStorage.getItem('voz-study-v1:' + owner))
+      if (!localStorage.getItem('voz-study-v1:' + owner) && !localStorage.getItem('mock-no-seed'))
         localStorage.setItem('voz-study-v1:' + owner, JSON.stringify(store));
     },
     { owner: user.id, ids: materials.map((m) => m.id) },

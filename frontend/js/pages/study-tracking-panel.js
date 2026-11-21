@@ -76,7 +76,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       const list=make('ul');list.className='study-day-list';
       const most=Math.max(1,...data.days.map((day)=>Number(day.seconds)||0));
       for(const day of data.days){
-        const item=make('li'),label=make('span',`${new Date(day.date+'T00:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})}`),bar=make('span'),value=make('span',`${Math.floor(Number(day.seconds)/60)} min`);
+        const item=make('li'),label=make('span',`${new Date(day.date+'T00:00:00').toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR'),{weekday:'short',day:'2-digit',month:'2-digit'})}`),bar=make('span'),value=make('span',`${Math.floor(Number(day.seconds)/60)} min`);
         bar.className='study-day-bar';bar.setAttribute('aria-hidden','true');bar.style.setProperty('--fill',String(Math.round(((Number(day.seconds)||0)/most)*100)));
         item.append(label,bar,value);list.append(item);
       }

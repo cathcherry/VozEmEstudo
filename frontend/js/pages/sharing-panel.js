@@ -22,13 +22,13 @@ export async function initSharingPanel({panel,materialId,context}){
         const url=new URL('./compartilhado.html',location.href);url.hash=`token=${identity.token}`;
         const link=make('a','Abrir cópia compartilhada');link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';
         const fieldLabel=make('label','Link criado (copie agora)'),field=make('input');field.readOnly=true;field.value=url.href;fieldLabel.append(field);
-        result.replaceChildren(fieldLabel,link,make('p',`Expira em ${new Date(row.expiresAt).toLocaleString('pt-BR')}. O endereço não é guardado nesta lista; para outro link, revogue e crie uma nova cópia.`));
+        result.replaceChildren(fieldLabel,link,make('p',`Expira em ${new Date(row.expiresAt).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'))}. O endereço não é guardado nesta lista; para outro link, revogue e crie uma nova cópia.`));
         identity={id:crypto.randomUUID(),token:randomShareToken()};status.textContent='Cópia criada. O texto não acompanha alterações futuras da aula.';return load(true);
       }).catch((error)=>{status.textContent=error.message;}).finally(()=>{submit.disabled=false;});
   });
   async function load(reset=false){
     more.disabled=true;try{const data=await listMaterialShares(materialId,reset?0:offset);if(reset){offset=0;list.replaceChildren();}total=data.total;
-      for(const row of data.shares){const item=make('p',`${row.revoked_at?'Revogado':Date.parse(row.expires_at)<=Date.now()?'Expirado':'Disponível'} · expira em ${new Date(row.expires_at).toLocaleString('pt-BR')} `);
+      for(const row of data.shares){const item=make('p',`${row.revoked_at?'Revogado':Date.parse(row.expires_at)<=Date.now()?'Expirado':'Disponível'} · expira em ${new Date(row.expires_at).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'))} `);
         if(!row.revoked_at&&Date.parse(row.expires_at)>Date.now()){const revoke=make('button','Revogar link');revoke.type='button';revoke.addEventListener('click',()=>{if(!confirm(REVOKE_QUESTION))return;revoke.disabled=true;void revokeMaterialShare(materialId,row.id).then(()=>load(true)).catch((e)=>{status.textContent=e.message;revoke.disabled=false;});});item.append(revoke);}list.append(item);}
       offset+=data.shares.length;more.hidden=offset>=total;
       if(!total)list.replaceChildren(make('p','Nenhum link criado para esta aula.'));

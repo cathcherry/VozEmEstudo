@@ -11,7 +11,7 @@ const make = (tag, text) => {
   if (text !== undefined) node.textContent = text;
   return node;
 };
-const when = (value) => new Date(value).toLocaleString('pt-BR');
+const when = (value) => new Date(value).toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'));
 
 /** Questões tab → list menu → "Compartilhar": revocable, expiring read-only worksheet links. */
 export function initListShare({ materialId }) {

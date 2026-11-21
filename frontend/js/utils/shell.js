@@ -4,7 +4,7 @@ import { setStudyUser } from './study-store.js';
 import { initStudySync } from './study-sync.js';
 import { readProfileMedia } from './profile-storage.js';
 import { initProfileStudySync } from './profile-study-sync.js';
-import { initPreferenceCloud } from './preference-cloud.js';
+import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
 
@@ -52,7 +52,7 @@ export async function initAuthenticatedShell() {
     el.addEventListener('click', async (event) => {
       event.preventDefault();
       el.disabled = true;
-      try { await signOut(); location.href = './login.html'; }
+      try { await signOut(); releaseAccountPreferences({ notify: false }); location.href = './login.html'; }
       catch (error) { const message = document.querySelector('[data-logout-message]'); if (message) { message.textContent = error.message || 'Não foi possível sair. Tente novamente.'; message.dataset.state = 'error'; } el.disabled = false; }
     });
   });

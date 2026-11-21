@@ -85,6 +85,13 @@
         localStorage.setItem(key, value);
         if (SYNCED_KEYS.includes(key) || key.startsWith('voz-theme-profiles-v1:'))
           localStorage.setItem('voz-preferences-dirty', 'true');
+        // Signed out: this is a choice for the device (login page, before any account), kept
+        // apart so that signing out of an account brings it back (see preference-cloud.js).
+        if (SYNCED_KEYS.includes(key) && !localStorage.getItem('voz-preferences-owner')) {
+          const device = JSON.parse(localStorage.getItem('voz-preferences-device') || '{}');
+          device[key] = value;
+          localStorage.setItem('voz-preferences-device', JSON.stringify(device));
+        }
         return true;
       } catch {
         return false;
@@ -103,6 +110,8 @@
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
     root.lang = prefs.language;
+    // Dates and times in the interface language (a language change reloads the page).
+    globalThis.VOZ_LOCALE = prefs.language;
     // Bottom dock navigation: always in focus mode (auto-hidden), or chosen as the normal
     // navigation in Aparência (always visible). The sidebar is not shown in either case.
     root.dataset.navDock = String(prefs.focusMode || prefs.navigation === 'dock');
@@ -373,6 +382,15 @@
   migrateLegacyAccessibility();
   applyAppearance(loadAppearance());
   applyUi(loadUi());
+  // Another interface language: keep the page hidden for a moment until it is translated, so
+  // Portuguese does not flash first (js/i18n/boot.js removes the mark; 1.5 s safety limit).
+  if (root.dataset.language && root.dataset.language !== 'pt-BR') {
+    root.setAttribute('data-i18n-pending', '');
+    const style = document.createElement('style');
+    style.textContent = 'html[data-i18n-pending] body{visibility:hidden}';
+    document.head.append(style);
+    setTimeout(() => root.removeAttribute('data-i18n-pending'), 1500);
+  }
   root.dataset.profile = storage.get('voz-active-theme-profile', '');
   const file = location.pathname.split('/').pop();
   const aliases =

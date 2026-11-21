@@ -501,7 +501,7 @@ function openMilestone(badge) {
   const target=document.createElement('span');target.textContent=badge.target+' '+metricName;
   const xp=document.createElement('strong');xp.textContent='+'+badge.xp+' XP';metrics.append(target,xp);
   const progress=document.createElement('progress');progress.max=badge.target;progress.value=Math.min(badge.target,gameState.best?.[badge.metric]||0);progress.setAttribute('aria-label','Progresso do marco');
-  const status=document.createElement('p');status.className='milestone-date';status.textContent=date ? 'Conquistada em '+new Date(date).toLocaleDateString('pt-BR') : Math.floor(progress.value)+' de '+badge.target+' '+metricName;
+  const status=document.createElement('p');status.className='milestone-date';status.textContent=date ? 'Conquistada em '+new Date(date).toLocaleDateString((globalThis.VOZ_LOCALE || 'pt-BR')) : Math.floor(progress.value)+' de '+badge.target+' '+metricName;
   const link=document.createElement('a');link.className='primary-action';link.href='./historico.html';link.textContent='Ir para a Biblioteca';
   info.append(subtitle,reward,metrics,progress,status);
   if (date) {

@@ -1770,7 +1770,8 @@ async function main() {
           focusMode: true,
           reducedMotion: true,
         };
-        localStorage.setItem('audioestudo-ui-preferences', JSON.stringify(prefs));
+        // Through the app's storage helper, as the settings page does (marks a local change).
+        window.VozAppearance.storage.set('audioestudo-ui-preferences', JSON.stringify(prefs));
         window.VozAppearance.applyUi(prefs);
       });
       for (const name of [

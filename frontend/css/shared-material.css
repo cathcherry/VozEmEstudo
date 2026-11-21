@@ -5,3 +5,18 @@ body{font:1rem/1.65 system-ui,sans-serif;color:#222;background:#fff;margin:0}mai
 .shared-options{list-style:lower-alpha;margin:.4em 0 0;padding-left:1.6em}
 @media print{[data-shared-retry],[data-shared-print]{display:none}}
 .shared-nino{display:block;margin:12px 0;object-fit:contain}
+
+/* The visitor's own device settings (never the sharer's): text size, contrast, motion, dark. */
+:root{--shared-bg:#fff;--shared-text:#1f2328;--shared-muted:#4a5568;--shared-focus:#315d86}
+body{background:var(--shared-bg);color:var(--shared-text)}
+.shared-note{color:var(--shared-muted)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--shared-focus);outline-offset:2px}
+section{max-width:70ch}
+.skip-link{position:absolute;left:-999px;top:0;padding:.6rem 1rem;background:var(--shared-text);color:var(--shared-bg)}
+.skip-link:focus{left:1rem}
+:root[data-theme='night']{--shared-bg:#15191f;--shared-text:#eef1f5;--shared-muted:#b8c0cc;--shared-focus:#8fc0ff}
+:root[data-theme='contrast-dark']{--shared-bg:#000;--shared-text:#fff;--shared-muted:#fff;--shared-focus:#ffd400}
+:root[data-theme='contrast-light']{--shared-bg:#fff;--shared-text:#000;--shared-muted:#000;--shared-focus:#0033cc}
+[data-text-size="small"]{font-size:90%}[data-text-size="medium"]{font-size:115%}[data-text-size="large"]{font-size:130%}[data-text-size="extra-large"]{font-size:150%}[data-text-size="maximum"]{font-size:200%}
+[data-reading-spacing="wide"] section p{line-height:2;letter-spacing:.02em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

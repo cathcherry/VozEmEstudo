@@ -8,7 +8,7 @@ export const FLASHCARD_RATINGS = Object.freeze([
 export function formatFlashcardDue(isoDate) {
   const date = new Date(isoDate);
   if (!Number.isFinite(date.valueOf())) return 'Data indisponível';
-  return new Intl.DateTimeFormat('pt-BR', {
+  return new Intl.DateTimeFormat((globalThis.VOZ_LOCALE || 'pt-BR'), {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit',
   }).format(date);

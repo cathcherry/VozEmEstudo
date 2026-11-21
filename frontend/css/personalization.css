@@ -551,3 +551,40 @@ body[data-profile-editing] .account-page .profile-block-grid > .is-hidden-block,
     white-space: nowrap;
   }
 }
+
+/* ---- Configurações: synchronization and data on this browser ----------------------------- */
+.sync-card .sync-state {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface-alt);
+  font-weight: 600;
+}
+.sync-card[data-state='pending'] .sync-state,
+.sync-card[data-state='offline'] .sync-state {
+  border-left-color: var(--muted);
+}
+.sync-card .sync-detail:empty {
+  display: none;
+}
+.sync-card .sync-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin: 12px 0;
+}
+.sync-card .sync-note,
+.clear-device-dialog p {
+  max-width: 68ch;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.clear-device-dialog .clear-device-warning {
+  padding: 10px 14px;
+  border: 1px solid var(--text);
+  border-radius: 10px;
+  color: var(--text);
+  font-weight: 600;
+}

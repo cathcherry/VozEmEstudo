@@ -3,7 +3,8 @@ import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
 import { initPageReader } from './page-reader.js';
 import { STUDY_PRESETS, applyStudyPreset, activeStudyPreset } from './study-presets.js';
-import { t, translateDocument } from '../i18n/i18n.js';
+import { t } from '../i18n/i18n.js';
+import { bootTranslations } from '../i18n/boot.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
@@ -404,7 +405,7 @@ function syncScreenReaderToggle() {
 }
 function initialize() {
   // Before navigation reads link labels into aria-label/title.
-  translateDocument(document);
+  void bootTranslations();
   initializeNavigation();
   if (document.body.classList.contains('app-page')) {
     initReadingRuler();
