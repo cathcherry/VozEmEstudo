@@ -1,6 +1,4 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
-/* Public landing: a study scrapbook, with its own scoped art direction. */
+﻿/* Public landing: a study scrapbook, with its own scoped art direction. */
 @font-face{font-family:Inter;src:url('/assets/fonts/inter-latin.woff2') format('woff2');font-weight:400 800;font-display:swap}
 @font-face{font-family:Jakarta;src:url('/assets/fonts/jakarta-latin.woff2') format('woff2');font-weight:400 800;font-display:swap}
 body.ve-landing{--ink:#3b342f;--quiet:#62574e;--paper:#fffdf5;--blue:#cbdef1;--pink:#f4c8cd;--green:#d8dfad;--line:#998e7d;background:var(--paper)!important;color:var(--ink);font-family:Jakarta,Inter,sans-serif;font-size:1rem;line-height:1.7;margin:0;-webkit-font-smoothing:antialiased}
@@ -64,4 +62,3 @@ html[data-low-stimulation="true"] .ve-hero:before,html[data-low-stimulation="tru
 @media(max-width:960px){.ve-features{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:720px){.ve-split{grid-template-columns:minmax(0,1fr)}.ve-sample{max-width:100%}}
 .ve-sample-labels{flex-wrap:wrap;column-gap:18px;row-gap:0}
-}

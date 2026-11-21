@@ -1,5 +1,3 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
 /* Study time: a focus card (ring timer, one main button) beside a quiet week card (columns per
    day against the goal). Goal, time zone and synchronization live in a dialog. */
 .study-tracking-panel { margin-block: 1.5rem; container-type: inline-size; }
@@ -286,5 +284,4 @@
 .stats-legend span:last-child { margin-left: 4px; }
 @media (forced-colors: active) {
   .stats-bar, .stats-cell[data-level]:not([data-level='0']) { background: Highlight; forced-color-adjust: none; }
-}
 }

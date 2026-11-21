@@ -1,5 +1,3 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
 /* A calmer, compact hierarchy for the study library. */
 body[data-page='history'] {
   --library-accent-wash: color-mix(in srgb, var(--accent-strong) 7%, var(--surface));
@@ -352,4 +350,3 @@ body[data-page='history'] .folder-customizable { width:42px; height:36px; flex:0
 .folder-icon-reset { width:30px; height:30px; padding:0; border:0; border-radius:50%; background:var(--surface-alt); color:var(--muted); cursor:pointer; }
 .folder-icon-reset[hidden] { display:none; }
 .folder-icon-message { flex-basis:100%; font-size:.75rem; color:var(--muted); }
-}

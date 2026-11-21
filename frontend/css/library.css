@@ -1,6 +1,4 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
-/* A quieter library, retaining the adapted Marque controls and theme variables. */
+﻿/* A quieter library, retaining the adapted Marque controls and theme variables. */
 [data-theme='paper'] {
   --background:#f5f8ff; --surface:#fff; --surface-alt:#eaf0ff;
   --text:#17243d; --muted:#54637e; --border:#b5c6ec; --border-light:#d7e1fa;
@@ -493,5 +491,4 @@ html[data-nav-dock='true'][data-focus-mode='false'] body.app-page .focus-dock {
   opacity: 1;
   pointer-events: auto;
   transform: translate(-50%, 0);
-}
 }

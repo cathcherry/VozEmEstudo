@@ -1,5 +1,3 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
 .account-page { max-width: 1440px; }
 .profile-about-section { margin-bottom:20px; }
 .profile-about-section .profile-about-block { border:0; padding:0; background:transparent; }
@@ -246,4 +244,3 @@ body[data-page="account"] .sidebar-settings a { white-space:nowrap; font-size:.9
 body[data-page="account"] .sidebar-settings a { white-space: nowrap; font-size: .9rem; }
 body[data-page="account"] .sidebar-settings a span { white-space: nowrap; }
 .journey-note { margin:10px 0 0; color:var(--muted); font-size:.74rem; line-height:1.5; }
-}

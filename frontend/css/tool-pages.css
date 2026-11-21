@@ -1,5 +1,3 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
 /* Revisar and Planejar: full study tools on their own pages, one tab per tool.
    Panel rules moved from the dashboard side sheets; colours come from the theme tokens. */
 
@@ -778,4 +776,3 @@ body.app-page .tool-page .question-reports-panel > h2 { padding: 0 0 4px; font-s
 .unit-plan-sample li { overflow-wrap: anywhere; }
 .unit-plan-more { list-style: none; margin-left: -1.4rem; }
 .unit-plan-error { margin: 8px 0 0; color: var(--danger); }
-}
