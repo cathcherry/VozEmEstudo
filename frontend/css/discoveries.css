@@ -500,4 +500,45 @@
       padding: var(--space-4);
     }
   }
+
+  /* ---- 3.5 M5: small gestures (keyframes in system.css; stilled by the a11y layer) ---- */
+  /* A new unlock: its stamp is pressed onto the line. */
+  .investigation-unlocks:not([hidden]) .unlock-line .collectible-art {
+    display: inline-block;
+    animation: stamp-press 460ms var(--ease) both;
+  }
+  .investigation-unlocks:not([hidden]) .unlock-line:nth-child(2) .collectible-art {
+    animation-delay: 140ms;
+  }
+  /* Opening a discovery: the notebook page turns in from the spine. */
+  .discovery-detail:not([hidden]) {
+    transform-origin: 0 50%;
+    animation: page-turn 380ms var(--ease);
+  }
+  /* Gabinete: a drawer pulled open shows its contents sliding out. */
+  .cabinet-drawer[data-opening] > .cabinet-items {
+    animation: drawer-open 300ms var(--ease);
+  }
+  /* The notebook's cover beside the archive title (Aparência > Estúdio). */
+  .discoveries-cover {
+    flex: none;
+    width: 3.25rem;
+    border-radius: 3px 6px 6px 3px;
+    box-shadow: 0 1px 2px rgb(var(--shadow-color) / 0.18), 0 8px 18px -10px rgb(var(--shadow-color) / 0.45);
+    overflow: hidden;
+    rotate: -3deg;
+  }
+  .discoveries-cover:empty {
+    display: none;
+  }
+  .discoveries-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .discoveries-page .tool-heading > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
 }

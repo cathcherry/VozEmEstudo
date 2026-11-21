@@ -19,6 +19,7 @@ import {
   PRESETS,
 } from './soundscape-mix.js';
 import { createSoundscapeEngine } from './soundscape-engine.js';
+import { getAtmosphere } from './atmospheres.js';
 
 export const MINI_HEARTBEAT_MS = 2000;
 const MINI_STALE_MS = 6000;
@@ -56,8 +57,11 @@ export function loadMix(userId, storage = globalThis.localStorage) {
   if (saved) return normalizeMix(saved);
   const legacy = migrateLegacy(store.read(legacyKey(userId)));
   if (legacy) return legacy;
-  // A first visit starts from the first atmosphere's mix (silent until the student presses play).
-  return applyPreset(normalizeMix(), PRESETS[0].id);
+  // A first visit starts from the mix of the student's atmosphere (utils/atmospheres.js), silent
+  // until the student presses play.
+  const atmosphere = globalThis.VozAppearance?.loadUi?.().atmosphere;
+  const preset = atmosphere ? getAtmosphere(atmosphere).soundscape : PRESETS[0].id;
+  return applyPreset(normalizeMix(), PRESETS.some((p) => p.id === preset) ? preset : PRESETS[0].id);
 }
 
 /**

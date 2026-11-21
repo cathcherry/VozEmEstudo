@@ -139,7 +139,7 @@ async function main() {
       { segmentPosition: 0, startOffset: 2, endOffset: 14, quote: 'fotossíntese', note: 'Define o processo' },
     );
     await page.locator('[data-unlock-notice]:not([hidden])', { hasText: 'Primeira evidência' }).waitFor();
-    assert.equal(await page.locator('[data-unlock-notice] [data-art-id="stamp.first-evidence"]').count(), 1);
+    assert.equal(await page.locator('[data-unlock-notice] [data-art-slot][data-art-id="stamp.first-evidence"]').count(), 1);
     const whole = page.locator('[data-whole-segment="2"]');
     await whole.focus();
     await page.keyboard.press('Enter');
@@ -176,7 +176,7 @@ async function main() {
     await complete.click();
     await page.locator('[data-investigation-done]:not([hidden])').waitFor();
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.investigationDone !== undefined), true, 'focus moves to the result');
-    const stamps = await page.locator('[data-done-stamps] [data-art-id]').evaluateAll((nodes) => nodes.map((n) => n.dataset.artId).sort());
+    const stamps = await page.locator('[data-done-stamps] [data-art-slot][data-art-id]').evaluateAll((nodes) => nodes.map((n) => n.dataset.artId).sort());
     assert.deepEqual(stamps, ['stamp.first-evidence', 'stamp.first-investigation', 'stamp.first-reflection', 'stamp.own-explanation']);
     await settle(page);
     await axeCheck(page, 'main', 'Investigação: descoberta registrada');
@@ -231,7 +231,7 @@ async function main() {
     await page.getByRole('button', { name: 'Salvar a mesa' }).click();
     await page.locator('[data-cabinet-status]', { hasText: 'Mesa salva.' }).waitFor();
     assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'window', objectId: 'object.magnifying-glass' }]);
-    assert.equal(await page.locator('.desk-slot[data-slot="window"] [data-art-id="object.magnifying-glass"]').count(), 1);
+    assert.equal(await page.locator('.desk-slot[data-slot="window"] [data-art-slot][data-art-id="object.magnifying-glass"]').count(), 1);
     await settle(page);
     await axeCheck(page, 'main', 'Gabinete');
     await shot(page, 'gabinete');

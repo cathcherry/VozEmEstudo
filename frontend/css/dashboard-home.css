@@ -225,7 +225,7 @@
   body[data-page='dashboard'] .dash-continue {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4) var(--space-5);
     min-width: 0;
     padding: clamp(var(--space-5), 3vw, var(--space-6));
@@ -236,20 +236,7 @@
       linear-gradient(180deg, var(--paper-raised), color-mix(in srgb, var(--paper-raised) 94%, var(--paper-sunken)));
     box-shadow: var(--elev-2);
   }
-  body[data-page='dashboard'] .dash-continue:has(> .dash-desk-art:empty) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  body[data-page='dashboard'] .dash-continue > :not(.dash-desk-art) {
-    grid-column: 1;
-  }
-  /* Mount point for the companion (art system); empty until something is mounted. */
-  body[data-page='dashboard'] .dash-desk-art {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    align-self: end;
-    width: clamp(6rem, 12vw, 9rem);
-    aspect-ratio: 1;
-  }
+  /* Lume lives on the desk above (desk.css), not inside the sheet. */
   body[data-page='dashboard'] .dash-continue .dash-card-head h2 {
     color: var(--ink-muted);
     font-size: var(--step-ui);
@@ -839,11 +826,7 @@
   }
   @media (max-width: 700px) {
     body[data-page='dashboard'] .dash-continue {
-      grid-template-columns: minmax(0, 1fr);
       border-radius: var(--radius-panel);
-    }
-    body[data-page='dashboard'] .dash-desk-art {
-      display: none;
     }
     body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue,
     body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-cue {

@@ -241,6 +241,22 @@ body[data-page='history'].library-selecting .library-material { padding-left: 52
     --folder-body: #5d7488;
     --folder-tab: #6f879b;
   }
+  /* 3.5 M5: each subject's folder has its own tone (history.page.js folderTone). */
+  body[data-page='history'] .library-folder-group[data-folder-tone='lavender'] { --tone: var(--lavender); --tone-ink: var(--lavender-ink); }
+  body[data-page='history'] .library-folder-group[data-folder-tone='matcha'] { --tone: var(--matcha); --tone-ink: var(--matcha-ink); }
+  body[data-page='history'] .library-folder-group[data-folder-tone='honey'] { --tone: var(--honey); --tone-ink: var(--honey-ink); }
+  body[data-page='history'] .library-folder-group[data-folder-tone='mist'] { --tone: var(--mist); --tone-ink: var(--mist-ink); }
+  body[data-page='history'] .library-folder-group[data-folder-tone='rose'] { --tone: var(--rose); --tone-ink: var(--rose-ink); }
+  body[data-page='history'] .library-folder-group[data-folder-tone] {
+    --folder-top: color-mix(in srgb, var(--tone) 42%, #fff);
+    --folder-body: color-mix(in srgb, var(--tone) 86%, var(--tone-ink));
+    --folder-tab: color-mix(in srgb, var(--tone) 74%, #fff);
+  }
+  :root:is([data-theme='night'], [data-theme='contrast-dark']) body[data-page='history'] .library-folder-group[data-folder-tone] {
+    --folder-top: color-mix(in srgb, var(--tone) 70%, #2a2640);
+    --folder-body: color-mix(in srgb, var(--tone) 55%, #2a2640);
+    --folder-tab: color-mix(in srgb, var(--tone) 62%, #2a2640);
+  }
   body[data-page='history'] .dashboard-heading {
     margin-bottom: var(--space-5);
     align-items: flex-end;
@@ -248,7 +264,8 @@ body[data-page='history'].library-selecting .library-material { padding-left: 52
   body[data-page='history'] .file-browser {
     position: relative;
     display: block;
-    min-height: 32rem;
+    /* Sized to its content, with a pleasant minimum (no tall empty window). */
+    min-height: 19rem;
     margin: 0;
     padding: 0 0 2.75rem;
     overflow: visible;

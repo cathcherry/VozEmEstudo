@@ -30,7 +30,7 @@ function updateControls() {
     const key = c.dataset.uiSetting;
     if (key in uiPreferences) {
       if (c.type === 'checkbox') c.checked = uiPreferences[key];
-      else if (c.type === 'radio') c.checked = c.value === uiPreferences[key];
+      else if (c.type === 'radio') c.checked = c.value === String(uiPreferences[key]);
       else c.value = uiPreferences[key];
     }
   });
@@ -96,7 +96,7 @@ function renderStudyPresets() {
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
   // Focus mode and read-aloud choices are not part of a theme, so they never deselect one.
-  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density', 'language'];
+  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density', 'language', 'experience'];
   const changesTheme = Object.keys(appearance.defaults).some(
     (key) => !notTheme.includes(key) && next[key] !== uiPreferences[key],
   );
@@ -112,14 +112,32 @@ function saveUi(next) {
 export function setUiPreference(key, value) {
   updateUiPreference(key, value);
 }
+/** For page modules: change several preferences at once (one save, one sync, one apply). */
+export function setUiPreferences(patch) {
+  const saved = saveUi({ ...uiPreferences, ...patch });
+  if (!saved) showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
+  window.dispatchEvent(new Event('voz-ui-preferences-change'));
+  return saved;
+}
 export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
   if (key === 'wallpaper' || key === 'pageWallpapers') queueMicrotask(() => window.dispatchEvent(new Event('voz-wallpaper-change')));
-  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings', 'stickers'].includes(key)) return;
+  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings', 'stickers', 'deskStarters'].includes(key)) return;
+  // On/off segmented controls are radios with "true"/"false" values.
+  if (typeof appearance.defaults[key] === 'boolean' && typeof value === 'string') value = value === 'true';
+  // The mode used to be a per-device value (Gabinete); the account preference replaces it.
+  if (key === 'experience') {
+    try {
+      localStorage.removeItem('voz-experience-mode');
+    } catch {
+      /* private window: the preference still applies */
+    }
+  }
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
   if (key === 'language') reloadIfLanguageChanged();
   if (key === 'stickers') window.dispatchEvent(new Event('voz-stickers-change'));
+  window.dispatchEvent(new Event('voz-ui-preferences-change'));
 }
 // ---- Estúdio visual (Personalização 3.0): wallpapers, surfaces and per-page wallpapers -----
 const WALLPAPER_CHOICES = [
@@ -215,7 +233,22 @@ function initVisualStudio() {
     // Visual choices only: reading, accessibility and language settings stay as they are.
     appearance.saveAppearance({ ...appearance.loadAppearance(), theme: 'paper' });
     appearance.applyAppearance(appearance.loadAppearance());
-    saveUi({ ...uiPreferences, wallpaper: 'none', surfaces: 'solid', pageWallpapers: {}, stickers: [] });
+    const d = appearance.defaults;
+    saveUi({
+      ...uiPreferences,
+      wallpaper: 'none',
+      surfaces: 'solid',
+      pageWallpapers: {},
+      stickers: [],
+      atmosphere: d.atmosphere,
+      atmosphereAccent: d.atmosphereAccent,
+      atmospherePalette: d.atmospherePalette,
+      atmosphereWallpaper: d.atmosphereWallpaper,
+      atmosphereMotion: d.atmosphereMotion,
+      lumeOutfit: d.lumeOutfit,
+      notebookCover: d.notebookCover,
+      decoration: d.decoration,
+    });
     window.dispatchEvent(new Event('voz-stickers-change'));
     markTheme();
     updateControls();
@@ -392,6 +425,7 @@ function initializeFocusDock() {
     reading: '<path d="M3 20 10 4l7 16M6 14h8M20 4v16"/>',
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',
     classrooms: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6"/>',
+    discoveries: '<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M10 8h5M10 12h5"/>',
   };
   const links = [
     ['Início', './painel.html', 'dashboard'],
@@ -401,6 +435,7 @@ function initializeFocusDock() {
     ['Planejar', './planejar.html', 'plan'],
     ['Focar', './focar.html', 'plan'],
     ['Turmas', './turmas.html', 'classrooms'],
+    ['Descobertas', './descobertas.html', 'discoveries'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');
@@ -417,7 +452,7 @@ function initializeFocusDock() {
     const link = document.createElement('a');
     link.href = href;
     link.className = 'focus-dock-link';
-    if (['review', 'plan', 'classrooms'].includes(iconName)) link.dataset.navFeature = iconName;
+    if (['review', 'plan', 'classrooms', 'discoveries'].includes(iconName)) link.dataset.navFeature = iconName;
     link.setAttribute('aria-label', label);
     const path = location.pathname.split('/').at(-1) || 'painel.html';
     if (
@@ -577,7 +612,9 @@ function initialize() {
       ),
     );
   document.querySelector('#reset-personalization')?.addEventListener('click', () => {
-    saveUi({ ...appearance.defaults });
+    // Reading and focus only: the atmosphere, the desk and the experience mode stay.
+    const kept = ['experience', 'atmosphere', 'atmosphereAccent', 'atmospherePalette', 'atmosphereWallpaper', 'atmosphereMotion', 'lumeOutfit', 'notebookCover', 'decoration', 'deskStarters'];
+    saveUi({ ...appearance.defaults, ...Object.fromEntries(kept.map((key) => [key, uiPreferences[key]])) });
     showToast('Preferências de leitura restauradas.');
   });
   document.addEventListener('keydown', (event) => {
@@ -645,6 +682,8 @@ function initialize() {
   document.querySelectorAll('[data-theme-option]').forEach((b) =>
     b.addEventListener('click', () => {
       appearance.saveAppearance({ ...appearance.loadAppearance(), theme: b.dataset.themeOption });
+      // A classic theme wins over the atmosphere's colours (its desk, Lume and sound stay).
+      if (uiPreferences.atmospherePalette !== 'off') saveUi({ ...uiPreferences, atmospherePalette: 'off' });
       notify(`Tema ${b.querySelector('strong').textContent} aplicado e salvo.`);
     }),
   );
@@ -805,6 +844,7 @@ function initialize() {
     populateColors();
     renderProfiles();
     reloadIfLanguageChanged();
+    window.dispatchEvent(new Event('voz-ui-preferences-change'));
   }
   window.addEventListener('voz-user-change', () => renderProfiles());
   window.addEventListener('voz-preferences-change', refresh);

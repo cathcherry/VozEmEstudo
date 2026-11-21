@@ -61,6 +61,24 @@ const shots = [
   ['inicio-noturno', '/painel.html', KEY, { theme: 'night' }],
   ['material-noturno', '/material.html?id=l-foto#resumo', [1440], { theme: 'night' }],
   ['inicio-contraste', '/painel.html', [1440], { theme: 'contrast-light' }],
+  // 3.5 M5 (Personalization): the escrivaninha, the Creative Studio and the atmospheres.
+  ['escrivaninha', '/painel.html', KEY, { full: false }],
+  ['escrivaninha-biblioteca-chuvosa', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'rainy-library' } }],
+  ['escrivaninha-inverno', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'cozy-winter', decoration: 'abundant' } }],
+  ['escrivaninha-jardim-noturno', '/painel.html', KEY, { full: false, theme: 'night', prefs: { atmosphere: 'night-garden' } }],
+  ['escrivaninha-caderno-antigo', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'old-notebook' } }],
+  ['escrivaninha-pastel', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'dreamy-pastel' } }],
+  ['escrivaninha-beira-mar', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'seaside' } }],
+  ['escrivaninha-matcha-aventura', '/painel.html', [1440], { full: false, discoveries: true, prefs: { atmosphere: 'matcha-afternoon', experience: 'adventure' } }],
+  ['escrivaninha-silencioso', '/painel.html', KEY, { full: false, prefs: { experience: 'quiet' } }],
+  ['escrivaninha-arrumando', '/painel.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'lavender-desk', decoration: 'abundant' },
+    act: async (p) => { await p.getByRole('button', { name: 'Arrumar a mesa' }).click(); await p.locator('[data-desk-object="object.globe"]').click(); } }],
+  ['escrivaninha-inicio-completo', '/painel.html', KEY, { prefs: { atmosphere: 'rainy-library' } }],
+  ['estudio-simples', '/aparencia.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'lavender-desk' },
+    act: (p) => p.locator('[data-creative-studio]').scrollIntoViewIfNeeded() }],
+  ['estudio-detalhes', '/aparencia.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'cozy-winter' },
+    act: async (p) => { await p.locator('input[name="studio-view"][value="studio"]').check(); await p.locator('[data-studio-detail]').scrollIntoViewIfNeeded(); } }],
+  ['biblioteca-pastas-coloridas', '/historico.html', KEY],
 ];
 
 async function main() {
@@ -72,8 +90,19 @@ async function main() {
       if (filter && !filter.test(name)) continue;
       for (const width of widths) {
         const data = options.data ? options.data(state()) : state();
-        const { context, page } = await openApp(browser, base, flags, data, { width, height: width < 700 ? 844 : 1000 });
+        if (options.discoveries)
+          data.seedUnlocks = [
+            { id: 'object.globe', kind: 'object', occurredAt: '2026-11-18T14:00:00Z', lessonTitle: 'Fotossíntese e respiração celular' },
+            { id: 'object.magnifying-glass', kind: 'object', occurredAt: '2026-11-19T14:00:00Z', lessonTitle: 'Fotossíntese e respiração celular' },
+            { id: 'stamp.first-evidence', kind: 'stamp', occurredAt: '2026-11-18T14:00:00Z' },
+          ];
+        const { context, page } = await openApp(browser, base, { ...flags, discoveries: Boolean(options.discoveries) }, data, { width, height: width < 700 ? 844 : 1000 }, { context: { timezoneId: 'America/Sao_Paulo' } });
         if (options.prepare) await options.prepare(context, base);
+        if (options.prefs)
+          await context.addInitScript((prefs) => {
+            const current = JSON.parse(localStorage.getItem('audioestudo-ui-preferences') || '{}');
+            localStorage.setItem('audioestudo-ui-preferences', JSON.stringify({ ...current, ...prefs }));
+          }, options.prefs);
         if (options.theme)
           await context.addInitScript((theme) => localStorage.setItem('audioestudo-theme', theme), options.theme);
         try {
