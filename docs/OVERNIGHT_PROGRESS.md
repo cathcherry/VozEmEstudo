@@ -110,3 +110,6 @@ Nenhuma migration foi criada ou aplicada.
 | Som ambiente gerado no navegador (ruído marrom, chuva, ondas) com ducking | `6439743` |
 | Biblioteca: selecionar várias aulas e mover de uma vez (barra de seleção, axe ok) | `37b1e31` |
 | Histórico de blocos do Focar na conta (`focus-history`, união entre aparelhos) | `59dc98e` |
+| Correção de privacidade: "Apagar dados desta conta" também remove Focar, painel e som (achada pelo CI) | `5ddc1b9` |
+
+**PR #9 integrado em `main`** (merge `399bddb`), depois do CI verde em `5ddc1b9`.
