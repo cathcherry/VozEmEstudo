@@ -22,6 +22,8 @@ export default {
   "20 questões": "20 preguntas",
   "3 questões": "3 preguntas",
   "30 dias": "30 días",
+  "30 min mais cedo": "30 min antes",
+  "30 min mais tarde": "30 min después",
   "5 cartões": "5 tarjetas",
   "5 questões": "5 preguntas",
   "7 dias": "7 días",
@@ -543,6 +545,8 @@ export default {
   "Detalhes": "Detalles",
   "Detalhes do processamento": "Detalles del procesamiento",
   "Detectar automaticamente": "Detectar automáticamente",
+  "Dia anterior": "Día anterior",
+  "Dia seguinte": "Día siguiente",
   "Diagnóstico da tentativa": "Diagnóstico del intento",
   "Dias com estudo": "Días con estudio",
   "Dias do mês": "Días del mes",
@@ -1023,6 +1027,7 @@ export default {
   "Mostrar senha": "Mostrar contraseña",
   "Mostrar tarefas": "Mostrar tareas",
   "Mostrar tudo": "Mostrar todo",
+  "Mover": "Mover",
   "Mover aula": "Mover clase",
   "Mover para baixo": "Mover abajo",
   "Mover para cá": "Mover aquí",
@@ -1432,6 +1437,7 @@ export default {
   "próxima etapa": "siguiente paso",
   "Próxima página": "Página siguiente",
   "Próxima questão": "Siguiente pregunta",
+  "Próxima semana": "Próxima semana",
   "Próximas anotações": "Notas siguientes",
   "Próximas tarefas": "Próximas tareas",
   "Próximo mês": "Mes siguiente",
@@ -1620,6 +1626,8 @@ export default {
   "Sem tags": "Sin etiquetas",
   "Sem tarefas": "Sin tareas",
   "Sem unidade": "Sin unidad",
+  "Semana": "Semana",
+  "Semana anterior": "Semana anterior",
   "Semana de": "Semana del",
   "Semana, agenda e disciplinas": "Semana, agenda y asignaturas",
   "Semanas na meta": "Semanas en la meta",
@@ -1871,6 +1879,7 @@ export default {
   "Vidro translúcido": "Vidrio translúcido",
   "Vinho": "Vino",
   "Visual padrão restaurado.": "Aspecto predeterminado restaurado.",
+  "Visualização": "Vista",
   "Visualização das pastas": "Vista de carpetas",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "Aún no has respondido ninguna lista. Crea preguntas a partir de una clase para practicar y repasar aquí las falladas.",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "Tú eliges el contenido y sigues cada etapa de la preparación del material.",
@@ -2229,6 +2238,10 @@ export default {
    "{0}. Revisar la transcripción: {1}"
   ],
   [
+   "{0}, {1} a {2}. Editar horário",
+   "{0}, de {1} a {2}. Editar horario"
+  ],
+  [
    "Gerar novas questões para {0}",
    "Generar nuevas preguntas para {0}"
   ],
@@ -2311,6 +2324,10 @@ export default {
   [
    "Continuar tentativa: {0}",
    "Seguir el intento: {0}"
+  ],
+  [
+   "Horário movido para {0}.",
+   "Horario movido a {0}."
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -2585,6 +2602,10 @@ export default {
    "Seleccionar {0}"
   ],
   [
+   "Agendar em {0}",
+   "Programar el {0}"
+  ],
+  [
    "- Revisão {0}",
    "- Versión {0}"
   ],
@@ -2659,6 +2680,10 @@ export default {
   [
    "Aula: {0}",
    "Clase: {0}"
+  ],
+  [
+   "Mover {0}",
+   "Mover {0}"
   ],
   [
    "{0} aula",

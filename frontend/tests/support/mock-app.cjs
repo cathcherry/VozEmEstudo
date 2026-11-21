@@ -478,8 +478,13 @@ async function setup(context, base, flags, data, options = {}) {
     if (p === '/api/calendar' && method === 'PUT') {
       const body = request.postDataJSON();
       data.savedEvents.push(body);
-      data.events.push({ kind: 'event', id: body.id, version: 1, ...body.body });
-      return json({ id: body.id, version: 1 });
+      const existing = data.events.find((event) => event.id === body.id);
+      if (existing && existing.version !== body.version)
+        return json({ error: { code: 'CALENDAR_CONFLICT', message: 'Outro dispositivo alterou este horário.' } }, 409);
+      const version = (existing?.version || 0) + 1;
+      if (existing) Object.assign(existing, body.body, { version });
+      else data.events.push({ kind: 'event', id: body.id, version, ...body.body });
+      return json({ id: body.id, version });
     }
     if (p === '/api/catalog' && method === 'GET') return json(data.catalog || CATALOG);
     if (/^\/api\/catalog\/materials\/[^/]+$/.test(p) && method === 'PATCH') {

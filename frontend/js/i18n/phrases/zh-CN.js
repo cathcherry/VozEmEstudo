@@ -22,6 +22,8 @@ export default {
   "20 questões": "20 道题",
   "3 questões": "3 道题",
   "30 dias": "30 天",
+  "30 min mais cedo": "提前 30 分钟",
+  "30 min mais tarde": "推后 30 分钟",
   "5 cartões": "5 张卡片",
   "5 questões": "5 道题",
   "7 dias": "7 天",
@@ -543,6 +545,8 @@ export default {
   "Detalhes": "详情",
   "Detalhes do processamento": "处理详情",
   "Detectar automaticamente": "自动检测",
+  "Dia anterior": "前一天",
+  "Dia seguinte": "后一天",
   "Diagnóstico da tentativa": "答题诊断",
   "Dias com estudo": "学习天数",
   "Dias do mês": "本月日期",
@@ -937,7 +941,7 @@ export default {
   "Lista": "列表",
   "Listas de questões": "题目列表",
   "Literária": "文学",
-  "Livre": "自由",
+  "Livre": "空闲",
   "Livro": "书本",
   "Localização": "位置",
   "Longa": "长",
@@ -1023,6 +1027,7 @@ export default {
   "Mostrar senha": "显示密码",
   "Mostrar tarefas": "显示任务",
   "Mostrar tudo": "显示全部",
+  "Mover": "移动",
   "Mover aula": "移动课程",
   "Mover para baixo": "下移",
   "Mover para cá": "移到这里",
@@ -1432,6 +1437,7 @@ export default {
   "próxima etapa": "下一步",
   "Próxima página": "下一页",
   "Próxima questão": "下一题",
+  "Próxima semana": "下一周",
   "Próximas anotações": "下一页笔记",
   "Próximas tarefas": "近期任务",
   "Próximo mês": "下个月",
@@ -1620,6 +1626,8 @@ export default {
   "Sem tags": "无标签",
   "Sem tarefas": "无任务",
   "Sem unidade": "无单元",
+  "Semana": "周",
+  "Semana anterior": "上一周",
   "Semana de": "周起始",
   "Semana, agenda e disciplinas": "本周、日程和科目",
   "Semanas na meta": "达标周数",
@@ -1871,6 +1879,7 @@ export default {
   "Vidro translúcido": "半透明玻璃",
   "Vinho": "酒红",
   "Visual padrão restaurado.": "已恢复默认外观。",
+  "Visualização": "视图",
   "Visualização das pastas": "文件夹视图",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "你还没有作答过任何列表。从课程生成题目来练习，并在这里复习错题。",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "你选择内容，并跟进资料准备的每个步骤。",
@@ -2229,6 +2238,10 @@ export default {
    "{0}. 核对转写：{1}"
   ],
   [
+   "{0}, {1} a {2}. Editar horário",
+   "{0}，{1} 至 {2}。编辑时间"
+  ],
+  [
    "Gerar novas questões para {0}",
    "为{0}生成新题目"
   ],
@@ -2311,6 +2324,10 @@ export default {
   [
    "Continuar tentativa: {0}",
    "继续作答：{0}"
+  ],
+  [
+   "Horário movido para {0}.",
+   "时间已移至 {0}。"
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -2585,6 +2602,10 @@ export default {
    "选择 {0}"
   ],
   [
+   "Agendar em {0}",
+   "安排在 {0}"
+  ],
+  [
    "- Revisão {0}",
    "- 版本 {0}"
   ],
@@ -2659,6 +2680,10 @@ export default {
   [
    "Aula: {0}",
    "课程：{0}"
+  ],
+  [
+   "Mover {0}",
+   "移动 {0}"
   ],
   [
    "{0} aula",

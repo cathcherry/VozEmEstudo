@@ -121,3 +121,4 @@ Nenhuma migration foi criada ou aplicada.
 | Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | `3bea961` |
 | "Seu ritmo": 12 semanas contra a meta, aulas mais estudadas e mapa do ano (`GET /api/study/history`, sem tabela nova) | `0296300` |
 | Adesivos originais ao lado do título (até 3, preferências sincronizadas) | `21b0fc1` |
+| Calendário › Semana: grade de horários, mover sem arrastar | (este commit) |

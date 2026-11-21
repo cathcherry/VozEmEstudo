@@ -88,6 +88,49 @@ async function main() {
     data.calendarPageSize = 0;
     record('Calendário: exportação ICS percorre todas as páginas, mesmo sem "limit" na resposta');
 
+    // ---------- Calendar › Semana: blocks on a time grid, moved without dragging ------------
+    {
+      const today = new Date();
+      today.setHours(14, 0, 0, 0);
+      const end = new Date(today);
+      end.setHours(15, 0, 0, 0);
+      data.events = [
+        { kind: 'event', id: 'w1', title: 'Revisar genética', startsAt: today.toISOString(), endsAt: end.toISOString(), description: 'cap. 3', materialId: 'l-foto', taskId: null, version: 1 },
+      ];
+      await page.goto(base + '/planejar.html#calendario');
+      await page.reload();
+      await page.getByRole('button', { name: 'Semana', exact: true }).click();
+      const block = page.locator('.week-event', { hasText: 'Revisar genética' });
+      await block.waitFor();
+      assert.equal(await page.getByRole('button', { name: 'Semana', exact: true }).getAttribute('aria-pressed'), 'true');
+      await page.locator('.week-day.is-today .week-event').waitFor();
+      await settle(page);
+      await axeCheck(page, '[data-calendar-panel]', 'Calendário › Semana');
+      // Keyboard: open "Mover" and move 30 minutes later.
+      await block.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      await block.getByRole('button', { name: '30 min mais tarde' }).click();
+      await page.locator('.calendar-status', { hasText: 'Horário movido para' }).waitFor();
+      const moved = data.events.find((e) => e.id === 'w1');
+      assert.equal(new Date(moved.startsAt).getHours(), 14);
+      assert.equal(new Date(moved.startsAt).getMinutes(), 30);
+      assert.equal(Date.parse(moved.endsAt) - Date.parse(moved.startsAt), 3_600_000, 'duration kept');
+      assert.equal(moved.version, 2);
+      assert.equal(moved.description, 'cap. 3', 'other fields kept');
+      assert.equal(moved.materialId, 'l-foto');
+      // Focus comes back to the same block's "Mover".
+      await page.waitForFunction(() => document.activeElement?.closest('.week-move'), null, { timeout: 3000 });
+      // The choice is remembered on this device; the phone shows a list of days.
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.reload();
+      await page.locator('.calendar-week .week-event', { hasText: 'Revisar genética' }).waitFor();
+      await noHorizontalScroll(page, 'calendário semana (390 px)');
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.getByRole('button', { name: 'Mês', exact: true }).click();
+      await page.locator('.study-calendar-grid').waitFor();
+      record('Calendário › Semana: blocos na grade de horários, mover 30 min pelo teclado mantém duração e dados, escolha lembrada, lista no celular');
+    }
+
     // ---------- Annotations: pages and the way back to the passage ----------------------
     data.notePageSize = 1;
     await page.goto(base + '/revisar.html#anotacoes');

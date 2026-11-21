@@ -402,7 +402,12 @@ Já existe (antes desta sessão):
 Desenho:
 
 - objetivos ligados a unidades, com inclusão de aulas novas por regra explícita;
-- semana em blocos de horário com movimentação acessível (arrastar é opcional);
+- ~~semana em blocos de horário com movimentação acessível~~: **feito**. Calendário › Semana:
+  - grade de 07:00 a 23:00 com prazos no topo de cada dia;
+  - blocos sobrepostos lado a lado;
+  - menu "Mover" (30 min mais cedo ou mais tarde, dia anterior ou seguinte), que mantém duração, aula, tarefa e descrição;
+  - lista de dias no celular;
+  - sem arrastar e sem tabela nova (usa `PUT /api/calendar` com versão);
 - ~~estatísticas semanais e mapa anual opcional~~ (feito, acima);
 - nada de streaks punitivos; visitas a páginas não contam como estudo.
 

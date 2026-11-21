@@ -3,6 +3,7 @@ import { listCalendar,saveCalendarEvent } from '../api/learning-tools.api.js';
 import { monthRange,localDay,itemOnDay,calendarIcs } from '../utils/calendar-export.js';
 import { downloadText } from '../utils/study-export.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
+import { renderWeek,weekStartOf,weekRange,moveEvent,addDays } from './calendar-week.js';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
 // Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
 const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
@@ -25,7 +26,12 @@ export async function initCalendarPanel({panel,materials=[]}){
   const composeButton=make('button','Agendar estudo'),exportButton=make('button','Baixar calendário ICS');composeButton.type=exportButton.type='button';
   composeButton.className='primary-action calendar-compose-button';composeButton.setAttribute('aria-haspopup','dialog');exportButton.className='secondary-action';
   exportButton.title='Baixa um arquivo .ics do mês. Não envia convites nem altera outros calendários.';
-  actions.append(exportButton,composeButton);controls.append(nav,actions);
+  // Month or week view (remembered on this device only).
+  const views=make('div');views.className='calendar-views';views.setAttribute('role','group');views.setAttribute('aria-label','Visualização');
+  const monthView=make('button','Mês'),weekView=make('button','Semana');monthView.type=weekView.type='button';monthView.className=weekView.className='calendar-view';views.append(monthView,weekView);
+  let view='month';try{if(localStorage.getItem('voz-calendar-view')==='week')view='week';}catch{/* storage blocked */}
+  let weekStart=weekStartOf(new Date());
+  actions.append(views,exportButton,composeButton);controls.append(nav,actions);
   // Short confirmations and errors in a small banner that clears itself.
   const status=make('p');status.className='calendar-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   let statusTimer;const say=(text,{keep=false}={})=>{clearTimeout(statusTimer);status.textContent=text;if(text&&!keep)statusTimer=setTimeout(()=>{status.textContent='';},7000);};
@@ -36,7 +42,8 @@ export async function initCalendarPanel({panel,materials=[]}){
   monthBox.append(grid,note);
   const agenda=make('div');agenda.className='calendar-agenda';
   layout.append(monthBox,agenda);
-  panel.append(controls,status,layout);
+  const weekBox=make('div');weekBox.className='calendar-week-box';weekBox.hidden=true;
+  panel.append(controls,status,layout,weekBox);
   // Scheduling happens in a dialog opened by "Agendar estudo", a day's entry or a task.
   const compose=make('dialog');compose.className='app-dialog calendar-compose';compose.setAttribute('aria-labelledby','calendar-compose-title');
   const composeTitle=make('h2','Agendar estudo');composeTitle.id='calendar-compose-title';
@@ -112,7 +119,38 @@ export async function initCalendarPanel({panel,materials=[]}){
     if(visible.length)agenda.append(list);
     more.hidden=offset>=total;
   }
+  async function loadWeek(){
+    const version=++loading;
+    try{const range=weekRange(weekStart);const all=[];let start=0,count=0;
+      do{const page=await listCalendar({...range,offset:start});all.push(...page.items);count=page.total;if(!page.items.length)break;start+=page.items.length;}while(start<count);
+      if(version!==loading)return;items=all;offset=total=0;renderWeekView();
+    }catch(error){if(version===loading){items=[];renderWeekView();say(error.message,{keep:true});}}
+  }
+  function renderWeekView(){
+    const end=addDays(weekStart,6);
+    title.textContent=`${weekStart.toLocaleDateString(locale(),{day:'numeric',month:'short'})} – ${end.toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})}`;
+    renderWeek(weekBox,{items,weekStart,locale:locale(),
+      onEdit:(item,from)=>edit(item,from),
+      onCompose:(day,from)=>{reset();selectedDay=day;startDraft();openCompose(from);},
+      onMove:(item,minutes,from)=>{
+        const moved=moveEvent(item,minutes);
+        void mutate({id:item.id,version:item.version,body:{title:item.title,description:item.description||'',...moved,materialId:item.materialId||null,taskId:item.taskId||null}})
+          .then(()=>{signal('calendar',{changed:true});return loadWeek();})
+          .then(()=>{say(`Horário movido para ${new Date(moved.startsAt).toLocaleString(locale(),{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}.`);
+            const again=[...weekBox.querySelectorAll('.week-move summary')].find((node)=>node.getAttribute('aria-label')===`Mover ${item.title}`);(again||from)?.focus?.();})
+          .catch((e)=>say(e.message,{keep:true}));
+      }});
+  }
+  function applyView(){
+    const week=view==='week';layout.hidden=week;more.hidden=week||offset>=total;weekBox.hidden=!week;
+    monthView.setAttribute('aria-pressed',String(!week));weekView.setAttribute('aria-pressed',String(week));
+    prev.setAttribute('aria-label',week?'Semana anterior':'Mês anterior');next.setAttribute('aria-label',week?'Próxima semana':'Próximo mês');
+    exportButton.hidden=week;
+  }
+  const setView=(choice)=>{view=choice;try{localStorage.setItem('voz-calendar-view',choice);}catch{/* storage blocked */}applyView();void load(true);};
+  monthView.addEventListener('click',()=>setView('month'));weekView.addEventListener('click',()=>setView('week'));
   async function load(resetList=false){
+    if(view==='week')return loadWeek();
     const version=++loading;more.disabled=true;
     try{const query={...monthRange(month.value),offset:resetList?0:offset};const page=await listCalendar(query);if(version!==loading)return;
       if(resetList){items=[];offset=0;}items.push(...page.items);offset+=page.items.length;total=page.total;render();if(items.length<total)say(`${items.length} de ${total} registros carregados.`,{keep:true});
@@ -131,8 +169,9 @@ export async function initCalendarPanel({panel,materials=[]}){
   });
   month.addEventListener('change',()=>{selectedDay='';void load(true);});more.addEventListener('click',()=>{void load();});
   const shift=(delta)=>{const [y,mo]=month.value.split('-').map(Number);const d=new Date(y,mo-1+delta,1);month.value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;selectedDay='';void load(true);};
-  prev.addEventListener('click',()=>shift(-1));next.addEventListener('click',()=>shift(1));
-  today.addEventListener('click',()=>{month.value=localDay(new Date()).slice(0,7);selectedDay=localDay(new Date());void load(true);});
+  const step=(delta)=>{if(view==='week'){weekStart=addDays(weekStart,7*delta);void loadWeek();}else shift(delta);};
+  prev.addEventListener('click',()=>step(-1));next.addEventListener('click',()=>step(1));
+  today.addEventListener('click',()=>{weekStart=weekStartOf(new Date());month.value=localDay(new Date()).slice(0,7);selectedDay=view==='week'?'':localDay(new Date());void load(true);});
   exportButton.addEventListener('click',()=>{
     const selected=month.value;exportButton.disabled=true;
     void (async()=>{const allItems=[];let start=0,count;const range=monthRange(selected);do{const page=await listCalendar({...range,offset:start});allItems.push(...page.items);count=page.total;if(!page.items.length&&start<count)throw new Error('Não foi possível completar o calendário.');start+=page.items.length;}while(start<count);
@@ -140,5 +179,6 @@ export async function initCalendarPanel({panel,materials=[]}){
     })().catch((error)=>{say(error.message,{keep:true});}).finally(()=>{exportButton.disabled=false;});
   });
   document.addEventListener('voz:calendar-command',(event)=>{if(event.detail?.action==='compose'){reset();startDraft();openCompose(composeButton);}});
+  applyView();
   await load(true);
 }

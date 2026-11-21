@@ -22,6 +22,8 @@ export default {
   "20 questões": "20 questions",
   "3 questões": "3 questions",
   "30 dias": "30 days",
+  "30 min mais cedo": "30 min earlier",
+  "30 min mais tarde": "30 min later",
   "5 cartões": "5 cards",
   "5 questões": "5 questions",
   "7 dias": "7 days",
@@ -543,6 +545,8 @@ export default {
   "Detalhes": "Details",
   "Detalhes do processamento": "Processing details",
   "Detectar automaticamente": "Detect automatically",
+  "Dia anterior": "Previous day",
+  "Dia seguinte": "Next day",
   "Diagnóstico da tentativa": "Attempt diagnosis",
   "Dias com estudo": "Days studied",
   "Dias do mês": "Days of the month",
@@ -1023,6 +1027,7 @@ export default {
   "Mostrar senha": "Show password",
   "Mostrar tarefas": "Show tasks",
   "Mostrar tudo": "Show all",
+  "Mover": "Move",
   "Mover aula": "Move lesson",
   "Mover para baixo": "Move down",
   "Mover para cá": "Move here",
@@ -1432,6 +1437,7 @@ export default {
   "próxima etapa": "next step",
   "Próxima página": "Next page",
   "Próxima questão": "Next question",
+  "Próxima semana": "Next week",
   "Próximas anotações": "Next notes",
   "Próximas tarefas": "Upcoming tasks",
   "Próximo mês": "Next month",
@@ -1620,6 +1626,8 @@ export default {
   "Sem tags": "No tags",
   "Sem tarefas": "No tasks",
   "Sem unidade": "No unit",
+  "Semana": "Week",
+  "Semana anterior": "Previous week",
   "Semana de": "Week of",
   "Semana, agenda e disciplinas": "Week, schedule and subjects",
   "Semanas na meta": "Weeks on goal",
@@ -1871,6 +1879,7 @@ export default {
   "Vidro translúcido": "Translucent glass",
   "Vinho": "Wine",
   "Visual padrão restaurado.": "Default look restored.",
+  "Visualização": "View",
   "Visualização das pastas": "Folder view",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "You haven't answered any lists yet. Create questions from a lesson to practice and review your mistakes here.",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "You choose the content and follow each step of preparing the material.",
@@ -2229,6 +2238,10 @@ export default {
    "{0}. Check transcript: {1}"
   ],
   [
+   "{0}, {1} a {2}. Editar horário",
+   "{0}, {1} to {2}. Edit time"
+  ],
+  [
    "Gerar novas questões para {0}",
    "Generate new questions for {0}"
   ],
@@ -2311,6 +2324,10 @@ export default {
   [
    "Continuar tentativa: {0}",
    "Continue attempt: {0}"
+  ],
+  [
+   "Horário movido para {0}.",
+   "Time moved to {0}."
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -2585,6 +2602,10 @@ export default {
    "Select {0}"
   ],
   [
+   "Agendar em {0}",
+   "Schedule on {0}"
+  ],
+  [
    "- Revisão {0}",
    "- Version {0}"
   ],
@@ -2659,6 +2680,10 @@ export default {
   [
    "Aula: {0}",
    "Lesson: {0}"
+  ],
+  [
+   "Mover {0}",
+   "Move {0}"
   ],
   [
    "{0} aula",
