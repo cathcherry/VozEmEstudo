@@ -9,8 +9,11 @@ import { initGlobalSearch } from './global-search.js';
 import { initDashboardHome } from './dashboard-home.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { listAnnotations } from '../api/learning-tools.api.js';
+import { initDashboardCustomize } from './dashboard-customize.js';
 
 const session=await initAuthenticatedShell();
+// Saved layout first, so the cards appear where the person put them.
+void initDashboardCustomize({ owner: session.user.id }).catch(() => { /* The default layout stays usable. */ });
 // Summary cards for the study tools (each links to Revisar or Planejar).
 initDashboardHome();
 // Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.

@@ -20,8 +20,11 @@
     speechRate: 'normal',
     // Minimal presentation for screen-reader users: no decoration, animation or own TTS.
     screenReaderMode: false,
+    // Card spacing in study pages: 'comfortable' (default) or 'compact' (more on screen).
+    density: 'comfortable',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
+  const DENSITIES = ['comfortable', 'compact'];
   const READ_ALOUD = ['off', 'icons', 'everywhere'];
   const SPEECH_RATES = ['slow', 'normal', 'fast', 'faster'];
   const RULERS = ['off', 'ruler', 'focus'];
@@ -220,6 +223,7 @@
     if (WIDTHS.includes(value?.readingWidth)) result.readingWidth = value.readingWidth;
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
+    if (DENSITIES.includes(value?.density)) result.density = value.density;
     if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
     else if (value?.readAloud === 'on') result.readAloud = 'icons';
     if (SPEECH_RATES.includes(value?.speechRate)) result.speechRate = value.speechRate;
@@ -290,13 +294,14 @@
     const profile = loadProfiles().find((p) => p.id === id);
     if (!profile) return;
     saveAppearance(profile.appearance);
-    // Read-aloud choices belong to the person, not to the theme: keep the current ones.
+    // Read-aloud choices and card density belong to the person, not to the theme: keep them.
     const current = loadUi();
     const ui = normalizeUi({
       ...profile.ui,
       readAloud: current.readAloud,
       speechRate: current.speechRate,
       screenReaderMode: current.screenReaderMode,
+      density: current.density,
     });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);

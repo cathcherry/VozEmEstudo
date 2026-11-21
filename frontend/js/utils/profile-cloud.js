@@ -176,6 +176,11 @@ export async function loadCloudState(owner, key, fallback = null) {
   }
 }
 
+/** This browser's last copy of a key for `owner` (no network), e.g. to paint a layout at once. */
+export function cachedCloudState(owner, key) {
+  return cached(owner, key)?.data ?? null;
+}
+
 /** Retries every pending key of this account (e.g. when the browser comes back online). */
 export async function retryCloudState(owner) {
   const prefix = `voz-cloud-v1:${owner}:`;

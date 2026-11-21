@@ -53,7 +53,7 @@ function updateControls() {
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
   // Focus mode and read-aloud choices are not part of a theme, so they never deselect one.
-  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode'];
+  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density'];
   const changesTheme = Object.keys(appearance.defaults).some(
     (key) => !notTheme.includes(key) && next[key] !== uiPreferences[key],
   );

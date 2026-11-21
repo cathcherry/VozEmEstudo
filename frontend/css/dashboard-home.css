@@ -208,8 +208,17 @@ body[data-page='dashboard'] .dash-recent .dashboard-overview strong {
 }
 body[data-page='dashboard'] .dash-recent-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
   gap: 12px;
+}
+/* Titles wrap between words (hyphenated if needed), never in the middle of a word. */
+body[data-page='dashboard'] .dash-recent .dashboard-lesson-copy {
+  padding-right: 84px;
+}
+body[data-page='dashboard'] .dash-recent .dashboard-lesson-title {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
 }
 body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
   margin: 0;

@@ -1,0 +1,295 @@
+/* Personalization 2.0: Início layout (hidden cards, block order, density) and its side sheet.
+   Colours come from the active theme's tokens. */
+
+/* ---- Início: heading actions ------------------------------------------------------------- */
+body[data-page='dashboard'] .dashboard-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+body[data-page='dashboard'] .dash-customize-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+body[data-page='dashboard'] .dash-customize-trigger[hidden] {
+  display: none;
+}
+body[data-page='dashboard'] .dash-customize-trigger .ui-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Cards the person chose to hide ------------------------------------------------------ */
+body[data-page='dashboard'] [data-user-hidden] {
+  display: none !important;
+}
+/* A pair or a right column with nothing left to show disappears instead of leaving a frame. */
+body[data-page='dashboard'] .dash-pair:not(:has(> .dash-card:not([hidden], [data-user-hidden]))) {
+  display: none;
+}
+body[data-page='dashboard'] .dash-rail:not(:has(> .dash-card:not([hidden], [data-user-hidden]))) {
+  display: none;
+}
+body[data-page='dashboard']
+  .dash-home:not(:has(.dash-rail > .dash-card:not([hidden], [data-user-hidden]))) {
+  grid-template-columns: minmax(0, 1fr);
+}
+/* One divider between visible cards of the right column, whatever is hidden or reordered. */
+body[data-page='dashboard'] .dash-rail > .dash-card {
+  border-top: 0;
+}
+body[data-page='dashboard']
+  .dash-rail
+  > .dash-card:not([hidden], [data-user-hidden])
+  ~ .dash-card:not([hidden], [data-user-hidden]) {
+  border-top: 1px solid var(--dash-hairline);
+}
+/* Medium screens place the calendar beside the others; a custom order uses plain flow. */
+@media (min-width: 701px) and (max-width: 1180px) {
+  body[data-page='dashboard'] .dash-rail.has-custom-order {
+    grid-template-areas: none;
+    grid-template-rows: none;
+  }
+  body[data-page='dashboard'] .dash-rail.has-custom-order > .dash-card {
+    grid-area: auto;
+    border-top: 0;
+  }
+}
+
+/* ---- Compact density --------------------------------------------------------------------- */
+html[data-density='compact'] body[data-page='dashboard'] {
+  --dash-gap: 14px;
+}
+html[data-density='compact'] body[data-page='dashboard'] .dash-card {
+  gap: 8px;
+  padding: 16px 18px;
+}
+html[data-density='compact'] body[data-page='dashboard'] .dash-rail > .dash-card {
+  padding: 14px 0;
+}
+html[data-density='compact'] body[data-page='dashboard'] .dash-continue {
+  padding: 20px 22px;
+}
+html[data-density='compact'] body[data-page='dashboard'] .dashboard-heading {
+  margin-bottom: 12px;
+}
+html[data-density='compact'] body.app-page :is(.study-section, .tool-section > section) {
+  padding-block: 16px;
+}
+
+/* ---- Side sheet -------------------------------------------------------------------------- */
+.dash-customize {
+  width: min(420px, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border-light);
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: -12px 0 40px rgb(20 24 32 / 18%);
+}
+.dash-customize::backdrop {
+  background: rgb(20 24 32 / 18%);
+}
+.dash-customize-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100%;
+  padding: 24px;
+}
+.dash-customize-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.dash-customize .dialog-close {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.dash-customize-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.dash-customize-head h2:focus {
+  outline: none;
+}
+.dash-customize-head h2:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.dash-customize-intro {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.dash-customize-density {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.dash-customize-density select {
+  min-height: 44px;
+  font-weight: 400;
+}
+.customize-list {
+  display: grid;
+  gap: 20px;
+}
+.dash-customize .customize-group h3 {
+  margin: 0 0 8px;
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.customize-units {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.customize-unit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: 'title moves' 'toggles moves';
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.customize-unit.is-fixed {
+  grid-template-areas: 'title' 'toggles';
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--surface-alt);
+}
+.customize-unit > strong {
+  grid-area: title;
+}
+.customize-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: toggles;
+  gap: 4px 16px;
+}
+.customize-toggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.customize-toggle input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent-strong);
+}
+.customize-toggle:has(input:disabled) {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.customize-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.customize-moves {
+  display: flex;
+  grid-area: moves;
+  gap: 6px;
+}
+.customize-move {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--surface);
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.customize-move:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.customize-move:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.dash-customize-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}
+.dash-customize-foot .primary-action {
+  margin-left: auto;
+}
+.dash-customize-status {
+  flex: 1 1 100%;
+  order: 3;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.dash-customize-status:empty {
+  display: none;
+}
+.dash-customize-status[data-state='warning'] {
+  color: var(--text);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduced-motion='true']) .dash-customize[open] {
+    animation: dash-sheet-in 0.18s ease-out;
+  }
+}
+@keyframes dash-sheet-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+@media (max-width: 600px) {
+  .dash-customize-sheet {
+    padding: 18px 16px;
+  }
+  body[data-page='dashboard'] .dashboard-heading-actions {
+    justify-content: flex-start;
+  }
+}
+@media (forced-colors: active) {
+  .customize-unit,
+  .dash-customize {
+    border: 1px solid CanvasText;
+  }
+}

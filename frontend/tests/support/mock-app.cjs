@@ -267,8 +267,9 @@ ${withDb ? 'from:db,' : ''}storage:{from:()=>({upload:async()=>({error:null}),re
  * Answers the in-browser query builder against `data.profileState` (array of rows). Like RLS,
  * every query is limited to the signed-in user's rows. `data.dbDown = true` simulates an outage.
  */
-function dbRoute(user, data) {
+function dbRoute(currentUser, data) {
   return async (route) => {
+    const user = currentUser();
     const q = route.request().postDataJSON();
     const reply = (body) => route.fulfill({ json: body });
     if (data.dbDown) return reply({ data: null, error: { message: 'offline', code: 'MOCK' } });
@@ -313,12 +314,15 @@ const defaultUser = () => ({
  * account; when `data.profileState` is an array, `profile_state` reads and writes are simulated.
  */
 async function setup(context, base, flags, data, options = {}) {
-  const user = options.user || defaultUser();
+  // `data.user` may change during a test (account switch in the same browser).
+  const initialUser = options.user || defaultUser();
+  const currentUser = () => data.user || initialUser;
+  const user = initialUser;
   const withDb = Array.isArray(data.profileState);
   await context.route(base + '/js/vendor/supabase.min.js', (route) =>
-    route.fulfill({ contentType: 'text/javascript', body: sdk(user, withDb) }),
+    route.fulfill({ contentType: 'text/javascript', body: sdk(currentUser(), withDb) }),
   );
-  if (withDb) await context.route(base + '/__mock/db', dbRoute(user, data));
+  if (withDb) await context.route(base + '/__mock/db', dbRoute(currentUser, data));
   await context.route(base + '/api/**', async (route) => {
     const request = route.request();
     const url = new URL(request.url());

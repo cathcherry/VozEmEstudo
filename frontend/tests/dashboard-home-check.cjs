@@ -53,7 +53,12 @@ async function main() {
     await page.locator('[data-week-body] .dash-day-bar').first().waitFor();
     await page.locator('[data-notes-summary]', { hasText: 'anotações salvas' }).waitFor();
     await settle(page);
-    assert.equal(await page.locator('dialog').count(), 0, 'Início has no hidden tool panels');
+    // The only dialog is the layout sheet ("Personalizar"); tools live on their own pages.
+    assert.equal(
+      await page.locator('dialog:not([data-dashboard-customize-dialog])').count(),
+      0,
+      'Início has no hidden tool panels',
+    );
     assert.equal(
       await page.locator('.primary-navigation a[aria-current="page"] span').textContent(),
       'Início',

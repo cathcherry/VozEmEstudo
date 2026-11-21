@@ -28,7 +28,7 @@
     "test:demo": "node --test scripts/tests/presentation.test.mjs",
     "test:auth-css": "node frontend/tests/auth-style-check.mjs && node --test frontend/tests/password-policy.test.mjs frontend/tests/profile-cloud.test.mjs",
     "test:catalog-ui": "node --test frontend/tests/catalog-ui-check.mjs frontend/tests/library-views.test.mjs",
-    "test:planning-ui": "node --test frontend/tests/planning-ui-check.mjs frontend/tests/lesson-steps.test.mjs",
+    "test:planning-ui": "node --test frontend/tests/planning-ui-check.mjs frontend/tests/lesson-steps.test.mjs frontend/tests/dashboard-layout.test.mjs",
     "test:quiz-v2-ui": "node --test frontend/tests/quiz-v2-ui.test.mjs",
     "test:quiz-diagnostic-ui": "node --test frontend/tests/quiz-diagnostic-ui.test.mjs",
     "test:flashcards-ui": "node --test frontend/tests/flashcard-ui.test.mjs",
