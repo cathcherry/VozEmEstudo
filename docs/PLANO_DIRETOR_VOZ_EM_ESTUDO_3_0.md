@@ -324,6 +324,30 @@ Trocar o template nunca regenera nem altera o conteúdo, as respostas, as refer�
 
 ## 9. Aprendizagem multiaula e multiunidade
 
+**Implementado e testado automaticamente (Marco C, 21/11/2026; migrations não aplicadas em nenhum
+ambiente, não validado com provedor de IA real nem manualmente).** Detalhes em
+[migrations/MULTI_LESSON.md](migrations/MULTI_LESSON.md); rotas em [API.md](API.md) (seção
+"Material integrado"); flag `FEATURE_MULTI_LESSON` (desligada; exige `FEATURE_CATALOG_UNITS`).
+
+- ✅ Fontes: várias aulas (seleção na Biblioteca), uma unidade, várias unidades (API) e uma
+  disciplina. ⏳ Objetivo e coleção ainda não.
+- ✅ Item 1: mapa de conhecimento por revisão (conceitos, definições curtas, relações; cada um com
+  posição do trecho + citação conferida no `segments_snapshot`), em cache **opcional**
+  (`20261121171000_knowledge_map_cache.sql`) com chave `(source_revision_id, prompt_version,
+  model_family)`; a revisão já identifica o material. Uma revisão nova é outra chave. Objetivos e
+  pré-requisitos ainda não entram no mapa.
+- ✅ Item 2: a seleção vira a lista de revisões **confirmadas** no momento do pedido, congelada no
+  material integrado (imutável por gatilho); as aulas que ficam de fora aparecem com o motivo.
+- ✅ Item 3: a síntese recebe os mapas, não as transcrições; cada seção/questão/cartão cita aula,
+  revisão e trecho, conferidos no servidor; o que não tem apoio é descartado e informado.
+- ✅ Item 4: materiais antigos ficam com as revisões que os produziram.
+- Custo limitado: até 12 aulas; por tentativa, 1 chamada de mapa por revisão sem cache + 1 síntese
+  + no máximo 1 reparo; 2 tentativas; chave canônica e orçamento diário de `begin_generation_admin`
+  (pedidos iguais simultâneos viram um job; reuso sob pedido).
+- Fila própria (`multi_lesson_jobs`) com lease e retry, executada pelo worker existente.
+- ⏳ Compartilhar material integrado com a turma; transformar as questões em lista tentável e os
+  cartões em conjunto de flashcards.
+
 **Desenho**.
 
 Fontes possíveis: uma aula, várias, uma unidade, uma disciplina, um objetivo ou uma coleção.

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { createAcademicDatabase } from './fixtures/academic-db.fixture.js';
 import { migrateClassrooms } from './fixtures/classroom-db.fixture.js';
 import {
@@ -68,6 +69,34 @@ test('preflight guards: refuses without generation reuse, refuses to run twice',
     await g.db.exec('rollback');
   } finally {
     await g.db.close();
+  }
+});
+
+test('read-only preflight and postflight checks report what the docs promise', async () => {
+  const check = (name) =>
+    readFileSync(new URL(`../../database/checks/multi-lesson-${name}.sql`, import.meta.url), 'utf8');
+  const f = await createAcademicDatabase();
+  try {
+    await migrateClassrooms(f);
+    await f.db.exec(readFileSync(new URL('../../database/migrations/20261121160000_generation_reuse.sql', import.meta.url), 'utf8'));
+    const pre = (await f.db.query(check('preflight'))).rows[0];
+    assert.equal(pre.prerequisites, true);
+    assert.equal(pre.already_applied, false);
+    assert.equal(pre.cache_already_applied, false);
+    await f.db.exec(migration);
+    let post = (await f.db.query(check('postflight'))).rows[0];
+    assert.equal(Number(post.generations_after), Number(pre.generations_before));
+    assert.equal(Number(post.confirmations_after), Number(pre.confirmations_before));
+    for (const key of ['rls_enabled', 'no_browser_access', 'functions_server_only', 'snapshot_frozen'])
+      assert.equal(post[key], true, key);
+    assert.equal(post.cache_applied, false, 'the cache is optional');
+    await f.db.exec(cacheMigration);
+    post = (await f.db.query(check('postflight'))).rows[0];
+    assert.equal(post.cache_applied, true);
+    assert.equal(post.cache_rls_enabled, true);
+    assert.equal((await f.db.query(check('preflight'))).rows[0].already_applied, true);
+  } finally {
+    await f.db.close();
   }
 });
 

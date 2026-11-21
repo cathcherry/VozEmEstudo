@@ -280,3 +280,44 @@ Erros:
 | `GENERATION_CLASSROOM_STAFF_ONLY` | 403 | Na turma, só professor ou monitor iniciam uma geração. |
 | `GENERATION_SOURCE_FORBIDDEN` | 409 | Fonte não confirmada ou não publicada. |
 | `GENERATION_SCOPE_FORBIDDEN` | 403 | Sem acesso ao escopo. |
+
+## Material integrado 🔒 — `/api/multi-lesson` (flag `multi_lesson`, exige `catalog_units`)
+
+Resumo, questões e (opcionalmente) flashcards integrados de várias aulas confirmadas da própria
+conta. Privado: respostas com `Cache-Control: no-store`. Detalhes, regras e limites em
+[migrations/MULTI_LESSON.md](migrations/MULTI_LESSON.md).
+
+Seleção (`selection`): `{kind: 'lessons'|'unit'|'units'|'subject', ids: uuid[]}` — `lessons` até 50
+aulas, `unit` e `subject` exatamente 1 id, `units` até 20.
+
+| Método e rota | Corpo | Resposta |
+| --- | --- | --- |
+| `POST /api/multi-lesson/preview` | `{selection}` | `200 {kind, included:[{materialId, revisionId, revision, title, subjectId, unitId}], excluded:[{materialId, title, reason:'unconfirmed'|'not_transcribed'}], missing, limit:12, tooMany}` |
+| `POST /api/multi-lesson` | `{id, requestId, title, selection, outputs:['summary'\|'questions'\|'flashcards'], settings?:{questionCount 1–20, flashcardCount 1–30, focus ≤200}, expectedRevisionIds?, reuse?}` | `202 {multiLesson, generation:{id, decision:'start'\|'join'\|'reuse', reuseCount}}` |
+| `GET /api/multi-lesson` | — | `200 [{id, title, status, selection_kind, outputs, source_count, excluded_count, error_code, created_at, completed_at}]` (50 mais recentes) |
+| `GET /api/multi-lesson/:id` | — | `200` material com `sources` (congeladas), `excluded`, `status` (`queued`, `running`, `ready`, `failed`), `job` e, quando pronto, `result` |
+| `DELETE /api/multi-lesson/:id` | — | `200 {id, deleted:true}`; se ainda estava na fila, a chave da geração é liberada |
+
+`result` (quando `ready`): `summary.sections[{heading, text, citations}]`, `questions[{statement,
+options[4], correctIndex, explanation, citations}]`, `flashcards[{front, back, citations}]`,
+`lessons[{label, materialId, revisionId, revision, title, concepts}]` e `report` (descartados,
+citações descartadas, acertos de cache, chamadas). Cada citação: `{materialId, revisionId, revision,
+lessonTitle, position, quote, startMs}`.
+
+`requestId` é a chave de idempotência (repetir o mesmo POST devolve o mesmo material). Limite: 20
+pedidos por hora por conta, além do orçamento diário.
+
+| Código | Status | Significado |
+| --- | --- | --- |
+| `MULTI_LESSON_NO_SOURCES` | 409 | Nenhuma aula da seleção tem a revisão atual confirmada. |
+| `MULTI_LESSON_TOO_MANY_SOURCES` | 409 | Mais de 12 aulas confirmadas. |
+| `MULTI_LESSON_SOURCES_CHANGED` | 409 | A seleção mudou desde a prévia (`expectedRevisionIds`). |
+| `MULTI_LESSON_REQUEST_CONFLICT` | 409 | `requestId` já usado com outro `id`. |
+| `MULTI_LESSON_NOT_FOUND` | 404 | Material, unidade ou disciplina inexistente ou de outra conta. |
+| `MULTI_LESSON_INVALID_SELECTION` | 400 | Seleção malformada. |
+| `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
+| `MULTI_LESSON_SCHEMA_REQUIRED` | 503 | Flag ligada sem a migration. |
+
+Falhas da geração (em `error_code` do material): `LLM_TEMPORARY_ERROR`, `LLM_FAILED`,
+`LLM_INVALID_OUTPUT`, `MULTI_LESSON_NO_KNOWLEDGE`, `MULTI_LESSON_UNSUPPORTED`,
+`TRANSCRIPTION_CONFIRMATION_REQUIRED`, `WORKER_LEASE_EXPIRED`.
