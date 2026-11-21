@@ -989,3 +989,8 @@ html[data-wallpaper='image'] body {
 .wallpaper-image-pick:focus-within { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
 .wallpaper-image .field-note { flex-basis: 100%; margin: 0; color: var(--muted); font-size: .84rem; }
 .wallpaper-image-status:empty { display: none; }
+/* Title typography (Estúdio visual). The reading-font accessibility rule stays stronger. */
+html[data-heading-font='modern'] body.app-page :is(h1, h2, h3, h4) { font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 750; letter-spacing: -.025em; }
+html[data-heading-font='rounded'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', system-ui, sans-serif; letter-spacing: -.01em; }
+html[data-heading-font='friendly'] body.app-page :is(h1, h2, h3, h4) { font-family: Lexend, system-ui, sans-serif; font-weight: 650; letter-spacing: -.02em; }
+html[data-heading-font='typewriter'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; letter-spacing: 0; }
