@@ -18,6 +18,8 @@ import {
   TOKEN_FONTS,
   TOKEN_PATTERNS,
   TOKEN_SHADOWS,
+  fillLookOptions,
+  templateNameTaken,
 } from '../utils/card-looks.js';
 
 const make = (tag, text, className) => {
@@ -255,6 +257,14 @@ export function openTemplateEditor({ template = null, opener } = {}) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
+      // Two templates with the same name would look identical in every chooser.
+      if (templateNameTaken(name.value, state.templates, template?.id)) {
+        error.textContent = 'Você já tem um modelo com esse nome. Escolha outro nome para diferenciar os dois.';
+        name.setAttribute('aria-invalid', 'true');
+        name.focus();
+        return;
+      }
+      name.removeAttribute('aria-invalid');
       save.disabled = true;
       try {
         saved = await saveCardTemplate(template?.id || crypto.randomUUID(), {
@@ -296,14 +306,7 @@ function setLookControl(panel, setFilter) {
   const fill = () => {
     const set = state.sets.get(setFilter.value);
     wrap.hidden = !set;
-    select.replaceChildren(new Option('Igual à favorita', ''));
-    for (const [value, name] of CARD_TEMPLATES) select.append(new Option(name, `base:${value}`));
-    if (state.templates.length) {
-      const group = document.createElement('optgroup');
-      group.label = 'Meus modelos';
-      for (const template of state.templates) group.append(new Option(template.name, `template:${template.id}`));
-      select.append(group);
-    }
+    fillLookOptions(select, state.templates);
     if (set) select.value = set.template_id ? `template:${set.template_id}` : set.template_base ? `base:${set.template_base}` : '';
   };
   select.addEventListener('change', async () => {
