@@ -84,6 +84,7 @@ recebe o estado pelas `featureFlags` de `/api/config`.
 | `FEATURE_STUDY_TRACKING`  | Tempo e progresso de estudo sincronizados                         | E08/E09                                       | Não                          |
 | `FEATURE_ANNOTATIONS`     | Destaques e anotações                                             | E14/E15                                       | Não                          |
 | `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                      | E18/E19                                       | Não                          |
+| `FEATURE_CLASSROOMS`      | Turmas privadas (página Turmas, `/api/classrooms`)                | `flashcard_sets` + `classrooms`; exige `FEATURE_FLASHCARD_SETS` | Não                          |
 | `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                               | —                                             | —                            |
 
 Ao iniciar pelo `INICIAR.cmd`, uma flag ligada sem a migration (ou combinação inválida) **bloqueia a

@@ -142,6 +142,56 @@ ligado responde `409 QUIZ_SESSION_REQUIRED` (usar tentativas).
 dificuldades, foco, lista de evitar); senão o v1 (5/10/20). Uma geração por pessoa por vez
 (`429 GENERATION_BUSY`); fonte acima de 80 mil caracteres → `422 SOURCE_TOO_LARGE`.
 
+## Turmas privadas 🔒 — `/api/classrooms` (flag `classrooms`)
+
+Só para membros; nada é público nem indexável (`Cache-Control: no-store`,
+`X-Robots-Tag: noindex, nofollow`, `Referrer-Policy: no-referrer`). Cada rota chama uma função
+`classroom_*_admin` que confere o papel na turma (`classroom_require_admin`); a conta vem sempre do
+token. Quem não é membro (ou saiu/foi removido) recebe `404 CLASSROOM_NOT_FOUND`; papel
+insuficiente, `403 CLASSROOM_FORBIDDEN`; turma arquivada, `409 CLASSROOM_ARCHIVED`; esquema
+ausente com a flag ligada, `503 CLASSROOMS_SCHEMA_REQUIRED`. Detalhes em
+[migrations/CLASSROOMS.md](migrations/CLASSROOMS.md).
+
+| Método | Rota                                         | Quem                   | Corpo / resposta                                                                                                                                 |
+| ------ | -------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/`                                          | conta                  | Minhas turmas (ativas como membro): `[{id, name, description, status, role, isOwner, canManage, memberCount, lessonCount, teacherName}]`        |
+| POST   | `/`                                          | conta                  | `{id, name, description?, displayName?}` → `201`; quem cria é o professor                                                                        |
+| POST   | `/join`                                      | conta                  | `{code, displayName?}`; limite de 30 tentativas/hora. `404 CLASSROOM_INVITE_INVALID`, `409 CLASSROOM_INVITE_FULL`, `403 CLASSROOM_REMOVED`       |
+| GET    | `/:id`                                       | membro                 | Resumo da turma e meu papel                                                                                                                      |
+| PATCH  | `/:id`                                       | professor              | `{name?, description?, archived?}`                                                                                                               |
+| GET    | `/:id/members`                               | membro                 | `[{userId, displayName, role, joinedAt, isMe}]` (só ativos)                                                                                      |
+| POST   | `/:id/leave`                                 | membro (não professor) | Sai; revoga o que compartilhou e retira envios abertos                                                                                           |
+| PATCH  | `/:id/members/:userId`                       | professor              | `{role: "assistant"\|"student"}`                                                                                                                 |
+| DELETE | `/:id/members/:userId`                       | professor              | Remove na hora (mesmos efeitos de sair)                                                                                                          |
+| GET    | `/:id/invites`                               | professor, monitor     | `[{id, state: active\|expired\|revoked\|full, useCount, maxUses, expiresAt, createdAt}]` — nunca o código                                        |
+| POST   | `/:id/invites`                               | professor, monitor     | `{id, requestId, code, days 1–30, maxUses 1–500}`; `code` gerado no navegador (`XXXX-XXXX-XXXX`), só o SHA-256 é guardado                        |
+| DELETE | `/:id/invites/:inviteId`                     | professor, monitor     | Revoga                                                                                                                                           |
+| GET    | `/:id/lessons`                               | membro                 | Aulas publicadas: `[{id, title, source, revision, author{userId, displayName}, hasSummary, questionListCount, publishedAt}]`                     |
+| POST   | `/:id/lessons`                               | professor, monitor     | `{id, materialId, revisionId, summaryId?, questionBatchIds?, title?}`: material **próprio**, revisão confirmada por quem publica                 |
+| GET    | `/:id/lessons/:lessonId`                     | membro                 | Aula na revisão fixada: `transcript{revision, fullText, segments}`, `summary`, `questionLists` (com gabarito)                                    |
+| DELETE | `/:id/lessons/:lessonId`                     | professor, monitor     | Despublica                                                                                                                                       |
+| GET    | `/:id/submissions`                           | membro                 | Professor/monitor: todos; aluno: só os seus. Cada item traz `status` e `actions` (transições permitidas para quem pergunta)                       |
+| POST   | `/:id/submissions`                           | aluno                  | `{id, materialId, note?}`: gravação própria, com a declaração de permissão vigente                                                               |
+| GET    | `/:id/submissions/:sid`                      | dono do envio, gestão  | Envio, histórico (`events`) e, a partir de `processing`, `review{revisionId, revision, fullText, studentConfirmed}`                              |
+| POST   | `/:id/submissions/:sid/transitions`          | conforme a etapa       | `{to, requestId, revisionId?, note?}` → `409 CLASSROOM_ILLEGAL_TRANSITION` fora do grafo                                                         |
+| GET    | `/:id/flashcard-sets`                        | membro                 | Conjuntos compartilhados (ver abaixo)                                                                                                            |
+| POST   | `/:id/flashcard-sets`                        | membro                 | `{id, setId}`: conjunto **próprio** e ativo                                                                                                      |
+| GET    | `/:id/flashcard-sets/:sharedId`              | membro                 | Cartões do conjunto (ver abaixo)                                                                                                                 |
+| DELETE | `/:id/flashcard-sets/:sharedId`              | dono ou gestão         | Para de compartilhar / oculta da turma                                                                                                           |
+| GET    | `/:id/resources`                             | membro                 | Links de apoio `[{id, title, url, description}]`                                                                                                 |
+| POST   | `/:id/resources`                             | professor, monitor     | `{id, title, url (https), description?}`                                                                                                         |
+| DELETE | `/:id/resources/:resourceId`                 | professor, monitor     | Remove                                                                                                                                           |
+
+**Leitura de conjuntos compartilhados** (base para juntar baralhos de colegas):
+
+- `GET /api/classrooms/:id/flashcard-sets` →
+  `[{sharedId, classroomId, kind:"flashcard_set", setId, name, cardCount, sharedAt, isMine, author:{userId, displayName}}]`.
+  Só conjuntos não revogados, ativos e de autores ainda membros.
+- `GET /api/classrooms/:id/flashcard-sets/:sharedId` → o mesmo objeto com
+  `cards:[{id, front, back, style, difficulty, focus}]` (cartões ativos). **Nunca** inclui datas de
+  revisão, intervalos, repetições, facilidade, histórico de revisões, evidências ou referências à
+  transcrição do autor.
+
 ## Arquivos estáticos
 
 Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, `/css`, `/js` e

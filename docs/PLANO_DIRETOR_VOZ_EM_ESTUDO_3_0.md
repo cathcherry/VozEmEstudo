@@ -275,7 +275,38 @@ Fontes possíveis: uma aula, várias, uma unidade, uma disciplina, um objetivo o
 
 ## 10. Turmas privadas, amigos e IA compartilhada
 
-**Desenho**.
+**Fundação implementada e testada automaticamente (Marco E, 21/11/2026; não integrada, migration
+não aplicada, não validada manualmente).** Detalhes em
+[migrations/CLASSROOMS.md](migrations/CLASSROOMS.md); rotas em [API.md](API.md) (seção "Turmas privadas").
+
+- Migration candidata `20261121140000_classrooms.sql` (aditiva, com guarda, RLS e funções só do
+  servidor) e flag `FEATURE_CLASSROOMS` (desligada; exige `FEATURE_FLASHCARD_SETS`).
+- Turmas criadas pelo professor (nome, descrição, ativa/arquivada); papéis professor, monitor
+  (o "gestor" deste desenho) e aluno, com uma função central de permissão usada por todas as
+  operações.
+- Convites por código/link com validade (1–30 dias), limite de usos, revogação; só o SHA-256 do
+  código é guardado; entrar, sair, remover membro, promover a monitor.
+- Aulas publicadas pelo professor: material próprio, revisão confirmada e **fixada**; os membros
+  leem transcrição, resumo e listas escolhidos sem nenhum acesso de escrita ao material.
+- Fila de envios dos alunos como máquina de estados no SQL (gatilho + função de transição + log):
+  `submitted` → `approved_for_processing` → `processing` → `transcription_confirmed` (confirmação
+  do professor, separada da do aluno, que continua obrigatória) → `published`; `rejected` e
+  `withdrawn` são finais. A etapa "aprovação para publicar" deste desenho é a ação "Publicar na
+  turma" a partir de `transcription_confirmed`.
+- Conjuntos de flashcards compartilhados explicitamente com a turma (só conteúdo e autoria, nunca
+  agenda ou histórico de revisão), links de apoio do professor.
+- Nada aparece antes de ser publicado ou compartilhado; revogar esconde; sair ou ser removido
+  esconde a turma e retira o que a pessoa compartilhou. Progresso, revisões, anotações e tentativas
+  continuam privados: nenhuma função ou rota das turmas os lê (testado).
+- Página **Turmas** (`turmas.html`) com abas Aulas publicadas, Envios, Flashcards compartilhados e
+  Membros; jornada no navegador com API simulada.
+
+**Ainda não implementado**: geração compartilhada por `generation_key`, regras de quem gera e como
+publicar, cotas, amigos, presença de foco, combinar baralhos de colegas (a leitura necessária já
+existe: `GET /api/classrooms/:id/flashcard-sets[/:sharedId]`), áudio da aula publicada para os
+membros, notificações.
+
+**Desenho** (o que segue continua valendo para as próximas fatias).
 
 **Papéis**: professor (dono), gestor e aluno.
 
