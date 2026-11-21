@@ -1,0 +1,273 @@
+/* Voz em Estudo 3.5: art system (manifest-driven illustrations and Lume, the companion).
+   Owned by the art direction (docs/ART_DIRECTION_AND_ASSETS.md). It never restyles pages:
+   every selector is scoped to art elements. Motion: 120 to 400 ms gestures and slow loops,
+   all switched off by prefers-reduced-motion, data-reduced-motion, data-low-stimulation or
+   data-motion="off" on <html>. Lume is hidden in "Estudo silencioso" (data-experience="quiet"). */
+
+.art {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.art-icon {
+  display: inline-block;
+  flex: none;
+  inline-size: var(--art-icon-size, 1.25em);
+  block-size: var(--art-icon-size, 1.25em);
+  vertical-align: -0.2em;
+  background-color: currentColor;
+  -webkit-mask: var(--art-icon) center / contain no-repeat;
+  mask: var(--art-icon) center / contain no-repeat;
+}
+
+/* ---- Lume ---- */
+
+.lume-companion {
+  position: relative;
+  display: inline-block;
+  inline-size: var(--lume-size, 96px);
+  aspect-ratio: 1;
+  line-height: 0;
+  pointer-events: none;
+}
+.lume-stage {
+  position: relative;
+  inline-size: 100%;
+  block-size: 100%;
+  animation: lume-enter 220ms ease-out;
+}
+.lume-stage > svg,
+.lume-stage > img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+.lume-stage > .lume-outfit-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+/* Pivots, in the 240 × 240 drawing's own units. */
+.lume-companion :is(.lume-figure, .lume-wing, .lume-antenna) {
+  transform-box: view-box;
+}
+.lume-companion .lume-figure {
+  transform-origin: 120px 196px;
+}
+.lume-companion .lume-wing-l {
+  transform-origin: 108px 122px;
+}
+.lume-companion .lume-wing-r {
+  transform-origin: 132px 122px;
+}
+.lume-companion .lume-antenna-l {
+  transform-origin: 112px 76px;
+}
+.lume-companion .lume-antenna-r {
+  transform-origin: 128px 76px;
+}
+.lume-companion :is(.lume-lid, .lume-glow, .lume-spark, .lume-dot) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.lume-companion .lume-lid {
+  transform-origin: top center;
+}
+
+/* idle: breathes, blinks, antennae sway, wings drift. */
+.lume-companion[data-state='idle'] .lume-figure {
+  animation: lume-breathe 4.2s ease-in-out infinite;
+}
+.lume-companion:is([data-state='idle'], [data-state='thinking']) .lume-lid {
+  animation: lume-blink 5.6s ease-in-out infinite;
+}
+.lume-companion:is([data-state='idle'], [data-state='thinking']) .lume-antenna-l {
+  animation: lume-sway-l 4.8s ease-in-out infinite;
+}
+.lume-companion:is([data-state='idle'], [data-state='thinking']) .lume-antenna-r {
+  animation: lume-sway-r 4.8s ease-in-out infinite;
+}
+.lume-companion[data-state='idle'] .lume-wing-l {
+  animation: lume-wing-l 3.6s ease-in-out infinite;
+}
+.lume-companion[data-state='idle'] .lume-wing-r {
+  animation: lume-wing-r 3.6s ease-in-out infinite;
+}
+
+/* reading: nothing moves while the person reads. */
+
+/* thinking: thought bubbles light up in turn. */
+.lume-companion[data-state='thinking'] .lume-dot {
+  animation: lume-think 1.5s ease-in-out infinite;
+}
+.lume-companion[data-state='thinking'] .lume-dot-2 {
+  animation-delay: 0.2s;
+}
+.lume-companion[data-state='thinking'] .lume-dot-3 {
+  animation-delay: 0.4s;
+}
+
+/* happy: a small hop and fluttering wings. */
+.lume-companion[data-state='happy'] .lume-figure {
+  animation: lume-hop 1.6s ease-in-out 2;
+}
+.lume-companion:is([data-state='happy'], [data-state='celebrating']) .lume-wing-l {
+  animation: lume-flutter-l 0.4s ease-in-out 6;
+}
+.lume-companion:is([data-state='happy'], [data-state='celebrating']) .lume-wing-r {
+  animation: lume-flutter-r 0.4s ease-in-out 6;
+}
+.lume-companion:is([data-state='happy'], [data-state='celebrating']) .lume-spark {
+  animation: lume-twinkle 1.8s ease-in-out infinite;
+}
+.lume-companion:is([data-state='happy'], [data-state='celebrating']) .lume-spark:nth-of-type(2n) {
+  animation-delay: 0.6s;
+}
+
+/* sleepy: slow, deep breaths and drifting bubbles. Never sad. */
+.lume-companion[data-state='sleepy'] .lume-figure {
+  animation: lume-breathe-slow 6s ease-in-out infinite;
+}
+.lume-companion[data-state='sleepy'] .lume-dot {
+  animation: lume-drift 4.5s ease-in-out infinite;
+}
+.lume-companion[data-state='sleepy'] .lume-dot-2 {
+  animation-delay: 1.5s;
+}
+.lume-companion[data-state='sleepy'] .lume-dot-3 {
+  animation-delay: 3s;
+}
+
+/* celebrating: a brief glow of the lantern (three pulses, then it stays lit). */
+.lume-companion[data-state='celebrating'] .lume-glow {
+  animation: lume-glow 1.2s ease-in-out 3;
+}
+
+@keyframes lume-enter {
+  from {
+    opacity: 0.35;
+    transform: scale(0.97);
+  }
+}
+@keyframes lume-breathe {
+  50% {
+    transform: translateY(-1.6px) scale(1.006);
+  }
+}
+@keyframes lume-breathe-slow {
+  50% {
+    transform: translateY(1.2px) scale(1.012, 0.992);
+  }
+}
+@keyframes lume-hop {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes lume-blink {
+  0%,
+  90%,
+  100% {
+    transform: scaleY(0);
+  }
+  94% {
+    transform: scaleY(1);
+  }
+}
+@keyframes lume-sway-l {
+  50% {
+    transform: rotate(-4deg);
+  }
+}
+@keyframes lume-sway-r {
+  50% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes lume-wing-l {
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+@keyframes lume-wing-r {
+  50% {
+    transform: rotate(-2.5deg);
+  }
+}
+@keyframes lume-flutter-l {
+  50% {
+    transform: rotate(9deg) scaleX(0.94);
+  }
+}
+@keyframes lume-flutter-r {
+  50% {
+    transform: rotate(-9deg) scaleX(0.94);
+  }
+}
+@keyframes lume-think {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes lume-drift {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.8);
+  }
+  30%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(1.1);
+  }
+}
+@keyframes lume-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.7);
+  }
+}
+@keyframes lume-glow {
+  50% {
+    opacity: 0.42;
+    transform: scale(1.12);
+  }
+}
+
+/* "Estudo silencioso": no companion at all. */
+:root:is([data-experience='quiet'], [data-experience-mode='quiet'])
+  :is([data-art-slot='companion'], .lume-companion) {
+  display: none !important;
+}
+
+/* Reduced motion, from the system or from the app's own settings: everything becomes still. */
+:root:is([data-reduced-motion='true'], [data-low-stimulation='true'], [data-motion='off'])
+  :is(.lume-companion, .lume-companion *) {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lume-companion,
+  .lume-companion * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

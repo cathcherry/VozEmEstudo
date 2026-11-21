@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160" fill="none">
+<!-- voz-art:generated | id: object.desk-lamp | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<ellipse cx="80" cy="140" rx="50" ry="7.0" fill="#2E2A3B" opacity="0.12"/>
+    <path d="M100 86 L124 80 L146 138 L92 138 Z" fill="#E2B14A" opacity="0.16"/>
+    <ellipse cx="118" cy="139" rx="26" ry="4" fill="#E2B14A" opacity="0.32"/>
+    <ellipse cx="54" cy="136" rx="24" ry="5.5" fill="#6F60A6" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M32 134 Q32 124 54 124 Q76 124 76 134" fill="#8E7CC3" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M54 126 L70 88" stroke="#2E2A3B" stroke-opacity="0.88" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M54 126 L70 88" stroke="#AE9FDB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M70 88 L102 66" stroke="#2E2A3B" stroke-opacity="0.88" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 88 L102 66" stroke="#AE9FDB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="70" cy="88" r="5" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <g transform="translate(110 72) rotate(-18)">
+      <ellipse cx="0" cy="12" rx="17" ry="5" fill="#FAEDCB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle cx="0" cy="13" r="5" fill="#E2B14A"/>
+      <path d="M-17 12 C-17 -4 -10 -12 0 -13 C10 -12 17 -4 17 12 C10 8 -10 8 -17 12 Z" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M-9 -4 Q-6 -9 -1 -10" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle cx="0" cy="-14" r="3" fill="#5E7F4E" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    </g>
+</svg>

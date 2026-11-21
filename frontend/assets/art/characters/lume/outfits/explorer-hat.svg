@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" fill="none" class="lume-outfit" data-lume-outfit="explorer-hat">
+<!-- voz-art:generated | id: character.lume.outfit.explorer-hat | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<g data-layer="head">
+      <path d="M96 76 Q98 54 120 52 Q142 54 144 76 Z" fill="#C9A27E" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M97 70 Q120 64 143 70 L144 76 Q120 70 96 76 Z" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M78 80 Q120 64 162 80 Q166 86 156 87 Q120 76 84 87 Q74 86 78 80 Z" fill="#E2C6A8" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M120 53 Q118 62 120 70" stroke="#9C7656" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.6"/>
+    </g>
+</svg>

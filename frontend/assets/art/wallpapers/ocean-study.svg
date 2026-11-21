@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" fill="none" preserveAspectRatio="xMidYMid slice">
+<!-- voz-art:generated | id: wallpaper.ocean-study | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><linearGradient id="os-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EAF1F7"/><stop offset="0.62" stop-color="#F7F5FB"/><stop offset="0.621" stop-color="#D3E2EE"/><stop offset="1" stop-color="#A9C4D9"/></linearGradient></defs>
+<rect width="1600" height="1000" fill="url(#os-sky)"/>
+  <circle cx="300" cy="260" r="90" fill="#FAEDCB" opacity="0.8"/>
+  <path d="M200 330 Q300 300 420 330 Q520 300 640 320" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M1100 200 Q1180 180 1260 200 Q1330 180 1400 196" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <g opacity="0.55">
+    <path d="M1380 620 L1388 520 H1412 L1420 620 Z" fill="#FFFFFF"/>
+    <path d="M1384 570 H1416" stroke="#D98A9B" stroke-width="10"/>
+    <rect x="1386" y="500" width="28" height="20" fill="#F1D38C"/>
+    <path d="M1380 500 L1400 482 L1420 500 Z" fill="#D98A9B"/>
+  </g>
+  <path d="M0 700 Q100 688 200 700 T400 700 T600 700 T800 700 T1000 700 T1200 700 T1400 700 T1600 700" stroke="#FFFFFF" stroke-width="3" fill="none" opacity="0.4"/><path d="M0 744 Q100 732 200 744 T400 744 T600 744 T800 744 T1000 744 T1200 744 T1400 744 T1600 744" stroke="#FFFFFF" stroke-width="3.6" fill="none" opacity="0.4"/><path d="M0 788 Q100 776 200 788 T400 788 T600 788 T800 788 T1000 788 T1200 788 T1400 788 T1600 788" stroke="#FFFFFF" stroke-width="4.2" fill="none" opacity="0.5"/><path d="M0 832 Q100 820 200 832 T400 832 T600 832 T800 832 T1000 832 T1200 832 T1400 832 T1600 832" stroke="#FFFFFF" stroke-width="4.8" fill="none" opacity="0.5"/><path d="M0 876 Q100 864 200 876 T400 876 T600 876 T800 876 T1000 876 T1200 876 T1400 876 T1600 876" stroke="#FFFFFF" stroke-width="5.4" fill="none" opacity="0.6"/><path d="M0 920 Q100 908 200 920 T400 920 T600 920 T800 920 T1000 920 T1200 920 T1400 920 T1600 920" stroke="#FFFFFF" stroke-width="6" fill="none" opacity="0.6"/><path d="M0 964 Q100 952 200 964 T400 964 T600 964 T800 964 T1000 964 T1200 964 T1400 964 T1600 964" stroke="#FFFFFF" stroke-width="6.6" fill="none" opacity="0.7"/>
+</svg>

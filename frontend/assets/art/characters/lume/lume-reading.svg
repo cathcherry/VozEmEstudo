@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" fill="none" class="lume" data-lume-state="reading">
+<!-- voz-art:generated | id: character.lume.reading | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<ellipse class="lume-shadow" cx="120" cy="196" rx="44" ry="4.5" fill="#2E2A3B" opacity="0.1"/>
+  <g class="lume-figure">
+    
+    <g class="lume-wings"><g class="lume-wing lume-wing-l"><g>
+      <g class="lume-wing-hind">
+        <path d="M108 128 C88 126 62 134 54 152 C47 168 60 182 78 178 C94 174 104 156 112 140 Z" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <path d="M108 132 C92 133 74 140 69 152 C65 162 72 170 82 167 C94 163 102 150 108 140 Z" fill="#CFC5EC" opacity="0.75"/>
+        <path d="M108 134 Q86 146 64 160 M108 137 Q96 154 80 172" stroke="#7FA36B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="70" cy="164" r="3.2" fill="#EDBDC7"/>
+      </g>
+      <g class="lume-wing-fore">
+        <path d="M106 108 C88 84 54 60 34 66 C18 71 18 98 30 114 C42 130 76 134 104 124 Z" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <path d="M104 110 C90 92 66 78 52 81 C42 84 42 102 50 112 C60 122 84 124 102 120 Z" fill="#CFC5EC" opacity="0.75"/>
+        <path d="M104 114 Q76 92 42 76 M104 117 Q70 106 30 98 M104 120 Q74 122 42 122" stroke="#7FA36B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="48" cy="96" r="7.5" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="48" cy="96" r="3" fill="#E2B14A"/>
+      </g>
+    </g></g><g class="lume-wing lume-wing-r"><g transform="translate(240 0) scale(-1 1)">
+      <g class="lume-wing-hind">
+        <path d="M108 128 C88 126 62 134 54 152 C47 168 60 182 78 178 C94 174 104 156 112 140 Z" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <path d="M108 132 C92 133 74 140 69 152 C65 162 72 170 82 167 C94 163 102 150 108 140 Z" fill="#CFC5EC" opacity="0.75"/>
+        <path d="M108 134 Q86 146 64 160 M108 137 Q96 154 80 172" stroke="#7FA36B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="70" cy="164" r="3.2" fill="#EDBDC7"/>
+      </g>
+      <g class="lume-wing-fore">
+        <path d="M106 108 C88 84 54 60 34 66 C18 71 18 98 30 114 C42 130 76 134 104 124 Z" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <path d="M104 110 C90 92 66 78 52 81 C42 84 42 102 50 112 C60 122 84 124 102 120 Z" fill="#CFC5EC" opacity="0.75"/>
+        <path d="M104 114 Q76 92 42 76 M104 117 Q70 106 30 98 M104 120 Q74 122 42 122" stroke="#7FA36B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="48" cy="96" r="7.5" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <circle cx="48" cy="96" r="3" fill="#E2B14A"/>
+      </g>
+    </g></g></g>
+    <g class="lume-antennae">
+      <g class="lume-antenna lume-antenna-l"><g><path d="M112.37 75.84 C112.54 75.24 112.67 73.6 112.66 72.52 C112.65 71.43 112.49 70.39 112.32 69.33 C112.16 68.27 111.94 67.21 111.68 66.16 C111.42 65.11 111.12 64.07 110.77 63.03 C110.42 62 110.03 60.97 109.6 59.95 C109.16 58.94 108.68 57.93 108.16 56.95 C107.64 55.96 107.08 54.99 106.47 54.04 C105.87 53.1 105.22 52.16 104.53 51.26 C103.84 50.36 103.12 49.48 102.35 48.63 C101.58 47.78 100.78 46.96 99.94 46.17 C99.09 45.39 98.21 44.63 97.3 43.92 C96.39 43.2 95.45 42.52 94.47 41.89 C93.5 41.25 92.49 40.65 91.45 40.11 C90.42 39.58 89.34 39.08 88.24 38.67 C87.14 38.26 85.83 38.13 84.83 37.63 C83.83 37.13 82.74 35.89 82.23 35.67 C81.72 35.46 81.42 35.9 81.77 36.33 C82.12 36.76 83.64 37.42 84.33 38.26 C85.02 39.1 85.36 40.36 85.88 41.36 C86.41 42.37 86.93 43.34 87.45 44.3 C87.98 45.25 88.5 46.19 89.03 47.11 C89.55 48.04 90.07 48.96 90.6 49.86 C91.13 50.77 91.66 51.66 92.19 52.54 C92.72 53.43 93.26 54.3 93.81 55.17 C94.35 56.03 94.91 56.89 95.47 57.74 C96.03 58.58 96.6 59.42 97.18 60.25 C97.77 61.08 98.36 61.9 98.96 62.71 C99.57 63.52 100.18 64.32 100.81 65.11 C101.44 65.91 102.08 66.69 102.73 67.47 C103.38 68.24 104.05 69.01 104.72 69.77 C105.4 70.53 106.09 71.28 106.8 72.02 C107.51 72.75 108.19 73.5 108.99 74.19 C109.8 74.88 111.07 75.88 111.63 76.16 C112.19 76.43 112.2 76.45 112.37 75.84 Z" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M112 76 C106 62 96 46 82 36" stroke="#B9862A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M106.75 65.25 L108.23 60.43 M106.75 65.25 L101.8 63.98 M103.56 59.83 L105.29 54.52 M103.56 59.83 L97.93 59.13 M100 54.5 L101.47 49 M100 54.5 L94.22 54.18 M96.06 49.36 L96.79 44.05 M96.06 49.36 L90.6 49.15 M91.75 44.5 L91.35 39.84 M91.75 44.5 L86.99 44.03 M87.06 40.02 L85.22 36.63 M87.06 40.02 L83.33 38.78" stroke="#B9862A" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.7"/></g></g>
+      <g class="lume-antenna lume-antenna-r"><g><path d="M128.37 76.16 C128.93 75.88 130.2 74.88 131.01 74.19 C131.81 73.5 132.49 72.75 133.2 72.02 C133.91 71.28 134.6 70.53 135.28 69.77 C135.95 69.01 136.62 68.24 137.27 67.47 C137.92 66.69 138.56 65.91 139.19 65.11 C139.82 64.32 140.43 63.52 141.04 62.71 C141.64 61.9 142.23 61.08 142.82 60.25 C143.4 59.42 143.97 58.58 144.53 57.74 C145.09 56.89 145.65 56.03 146.19 55.17 C146.74 54.3 147.28 53.43 147.81 52.54 C148.34 51.66 148.87 50.77 149.4 49.86 C149.93 48.96 150.45 48.04 150.97 47.11 C151.5 46.19 152.02 45.25 152.55 44.3 C153.07 43.34 153.59 42.37 154.12 41.36 C154.64 40.36 154.98 39.1 155.67 38.26 C156.36 37.42 157.88 36.76 158.23 36.33 C158.58 35.9 158.28 35.46 157.77 35.67 C157.26 35.89 156.17 37.13 155.17 37.63 C154.17 38.13 152.86 38.26 151.76 38.67 C150.66 39.08 149.58 39.58 148.55 40.11 C147.51 40.65 146.5 41.25 145.53 41.89 C144.55 42.52 143.61 43.2 142.7 43.92 C141.79 44.63 140.91 45.39 140.06 46.17 C139.22 46.96 138.42 47.78 137.65 48.63 C136.88 49.48 136.16 50.36 135.47 51.26 C134.78 52.16 134.13 53.1 133.53 54.04 C132.92 54.99 132.36 55.96 131.84 56.95 C131.32 57.93 130.84 58.94 130.4 59.95 C129.97 60.97 129.58 62 129.23 63.03 C128.88 64.07 128.58 65.11 128.32 66.16 C128.06 67.21 127.84 68.27 127.68 69.33 C127.51 70.39 127.35 71.43 127.34 72.52 C127.33 73.6 127.46 75.24 127.63 75.84 C127.8 76.45 127.81 76.43 128.37 76.16 Z" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M128 76 C134 62 144 46 158 36" stroke="#B9862A" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M133.25 65.25 L138.2 63.98 M133.25 65.25 L131.77 60.43 M136.44 59.83 L142.07 59.13 M136.44 59.83 L134.71 54.52 M140 54.5 L145.78 54.18 M140 54.5 L138.53 49 M143.94 49.36 L149.4 49.15 M143.94 49.36 L143.21 44.05 M148.25 44.5 L153.01 44.03 M148.25 44.5 L148.65 39.84 M152.94 40.02 L156.67 38.78 M152.94 40.02 L154.78 36.63" stroke="#B9862A" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.7"/></g></g>
+    </g>
+    <g class="lume-body">
+      <g class="lume-abdomen">
+        <ellipse cx="120" cy="162" rx="23" ry="25" fill="#AE9FDB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+        <path d="M141 152 C146 166 140 182 126 186 C136 176 140 164 141 152 Z" fill="#8E7CC3" opacity="0.55"/>
+        <path d="M100 160 Q120 166 140 160 M103 171 Q120 177 137 171" stroke="#6F60A6" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.45"/>
+      </g>
+      <ellipse cx="110" cy="188" rx="7" ry="3.6" fill="#AE9FDB" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <ellipse cx="130" cy="188" rx="7" ry="3.6" fill="#AE9FDB" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <g class="lume-arms"><g class="lume-arm lume-arm-l">
+        <path d="M100 138 Q101 148.6 96 158" stroke="#2E2A3B" stroke-opacity="0.88" stroke-width="12.6" stroke-linecap="round"/>
+        <path d="M100 138 Q101 148.6 96 158" stroke="#AE9FDB" stroke-width="9.6" stroke-linecap="round"/>
+      </g><g class="lume-arm lume-arm-r">
+        <path d="M140 138 Q139 148.6 144 158" stroke="#2E2A3B" stroke-opacity="0.88" stroke-width="12.6" stroke-linecap="round"/>
+        <path d="M140 138 Q139 148.6 144 158" stroke="#AE9FDB" stroke-width="9.6" stroke-linecap="round"/>
+      </g></g>
+      <path class="lume-ruff" d="M151 132 A4.11 4.11 0 0 1 146.85 137.75 A7.02 7.02 0 0 1 135.5 141.96 A9.03 9.03 0 0 1 120 143.5 A9.03 9.03 0 0 1 104.5 141.96 A7.02 7.02 0 0 1 93.15 137.75 A4.11 4.11 0 0 1 89 132 A4.11 4.11 0 0 1 93.15 126.25 A7.02 7.02 0 0 1 104.5 122.04 A9.03 9.03 0 0 1 120 120.5 A9.03 9.03 0 0 1 135.5 122.04 A7.02 7.02 0 0 1 146.85 126.25 A4.11 4.11 0 0 1 151 132 Z" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M100 72 Q105 62 112 69 Q118 58 125 68 Q133 61 138 73" fill="#CFC5EC" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <circle class="lume-head" cx="120" cy="100" r="31" fill="#CFC5EC" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M144 84 C154 100 148 122 130 128 C142 118 147 102 144 84 Z" fill="#AE9FDB" opacity="0.5"/>
+      <ellipse cx="97" cy="114" rx="5.5" ry="3.2" fill="#D98A9B" opacity="0.45"/>
+      <ellipse cx="143" cy="114" rx="5.5" ry="3.2" fill="#D98A9B" opacity="0.45"/>
+    </g>
+    <g class="lume-outfit-slot" data-layer="body"></g>
+    <g class="lume-eyes">
+      <ellipse cx="107.4" cy="103.6" rx="6.4" ry="7.8" fill="#2E2A3B"/>
+        <circle cx="109.4" cy="100.6" r="2.2" fill="#FFFFFF"/>
+        <circle cx="105.2" cy="107.1" r="1" fill="#FFFFFF" opacity="0.85"/>
+      <ellipse cx="131.4" cy="103.6" rx="6.4" ry="7.8" fill="#2E2A3B"/>
+        <circle cx="133.4" cy="100.6" r="2.2" fill="#FFFFFF"/>
+        <circle cx="129.20000000000002" cy="107.1" r="1" fill="#FFFFFF" opacity="0.85"/>
+      <g class="lume-lids"><g class="lume-lid" transform="scale(1 0)">
+        <path d="M99.6 95 C99.6 87.6 116.4 87.6 116.4 95 V103 Q108 109.5 99.6 103 Z" fill="#CFC5EC"/>
+        <path d="M101.4 104 Q108 108.6 114.6 104" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      </g><g class="lume-lid" transform="scale(1 0)">
+        <path d="M123.6 95 C123.6 87.6 140.4 87.6 140.4 95 V103 Q132 109.5 123.6 103 Z" fill="#CFC5EC"/>
+        <path d="M125.4 104 Q132 108.6 138.6 104" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      </g></g>
+    </g>
+    <path class="lume-mouth" d="M117.5 114 Q120 115.6 122.5 114" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <g class="lume-outfit-slot" data-layer="head"></g>
+    <g class="lume-lantern">
+      <circle class="lume-glow" cx="184" cy="174" r="17.6" fill="#E2B14A" opacity="0.22"/>
+      <path d="M179 159 Q184 151 189 159" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M177 163 L179 160 H189 L191 163 Z" fill="#6F60A6" stroke="#2E2A3B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <rect x="176" y="163" width="16" height="21" rx="5" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path class="lume-flame" d="M184 168 C188 172 188 178 184 179 C180 178 180 172 184 168 Z" fill="#E2B14A"/>
+      <path d="M181 164 V183 M187 164 V183" stroke="#B9862A" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.6"/>
+      <path d="M178 184 H190 L188 187 H180 Z" fill="#6F60A6" stroke="#2E2A3B" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    </g><g class="lume-book">
+      <path d="M92 150 Q106 146 120 152 Q134 146 148 150 L148 172 Q134 168 120 174 Q106 168 92 172 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M95 147 Q107 143 120 149 L120 170 Q107 164 95 168 Z" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M145 147 Q133 143 120 149 L120 170 Q133 164 145 168 Z" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+      <path d="M100 153 Q108 151 115 154 M100 158 Q108 156 115 159 M125 154 Q132 151 140 153 M125 159 Q132 156 140 158" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" opacity="0.7"/>
+      <path d="M128 149 V178 L131 175 L134 178 V150" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    </g><circle cx="95" cy="159" r="5" fill="#AE9FDB" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/><circle cx="145" cy="159" r="5" fill="#AE9FDB" stroke="#2E2A3B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <g class="lume-extras"></g>
+  </g>
+</svg>
