@@ -951,6 +951,22 @@
     color: var(--ink-muted);
   }
 
+  /* A small context line above a title (sentence case, never tracked caps). */
+  body.app-page .eyebrow {
+    display: block;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  body.app-page main .article-heading > .eyebrow {
+    flex-basis: 100%;
+    order: -1;
+    margin-bottom: calc(var(--space-2) * -1);
+    font-size: var(--step-ui);
+  }
+
   /* ==== Panels ==============================================================================
    * A panel is one raised sheet. Content inside a panel is never boxed again: rows are separated
    * by hairlines. */

@@ -158,3 +158,159 @@
   font-size: 1rem;
 }
 }
+
+/* ==== Aparência, Conta e Configurações 3.5 ==================================================
+ * Each section is one panel; inside it, groups are ruled columns (no tinted boxes in boxes). The
+ * preference groups flow in balanced columns so no group is stretched into an empty tall box. */
+@layer pages {
+  body.app-page .settings-section,
+  body.app-page .article-section#aparencia {
+    margin-block: 0 var(--space-5);
+    padding: clamp(var(--space-4), 2.4vw, var(--space-5));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+  body.app-page :is(.settings-section, .article-section#aparencia) > h2 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 480;
+    letter-spacing: -0.01em;
+  }
+  body.app-page :is(.settings-section, .article-section#aparencia) > p {
+    max-width: 62ch;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  /* Themes: a grid of swatch rows; the chosen one carries the brand outline. */
+  body.app-page .theme-grid {
+    gap: var(--space-2);
+  }
+  body.app-page .theme-option {
+    min-height: 4.5rem;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+    transform: none;
+  }
+  body.app-page .theme-option:hover {
+    transform: none;
+    border-color: color-mix(in srgb, var(--brand) 40%, var(--line));
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .theme-option:is(.selected, [aria-pressed='true']) {
+    border-color: var(--brand-ink);
+    background: color-mix(in srgb, var(--paper-raised) 92%, var(--brand));
+    box-shadow: 0 0 0 1px var(--brand-ink);
+  }
+  body.app-page .theme-copy strong {
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body.app-page .theme-copy small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .theme-swatches {
+    border-radius: 6px;
+    border-color: var(--line-strong);
+  }
+  /* "Personalizar" (custom colours): a quiet key, not a red sticker. */
+  body.app-page .article-section#aparencia .appearance-plus,
+  body.app-page .appearance-plus {
+    width: auto;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-control);
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--elev-1);
+    transform: none;
+  }
+  body.app-page .appearance-plus:hover {
+    background: color-mix(in srgb, var(--paper-raised) 90%, var(--brand));
+    transform: none;
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .appearance-plus > span:first-child {
+    font: 500 1.1rem/1 var(--font-ui);
+    color: var(--brand-ink);
+  }
+  body.app-page .appearance-plus .appearance-plus-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip: auto;
+    display: inline;
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body.app-page .appearance-plus::after {
+    display: none;
+  }
+  /* Preference groups: balanced columns of ruled rows. */
+  body.app-page .personalization-settings {
+    display: block;
+    columns: 2 20rem;
+    column-gap: var(--space-6);
+  }
+  body.app-page .personalization-group {
+    display: block;
+    break-inside: avoid;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.app-page .personalization-heading {
+    gap: var(--space-2);
+    margin: 0 0 var(--space-1);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  body.app-page .personalization-group > h3,
+  body.app-page .personalization-heading h3 {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  body.app-page .setting-icon {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--step--1);
+  }
+  body.app-page :is(.check-row, .setting-select-row) {
+    gap: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .personalization-heading + :is(.check-row, .setting-select-row) {
+    border-top: 0;
+  }
+  body.app-page :is(.check-row, .setting-select-row) > span {
+    font-size: var(--step-ui);
+    font-weight: 550;
+  }
+  body.app-page .setting-select-row select {
+    width: auto;
+    min-width: 11rem;
+    min-height: 2.25rem;
+    margin-left: auto;
+    font-size: var(--step-ui);
+  }
+}

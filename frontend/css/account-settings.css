@@ -32,3 +32,154 @@
 .settings-details-card p { color:var(--muted); font-size:.8rem; line-height:1.6; max-width:80ch; }
 .settings-hub [id] { scroll-margin-top:110px; }
 }
+
+/* ==== Configurações 3.5: a settings window — the account on top, a jump bar, then sections as
+ * panels whose content is rows (never boxes in boxes). */
+@layer pages {
+  body.app-page .settings-hub {
+    --hub-gap: var(--space-5);
+  }
+  body.app-page .settings-hub-card {
+    padding: var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .settings-hub-card + .settings-hub-card,
+  body.app-page .settings-hub > .settings-hub-card {
+    margin-top: 0;
+    margin-bottom: var(--hub-gap);
+  }
+  body.app-page .settings-hub-grid {
+    gap: var(--hub-gap);
+    margin-bottom: var(--hub-gap);
+  }
+  body.app-page .settings-hub-grid > .settings-hub-card {
+    margin: 0;
+  }
+  body.app-page .settings-card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  body.app-page .settings-card-heading :is(h2, h3) {
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 480;
+    letter-spacing: -0.01em;
+  }
+  body.app-page .settings-card-heading .eyebrow {
+    margin: 0 0 var(--space-1);
+  }
+  body.app-page .settings-hub-card > p {
+    margin: 0 0 var(--space-4);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  /* The decorative icon chip goes quiet: a glyph, not a button-looking tile. */
+  body.app-page .settings-card-icon {
+    width: 2rem;
+    height: 2rem;
+    flex-basis: 2rem;
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--ink-muted);
+  }
+  body.app-page .settings-card-link {
+    min-height: 2.75rem;
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    font-size: var(--step-ui);
+    font-weight: 550;
+    text-decoration: none;
+  }
+  body.app-page .settings-card-link:hover {
+    color: var(--brand-ink);
+    text-decoration: none;
+  }
+  /* Account facts: three labelled values on one ruled line. */
+  body.app-page .account-facts {
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .account-facts > div {
+    padding: var(--space-3) var(--space-4) 0 0;
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page .account-facts > div + div {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--line);
+  }
+  body.app-page .account-facts dt {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .account-facts dd {
+    font-size: var(--step-ui);
+  }
+  /* Jump bar */
+  body.app-page .settings-category-nav {
+    gap: var(--space-1);
+    margin: 0 0 var(--hub-gap);
+    padding: 3px;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius-control) + 2px);
+    background: var(--paper-sunken);
+    box-shadow: var(--recessed);
+  }
+  body.app-page .settings-category-nav a {
+    padding: 0.35rem 0.8rem;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--ink);
+    font-size: var(--step-ui);
+    font-weight: 550;
+    text-decoration: none;
+  }
+  body.app-page .settings-category-nav a:hover {
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  /* Disclosures inside settings cards (Conta e dispositivo). */
+  body.app-page .settings-hub-card details > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 2.75rem;
+    list-style: none;
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body.app-page .settings-hub-card details > summary::-webkit-details-marker {
+    display: none;
+  }
+  body.app-page .settings-hub-card details > summary::before {
+    content: '';
+    flex: none;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 1.5px solid var(--ink-muted);
+    border-bottom: 1.5px solid var(--ink-muted);
+    transform: rotate(-45deg);
+  }
+  body.app-page .settings-hub-card details[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  @media (max-width: 780px) {
+    body.app-page .account-facts > div + div {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+  }
+}

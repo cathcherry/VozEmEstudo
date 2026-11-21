@@ -148,7 +148,7 @@
     );
   }
   // One set of custom-theme defaults (the "Claro" palette) for first use and saved profiles.
-  const CUSTOM = Object.freeze({ accent: '#3156d8', background: '#f5f8ff', text: '#17243d' });
+  const CUSTOM = Object.freeze({ accent: '#5a4896', background: '#f7f5fb', text: '#2e2a3b' });
   const validHex = (value, fallback) => (/^#[\da-f]{6}$/i.test(value) ? value : fallback);
   function mix(first, second, amount) {
     const channel = (i) =>
@@ -220,11 +220,11 @@
     else root.style.removeProperty('color-scheme');
     const background =
       {
-        paper: '#f8f9fb',
+        paper: '#f7f5fb',
         gabriela: '#fbf8ff',
         forest: '#f7f7f1',
         wine: '#f8f3f4',
-        night: '#151a21',
+        night: '#1b1924',
         'contrast-light': '#ffffff',
         'contrast-dark': '#090909',
         soft: '#fff4d9',
