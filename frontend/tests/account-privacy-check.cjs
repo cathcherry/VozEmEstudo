@@ -173,11 +173,11 @@ async function main() {
     await dialog.waitFor();
     assert.match(
       await dialog.locator('[data-clear-device-warning]').textContent(),
-      /serão perdidas/,
+      /这些更改将会丢失/, // the account uses Chinese: the warning is translated too
     );
     assert.equal(
       await dialog.locator('[data-clear-device-confirm]').textContent(),
-      'Apagar mesmo assim e sair',
+      '仍然删除并退出',
     );
     await settle(page);
     await axeCheck(page, '[data-clear-device-dialog]', 'Apagar dados (diálogo)');
@@ -193,7 +193,7 @@ async function main() {
     data.dbDown = false;
     await panel.locator('[data-clear-device]').click();
     await dialog.locator('[data-clear-device-sync]').click();
-    await dialog.locator('[data-clear-device-status]', { hasText: 'seguro apagar' }).waitFor();
+    await dialog.locator('[data-clear-device-status]', { hasText: '现在可以安全删除' }).waitFor();
     assert.equal(
       row(data, A, 'preferences').data['audioestudo-theme'],
       'wine',
