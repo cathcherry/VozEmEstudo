@@ -70,6 +70,8 @@ export const env = Object.freeze({
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),
 
   mockExternalServices: bool(process.env.MOCK_EXTERNAL_SERVICES, false),
+  // Offline demo only: a JSON array of strings used as the simulated transcript's segments.
+  mockAsrSegmentsFile: process.env.MOCK_ASR_SEGMENTS_FILE || '',
   // Server-side ceiling for one question list; the database accepts at most 100.
   maxQuestionListCount: listLimit(process.env.MAX_QUESTION_LIST_COUNT),
 });
