@@ -143,7 +143,7 @@ O dono autorizou criar e testar migrations; produção só com backup e nova aut
 | A — Anotações 3.0 (subagente, revisado e integrado) | Âncoras em vários trechos, caderno da aula com autosave, referências cientes de revisão, privado por padrão. | merge `50fd380` |
 | E — Turmas privadas (subagente, revisado e integrado) | Papéis, convites com hash, aulas publicadas com revisão fixada, máquina de estados de envios, conjuntos compartilhados sem histórico. | merge `8a32fc2` |
 | D — Gerações de IA reutilizáveis | Chave canônica ligada aos jobs: reuso autorizado, single flight, orçamento diário, falha honesta. | `d3c9436` |
-| C — Aprendizagem multiaula | A fazer. | — |
+| C — Aprendizagem multiaula (subagente, revisado e integrado) | Material integrado de várias aulas, unidades ou disciplina. Só entram revisões confirmadas, com a lista de fontes congelada. Fila própria com lease e no máximo 2 tentativas. Cache de mapas de conhecimento opcional, em migration separada. Citações conferidas na revisão de origem. Usa a reutilização de gerações do marco D. | merge `95b02b9` |
 
 **Flashcards 3.0 em detalhe:**
 
@@ -266,3 +266,35 @@ Isso existe **só no staging**. Não faz parte de nenhuma migration e não deve 
 | Postgres 16.15 local | aplicada | aplicada | aplicada | aplicada |
 | Staging Supabase | aplicada | aplicada | aplicada | aplicada |
 | **Produção (`audioestudo`)** | **não** | **não** | **não** | **não** |
+
+### Validação do marco C (`20261121170000_multi_lesson` e `20261121171000_knowledge_map_cache`)
+
+| Ambiente | Resultado |
+| --- | --- |
+| PGlite | 11 testes de SQL, 2 do worker (com provedor falso que conta as chamadas) e 1 HTTP com 5 subtestes |
+| navegador | 6 jornadas com API simulada |
+| Postgres 16.15 local | preflight ok; as duas migrations aplicadas; postflight ok (RLS, nada para o navegador, gatilho de fontes congeladas, cache com RLS); reaplicação recusada com `MULTI_LESSON_ABORT` |
+| Concorrência real (PG16) | 2 workers pedem a fila ao mesmo tempo: um recebe o job e o outro recebe `none` (`skip locked`); um único `attempt_count = 1` |
+| Staging Supabase | preflight ok; aplicadas a partir do commit `95b02b9`, com o MD5 dos dois arquivos igual ao do Git; postflight ok; 0 funções novas chamáveis pelo navegador |
+
+Teste funcional no staging:
+
+| Passo | Resultado |
+| --- | --- |
+| resolver as próprias aulas | 1 incluída |
+| outra conta pede as mesmas aulas | 0 incluídas, 1 em `missing` (nada revelado) |
+| geração nova | `start`, `attach` em `queued` |
+| worker pega o job | `running`, com 1 revisão de fonte |
+| outro worker tenta ler as fontes | `MULTI_LESSON_LEASE_LOST` |
+| tentativa de reescrever as fontes | `MULTI_LESSON_SOURCES_IMMUTABLE` |
+| job concluído | `ready` |
+| pedido equivalente com reuso | `reuse`, sem chamada de IA |
+| outra conta lê o material | `MULTI_LESSON_NOT_FOUND` |
+
+Nenhum provedor de IA real foi chamado: nada foi gasto.
+
+| Banco | Multiaula | Cache de mapas (opcional) |
+| --- | --- | --- |
+| Postgres 16.15 local | aplicada | aplicada |
+| Staging Supabase | aplicada | aplicada |
+| **Produção (`audioestudo`)** | **não** | **não** |

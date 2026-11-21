@@ -1,9 +1,17 @@
 # Material integrado (Marco C) — `20261121170000_multi_lesson.sql` e `20261121171000_knowledge_map_cache.sql`
 
-**Situação:** versionadas no Git e testadas só em PGlite (Postgres real em processo) pelos testes
-automáticos. **Não foram aplicadas em nenhum ambiente** (nem staging, nem produção) e **não foram
-validadas no Postgres 16 local** nem com um provedor de IA real. Flag `FEATURE_MULTI_LESSON`
-desligada por padrão.
+**Situação:** versionadas no Git.
+
+Onde foram aplicadas (21/11):
+
+| Banco | Situação |
+| --- | --- |
+| PGlite (testes automáticos) | aplicadas a cada execução |
+| Postgres 16.15 local | aplicadas; preflight e postflight ok; reaplicação recusada; concorrência real ok |
+| staging Supabase `voz-em-estudo-staging` | aplicadas com o arquivo idêntico ao do commit `95b02b9` (MD5 conferido); postflight e teste funcional ok |
+| **produção (`audioestudo`)** | **não aplicadas** |
+
+**Não foi validado com um provedor de IA real** (os testes usam provedores falsos que contam as chamadas). A flag `FEATURE_MULTI_LESSON` fica desligada por padrão. Detalhes em `docs/OVERNIGHT_PROGRESS.md`, seção 3.3.
 
 ## O que resolve
 
