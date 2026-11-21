@@ -72,6 +72,15 @@ export async function initPlanningPanel({ materials }) {
     [...toolbar.querySelectorAll('[data-planning-open]')].map((b) => [b.dataset.planningOpen, b]),
   ) : {};
   let openedFrom = null;
+  // Creation happens in one modal dialog that shows the requested form; nothing stays open on
+  // the page. Without the dialog (older markup) the forms open inline as before.
+  const dialog = panel.querySelector('[data-planning-dialog]');
+  const dialogError = dialog ? document.createElement('p') : null;
+  if (dialogError) {
+    dialogError.className = 'planning-dialog-error';
+    dialogError.setAttribute('role', 'alert');
+    dialog.append(dialogError);
+  }
 
   // One creation form at a time, opened on request. Without the toolbar (older markup) the
   // forms simply stay visible as before.
@@ -87,9 +96,16 @@ export async function initPlanningPanel({ materials }) {
       if (kind === 'subgoal') subgoalGoalSelect.value = goalId;
     }
     const form = forms[kind];
-    const first = kind === 'goal' || goalId
-      ? form.querySelector('[name="title"]')
-      : form.querySelector('select, input');
+    if (dialog) {
+      if (dialogError) dialogError.textContent = '';
+      dialog.setAttribute('aria-labelledby', form.querySelector('h3')?.id || '');
+      if (!dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+    }
+    // A new task starts in the first goal; the title is what the student types first.
+    if (kind === 'task' && !goalSelect.value && goals.length) { goalSelect.value = goals[0].id; refreshTaskSubgoals(); }
+    const first = kind === 'subgoal' && !goalId
+      ? form.querySelector('select, input')
+      : form.querySelector('[name="title"]');
     form.scrollIntoView?.({ block: 'nearest' });
     first?.focus();
   }
@@ -99,7 +115,9 @@ export async function initPlanningPanel({ materials }) {
       form.hidden = true;
       openers[name]?.setAttribute('aria-expanded', 'false');
     }
-    const target = openedFrom?.isConnected ? openedFrom : openers.goal;
+    if (dialog?.open) dialog.close();
+    const target = [openedFrom, openers.goal, list.querySelector('.nino-note-action')]
+      .find((element) => element?.isConnected && !element.closest('[hidden]'));
     openedFrom = null;
     if (restoreFocus) target?.focus();
   }
@@ -111,6 +129,9 @@ export async function initPlanningPanel({ materials }) {
   }
   for (const cancel of panel.querySelectorAll('[data-planning-cancel]'))
     cancel.addEventListener('click', () => hideForms());
+  // Escape or a click on the backdrop closes the dialog like Cancel.
+  dialog?.addEventListener('cancel', (event) => { event.preventDefault(); hideForms(); });
+  dialog?.addEventListener('click', (event) => { if (event.target === dialog) hideForms(); });
   for (const form of Object.values(forms))
     form.addEventListener('keydown', (event) => {
       // Escape closes the form first; a second Escape closes the dialog.
@@ -155,14 +176,22 @@ export async function initPlanningPanel({ materials }) {
     if (available.some((item) => item.id === previous)) taskSubgoalSelect.value = previous;
   }
 
+  // Confirmations show in a small inline banner that clears itself; errors stay until the next
+  // action. With the creation dialog open, the error also appears inside it, next to the form.
+  let clearTimer;
   async function mutate(action, success) {
+    clearTimeout(clearTimer);
     setStatus(notice, '');
+    if (dialogError) dialogError.textContent = '';
     try {
       await action();
       setStatus(notice, success, 'success');
+      clearTimer = setTimeout(() => { if (notice.dataset.state === 'success') setStatus(notice, ''); }, 6000);
       return true;
     } catch (error) {
-      setStatus(notice, error.message || 'Não foi possível salvar.', 'error');
+      const message = error.message || 'Não foi possível salvar.';
+      setStatus(notice, message, 'error');
+      if (dialog?.open && dialogError) dialogError.textContent = message;
       return false;
     }
   }
@@ -404,9 +433,15 @@ export async function initPlanningPanel({ materials }) {
     if (openers.task) openers.task.hidden = !goals.length;
     if (openers.subgoal) openers.subgoal.hidden = !goals.length;
     if (sortControls && toolbar) sortControls.hidden = !tasks.length;
+    // With nothing created yet, the empty card carries the one action.
+    if (toolbar) toolbar.hidden = !goals.length;
 
     if (!goals.length) {
-      list.append(ninoNote('Nenhum objetivo criado ainda. Comece definindo o que deseja estudar.', 'reading', { className: 'planning-empty' }));
+      list.append(ninoNote('Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar.', 'reading', {
+        className: 'planning-empty planning-start',
+        title: 'Nenhum objetivo criado ainda',
+        action: toolbar ? { label: 'Criar primeiro objetivo', onClick: (button) => showForm('goal', { from: button }) } : null,
+      }));
       return;
     }
 
@@ -531,12 +566,22 @@ export async function initPlanningPanel({ materials }) {
       materialSelect.value = '';
       referenceInput.value = '';
       taskSubgoalSelect.value = '';
+      const details = formTask.querySelector('[data-planning-more]');
+      if (details) { details.hidden = true; formTask.querySelector('[data-planning-more-toggle]')?.setAttribute('aria-expanded', 'false'); }
       render();
       hideForms();
     }, 'Tarefa criada.');
   });
 
   goalSelect.addEventListener('change', refreshTaskSubgoals);
+  // Optional task details stay one click away so the form starts short.
+  const moreToggle = formTask.querySelector('[data-planning-more-toggle]');
+  const more = formTask.querySelector('[data-planning-more]');
+  moreToggle?.addEventListener('click', () => {
+    more.hidden = !more.hidden;
+    moreToggle.setAttribute('aria-expanded', String(!more.hidden));
+    if (!more.hidden) more.querySelector('select, input')?.focus();
+  });
   taskFilter.addEventListener('change', render);
   taskSort.addEventListener('change', render);
 

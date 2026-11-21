@@ -117,6 +117,7 @@ export default {
   "Ajuda": "帮助",
   "Ajuda e dados": "帮助与数据",
   "Ajustar aparência e leitura": "调整外观与阅读",
+  "Ajustar meta, fuso e sincronização": "调整目标、时区和同步",
   "Ajuste a cor do texto para melhorar o contraste.": "调整文字颜色以提高对比度。",
   "Alças do recorte: ← / →": "片段手柄：← / →",
   "algo novo?": "新事物吧？",
@@ -240,6 +241,7 @@ export default {
   "Avisos automáticos ajudam na leitura e podem falhar.": "自动提示可辅助阅读，但可能出错。",
   "Azul": "蓝色",
   "Azul marinho e ciano.": "海军蓝与青色。",
+  "Baixa um arquivo .ics do mês. Não envia convites nem altera outros calendários.": "下载本月的 .ics 文件。不会发送邀请，也不会更改其他日历。",
   "Baixar calendário ICS": "下载 ICS 日历",
   "Baixar trecho": "下载片段",
   "Barra inferior": "底部栏",
@@ -440,6 +442,7 @@ export default {
   "Criar objetivo": "创建目标",
   "Criar pasta": "创建文件夹",
   "Criar primeira unidade": "创建第一个单元",
+  "Criar primeiro objetivo": "创建第一个目标",
   "Criar questões": "生成题目",
   "Criar um objetivo": "创建目标",
   "Criar uma conta": "创建账户",
@@ -510,6 +513,7 @@ export default {
   "Distribuição": "分布",
   "Do áudio ao texto": "从音频到文本",
   "Do mais fácil ao mais difícil": "由易到难",
+  "Dom": "周日",
   "Duplicar": "复制",
   "Duração": "时长",
   "Dúvidas frequentes": "常见问题",
@@ -665,6 +669,7 @@ export default {
   "Filtrar por aula": "按课程筛选",
   "Filtros": "筛选",
   "Filtros e visualização": "筛选与视图",
+  "Fim": "结束",
   "Fim do recorte": "片段结束",
   "Fim em minutos e segundos": "结束时间（分:秒）",
   "Finalizando a transcrição…": "正在完成转写…",
@@ -672,12 +677,14 @@ export default {
   "Flashcards do dia, criação e conjuntos de cartões, suas tentativas de questões (com \"refazer apenas as erradas\") e todas as anotações. Aparece quando esses recursos estão ativos.": "今日记忆卡片、卡片创建与卡组、题目答题记录（可“只重做错题”）以及全部笔记。启用这些功能后显示。",
   "Flashcards, tentativas de questões e anotações aparecem aqui quando forem ativados neste servidor.": "记忆卡片、答题记录和笔记在此服务器启用后会显示在这里。",
   "Foco": "重点",
+  "Foco concluído! Que tal uma pausa de 5 minutos?": "专注完成！休息 5 分钟吧？",
   "Foco concluído. Inicie a pausa de 5 minutos.": "专注完成。开始 5 分钟休息。",
   "Foco de 25 minutos": "25 分钟专注",
   "Foco e personalização": "专注与个性化",
   "Foco no trecho": "聚焦段落",
   "Foco profundo": "深度专注",
   "Foco temático": "主题重点",
+  "Focos concluídos nesta visita": "本次访问完成的专注",
   "Focos sem conteúdo na aula são omitidos; nada é completado com informação externa.": "课程中没有相关内容的侧重点会被略过；不会用外部信息补充。",
   "Folha de questões somente para leitura. As respostas não fazem parte deste link.": "只读题目表。答案不包含在此链接中。",
   "Folha do aluno, sem respostas": "学生版，不含答案",
@@ -733,11 +740,15 @@ export default {
   "Há andamento local aguardando sincronização.": "有本地进度等待同步。",
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "设备之间存在冲突，请在下方选择保留哪份进度。",
   "Há mudanças salvas só neste navegador, aguardando sincronização.": "有些更改只保存在本浏览器中，正在等待同步。",
+  "Há uma sessão aberta em outro aparelho ou aba.": "另一台设备或标签页上有一个未结束的时段。",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "本地和账户中各有版本，请选择保留哪一个。",
   "Habilidades cognitivas": "认知能力",
   "histórico de estudo": "学习记录",
   "Histórico de revisões": "复习记录",
   "Histórico do cartão selecionado": "所选卡片的记录",
+  "Hoje": "今天",
+  "Horário removido.": "学习时间已删除。",
+  "Horário vinculado a uma tarefa.": "学习时间已关联到任务。",
   "Hugging Face": "Hugging Face",
   "Ícone": "图标",
   "Ícones discretos": "低调图标",
@@ -760,6 +771,7 @@ export default {
   "Incluir resumo da mesma revisão": "包含同一版本的摘要",
   "Incluir transcrição confirmada": "包含已确认的转写",
   "Incorporar conteúdo": "嵌入内容",
+  "Indicadores indisponíveis.": "指标暂不可用。",
   "Indicadores semanais": "每周指标",
   "Informe o nome que deseja exibir.": "请输入要显示的名称。",
   "Informe seu e-mail e enviaremos instruções, caso exista uma conta que permita recuperação por senha.": "输入你的邮箱，如果存在支持密码找回的账户，我们会发送操作说明。",
@@ -774,6 +786,9 @@ export default {
   "Iniciando a transcrição…": "正在开始转写…",
   "Iniciar / retomar": "开始 / 继续",
   "Iniciar a transcrição": "开始转写",
+  "Iniciar estudo livre": "开始自由学习",
+  "Iniciar foco": "开始专注",
+  "Iniciar pausa": "开始休息",
   "Inicie uma sessão para registrar tempo na conta. A contagem pausa ao sair desta aba. Minutos de estudo e trecho ouvido são indicadores diferentes.": "开始一次学习时段，即可将时间记录到账户。离开此标签页时计时会暂停。学习分钟数与已收听片段是不同的指标。",
   "Início": "首页",
   "Início do recorte": "片段开始",
@@ -830,8 +845,10 @@ export default {
   "Lista": "列表",
   "Listas de questões": "题目列表",
   "Literária": "文学",
+  "Livre": "自由",
   "Localização": "位置",
   "Longas": "长",
+  "Mais detalhes: subobjetivo, aula e link": "更多详情：子目标、课程和链接",
   "Mais lenta": "较慢",
   "Mais opções": "更多选项",
   "Mais rápida": "较快",
@@ -857,7 +874,10 @@ export default {
   "Mensagem": "消息",
   "Menu recolhido, menos estímulos visuais, sem animações e guia de leitura.": "收起菜单、减少视觉干扰、关闭动画并启用阅读引导。",
   "Mês": "月",
+  "Mês anterior": "上个月",
+  "Meta da semana alcançada. 🎉": "本周目标已达成。🎉",
   "Meta e fuso salvos na conta.": "目标和时区已保存到账户。",
+  "Meta e sincronização": "目标与同步",
   "Meta semanal e fuso horário": "每周目标和时区",
   "Meta semanal em minutos (0 desativa)": "每周目标（分钟，0 表示关闭）",
   "Meu estudo": "我的学习",
@@ -868,11 +888,13 @@ export default {
   "Meus cards": "我的卡片",
   "Meus objetivos": "我的目标",
   "Meus temas": "我的主题",
+  "min de estudo nesta semana": "分钟（本周学习）",
   "Minha conta": "我的账户",
   "Minha intenção": "我的心愿",
   "Minha semana de estudo": "我的学习周",
   "Minhas anotações": "我的笔记",
   "Minhas notas": "我的笔记",
+  "Minutos por dia": "每日分钟数",
   "Minutos registrados nesta semana e a sua meta.": "本周记录的分钟数和你的目标。",
   "Moderna": "现代",
   "Modo": "模式",
@@ -916,6 +938,7 @@ export default {
   "Na janela de impressão, escolha “Salvar como PDF”.": "在打印窗口中选择“另存为 PDF”。",
   "Na próxima aula, vamos comparar a eficiência dos dois sistemas com exemplos do dia a dia.": "下节课我们将用日常例子比较两种系统的效率。",
   "Na sua conta": "在你的账户中",
+  "Nada marcado neste dia. Que tal reservar um horário curto?": "这一天没有安排。要不要预留一小段时间？",
   "Não feche esta página até o envio terminar.": "上传完成前请勿关闭此页面。",
   "Não foi possível abrir a aula": "无法打开课程",
   "Não foi possível abrir a cópia. Tente novamente.": "无法打开副本。请重试。",
@@ -999,9 +1022,12 @@ export default {
   "Navegação principal": "主导航",
   "Nenhum cartão neste filtro": "此筛选下没有卡片",
   "Nenhum cartão pendente. Suas próximas revisões aparecerão aqui.": "暂无待复习卡片。之后的复习会显示在这里。",
+  "Nenhum foco concluído ainda": "尚未完成专注",
+  "Nenhum horário ou prazo neste mês ainda.": "本月还没有学习时间或截止日期。",
   "Nenhum indício detectado nesta análise": "本次分析未发现问题",
   "Nenhum link criado para esta aula.": "此课程还没有创建链接。",
   "Nenhum objetivo ativo.": "没有进行中的目标。",
+  "Nenhum objetivo criado ainda": "还没有目标",
   "Nenhum objetivo criado ainda. Comece definindo o que deseja estudar.": "还没有创建目标。先确定你想学习的内容吧。",
   "Nenhum recurso encontrado.": "未找到资源。",
   "Nenhum registro carregado para este período.": "此时段未加载任何记录。",
@@ -1161,6 +1187,7 @@ export default {
   "Pasta": "文件夹",
   "Pasta criada. Tente adicionar o PNG novamente mais tarde.": "文件夹已创建。请稍后重新添加 PNG。",
   "Pastas": "文件夹",
+  "Pausa": "休息",
   "Pausa concluída. Inicie outro foco de 25 minutos.": "休息结束。开始下一轮 25 分钟专注。",
   "Pausa de 5 minutos": "5 分钟休息",
   "Pausar": "暂停",
@@ -1209,6 +1236,7 @@ export default {
   "Prática constante": "坚持练习",
   "Prazo": "截止日期",
   "Prazo (opcional)": "截止日期（可选）",
+  "Prazo de tarefa": "任务截止日期",
   "Prazo e pendências": "按截止日期和未完成",
   "Prazo inválido.": "截止日期无效。",
   "Precisa de uma orientação?": "需要指引吗？",
@@ -1257,10 +1285,12 @@ export default {
   "Próxima questão": "下一题",
   "Próximas anotações": "下一页笔记",
   "Próximas tarefas": "近期任务",
+  "Próximo mês": "下个月",
   "Próximo passo": "下一步",
   "Próximo resultado": "下一个结果",
   "Pular para a questão": "跳到题目",
   "Pular para o conteúdo": "跳到主要内容",
+  "Qua": "周三",
   "Quais opções ajudam a adaptar a leitura e o foco?": "哪些选项可以调整阅读和专注体验？",
   "Qual é a diferença entre guardar áudio e vídeo?": "保留音频和保留视频有什么区别？",
   "Qualquer pessoa com o link poderá ler os textos escolhidos até a expiração ou revogação. Áudio, vídeo, anotações pessoais e progresso ficam fora da cópia. Uma revogação impede novos acessos, mas não remove cópias já baixadas.": "任何持有链接的人都能阅读所选文本，直到链接过期或被撤销。音频、视频、个人笔记和进度不包含在副本中。撤销可阻止新的访问，但无法删除已下载的副本。",
@@ -1276,6 +1306,7 @@ export default {
   "Questões de listas anteriores": "以往列表中的题目",
   "Questões para retomar": "待重做的题目",
   "questões repetidas ou sem fonte foram descartadas": "已舍弃重复或无出处的题目",
+  "Qui": "周四",
   "Rápida": "快",
   "Realça bordas, campos e links para facilitar a identificação.": "加强边框、输入框和链接，便于识别。",
   "Reativar": "重新启用",
@@ -1336,6 +1367,7 @@ export default {
   "Resumo": "摘要",
   "Resumo da Biblioteca": "资料库概览",
   "Resumos": "摘要",
+  "Retomar": "继续",
   "Retome as ideias principais e use as questões para conferir sua compreensão.": "回顾主要观点，用题目检验你的理解。",
   "Revelar resposta": "显示答案",
   "Rever aula": "复习课程",
@@ -1369,9 +1401,10 @@ export default {
   "Rodapé": "页脚",
   "Rosa": "粉色",
   "sáb": "六",
-  "Sáb": "六",
+  "Sáb": "周六",
   "Sair da lista": "退出列表",
   "Sair da tela cheia": "退出全屏",
+  "Sair desta aba pausa a contagem; nada se perde.": "离开此标签页会暂停计时；不会丢失任何内容。",
   "Salvando perfil…": "正在保存个人资料…",
   "Salvar": "保存",
   "Salvar alterações": "保存更改",
@@ -1400,6 +1433,7 @@ export default {
   "Se você não selecionar uma opção para guardar a gravação, o áudio é descartado após o processamento. A transcrição e os materiais gerados permanecem na Biblioteca.": "如果你未选择保留录音，音频会在处理后被删除。转写和生成的资料仍保留在资料库中。",
   "Seções da revisão": "复习板块",
   "Seções do planejamento": "计划板块",
+  "Seg": "周一",
   "Seguir áudio": "跟随音频",
   "Segurança": "安全",
   "Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para transcrição; a página da aula mostra o andamento.": "选择“上传并转写”。只有所选片段的音频会被发送转写；课程页面会显示进度。",
@@ -1432,6 +1466,7 @@ export default {
   "Senha e segurança": "密码与安全",
   "Separe por vírgulas. Até 12 tags, sincronizadas com a sua conta.": "用逗号分隔。最多 12 个标签，与你的账户同步。",
   "Serviços externos": "外部服务",
+  "Sessão de foco": "专注时段",
   "Sessão em andamento. Sair da aba pausa a contagem.": "会话进行中。离开此标签页将暂停计时。",
   "Sessão inválida. Entre novamente.": "会话无效，请重新登录。",
   "Sessão não encontrada.": "未找到会话。",
@@ -1443,10 +1478,12 @@ export default {
   "Seu próximo capítulo começa aqui.": "你的下一章从这里开始。",
   "Seu uso da gravação": "你对录音的使用",
   "Seus dados": "你的数据",
+  "Sex": "周五",
   "Sim. Você pode editar os trechos da transcrição e salvar uma nova revisão, mantendo o histórico de versões. Resumos e questões anteriores sinalizam quando precisam ser atualizados após uma alteração no texto.": "可以。你可以编辑转写片段并保存为新版本，同时保留版本历史。文本修改后，之前的摘要和题目会提示需要更新。",
   "Simples (Verdana)": "简洁（Verdana）",
   "Simples, com glossário": "简明，附术语表",
   "Sincronização da conta": "账户同步",
+  "Sincronização deste navegador": "此浏览器的同步",
   "Sincronização e andamento deste navegador": "此浏览器的同步与进度",
   "Sincronização e dados neste navegador": "同步与此浏览器中的数据",
   "Sincronizando…": "正在同步…",
@@ -1528,6 +1565,7 @@ export default {
   "Tente de novo agora ou continue depois pela aula.": "现在重试，或稍后从课程页面继续。",
   "Tente outra busca ou ajuste os filtros.": "请尝试其他搜索或调整筛选条件。",
   "Tente outra busca ou filtro.": "请尝试其他搜索或筛选。",
+  "Ter": "周二",
   "Termo e definição": "术语与定义",
   "Teste o que você aprendeu com uma lista de questões desta aula.": "用本节课的题目列表检验所学。",
   "Texto": "文本",
@@ -1581,6 +1619,7 @@ export default {
   "Um espaço para descobrir.": "一个探索的空间。",
   "Um lembrete por linha": "每行一条提醒",
   "Um número": "一个数字",
+  "Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar.": "目标汇集某次考试、科目或项目的任务。从你想达成的事情开始。",
   "Um pequeno passo.": "一小步。",
   "Um símbolo (ex.: ! @ # ?)": "一个符号（如 ! @ # ?）",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "一个说得通的片段。一个记得住的想法。一个开拓思路的问题。",
@@ -1715,6 +1754,10 @@ export default {
    "已记录 {0} 分钟学习 · 目标：{1} · 账户中已完成 {2} 次复习"
   ],
   [
+   "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
+   "时间按此设备的时区显示（{0}）。任务截止日期显示为全天。"
+  ],
+  [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
    "{0}到期。副本不会同步列表之后的更改。"
   ],
@@ -1771,6 +1814,10 @@ export default {
    "已完成 {0} / {1} 个任务 · {2} · 目标日期：{3}"
   ],
   [
+   "{0} de 7 dias com estudo · {1} aulas concluídas",
+   "7 天中有 {0} 天学习 · 已完成 {1} 节课"
+  ],
+  [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
    "{0} {1}{2}。它们将加入面板中的复习。"
   ],
@@ -1781,6 +1828,10 @@ export default {
   [
    "Redimensionar {0}. Use as setas para ajustar.",
    "调整{0}的大小。使用方向键调整。"
+  ],
+  [
+   "{0} de 7 dias com estudo · {1} aula concluída",
+   "7 天中有 {0} 天学习 · 已完成 {1} 节课"
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
@@ -1833,6 +1884,10 @@ export default {
   [
    "Revisão registrada. Próxima: {0}.",
    "复习已记录。下次：{0}。"
+  ],
+  [
+   "de {0} min de estudo nesta semana",
+   "/ {0} 分钟（本周学习）"
   ],
   [
    "Meta semanal: {0} de {1} minutos",
@@ -1909,6 +1964,10 @@ export default {
   [
    "Transcrição · revisão {0}",
    "转写 · 版本 {0}"
+  ],
+  [
+   "Fuso deste aparelho: {0}.",
+   "此设备的时区：{0}。"
   ],
   [
    "Opções da disciplina {0}",
@@ -2003,6 +2062,10 @@ export default {
    "{0}. 记忆卡片：{1}"
   ],
   [
+   "{0} focos concluídos",
+   "已完成 {0} 次专注"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · {1}到期"
   ],
@@ -2049,6 +2112,10 @@ export default {
   [
    "Salvar {0} cartões",
    "保存 {0} 张卡片"
+  ],
+  [
+   "{0} foco concluído",
+   "已完成 {0} 次专注"
   ],
   [
    "{0} · questão {1}",
@@ -2149,6 +2216,10 @@ export default {
   [
    "Opções de {0}",
    "{0}的选项"
+  ],
+  [
+   "Agenda de {0}",
+   "{0} 的日程"
   ],
   [
    "{0} questões",

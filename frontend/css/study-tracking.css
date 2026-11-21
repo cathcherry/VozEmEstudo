@@ -1,16 +1,208 @@
-.study-tracking-panel { margin-block: 1.5rem; padding-block: 1rem; border-block: 1px solid var(--border); }
-.study-timer-controls,.study-settings { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; margin-block: 1rem; }
-.study-settings label,.study-timer-controls label { display: grid; gap: .4rem; max-width: 100%; }
-.study-settings input { max-width: 100%; min-width: 0; }
-.study-timer-controls output { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
-.study-tracking-panel button { margin: .25rem; }
-.study-tracking-panel [hidden] { display: none; }
-/* Goal/time-zone and synchronization tools are folded; they open on request or on a conflict. */
-.study-disclosure { margin-block: .75rem; }
-.study-disclosure > summary { min-height: 44px; padding-block: .6rem; cursor: pointer; font-weight: 600; }
-.study-day-list { display: grid; gap: .35rem; margin: .75rem 0; padding: 0; list-style: none; }
-.study-day-list li { display: grid; grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr) 4.5rem; align-items: center; gap: .75rem; font-size: .9rem; }
-.study-day-list li > span:last-child { text-align: end; font-variant-numeric: tabular-nums; }
-.study-day-bar { position: relative; height: .55rem; overflow: hidden; border-radius: 999px; background: var(--border-light); }
-.study-day-bar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: calc(var(--fill, 0) * 1%); border-radius: inherit; background: var(--accent-strong); }
-@media (forced-colors: active) { .study-day-bar::after { background: Highlight; } }
+/* Study time: a focus card (ring timer, one main button) beside a quiet week card (columns per
+   day against the goal). Goal, time zone and synchronization live in a dialog. */
+.study-tracking-panel { margin-block: 1.5rem; container-type: inline-size; }
+.study-tracking-panel [hidden] { display: none !important; }
+.focus-layout { display: grid; gap: 1.25rem; align-items: start; }
+@container (min-width: 760px) { .focus-layout { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); } }
+
+.focus-card,.week-card {
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  background: var(--surface);
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+}
+.focus-card {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+  background:
+    radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--accent-soft, var(--surface-alt)) 70%, transparent), transparent 70%),
+    var(--surface);
+}
+.focus-heading,.week-head h2 { margin: 0; font-size: 1.15rem; }
+.focus-heading { justify-self: start; }
+
+/* Mode chips: a radio group of three pills. */
+.focus-modes {
+  display: inline-flex;
+  gap: .25rem;
+  padding: .25rem;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border-light);
+}
+.focus-mode {
+  min-height: 40px;
+  padding: .4rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  color: var(--muted);
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.focus-mode[aria-checked='true'] { color: var(--accent-contrast, #fff); background: var(--accent-strong); }
+.focus-mode:disabled { cursor: default; }
+.focus-mode:disabled:not([aria-checked='true']) { opacity: .55; }
+.focus-mode-long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Ring */
+.focus-dial { position: relative; width: min(100% - 3rem, 17.5rem); aspect-ratio: 1; margin-block: 1.6rem .4rem; }
+.focus-ring { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
+.focus-ring circle { fill: none; stroke-width: 7; }
+.focus-ring-track { stroke: color-mix(in srgb, var(--accent-strong) 14%, var(--surface-alt)); }
+.focus-ring-fill {
+  stroke: var(--accent-strong);
+  stroke-linecap: round;
+  stroke-dasharray: calc(var(--focus-progress, 0) * 100) 100;
+}
+[data-focus-mode='break'] .focus-ring-fill { stroke: color-mix(in srgb, var(--accent-strong) 55%, #4aa38a); }
+/* Nino sits on the ring at the progress point; the wrapper rotates, the image turns back upright. */
+.focus-walker {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: rotate(calc(var(--focus-progress, 0) * 360deg));
+}
+.focus-nino {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent-strong);
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(calc(var(--focus-progress, 0) * -360deg));
+}
+.focus-face { position: absolute; inset: 0; display: grid; place-content: center; gap: .2rem; }
+.focus-time {
+  font-family: var(--ue-serif);
+  font-size: clamp(3rem, 12cqi, 4.2rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.focus-caption { color: var(--muted); font-size: .9rem; }
+
+.focus-cycles { display: flex; align-items: center; gap: .4rem; margin: 0; color: var(--muted); font-size: .85rem; }
+.focus-cycle { width: .6rem; height: .6rem; border-radius: 50%; border: 1.5px solid var(--accent-strong); }
+.focus-cycle.is-done { background: var(--accent-strong); }
+.focus-cycles-text { margin-inline-start: .35rem; }
+
+.study-tracking-panel .focus-controls { display: flex; justify-content: center; margin: 0; padding: 0; background: none; }
+.study-tracking-panel .focus-primary {
+  min-width: 12rem;
+  min-height: 52px;
+  padding-inline: 1.75rem;
+  border: 0;
+  color: var(--accent-contrast, #fff);
+  background: var(--accent-strong);
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-strong) 28%, transparent);
+}
+.study-tracking-panel .focus-primary[aria-pressed='true'] { color: var(--text); background: var(--surface-alt); box-shadow: none; border: 1px solid var(--border); }
+.focus-hint { min-height: 1.4em; margin: 0; max-width: 32ch; color: var(--muted); font-size: .88rem; }
+
+/* Running: a slow breath on Nino, only when motion is welcome. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduced-motion='true']) .focus-walker { transition: transform 1s linear; }
+  html:not([data-reduced-motion='true']) [data-focus-state='running'] .focus-nino { animation: focus-breathe 4s ease-in-out infinite; }
+}
+@keyframes focus-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.06; }
+}
+
+/* Week card */
+.week-card { display: grid; gap: .9rem; }
+.week-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.week-settings {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  cursor: pointer;
+}
+.week-card.has-conflict .week-settings { border-color: var(--danger); color: var(--danger); }
+.study-metrics { display: grid; gap: .75rem; }
+.week-total { margin: 0; color: var(--muted); }
+.week-total strong { margin-inline-end: .15rem; color: var(--text); font-family: var(--ue-serif); font-size: 2.2rem; font-weight: 400; line-height: 1; }
+.week-goal { width: 100%; height: .6rem; border: 0; border-radius: 999px; overflow: hidden; appearance: none; background: var(--surface-alt); }
+.week-goal::-webkit-progress-bar { background: var(--surface-alt); border-radius: 999px; }
+.week-goal::-webkit-progress-value { background: var(--accent-strong); border-radius: 999px; }
+.week-goal::-moz-progress-bar { background: var(--accent-strong); border-radius: 999px; }
+.week-goal-done { margin: 0; font-weight: 600; }
+.study-day-list.week-columns {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: .4rem;
+  align-items: end;
+  height: 11rem;
+  margin: .25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.week-columns li { display: grid; grid-template-rows: 1.2rem minmax(0, 1fr) 1.4rem; height: 100%; justify-items: center; gap: .25rem; }
+.week-value { color: var(--muted); font-size: .75rem; font-variant-numeric: tabular-nums; align-self: end; }
+.week-day { color: var(--muted); font-size: .8rem; font-weight: 600; text-transform: capitalize; }
+.week-columns li.is-today .week-day { color: var(--accent-strong); }
+.week-columns .study-day-bar {
+  position: relative;
+  width: min(100%, 2.2rem);
+  height: 100%;
+  border-radius: 10px;
+  background: var(--surface-alt);
+  overflow: hidden;
+}
+.week-columns .study-day-bar::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: max(calc(var(--fill, 0) * 1%), 0px);
+  border-radius: 10px;
+  background: var(--accent-strong);
+}
+.week-columns li.is-today .week-day { text-decoration: underline 2px; text-underline-offset: 4px; }
+.week-note { margin: 0; color: var(--muted); font-size: .88rem; }
+.week-alert { display: grid; gap: .5rem; padding: .85rem 1rem; border-radius: 14px; background: var(--surface-alt); border: 1px solid var(--border-light); }
+.week-alert p { margin: 0; }
+
+/* Settings dialog */
+.focus-settings-dialog { width: min(520px, calc(100vw - 32px)); }
+.focus-settings-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .5rem; }
+.focus-settings-head h2 { margin: 0; }
+.focus-settings-dialog .dialog-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.focus-settings-dialog .study-settings { display: grid; gap: .9rem; }
+.focus-settings-dialog .form-actions { flex-wrap: wrap; justify-content: space-between; margin-top: .25rem; }
+.focus-sync { display: grid; gap: .5rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-light); }
+.focus-sync h3 { margin: 0; font-size: 1rem; }
+.focus-sync-status { margin: 0; color: var(--muted); }
+.focus-sync-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+@media (forced-colors: active) {
+  .week-columns .study-day-bar::after,.focus-cycle.is-done { background: Highlight; }
+  .focus-ring-fill { stroke: Highlight; }
+  .focus-mode[aria-checked='true'] { outline: 2px solid Highlight; }
+}

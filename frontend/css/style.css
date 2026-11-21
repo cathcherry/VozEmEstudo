@@ -886,15 +886,39 @@ kbd {
 
 /* Nino nos estados vazios e caminhos sem saída (js/utils/material-ui.js). */
 .empty-state-card .nino-art { flex: none; object-fit: contain; }
+/* ---- Empty states inside panels (ninoNote) -------------------------------------------------
+   Nino sits in a tinted badge inside the same card as the text, never beside loose text. */
 .nino-note {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: 8px 0;
-  color: var(--muted);
+  gap: 18px;
+  max-width: 44rem;
+  margin-block: 12px;
+  padding: 18px 20px;
+  border: 1px dashed color-mix(in srgb, var(--accent-strong, var(--accent)) 30%, var(--border-light));
+  border-radius: 18px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-alt) 70%, var(--surface));
+  font-size: .95rem;
 }
-.nino-note p { margin: 0; }
-.nino-note .nino-art { flex: none; width: 56px; height: 56px; object-fit: contain; }
+.nino-note-figure {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+}
+.nino-note-figure img { width: 56px; height: 56px; object-fit: contain; }
+.nino-note-body { display: grid; gap: 6px; justify-items: start; min-width: 0; }
+.nino-note-body p { margin: 0; color: var(--muted); }
+.nino-note-title { font-size: 1.05rem; }
+.nino-note-action { margin-top: 6px; }
+@media (max-width: 420px) {
+  .nino-note { flex-direction: column; align-items: flex-start; text-align: start; }
+}
 [data-low-stimulation='true'] .nino-note .nino-art { opacity: 0.7; }
 @media (max-width: 420px) {
   .empty-state-card { flex-direction: column; text-align: center; }

@@ -27,29 +27,33 @@
 <section class="planning-panel" data-planning-panel hidden aria-labelledby="planning-heading">
 <h2 id="planning-heading">Objetivos e tarefas</h2>
 <div class="planning-toolbar" data-planning-toolbar>
-<button type="button" class="primary-action" data-planning-open="goal" aria-expanded="false" aria-controls="planning-goal-form">Novo objetivo</button>
-<button type="button" class="secondary-action" data-planning-open="task" aria-expanded="false" aria-controls="planning-task-form" hidden>Nova tarefa</button>
-<button type="button" class="secondary-action" data-planning-open="subgoal" aria-expanded="false" aria-controls="planning-subgoal-form" hidden>Novo subobjetivo</button>
+<button type="button" class="primary-action" data-planning-open="goal" aria-haspopup="dialog" aria-expanded="false" aria-controls="planning-goal-form">Novo objetivo</button>
+<button type="button" class="secondary-action" data-planning-open="task" aria-haspopup="dialog" aria-expanded="false" aria-controls="planning-task-form" hidden>Nova tarefa</button>
+<button type="button" class="secondary-action" data-planning-open="subgoal" aria-haspopup="dialog" aria-expanded="false" aria-controls="planning-subgoal-form" hidden>Novo subobjetivo</button>
 </div>
-<div class="planning-forms">
-<form id="planning-goal-form" data-planning-goal-form hidden><h3>Novo objetivo</h3>
+<dialog class="app-dialog planning-dialog" data-planning-dialog aria-labelledby="planning-goal-form-title">
+<button type="button" class="dialog-close planning-dialog-close" data-planning-cancel aria-label="Fechar">×</button>
+<form id="planning-goal-form" data-planning-goal-form hidden><h3 id="planning-goal-form-title">Novo objetivo</h3>
 <label for="planning-goal-title">O que deseja alcançar?<input id="planning-goal-title" name="title" maxlength="160" required></label>
 <label for="planning-goal-date">Prazo (opcional)<input id="planning-goal-date" name="targetDate" type="date"></label>
 <div class="planning-form-actions"><button type="submit" class="primary-action">Criar objetivo</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
-<form id="planning-subgoal-form" data-planning-subgoal-form hidden><h3>Novo subobjetivo</h3>
+<form id="planning-subgoal-form" data-planning-subgoal-form hidden><h3 id="planning-subgoal-form-title">Novo subobjetivo</h3>
 <label for="planning-subgoal-goal">Objetivo principal<select id="planning-subgoal-goal" data-planning-subgoal-goal required></select></label>
 <label for="planning-subgoal-title">Subobjetivo<input id="planning-subgoal-title" name="title" maxlength="160" required></label>
 <label for="planning-subgoal-date">Prazo (opcional)<input id="planning-subgoal-date" name="dueDate" type="date"></label>
 <div class="planning-form-actions"><button type="submit" class="primary-action">Adicionar subobjetivo</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
-<form id="planning-task-form" data-planning-task-form hidden><h3>Nova tarefa</h3>
-<label for="planning-task-goal">Objetivo<select id="planning-task-goal" data-planning-goal-select required></select></label>
+<form id="planning-task-form" data-planning-task-form hidden><h3 id="planning-task-form-title">Nova tarefa</h3>
 <label for="planning-task-title">Tarefa<input id="planning-task-title" name="title" maxlength="180" required></label>
-<label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
+<label for="planning-task-goal">Objetivo<select id="planning-task-goal" data-planning-goal-select required></select></label>
 <label for="planning-task-date">Prazo (opcional)<input id="planning-task-date" name="dueDate" type="date"></label>
+<button type="button" class="text-action planning-more-toggle" data-planning-more-toggle aria-expanded="false" aria-controls="planning-task-more">Mais detalhes: subobjetivo, aula e link</button>
+<div class="planning-more" id="planning-task-more" data-planning-more hidden>
+<label for="planning-task-subgoal">Subobjetivo (opcional)<select id="planning-task-subgoal" data-planning-task-subgoal></select></label>
 <label for="planning-task-material">Aula relacionada (opcional)<select id="planning-task-material" data-planning-material-select></select></label>
 <label for="planning-task-link">Link de apoio (opcional)<input id="planning-task-link" data-planning-task-link name="referenceUrl" type="url" maxlength="2048" pattern="https://.*" placeholder="https://exemplo.com/material"></label>
-<div class="planning-form-actions"><button type="submit" class="primary-action">Adicionar tarefa</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
 </div>
+<div class="planning-form-actions"><button type="submit" class="primary-action">Adicionar tarefa</button><button type="button" class="text-action" data-planning-cancel>Cancelar</button></div></form>
+</dialog>
 <div class="planning-controls" data-planning-controls aria-label="Organização das tarefas">
 <label for="planning-task-filter">Mostrar tarefas
 <select id="planning-task-filter" data-planning-task-filter>

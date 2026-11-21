@@ -119,7 +119,7 @@ async function main() {
     await page.waitForURL('**/planejar.html#tarefas');
     await page.locator('[data-planning-task-form]:visible').waitFor();
     assert.equal(await page.locator('#tab-tarefas').getAttribute('aria-selected'), 'true');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-task-goal');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-task-title');
     await page.locator('#planning-task-goal').selectOption('g2');
     await page.locator('#planning-task-title').fill('Resumir o capítulo 5');
     await page.locator('[data-planning-task-form] [type=submit]').click();
@@ -134,7 +134,9 @@ async function main() {
     assert.equal(await page.evaluate(() => document.activeElement.id), 'tab-calendario');
     assert(page.url().endsWith('#calendario'));
     await page.locator('#calendario .study-calendar-grid button').first().waitFor();
-    await page.locator('#calendario details.calendar-compose > summary').click();
+    // "Agendar estudo" is the main action and opens a dialog (not a folded section).
+    await page.getByRole('button', { name: 'Agendar estudo', exact: true }).first().click();
+    await page.getByRole('dialog', { name: 'Agendar estudo' }).waitFor();
     await page
       .locator('#calendario .calendar-event-form input[type=text]')
       .fill('Estudar capítulo 5');

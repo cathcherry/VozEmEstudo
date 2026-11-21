@@ -134,3 +134,81 @@ body:is([data-page='plan'],[data-page='review']) .planning-order-controls button
 body:is([data-page='plan'],[data-page='review']) .planning-tasks a {
   overflow-wrap: anywhere;
 }
+
+/* Creation dialog: one form at a time, opened from "Novo objetivo", "Nova tarefa" or a goal. */
+body:is([data-page='plan'],[data-page='review']) .planning-dialog { width: min(540px, calc(100vw - 32px)); }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog form[hidden] { display: none; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog form { display: grid; gap: 14px; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog h3 { margin: 0 48px 4px 0; font-size: 1.25rem; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog label { display: grid; gap: 6px; font-weight: 600; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog :is(input,select) { width: 100%; min-height: 44px; font-weight: 400; }
+body:is([data-page='plan'],[data-page='review']) .planning-form-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 16px; margin-top: 6px; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  color: var(--text);
+  background: var(--surface-alt);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+body:is([data-page='plan'],[data-page='review']) .planning-dialog-error { margin: 12px 0 0; color: var(--danger, #a52828); font-weight: 600; }
+body:is([data-page='plan'],[data-page='review']) .planning-dialog-error:empty { display: none; }
+body:is([data-page='plan'],[data-page='review']) .planning-toolbar[hidden] { display: none; }
+
+/* Confirmations and errors appear as a small banner, not loose text. */
+body:is([data-page='plan'],[data-page='review']) [data-planning-status]:not(:empty) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 12px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--surface-alt);
+  font-size: .92rem;
+}
+body:is([data-page='plan'],[data-page='review']) [data-planning-status]:not(:empty)::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-strong);
+}
+body:is([data-page='plan'],[data-page='review']) [data-planning-status][data-state='error']:not(:empty) { border-color: color-mix(in srgb, var(--danger, #a52828) 40%, transparent); }
+body:is([data-page='plan'],[data-page='review']) [data-planning-status][data-state='error']::before { background: var(--danger, #a52828); }
+body:is([data-page='plan'],[data-page='review']) .planning-empty.planning-start { margin-top: 8px; color: var(--text); font-size: .95rem; }
+
+/* Filter and order: one quiet line under the actions, not a form block. */
+body:is([data-page='plan'],[data-page='review']) .planning-controls:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin: 14px 0 6px;
+  padding: 0;
+  border: 0;
+}
+body:is([data-page='plan'],[data-page='review']) .planning-controls label {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 8px;
+  max-width: none;
+  color: var(--muted);
+  font-size: .85rem;
+}
+body:is([data-page='plan'],[data-page='review']) .planning-controls select { width: auto; min-height: 40px; padding-block: 6px; font-size: .9rem; }
+body:is([data-page='plan'],[data-page='review']) .planning-more { display: grid; gap: 14px; }
+body:is([data-page='plan'],[data-page='review']) .planning-more[hidden] { display: none; }
+body:is([data-page='plan'],[data-page='review']) .planning-more-toggle { justify-self: start; }
