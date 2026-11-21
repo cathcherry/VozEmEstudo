@@ -6,7 +6,13 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
-import { getMultiLesson, listMultiLessons } from '../api/multi-lesson.api.js';
+import {
+  exportMultiLessonFlashcards,
+  exportMultiLessonQuestions,
+  getMultiLesson,
+  listMultiLessonExports,
+  listMultiLessons,
+} from '../api/multi-lesson.api.js';
 
 const $ = (selector) => document.querySelector(selector);
 function el(tag, attributes = {}, ...children) {
@@ -84,8 +90,85 @@ function renderSummary(summary) {
   return section;
 }
 
-function renderQuestions(questions) {
+// 3.4: the integrated questions become an ordinary question list (answered in responder.html)
+// and the cards a personal flashcard set. One request id per kind and page view: a retry after a
+// network failure is the same request; the server also returns what already exists.
+const requestIds = { questions: crypto.randomUUID(), flashcards: crypto.randomUUID() };
+const EXPORT_TEXT = {
+  questions: {
+    hint: 'Responda estas questões como uma lista comum, com placar e revisão dos erros. A lista fica guardada na primeira aula usada.',
+    action: 'Transformar em lista de questões',
+    busy: 'Criando a lista…',
+    done: 'Lista de questões pronta.',
+    open: 'Responder a lista',
+    gone: 'A lista criada antes não existe mais (a aula que a guardava foi excluída). Você pode criar outra.',
+  },
+  flashcards: {
+    hint: 'Revise estes cartões com a repetição espaçada, num conjunto pessoal em Revisar › Conjuntos. Cada cartão mostra a aula de onde veio.',
+    action: 'Salvar como conjunto de flashcards',
+    busy: 'Salvando o conjunto…',
+    done: 'Conjunto de flashcards salvo.',
+    open: 'Abrir o conjunto',
+    gone: 'O conjunto criado antes foi excluído. Você pode salvar outro.',
+  },
+};
+
+function exportBox(record, kind, existing, save) {
+  const text = EXPORT_TEXT[kind];
+  const box = el('div', { className: 'multi-lesson-export', 'data-multi-lesson-export': kind });
+  const status = el('p', { className: 'multi-lesson-export-status', role: 'status', 'aria-live': 'polite' });
+  const error = el('p', { className: 'multi-lesson-error', role: 'alert' });
+  const actions = el('div', { className: 'form-actions' });
+  const showDone = (item, announce) => {
+    const links = item.links || {};
+    const where = kind === 'questions' ? record.sources.find((source) => source.materialId === item.materialId) : null;
+    actions.replaceChildren(el('a', { className: 'primary-action', href: kind === 'questions' ? links.answer : links.review, text: text.open }));
+    if (kind === 'questions' && links.lesson)
+      actions.append(el('a', { className: 'text-action', href: links.lesson, text: 'Ver nas questões da aula' }));
+    // The lesson title is user content: never translated.
+    status.replaceChildren(
+      announce ? document.createTextNode(`${text.done} `) : '',
+      where ? el('span', { text: 'Guardada na aula ' }) : '',
+      where ? own('span', `“${where.title}”`) : '',
+      where ? document.createTextNode('. ') : '',
+      kind === 'flashcards' && item.skipped
+        ? el('span', { text: item.skipped === 1 ? '1 cartão repetido foi deixado de fora.' : `${item.skipped} cartões repetidos foram deixados de fora.` })
+        : '',
+    );
+    status.dataset.state = 'success';
+  };
+  const button = el('button', { type: 'button', className: 'secondary-action', text: text.action });
+  button.addEventListener('click', async () => {
+    error.textContent = '';
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    status.textContent = text.busy;
+    status.dataset.state = 'info';
+    try {
+      const item = await save({ requestId: requestIds[kind] });
+      requestIds[kind] = crypto.randomUUID();
+      showDone(item, true);
+      actions.querySelector('a')?.focus();
+    } catch (failure) {
+      status.textContent = '';
+      error.textContent = failure.message || 'Não foi possível salvar agora. Tente de novo.';
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    }
+  });
+  actions.append(button);
+  box.append(el('p', { className: 'tool-hint', text: text.hint }), actions, status, error);
+  if (existing?.available) showDone(existing, false);
+  else if (existing) {
+    status.textContent = text.gone;
+    status.dataset.state = 'info';
+  }
+  return box;
+}
+
+function renderQuestions(questions, exportControl = null) {
   const section = el('section', { className: 'multi-lesson-block', 'aria-labelledby': 'multi-lesson-questions-title' }, el('h3', { id: 'multi-lesson-questions-title', text: 'Questões integradas' }));
+  if (exportControl) section.append(exportControl);
   const list = el('ol', { className: 'multi-lesson-questions' });
   questions.forEach((question, index) => {
     const answerId = `multi-lesson-answer-${index}`;
@@ -111,8 +194,9 @@ function renderQuestions(questions) {
   return section;
 }
 
-function renderFlashcards(cards) {
+function renderFlashcards(cards, exportControl = null) {
   const section = el('section', { className: 'multi-lesson-block', 'aria-labelledby': 'multi-lesson-cards-title' }, el('h3', { id: 'multi-lesson-cards-title', text: 'Flashcards' }));
+  if (exportControl) section.append(exportControl);
   const list = el('ul', { className: 'multi-lesson-cards' });
   for (const card of cards)
     list.append(el('li', {}, el('details', {}, own('summary', card.front), own('p', card.back), citations(card.citations))));
@@ -183,9 +267,25 @@ async function showDetail(id) {
   const result = record.result || {};
   const report = renderReport(result.report);
   if (report) content.append(report);
+  // Without the exports migration (503) the material is still shown, only without the actions.
+  let exported = null;
+  try {
+    exported = await listMultiLessonExports(record.id);
+  } catch {
+    exported = null;
+  }
+  const find = (kind) => exported?.find((item) => item.kind === kind) || null;
+  const questionsControl =
+    exported && result.questions?.length
+      ? exportBox(record, 'questions', find('questions'), (body) => exportMultiLessonQuestions(record.id, body))
+      : null;
+  const cardsControl =
+    exported && flags.flashcard_sets && result.flashcards?.length
+      ? exportBox(record, 'flashcards', find('flashcards'), (body) => exportMultiLessonFlashcards(record.id, body))
+      : null;
   if (result.summary) content.append(renderSummary(result.summary));
-  if (result.questions) content.append(renderQuestions(result.questions));
-  if (result.flashcards) content.append(renderFlashcards(result.flashcards));
+  if (result.questions) content.append(renderQuestions(result.questions, questionsControl));
+  if (result.flashcards) content.append(renderFlashcards(result.flashcards, cardsControl));
 }
 
 async function showHome() {

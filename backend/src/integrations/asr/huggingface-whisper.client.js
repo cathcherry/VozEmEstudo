@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { Client, handle_file } from '@gradio/client';
 import { env } from '../../config/env.js';
 import { AppError } from '../../domain/errors.js';
@@ -78,11 +79,32 @@ function buildPayload(spec, file) {
   return payload;
 }
 
-export async function transcribeAudio(buffer, { durationMs = 0 } = {}) {
-  if (env.mockExternalServices) {
-    const text = 'Transcrição de demonstração para desenvolvimento local.';
-    return { text, language: 'pt', segments: [{ position: 0, startMs: 0, endMs: durationMs || 5000, text }] };
+/**
+ * Simulated transcript (MOCK_EXTERNAL_SERVICES). MOCK_ASR_SEGMENTS_FILE may point to a JSON array of
+ * strings, spread evenly over the audio, so demos and staging runs get realistic multi-segment text.
+ */
+export function mockTranscript(durationMs = 0, file = env.mockAsrSegmentsFile) {
+  const total = durationMs || 5000;
+  let texts = ['Transcrição de demonstração para desenvolvimento local.'];
+  if (file) {
+    const parsed = JSON.parse(readFileSync(file, 'utf8'));
+    if (!Array.isArray(parsed) || !parsed.length || parsed.some((t) => typeof t !== 'string' || !t.trim())) {
+      throw new AppError('ASR_MOCK_SEGMENTS_INVALID', 'MOCK_ASR_SEGMENTS_FILE precisa ser uma lista JSON de textos.', 500, { retryable: false });
+    }
+    texts = parsed.map((t) => t.trim());
   }
+  const step = Math.floor(total / texts.length);
+  const segments = texts.map((text, position) => ({
+    position,
+    startMs: position * step,
+    endMs: position === texts.length - 1 ? total : (position + 1) * step,
+    text,
+  }));
+  return { text: texts.join(' '), language: 'pt', segments };
+}
+
+export async function transcribeAudio(buffer, { durationMs = 0 } = {}) {
+  if (env.mockExternalServices) return mockTranscript(durationMs);
   if (!buffer?.length) throw new AppError('ASR_EMPTY_AUDIO', 'O áudio enviado está vazio.', 400, { retryable: false });
   try {
     const app = await getApp();

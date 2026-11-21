@@ -208,12 +208,26 @@ ausente com a flag ligada, `503 CLASSROOMS_SCHEMA_REQUIRED`. Detalhes em
 | GET    | `/:id/submissions/:sid`                      | dono do envio, gestão  | Envio, histórico (`events`) e, a partir de `processing`, `review{revisionId, revision, fullText, studentConfirmed}`                              |
 | POST   | `/:id/submissions/:sid/transitions`          | conforme a etapa       | `{to, requestId, revisionId?, note?}` → `409 CLASSROOM_ILLEGAL_TRANSITION` fora do grafo                                                         |
 | GET    | `/:id/flashcard-sets`                        | membro                 | Conjuntos compartilhados (ver abaixo)                                                                                                            |
-| POST   | `/:id/flashcard-sets`                        | membro                 | `{id, setId}`: conjunto **próprio** e ativo                                                                                                      |
+| POST   | `/:id/flashcard-sets`                        | membro                 | `{id, setId, note?}`: conjunto **próprio** e ativo. Com a migration de contribuições, o de um aluno vai para a fila (`status: "pending"`)           |
 | GET    | `/:id/flashcard-sets/:sharedId`              | membro                 | Cartões do conjunto (ver abaixo)                                                                                                                 |
 | DELETE | `/:id/flashcard-sets/:sharedId`              | dono ou gestão         | Para de compartilhar / oculta da turma                                                                                                           |
+| GET    | `/:id/contributions`                         | membro                 | ¹ Professor/monitor: fila da turma; aluno: só as suas. `[{id, kind, title, status, note, feedback, reviewedRole, reviewedAt, actions, author, isMine, itemId?}]` |
+| POST   | `/:id/contributions`                         | membro                 | ¹ `{id, kind: "flashcard_set"\|"integrated_material", itemId, note?}`: item **próprio** (conjunto ativo; material integrado `ready`). Aluno → `pending`; gestão → `approved` |
+| GET    | `/:id/contributions/:cid`                    | dono, gestão           | ¹ Contribuição + `preview` só leitura (`cards[{front, back}]` ou `{sources, content}`)                                                            |
+| POST   | `/:id/contributions/:cid/review`             | professor, monitor     | ¹ `{decision: "approved"\|"rejected", requestId, feedback?}` (idempotente por `requestId`; ninguém revisa o próprio)                            |
+| DELETE | `/:id/contributions/:cid`                    | dono, gestão           | ¹ Retira (pendente, só o dono) ou para de compartilhar/oculta (aprovado). O acesso acaba na hora                                                 |
+| GET    | `/:id/integrated-materials`                  | membro                 | ¹ Materiais integrados aprovados: `[{id, title, outputs, sourceCount, sharedAt, isMine, author}]`                                               |
+| GET    | `/:id/integrated-materials/:cid`             | membro                 | ¹ `{title, sources[{title, revision}], content{summary?, questions?, flashcards?}}` — só o conteúdo gerado e trechos citados                     |
 | GET    | `/:id/resources`                             | membro                 | Links de apoio `[{id, title, url, description}]`                                                                                                 |
 | POST   | `/:id/resources`                             | professor, monitor     | `{id, title, url (https), description?}`                                                                                                         |
 | DELETE | `/:id/resources/:resourceId`                 | professor, monitor     | Remove                                                                                                                                           |
+
+¹ Exige `20261122090000_classroom_contributions.sql`; sem ela, `503
+CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED` (o resto das turmas segue funcionando). Erros novos:
+`404 MULTI_LESSON_NOT_FOUND` (material integrado que não é seu), `409 CLASSROOM_ITEM_NOT_READY`
+(ainda não pronto), `409 CLASSROOM_ITEM_UNAVAILABLE` (o item sumiu antes da aprovação),
+`409 CLASSROOM_ALREADY_SHARED`, `409 CLASSROOM_ILLEGAL_TRANSITION` (já decidido). Detalhes em
+[migrations/CLASSROOM_CONTRIBUTIONS.md](migrations/CLASSROOM_CONTRIBUTIONS.md).
 
 **Leitura de conjuntos compartilhados** (base para juntar baralhos de colegas):
 
@@ -258,7 +272,7 @@ Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, 
 | POST | `/api/flashcards/decks` | `{id, name, origin:'manual'|'text_import', cards:[{noteType, fields}], templateId?, templateBase?}` |
 | POST | `/api/flashcards/merge/preview` | `{sources:[{setId, classroomId?}]}` → `{total, duplicates, resulting, overLimit, conflicts:[{key, front, options:[{cardId, back, label}]}]}` |
 | POST | `/api/flashcards/merge` | `{id, name, sources, decisions:{[key]: 'combine'|'keep:<cardId>'}, templateId?, templateBase?}` → conjunto novo |
-| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê; `create` guarda as imagens e o baralho |
+| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê e responde 200; `create` guarda as imagens e o baralho e responde 201 |
 
 `GET /api/flashcards/sets/:id` e a fila de revisão passam a incluir `note_type`, `note_fields`, `origin_label` e `media:[{name, mime, url}]`, com URL assinada válida por 1 h.
 
@@ -297,6 +311,9 @@ aulas, `unit` e `subject` exatamente 1 id, `units` até 20.
 | `GET /api/multi-lesson` | — | `200 [{id, title, status, selection_kind, outputs, source_count, excluded_count, error_code, created_at, completed_at}]` (50 mais recentes) |
 | `GET /api/multi-lesson/:id` | — | `200` material com `sources` (congeladas), `excluded`, `status` (`queued`, `running`, `ready`, `failed`), `job` e, quando pronto, `result` |
 | `DELETE /api/multi-lesson/:id` | — | `200 {id, deleted:true}`; se ainda estava na fila, a chave da geração é liberada |
+| `GET /api/multi-lesson/:id/exports` | — | `200 [{id, kind:'questions'\|'flashcards', multiLessonId, materialId, batchId, setId, itemCount, available, createdAt, updatedAt, links}]` |
+| `POST /api/multi-lesson/:id/question-list` | `{requestId, title?≤160}` | `200 {..., kind:'questions', materialId, batchId, replayed, links:{answer, lesson}}` — lista comum da primeira aula de origem utilizável, respondida em `responder.html` |
+| `POST /api/multi-lesson/:id/flashcard-set` (com `flashcard_sets`) | `{requestId, name?≤160}` | `200 {..., kind:'flashcards', setId, skipped, replayed, links:{review}}` — conjunto pessoal em Revisar › Conjuntos |
 
 `result` (quando `ready`): `summary.sections[{heading, text, citations}]`, `questions[{statement,
 options[4], correctIndex, explanation, citations}]`, `flashcards[{front, back, citations}]`,
@@ -317,6 +334,16 @@ pedidos por hora por conta, além do orçamento diário.
 | `MULTI_LESSON_INVALID_SELECTION` | 400 | Seleção malformada. |
 | `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
 | `MULTI_LESSON_SCHEMA_REQUIRED` | 503 | Flag ligada sem a migration. |
+| `MULTI_LESSON_NOT_READY` | 409 | Salvar como lista/conjunto antes de o material ficar pronto. |
+| `MULTI_LESSON_NOTHING_TO_EXPORT` | 409 | O material não tem questões (ou cartões) para salvar. |
+| `MULTI_LESSON_ANCHOR_UNAVAILABLE` | 409 | Nenhuma aula de origem continua do estudante, com permissão e a revisão congelada confirmada. |
+| `MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED` | 503 | Sem `20261121180000_multi_lesson_exports.sql`; a página esconde os botões. |
+
+Salvar como lista ou conjunto (3.4, detalhes em
+[migrations/MULTI_LESSON_EXPORTS.md](migrations/MULTI_LESSON_EXPORTS.md)): só material `ready` do
+próprio estudante; `requestId` é a chave de idempotência e cada material vira no máximo uma lista e
+um conjunto (um segundo pedido devolve o existente com `replayed: true`; se a lista ou o conjunto
+foi excluído, um novo é criado). Limite: 60 pedidos por hora por conta. Nenhuma chamada de IA.
 
 Falhas da geração (em `error_code` do material): `LLM_TEMPORARY_ERROR`, `LLM_FAILED`,
 `LLM_INVALID_OUTPUT`, `MULTI_LESSON_NO_KNOWLEDGE`, `MULTI_LESSON_UNSUPPORTED`,

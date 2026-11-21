@@ -61,10 +61,79 @@ function result(record) {
   return out;
 }
 
+// 3.4: saving a ready material's questions as a list (of its first lesson) and its cards as a set.
+function exportOf(data, record, kind, input) {
+  const existing = data.multiLessonExports.find((item) => item.multiLessonId === record.id && item.kind === kind);
+  if (existing) return { ...existing, replayed: true };
+  const materialId = record.sources[0].materialId;
+  const item =
+    kind === 'questions'
+      ? {
+          id: `exp-q-${record.id}`,
+          kind,
+          multiLessonId: record.id,
+          materialId,
+          batchId: `batch-${record.id}`,
+          setId: null,
+          itemCount: record.result.questions.length,
+          available: true,
+          links: {
+            answer: `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(`batch-${record.id}`)}`,
+            lesson: `./material.html?id=${encodeURIComponent(materialId)}#questoes`,
+          },
+        }
+      : {
+          id: `exp-f-${record.id}`,
+          kind,
+          multiLessonId: record.id,
+          materialId: null,
+          batchId: null,
+          setId: `set-${record.id}`,
+          itemCount: record.result.flashcards.length,
+          available: true,
+          skipped: 0,
+          links: { review: `./revisar.html?conjunto=${encodeURIComponent(`set-${record.id}`)}#flashcards` },
+        };
+  data.multiLessonExports.push(item);
+  data.multiLessonExportRequests.push({ kind, ...input });
+  if (kind === 'questions') {
+    data.extraBatches ||= {};
+    (data.extraBatches[materialId] ||= []).unshift({
+      id: item.batchId,
+      title: input.title || `Questões integradas: ${record.title}`,
+      generated_count: record.result.questions.length,
+      requested_count: record.result.questions.length,
+      source_transcription_revision: 1,
+      config: { origin: { kind: 'multi_lesson', multiLessonId: record.id } },
+      questions: record.result.questions.map((q, i) => ({ id: `${item.batchId}-q${i}`, position: i, statement: q.statement, options: q.options })),
+    });
+  }
+  return { ...item, replayed: false };
+}
+
 function handleMultiLesson({ request, p, method, json, data, materials }) {
   data.multiLessons ||= [];
   data.multiLessonRequests ||= [];
+  data.multiLessonExports ||= [];
+  data.multiLessonExportRequests ||= [];
   const body = () => JSON.parse(request.postData() || '{}');
+  const exportMatch = p.match(/^\/api\/multi-lesson\/([^/]+)\/(exports|question-list|flashcard-set)$/);
+  if (exportMatch) {
+    if (data.multiLessonExportsUnavailable)
+      return json({ error: { code: 'MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED', message: 'Salvar o material integrado como lista ou conjunto ainda não foi habilitado no banco.' } }, 503);
+    const record = data.multiLessons.find((r) => r.id === exportMatch[1]);
+    if (!record) return json({ error: { code: 'MULTI_LESSON_NOT_FOUND', message: 'Material integrado, unidade ou disciplina não encontrado.' } }, 404);
+    if (exportMatch[2] === 'exports' && method === 'GET')
+      return json(data.multiLessonExports.filter((item) => item.multiLessonId === record.id));
+    if (method !== 'POST') return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
+    if (record.status !== 'ready')
+      return json({ error: { code: 'MULTI_LESSON_NOT_READY', message: 'O material integrado ainda não está pronto.' } }, 409);
+    if (data.failNextExport) {
+      data.failNextExport = false;
+      return json({ error: { code: 'DATABASE_TEMPORARY_ERROR', message: 'O banco está temporariamente indisponível. Tente novamente.' } }, 503);
+    }
+    return json(exportOf(data, record, exportMatch[2] === 'question-list' ? 'questions' : 'flashcards', body()));
+  }
   if (p === '/api/multi-lesson/preview' && method === 'POST') return json(resolve(data, materials, body().selection));
   if (p === '/api/multi-lesson' && method === 'GET')
     return json(
@@ -74,6 +143,9 @@ function handleMultiLesson({ request, p, method, json, data, materials }) {
     const input = body();
     data.multiLessonRequests.push(input);
     const resolved = resolve(data, materials, input.selection);
+    const revisions = resolved.included.map((item) => item.revisionId);
+    if (input.expectedRevisionIds && (revisions.length !== input.expectedRevisionIds.length || revisions.some((id) => !input.expectedRevisionIds.includes(id))))
+      return json({ error: { code: 'MULTI_LESSON_SOURCES_CHANGED', message: 'As aulas da seleção mudaram. Revise a lista e confirme de novo.' } }, 409);
     const record = {
       id: input.id,
       title: input.title,

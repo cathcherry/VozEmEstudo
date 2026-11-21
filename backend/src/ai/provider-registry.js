@@ -11,7 +11,8 @@ import { createAssemblyAiProvider } from '../integrations/asr/assemblyai.client.
 /** Vendor factories. Each receives the resolved config and returns a contract-conforming adapter. */
 export const defaultFactories = Object.freeze({
   text: {
-    groq: (config, { mock }) => createGroqProvider({ apiKey: config.credentials.groq, mock }),
+    groq: (config, { mock }) =>
+      createGroqProvider({ apiKey: config.credentials.groq, mock, reasoningEffort: config.endpoints.groqReasoningEffort }),
     // MOCK_EXTERNAL_SERVICES reuses the offline demo outputs; no request leaves the server.
     'assemblyai-gateway': (config, { mock }) =>
       mock

@@ -23,6 +23,17 @@ const failures = {
   MULTI_LESSON_SOURCES_IMMUTABLE: [409, 'As aulas de origem de um material integrado não podem ser alteradas.'],
   TRANSCRIPTION_CONFIRMATION_REQUIRED: [409, 'Uma das transcrições deixou de estar confirmada.'],
   KNOWLEDGE_MAP_SOURCE_FORBIDDEN: [403, 'Revisão fora da sua conta.'],
+  // Exports (20261121180000_multi_lesson_exports.sql).
+  MULTI_LESSON_NOT_READY: [409, 'O material integrado ainda não está pronto.'],
+  MULTI_LESSON_NOTHING_TO_EXPORT: [409, 'Este material integrado não tem itens deste tipo para salvar.'],
+  MULTI_LESSON_ANCHOR_UNAVAILABLE: [
+    409,
+    'Nenhuma aula de origem continua disponível e confirmada para guardar a lista. Confira as aulas usadas.',
+  ],
+  PERMISSION_REQUIRED: [409, 'Falta a declaração de permissão de uma das aulas de origem.'],
+  INVALID_GENERATION: [422, 'As questões deste material não estão num formato que possa virar lista.'],
+  FLASHCARD_INVALID_SET: [422, 'Os cartões deste material não estão num formato que possa virar conjunto.'],
+  FLASHCARD_SET_LIMIT: [409, 'O conjunto ultrapassaria o limite de 500 cartões.'],
 };
 export const SCHEMA_CODES = ['PGRST202', 'PGRST205', '42883', '42P01', '42703'];
 
@@ -56,6 +67,39 @@ export const getMultiLesson = (userId, id) => call('multi_lesson_get_admin', { p
 export const listMultiLessons = (userId, limit = 50) =>
   call('multi_lesson_list_admin', { p_user_id: userId, p_limit: limit });
 export const deleteMultiLesson = (userId, id) => call('multi_lesson_delete_admin', { p_user_id: userId, p_id: id });
+
+// Exports: questions → an ordinary question list, flashcards → a personal set. Their own
+// migration: without it the endpoints answer 503 MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED and the
+// integrated material keeps working.
+export function createExportsCaller(db = getAdminSupabase) {
+  return async function exportsRpc(name, params) {
+    const { data, error, status } = await db().rpc(name, params);
+    if (!error) return data;
+    // 42501: execution revoked on purpose (rollback step 1) — the same answer as a missing schema.
+    throw mapError(
+      error?.code === '42501' ? { ...error, code: '42883' } : error,
+      status,
+      'MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED',
+      'Salvar o material integrado como lista ou conjunto ainda não foi habilitado no banco.',
+    );
+  };
+}
+const exportsCall = createExportsCaller();
+export const listExports = (userId, id) => exportsCall('multi_lesson_exports_admin', { p_user_id: userId, p_id: id });
+export const exportQuestions = (userId, id, requestId, title) =>
+  exportsCall('multi_lesson_export_questions_admin', {
+    p_user_id: userId,
+    p_id: id,
+    p_request_id: requestId,
+    p_title: title ?? null,
+  });
+export const exportFlashcards = (userId, id, requestId, name) =>
+  exportsCall('multi_lesson_export_flashcards_admin', {
+    p_user_id: userId,
+    p_id: id,
+    p_request_id: requestId,
+    p_name: name ?? null,
+  });
 
 // Queue (worker only).
 export const claimJob = (workerId, staleSeconds) =>

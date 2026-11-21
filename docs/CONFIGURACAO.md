@@ -24,9 +24,16 @@ o `INICIAR.cmd` de novo.
 | `SUPABASE_PUBLISHABLE_KEY` | —               | Chave publicável: vai para o navegador e valida tokens                                         |
 | `SUPABASE_SECRET_KEY`      | —               | **Secreta**, só no servidor; nunca publicar                                                    |
 | `SUPABASE_AUDIO_BUCKET`    | `audios`        | Bucket dos áudios enviados                                                                     |
+| `SUPABASE_AUTH_VERIFY`     | `server`        | Como o token do usuário é conferido: `server` (pergunta ao Supabase Auth a cada pedido) ou `jwks` (confere a assinatura pela JWKS pública do projeto; ver abaixo) |
 | `OAUTH_PROVIDERS`          | `google,github` | Botões de login social exibidos (ver [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md)) |
 
 Se uma chave secreta for colocada por engano em `SUPABASE_PUBLISHABLE_KEY`, o servidor se recusa a entregá-la ao navegador.
+
+`SUPABASE_AUTH_VERIFY=jwks` serve para ambientes em que o Supabase Auth não enxerga o token do usuário
+(por exemplo, atrás de um proxy que injeta a chave do servidor em todo pedido ao Supabase — o caso do
+teste de staging descrito em [STAGING_E2E.md](STAGING_E2E.md)). Com ele, tokens assinados com chave
+assimétrica (ES256/RS256) são conferidos localmente pela JWKS pública; uma sessão encerrada continua
+valendo até o `exp` do token (1 h por padrão). O padrão `server` não muda nada.
 
 ## Inteligência artificial
 
@@ -46,7 +53,8 @@ Resumo; detalhes, custos e como trocar de provedor em [AI_PROVIDERS.md](AI_PROVI
 | `LLM_PROVIDER`                                                                                                | `groq`                                              | Texto: `groq` ou `assemblyai-gateway`                                                                              |
 | `LLM_MODEL`                                                                                                   | `GROQ_MODEL`                                        | Modelo padrão                                                                                                      |
 | `LLM_SUMMARY_MODEL`, `LLM_QUESTIONS_MODEL`, `LLM_WARNINGS_MODEL`, `LLM_FLASHCARDS_MODEL`, `LLM_CLEANUP_MODEL` | `LLM_MODEL`                                         | Modelo por tarefa (e `LLM_<TAREFA>_PROVIDER`)                                                                      |
-| `GROQ_API_KEY`, `GROQ_MODEL`                                                                                  | —, `llama-3.3-70b-versatile`                        | Groq                                                                                                               |
+| `GROQ_API_KEY`, `GROQ_MODEL`                                                                                  | —, `openai/gpt-oss-120b`                            | Groq                                                                                                               |
+| `LLM_REASONING_EFFORT`                                                                                        | `low`                                               | Raciocínio dos modelos gpt-oss (low, medium, high); conta no limite de tokens                                      |
 | `ASSEMBLYAI_LLM_GATEWAY_URL`, `ASSEMBLYAI_LLM_JSON_MODE`                                                      | padrão do provedor                                  | Gateway de texto da AssemblyAI                                                                                     |
 | `MOCK_EXTERNAL_SERVICES`                                                                                      | `false`                                             | `true` = nada sai do servidor; transcrições e textos de demonstração (testes e apresentação)                       |
 | `MAX_QUESTION_LIST_COUNT`                                                                                     | `40`                                                | Máximo de questões por lista com `study_authoring` (1–100)                                                         |

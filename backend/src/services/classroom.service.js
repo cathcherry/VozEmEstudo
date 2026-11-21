@@ -32,6 +32,10 @@ export const SUBMISSION_STATUSES = Object.freeze([
   'withdrawn',
 ]);
 
+// What a member can offer the class (20261122090000_classroom_contributions.sql).
+export const CONTRIBUTION_KINDS = Object.freeze(['flashcard_set', 'integrated_material']);
+export const CONTRIBUTIONS_SCHEMA_REQUIRED = 'CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED';
+
 const schemas = {
   create: z
     .object({
@@ -79,7 +83,22 @@ const schemas = {
       note: optionalText(1000),
     })
     .strict(),
-  share: z.object({ id: uuid, setId: uuid }).strict(),
+  share: z.object({ id: uuid, setId: uuid, note: optionalText(1000) }).strict(),
+  contribution: z
+    .object({
+      id: uuid,
+      kind: z.enum(CONTRIBUTION_KINDS),
+      itemId: uuid,
+      note: optionalText(1000),
+    })
+    .strict(),
+  review: z
+    .object({
+      decision: z.enum(['approved', 'rejected']),
+      requestId: uuid,
+      feedback: optionalText(1000),
+    })
+    .strict(),
   resource: z
     .object({
       id: uuid,
@@ -127,6 +146,12 @@ const failures = {
   REVISION_CONFLICT: [409, 'A transcrição mudou. Reabra o envio e confira a revisão atual.'],
   MATERIAL_NOT_FOUND: [404, 'Material não encontrado.'],
   FLASHCARD_NOT_FOUND: [404, 'Conjunto de flashcards não encontrado.'],
+  MULTI_LESSON_NOT_FOUND: [404, 'Material integrado não encontrado.'],
+  CLASSROOM_ITEM_NOT_READY: [409, 'Este material integrado ainda não está pronto.'],
+  CLASSROOM_ITEM_UNAVAILABLE: [
+    409,
+    'O item não está mais disponível: o autor o arquivou, apagou ou ele deixou de estar pronto.',
+  ],
   PERMISSION_REQUIRED: [
     422,
     'Confirme a declaração de permissão desta gravação antes de enviá-la.',
@@ -136,17 +161,23 @@ const failures = {
 
 /** Calls one classroom database function and maps its errors to scoped HTTP answers. */
 export function createClassroomCaller(db = getAdminSupabase) {
-  return async function call(name, params) {
+  return async function call(name, params, { schema = 'classrooms' } = {}) {
     const { data, error, status } = await db().rpc(name, params);
     if (!error) return data;
     const failure = failures[error.message];
     if (failure) throw new AppError(error.message, failure[1], failure[0]);
     if (['PGRST202', 'PGRST205', '42883', '42P01', '42703'].includes(error.code))
-      throw new AppError(
-        'CLASSROOMS_SCHEMA_REQUIRED',
-        'As turmas ainda não foram habilitadas no banco.',
-        503,
-      );
+      throw schema === 'contributions'
+        ? new AppError(
+            CONTRIBUTIONS_SCHEMA_REQUIRED,
+            'Contribuições e materiais integrados nas turmas ainda não foram habilitados no banco.',
+            503,
+          )
+        : new AppError(
+            'CLASSROOMS_SCHEMA_REQUIRED',
+            'As turmas ainda não foram habilitadas no banco.',
+            503,
+          );
     if (error.code === '22P02')
       throw new AppError('CLASSROOM_INVALID_INPUT', failures.CLASSROOM_INVALID_INPUT[1], 400);
     if (status === 0 || status >= 500 || error.code?.startsWith('08'))
@@ -169,6 +200,22 @@ export function memberName(user, chosen) {
 
 export function buildClassroomService(call = createClassroomCaller()) {
   const id = (value) => uuid.parse(value);
+  const contributions = { schema: 'contributions' };
+  function contribute(user, classId, body) {
+    const data = schemas.contribution.parse(body);
+    return call(
+      'classroom_contribute_admin',
+      {
+        p_user_id: user.id,
+        p_classroom_id: id(classId),
+        p_id: data.id,
+        p_kind: data.kind,
+        p_item_id: data.itemId,
+        p_note: data.note ?? null,
+      },
+      contributions,
+    );
+  }
   return {
     list: (user) => call('classroom_list_mine_admin', { p_user_id: user.id }),
     create(user, body) {
@@ -311,8 +358,20 @@ export function buildClassroomService(call = createClassroomCaller()) {
         p_classroom_id: id(classId),
         p_shared_id: id(sharedId),
       }),
-    shareSet(user, classId, body) {
+    // With the contributions migration a student's set waits for review (staff share at once);
+    // without it, the original direct sharing keeps working.
+    async shareSet(user, classId, body) {
       const data = schemas.share.parse(body);
+      try {
+        return await contribute(user, classId, {
+          id: data.id,
+          kind: 'flashcard_set',
+          itemId: data.setId,
+          note: data.note,
+        });
+      } catch (error) {
+        if (error.code !== CONTRIBUTIONS_SCHEMA_REQUIRED) throw error;
+      }
       return call('classroom_share_item_admin', {
         p_user_id: user.id,
         p_classroom_id: id(classId),
@@ -321,6 +380,52 @@ export function buildClassroomService(call = createClassroomCaller()) {
         p_item_id: data.setId,
       });
     },
+    contributions: (user, classId) =>
+      call(
+        'classroom_list_contributions_admin',
+        { p_user_id: user.id, p_classroom_id: id(classId) },
+        contributions,
+      ),
+    contribute: (user, classId, body) => contribute(user, classId, body),
+    contribution: (user, classId, contributionId) =>
+      call(
+        'classroom_get_contribution_admin',
+        { p_user_id: user.id, p_classroom_id: id(classId), p_contribution_id: id(contributionId) },
+        contributions,
+      ),
+    reviewContribution(user, classId, contributionId, body) {
+      const data = schemas.review.parse(body);
+      return call(
+        'classroom_review_contribution_admin',
+        {
+          p_user_id: user.id,
+          p_classroom_id: id(classId),
+          p_contribution_id: id(contributionId),
+          p_decision: data.decision,
+          p_request_id: data.requestId,
+          p_feedback: data.feedback ?? null,
+        },
+        contributions,
+      );
+    },
+    endContribution: (user, classId, contributionId) =>
+      call(
+        'classroom_end_contribution_admin',
+        { p_user_id: user.id, p_classroom_id: id(classId), p_contribution_id: id(contributionId) },
+        contributions,
+      ),
+    integratedMaterials: (user, classId) =>
+      call(
+        'classroom_list_integrated_materials_admin',
+        { p_user_id: user.id, p_classroom_id: id(classId) },
+        contributions,
+      ),
+    integratedMaterial: (user, classId, contributionId) =>
+      call(
+        'classroom_get_integrated_material_admin',
+        { p_user_id: user.id, p_classroom_id: id(classId), p_contribution_id: id(contributionId) },
+        contributions,
+      ),
     revokeShared: (user, classId, sharedId) =>
       call('classroom_revoke_shared_item_admin', {
         p_user_id: user.id,

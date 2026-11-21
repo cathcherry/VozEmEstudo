@@ -1,7 +1,9 @@
 // Turmas (private classrooms) in a real browser with a SIMULATED API (support/mock-classrooms.cjs):
 // a teacher creates a class, invites, publishes a lesson; a student joins by link, submits a
-// recording and shares a flashcard set; the teacher moves the submission through each separate
-// step. Dialogs: keyboard, Escape, focus return. axe at 1280 and 390 px, no horizontal scroll.
+// recording, offers a flashcard set and an integrated material; the teacher reviews them (reject
+// with a reason, approve with a message) and moves the submission through each separate step; the
+// student follows every status and reads what was published or shared. Dialogs: keyboard, Escape,
+// focus return. axe at 1280 and 390 px, no horizontal scroll.
 // Nothing here calls a real backend, database or AI provider; the permission rules themselves are
 // tested against Postgres in backend/tests/classrooms-*.test.js.
 const path = require('node:path');
@@ -25,7 +27,7 @@ const {
 const output = path.join(__dirname, 'artifacts', 'classrooms');
 fs.mkdirSync(output, { recursive: true });
 const shot = shotter(output);
-const flags = { ...allFlags, classrooms: true };
+const flags = { ...allFlags, classrooms: true, multi_lesson: true };
 const student = {
   id: 'user-student',
   email: 'aluno@example.test',
@@ -41,6 +43,46 @@ async function main() {
     const data = state();
     data.lessonStage = { 'l-foto': 'questions' };
     data.sets = [{ id: 'set-1', name: 'Fotossíntese — revisão', status: 'active', card_count: 2 }];
+    // A READY integrated material of the student (Milestone C), with owner-only fields.
+    const cite = {
+      materialId: 'l-rev',
+      revisionId: 'rev-l-rev',
+      lessonTitle: 'Revolução Industrial',
+      position: 0,
+      quote: 'A máquina a vapor mudou a produção.',
+      startMs: 0,
+    };
+    data.multiLessons = [
+      {
+        id: 'ml-1',
+        title: 'Revisão integrada de História',
+        status: 'ready',
+        selection_kind: 'lessons',
+        outputs: ['summary', 'questions', 'flashcards'],
+        settings: { focus: 'PRIVADO' },
+        sources: [{ materialId: 'l-rev', revisionId: 'rev-l-rev', title: 'Revolução Industrial' }],
+        excluded: [],
+        created_at: new Date().toISOString(),
+        result: {
+          summary: {
+            sections: [
+              { heading: 'Indústria', text: 'O vapor acelerou a produção.', citations: [cite] },
+            ],
+          },
+          questions: [
+            {
+              statement: 'O que mudou a produção?',
+              options: ['A máquina a vapor', 'O telégrafo', 'A imprensa', 'O avião'],
+              correctIndex: 0,
+              explanation: 'O vapor.',
+              citations: [cite],
+            },
+          ],
+          flashcards: [{ front: 'Vapor', back: 'Mudou a produção.', citations: [cite] }],
+          report: { modelCalls: 2 },
+        },
+      },
+    ];
 
     // ---------- Feature off: no navigation item, an explanation instead of the page ---------
     {
@@ -201,13 +243,54 @@ async function main() {
     await spage.locator('dialog[open] textarea[name="note"]').fill('Aula de reforço');
     await spage.locator('dialog[open] button[type="submit"]').click();
     await spage.locator('[data-submissions-list] .status-chip', { hasText: 'Enviado' }).waitFor();
+    const subRow = spage.locator('[data-submissions-list] li', { hasText: 'Revolução Industrial' });
+    await subRow.locator('text=Aguardando a aprovação do professor.').waitFor();
+    await subRow.locator('text=Etapa 1 de 5').waitFor();
     await spage.locator('[role="tab"]', { hasText: 'Flashcards compartilhados' }).click();
     await spage.locator('[data-classroom-open="share"]').click();
+    await spage
+      .locator('dialog[open]', { hasText: 'O professor revisa o conjunto antes de a turma ver' })
+      .waitFor();
     await spage.locator('dialog[open] select[name="setId"]').selectOption('set-1');
     await spage.locator('dialog[open] button[type="submit"]').click();
-    await spage.locator('[data-shared-list] li', { hasText: 'Fotossíntese — revisão' }).waitFor();
+    await spage.locator('dialog[open]').waitFor({ state: 'detached' });
+    assert.equal(
+      await spage.locator('[data-shared-list] li', { hasText: 'Fotossíntese — revisão' }).count(),
+      0,
+      'a student set waits for review',
+    );
     await noHorizontalScroll(spage, 'Flashcards 390');
-    record('Aluno envia gravação (estado Enviado) e compartilha um conjunto de flashcards');
+    // Integrated material: only READY records of one's own; it waits for review too.
+    await spage.locator('[role="tab"]', { hasText: 'Aulas publicadas' }).click();
+    await spage.locator('[data-classroom-open="share-integrated"]').click();
+    await spage.locator('dialog[open] select[name="itemId"]').selectOption('ml-1');
+    await spage.locator('dialog[open] textarea[name="note"]').fill('Fiz para a prova');
+    await axeCheck(spage, 'dialog[open]', 'Compartilhar material integrado (390 px)');
+    await spage
+      .locator('dialog[open] button[type="submit"]', { hasText: 'Enviar para revisão' })
+      .click();
+    await spage.locator('dialog[open]').waitFor({ state: 'detached' });
+    await spage
+      .locator('[data-integrated-list]', {
+        hasText: 'Nenhum material integrado compartilhado ainda.',
+      })
+      .waitFor();
+    await spage.locator('[role="tab"]', { hasText: 'Envios' }).click();
+    const mine = spage.locator('[data-contributions-list]');
+    await mine
+      .locator('li', { hasText: 'Revisão integrada de História' })
+      .locator('.status-chip', { hasText: 'Aguardando revisão' })
+      .waitFor();
+    await mine
+      .locator('li', { hasText: 'Fotossíntese — revisão' })
+      .locator('.status-chip', { hasText: 'Aguardando revisão' })
+      .waitFor();
+    await settle(spage);
+    await axeCheck(spage, 'main', 'Envios do aluno (390 px)');
+    await noHorizontalScroll(spage, 'Envios 390');
+    record(
+      'Aluno envia gravação (Enviado, etapa 1 de 5, explicação) e oferece conjunto e material integrado: ambos aguardam revisão, invisíveis à turma',
+    );
 
     // ---------- Teacher: each step is separate --------------------------------------------
     // Same document, new hash: reload to fetch the current state.
@@ -221,11 +304,31 @@ async function main() {
       'cannot publish before the steps',
     );
     await row.locator('button', { hasText: 'Aprovar para processar' }).click();
+    await page.locator('dialog[open] textarea[name="note"]').fill('Pode processar, ficou ótima.');
+    await axeCheck(page, 'dialog[open]', 'Aprovar para processar');
+    await page.locator('dialog[open] button[type="submit"]').click();
     await row.locator('.status-chip', { hasText: 'Aprovado para processar' }).waitFor();
     // The student starts processing (teacher has no such button).
-    assert.equal(await row.locator('button').count(), 1, 'only "Recusar" for the teacher');
+    assert.deepEqual(
+      (await row.locator('button').allTextContents()).map((t) => t.trim()),
+      ['Recusar', 'Ver andamento'],
+      'only "Recusar" (and the history) for the teacher',
+    );
     await spage.goto(classUrl + '#envios');
     await spage.reload();
+    const pupilRow = spage.locator('[data-submissions-list] li', {
+      hasText: 'Revolução Industrial',
+    });
+    await pupilRow.locator('text=Pode processar, ficou ótima.').waitFor();
+    await pupilRow.locator('text=Etapa 2 de 5').waitFor();
+    await pupilRow.locator('button', { hasText: 'Ver andamento' }).click();
+    await spage
+      .locator('dialog[open] .classroom-timeline li', { hasText: 'Aprovado para processar' })
+      .waitFor();
+    await axeCheck(spage, 'dialog[open]', 'Andamento do envio (aluno)');
+    await spage.keyboard.press('Escape');
+    await spage.locator('dialog[open]').waitFor({ state: 'detached' });
+    assert.equal(await activeText(spage), 'Ver andamento', 'focus returns');
     await spage
       .locator('[data-submissions-list] button', { hasText: 'Já processei a gravação' })
       .click();
@@ -248,6 +351,68 @@ async function main() {
     );
     await page.locator('[role="tab"]', { hasText: 'Aulas publicadas' }).click();
     await page.locator('[data-lessons-list] li', { hasText: 'enviada por aluno' }).waitFor();
+    // Review queue: reject the set with a reason, the student offers it again, then approve.
+    await page.locator('[role="tab"]', { hasText: 'Envios' }).click();
+    const queue = page.locator('[data-contributions-list]');
+    const setRow = queue.locator('li', { hasText: 'Fotossíntese — revisão' });
+    await setRow.locator('text=Caio Lima').waitFor();
+    await setRow.locator('button', { hasText: 'Ver conteúdo' }).click();
+    await page.locator('dialog[open]', { hasText: 'O que é clorofila?' }).waitFor();
+    await page.keyboard.press('Escape');
+    await page.locator('dialog[open]').waitFor({ state: 'detached' });
+    await setRow.locator('button', { hasText: 'Recusar' }).click();
+    await page
+      .locator('dialog[open] textarea[name="feedback"]')
+      .fill('Inclua o verso de cada cartão.');
+    await page.locator('dialog[open] button[type="submit"]').click();
+    await setRow.locator('.status-chip', { hasText: 'Recusado' }).waitFor();
+    const materialRow = queue.locator('li', { hasText: 'Revisão integrada de História' });
+    await materialRow.locator('text=Fiz para a prova').waitFor();
+    await materialRow.locator('button', { hasText: 'Ver conteúdo' }).click();
+    await page.locator('dialog[open]', { hasText: 'O vapor acelerou a produção.' }).waitFor();
+    await axeCheck(page, 'dialog[open]', 'Prévia do material integrado');
+    await page.keyboard.press('Escape');
+    await page.locator('dialog[open]').waitFor({ state: 'detached' });
+    await materialRow.locator('button', { hasText: 'Aprovar' }).click();
+    await page.locator('dialog[open] textarea[name="feedback"]').fill('Muito bom, obrigado!');
+    await page
+      .locator('dialog[open] button[type="submit"]', { hasText: 'Aprovar e compartilhar' })
+      .click();
+    await materialRow.locator('.status-chip', { hasText: 'Compartilhado com a turma' }).waitFor();
+    await settle(page);
+    await axeCheck(page, 'main', 'Fila de revisão do professor');
+    // The student reads the reason, offers the set again; the teacher approves it.
+    await spage.reload();
+    const again = spage.locator('[data-contributions-list] li', {
+      hasText: 'Fotossíntese — revisão',
+    });
+    await again.locator('text=Inclua o verso de cada cartão.').waitFor();
+    await again.locator('.status-chip', { hasText: 'Recusado' }).waitFor();
+    await spage
+      .locator('[data-contributions-list] li', { hasText: 'Revisão integrada de História' })
+      .locator('text=Muito bom, obrigado!')
+      .waitFor();
+    await spage.locator('[role="tab"]', { hasText: 'Flashcards compartilhados' }).click();
+    await spage.locator('[data-classroom-open="share"]').click();
+    await spage.locator('dialog[open] select[name="setId"]').selectOption('set-1');
+    await spage.locator('dialog[open] button[type="submit"]').click();
+    await spage.locator('dialog[open]').waitFor({ state: 'detached' });
+    await page.reload();
+    await page
+      .locator('[data-contributions-list] li', { hasText: 'Fotossíntese — revisão' })
+      .filter({ has: page.locator('.status-chip', { hasText: 'Aguardando revisão' }) })
+      .locator('button', { hasText: 'Aprovar' })
+      .click();
+    await page.locator('dialog[open] button[type="submit"]').click();
+    await page.locator('dialog[open]').waitFor({ state: 'detached' });
+    assert.deepEqual(
+      data.reviews.map((r) => r.decision),
+      ['rejected', 'approved', 'approved'],
+    );
+    record(
+      'Fila de revisão: prévia só leitura, recusa com motivo e aprovação com recado; o aluno vê o status e a resposta e pode reenviar',
+    );
+
     await page.locator('[role="tab"]', { hasText: 'Flashcards compartilhados' }).click();
     const shared = page.locator('[data-shared-list] li', { hasText: 'Fotossíntese — revisão' });
     await shared.locator('text=Caio Lima').waitFor();
@@ -263,6 +428,58 @@ async function main() {
     record(
       'Professor: aprovar, (aluno processa), conferir transcrição e publicar são etapas distintas; conjunto do aluno com autoria',
     );
+
+    // The student reads the shared integrated material, and opens a lesson from a direct link.
+    await spage.goto(classUrl + '#aulas');
+    await spage.reload();
+    await spage.locator('[data-integrated-list] button', { hasText: 'Abrir material' }).click();
+    const integrated = spage.locator('[data-integrated-reader]:not([hidden])');
+    await integrated.locator('text=O vapor acelerou a produção.').waitFor();
+    await integrated.locator('text=A máquina a vapor mudou a produção.').first().waitFor();
+    assert.match(spage.url(), /material=/);
+    assert.doesNotMatch(await integrated.innerText(), /PRIVADO|modelCalls|rev-l-rev/);
+    assert.equal(
+      await integrated.locator('a[href*="material.html"]').count(),
+      0,
+      'no link into the private lesson',
+    );
+    await settle(spage);
+    await axeCheck(spage, 'main', 'Material integrado compartilhado (aluno, 390 px)');
+    await noHorizontalScroll(spage, 'Material integrado 390');
+    await integrated.locator('button', { hasText: 'Fechar material' }).click();
+    assert.equal(await activeText(spage), 'Abrir material');
+    assert.doesNotMatch(spage.url(), /material=/);
+    const lessonId = data.classrooms.rooms[0].lessons.find((l) => l.source === 'teacher').id;
+    await spage.goto(`${classUrl}&aula=${lessonId}#aulas`);
+    await spage
+      .locator('[data-lesson-reader]:not([hidden])', { hasText: 'A fotossíntese converte energia' })
+      .waitFor();
+    // A lesson that is no longer published: a clear message, not a broken reader.
+    await spage.goto(`${classUrl}&aula=00000000-0000-4000-8000-000000000000#aulas`);
+    await spage
+      .locator('[data-classrooms-status]', {
+        hasText: 'Esta aula não está mais publicada nesta turma.',
+      })
+      .waitFor();
+    assert.equal(await spage.locator('[data-lesson-reader]').isHidden(), true);
+    await shot(spage, 'aluno-material-integrado-390');
+    record(
+      'Aluno lê o material integrado aprovado (só conteúdo, sem link para a aula privada) e abre aula por link direto; aula despublicada mostra aviso claro',
+    );
+
+    // Without the contributions migration the class keeps working and those sections stay hidden.
+    data.classroomContributionsMissing = true;
+    await spage.reload();
+    await spage.locator('[data-lessons-list] li').first().waitFor();
+    await spage.waitForTimeout(100);
+    assert.equal(await spage.locator('[data-integrated-section]').isHidden(), true);
+    assert.equal(
+      (await spage.locator('[data-classrooms-status]').textContent()).trim(),
+      '',
+      'no error for an optional sub-feature',
+    );
+    data.classroomContributionsMissing = false;
+    record('Sem a migration de contribuições: seções ocultas, sem erro, o resto da turma funciona');
 
     // Keyboard: arrow keys move between tabs.
     await page.locator('[role="tab"][aria-selected="true"]').focus();
@@ -309,7 +526,15 @@ async function main() {
     await page
       .locator('[data-shared-list]', { hasText: 'Ninguém compartilhou conjuntos ainda.' })
       .waitFor();
-    record('Ao sair, a turma some para o aluno e o conjunto dele deixa de aparecer para a turma');
+    await page.locator('[role="tab"]', { hasText: 'Aulas publicadas' }).click();
+    await page
+      .locator('[data-integrated-list]', {
+        hasText: 'Nenhum material integrado compartilhado ainda.',
+      })
+      .waitFor();
+    record(
+      'Ao sair, a turma some para o aluno e o conjunto e o material integrado dele deixam de aparecer para a turma',
+    );
 
     await pupil.context.close();
     await teacher.context.close();

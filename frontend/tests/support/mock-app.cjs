@@ -373,6 +373,8 @@ async function setup(context, base, flags, data, options = {}) {
       // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
       if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
       if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
+      // Lists created elsewhere for this lesson (e.g. from an integrated material, mock-multi-lesson.cjs).
+      if (data.extraBatches?.[m.id]) detail.questionBatches = [...data.extraBatches[m.id], ...detail.questionBatches];
       return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
@@ -532,7 +534,7 @@ async function setup(context, base, flags, data, options = {}) {
         return json({ error: { code: 'APKG_INVALID', message: 'O arquivo não é um pacote do Anki.' } }, 400);
       const report = { deckName: 'Química::Orgânica', notes: 2, types: { basic: 1, cloze: 1 }, images: 1, skipped: { empty: 0, unsupported: 0, overLimit: 0, audio: 1, imagesSkipped: 0 },
         sample: [{ noteType: 'basic', front: 'Fórmula do metano?', back: 'CH4' }, { noteType: 'cloze', front: 'O carbono faz […] ligações.', back: 'O carbono faz 4 ligações.' }] };
-      if (mode === 'preview') return json(report, 201);
+      if (mode === 'preview') return json(report, 200);
       const set = newSet(url.searchParams.get('id'), url.searchParams.get('name') || report.deckName, report.sample.map((c) => ({ front: c.front, back: c.back, noteType: c.noteType, originLabel: report.deckName })));
       data.apkgImports = (data.apkgImports || 0) + 1;
       return json({ ...report, ...set, added: 2 }, 201);

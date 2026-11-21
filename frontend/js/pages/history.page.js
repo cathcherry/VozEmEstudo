@@ -9,7 +9,7 @@ import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initLibraryViewSwitcher } from './library-views.js';
-import { folderButton as multiLessonFolderButton, selectionButton as multiLessonSelectionButton } from './multi-lesson-entry.js';
+import { folderButton as multiLessonFolderButton, selectionButton as multiLessonSelectionButton, unitsButton as multiLessonUnitsButton } from './multi-lesson-entry.js';
 
 const session = await initAuthenticatedShell();
 const folderIcons = createFolderIcons(session.user.id);
@@ -514,6 +514,10 @@ function renderFolderGroups(visible, _needle) {
   folderToolbar.querySelector('[data-create-unit-shortcut]')?.remove();
   folderToolbar.querySelector('[data-subject-menu]')?.remove();
   folderToolbar.querySelector('[data-multi-lesson-folder]')?.remove();
+  folderToolbar.querySelector('[data-multi-lesson-units]')?.remove();
+  // 3.4: several units at once, picked in the dialog (library root and subject pages).
+  if (multiLessonEnabled && catalogEnabled && !selectedUnit && catalog.units.length >= 2)
+    folderToolbar.append(multiLessonUnitsButton(() => ({ subjects: catalog.subjects, units: catalog.units, currentSubjectId: selected })));
   let groupIndex = 0;
   for (const group of folderGroups) {
     if(selected && String(group.id||group.name)!==selected)continue;

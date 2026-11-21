@@ -51,6 +51,29 @@ export const shareSet = (classId, body) =>
 export const revokeSharedSet = (classId, sharedId) =>
   apiFetch(`${base(classId)}/flashcard-sets/${encodeURIComponent(sharedId)}`, { method: 'DELETE' });
 
+// Contributions (20261122090000_classroom_contributions.sql): a member offers a flashcard set or a
+// ready integrated material; a student's waits for the teacher's review, with optional feedback.
+export const CONTRIBUTIONS_SCHEMA_REQUIRED = 'CLASSROOM_CONTRIBUTIONS_SCHEMA_REQUIRED';
+export const listContributions = (classId) => apiFetch(`${base(classId)}/contributions`);
+export const contribute = (classId, body) =>
+  apiFetch(`${base(classId)}/contributions`, json('POST', body));
+export const getContribution = (classId, contributionId) =>
+  apiFetch(`${base(classId)}/contributions/${encodeURIComponent(contributionId)}`);
+export const reviewContribution = (classId, contributionId, body) =>
+  apiFetch(
+    `${base(classId)}/contributions/${encodeURIComponent(contributionId)}/review`,
+    json('POST', body),
+  );
+export const endContribution = (classId, contributionId) =>
+  apiFetch(`${base(classId)}/contributions/${encodeURIComponent(contributionId)}`, {
+    method: 'DELETE',
+  });
+// Integrated materials shared with the class: generated content only, read only.
+export const listIntegratedMaterials = (classId) =>
+  apiFetch(`${base(classId)}/integrated-materials`);
+export const getIntegratedMaterial = (classId, contributionId) =>
+  apiFetch(`${base(classId)}/integrated-materials/${encodeURIComponent(contributionId)}`);
+
 export const listResources = (classId) => apiFetch(`${base(classId)}/resources`);
 export const addResource = (classId, body) =>
   apiFetch(`${base(classId)}/resources`, json('POST', body));

@@ -30,6 +30,8 @@ export const env = Object.freeze({
   supabaseUrl: process.env.SUPABASE_URL || '',
   supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || '',
   supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || '',
+  // How user tokens are checked: 'server' (getUser, default) or 'jwks' (signature via public JWKS).
+  supabaseAuthVerify: process.env.SUPABASE_AUTH_VERIFY === 'jwks' ? 'jwks' : 'server',
   audioBucket: process.env.SUPABASE_AUDIO_BUCKET || 'audios',
   // Per-account limits on costly requests (0 turns a limit off). See docs/HOSPEDAGEM.md.
   // Content-Security-Policy for the served pages: 'off' (default), 'report-only' or 'enforce'.
@@ -45,7 +47,7 @@ export const env = Object.freeze({
     .filter((p) => ['google', 'github'].includes(p)),
 
   groqApiKey: process.env.GROQ_API_KEY || '',
-  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
 
   hfToken: process.env.HF_TOKEN || '',
   hfAsrSpaceId: process.env.HF_ASR_SPACE_ID || 'openai/whisper',
@@ -68,6 +70,8 @@ export const env = Object.freeze({
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),
 
   mockExternalServices: bool(process.env.MOCK_EXTERNAL_SERVICES, false),
+  // Offline demo only: a JSON array of strings used as the simulated transcript's segments.
+  mockAsrSegmentsFile: process.env.MOCK_ASR_SEGMENTS_FILE || '',
   // Server-side ceiling for one question list; the database accepts at most 100.
   maxQuestionListCount: listLimit(process.env.MAX_QUESTION_LIST_COUNT),
 });

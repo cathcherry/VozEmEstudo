@@ -20,7 +20,9 @@ flashcards) a partir de:
 
 - várias aulas escolhidas na Biblioteca (barra de seleção → "Material integrado");
 - uma unidade inteira (pasta da unidade → "Estudar a unidade inteira");
-- várias unidades (API, `kind: "units"`);
+- várias unidades (Biblioteca → "Estudar várias unidades": o estudante marca as unidades no próprio
+  diálogo, agrupadas por disciplina, e a prévia de aulas incluídas/excluídas acompanha cada marcação;
+  `kind: "units"`, até 20 unidades);
 - uma disciplina (pasta da disciplina → "Estudar a disciplina").
 
 ## Objetos
@@ -68,7 +70,9 @@ depois (nova revisão), renomeá-la ou confirmar outra revisão não muda o mate
 lê o `segments_snapshot` exatamente dessas revisões.
 
 **Prévia honesta.** O pedido pode levar `expectedRevisionIds` (o que a prévia mostrou). Se a seleção
-mudou entre a prévia e o pedido, a resposta é 409 `MULTI_LESSON_SOURCES_CHANGED`. Dentro do banco,
+mudou entre a prévia e o pedido, a resposta é 409 `MULTI_LESSON_SOURCES_CHANGED`. Na interface, o
+diálogo então refaz a prévia, mostra a lista nova e pede que o estudante confirme de novo (nada é
+gerado sem ele ver as aulas). Dentro do banco,
 `multi_lesson_attach_admin` resolve de novo e exige as mesmas revisões da geração.
 
 ## Custo limitado
@@ -157,6 +161,7 @@ das citações com um modelo de verdade), concorrência real entre conexões (PG
 
 - Compartilhar material integrado com a turma (escopo `classroom`): não implementado.
 - Fontes "objetivo" e "coleção" do plano diretor: não implementadas.
-- Salvar as questões integradas como lista de questões tentável (quiz) ou os cartões como conjunto
-  de flashcards: hoje ficam só na página do material integrado.
+- ~~Salvar as questões integradas como lista tentável e os cartões como conjunto de flashcards~~:
+  feito na 3.4 — ver [MULTI_LESSON_EXPORTS.md](MULTI_LESSON_EXPORTS.md)
+  (`20261121180000_multi_lesson_exports.sql`).
 - Regenerar o mapa de uma aula sob pedido e limpar mapas antigos do cache.

@@ -42,3 +42,18 @@
 .multi-lesson-report p { margin: 4px 0; }
 .multi-lesson-citation-source a,
 .multi-lesson-page .tool-hint a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* 3.4: several units picked in the dialog; saving the questions and cards of a ready material. */
+.multi-lesson-units { display: grid; gap: 8px; border: 1px solid var(--border-light); border-radius: 12px; padding: 8px 12px; margin: 0; max-height: 32vh; overflow-y: auto; min-width: 0; }
+.multi-lesson-unit-group { display: grid; gap: 4px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.multi-lesson-unit-group legend { padding: 0; font-weight: 650; overflow-wrap: anywhere; }
+/* The shared .app-dialog rules (grid labels, 44px inputs) are meant for text fields: checkbox rows
+   stay on one line, the whole row being the target. */
+.app-dialog.multi-lesson-dialog :is(.multi-lesson-outputs, .multi-lesson-unit-group) label,
+.app-dialog.multi-lesson-dialog label.multi-lesson-reuse { display: flex; gap: 10px; align-items: center; min-height: 36px; font-weight: 500; overflow-wrap: anywhere; }
+.app-dialog.multi-lesson-dialog input[type='checkbox'] { flex: 0 0 auto; width: 20px; height: 20px; min-height: 0; margin: 0; padding: 0; }
+.multi-lesson-export { padding: 12px 16px; border: 1px solid var(--border-light); border-radius: 14px; background: var(--surface); margin: 10px 0; }
+.multi-lesson-export .tool-hint { margin: 0 0 8px; }
+.multi-lesson-export .form-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.multi-lesson-export-status { margin: 8px 0 0; }
+.multi-lesson-export-status:empty { display: none; }

@@ -298,3 +298,111 @@ Nenhum provedor de IA real foi chamado: nada foi gasto.
 | Postgres 16.15 local | aplicada | aplicada |
 | Staging Supabase | aplicada | aplicada |
 | **Produção (`audioestudo`)** | **não** | **não** |
+
+## Voz em Estudo 3.4 — integração real, jornadas completas e prontidão para produção
+
+Ponto de partida: `main` em `504f3aa` (3.3). Branch `feat/ux-navigation`.
+
+### Jornadas completadas (código)
+
+| Item | Entrega | Migration nova |
+| --- | --- | --- |
+| Questões do material integrado → lista respondível | a lista é ancorada na primeira aula de origem, guarda a citação de cada questão e é respondida pelo fluxo de sempre | `20261121180000_multi_lesson_exports.sql` |
+| Cartões do material integrado → conjunto pessoal | conjunto com procedência (aula e trecho); o segundo clique devolve o mesmo | (a mesma) |
+| Várias unidades na Biblioteca | seleção direta, com prévia de incluídas e excluídas | — |
+| Material integrado compartilhado com a turma | o professor publica direto; o aluno passa pela fila; leitura só do conteúdo gerado; revogação imediata | `20261122090000_classroom_contributions.sql` |
+| Contribuições com revisão e recado | estados claros para o aluno; fila do professor com aprovar ou recusar e recado | (a mesma) |
+| Aulas e links publicados pelo professor | leitura completa pelo aluno, sem nada privado do professor | — |
+| Mescla de baralhos (item 7) | ver o subagente de UX abaixo | — |
+
+### Validação real no staging (`voz-em-estudo-staging`)
+
+O acesso foi feito por chaves salvas no ambiente: o proxy de rede injeta a chave do servidor do
+Supabase e a chave da Groq, e nenhum valor aparece em código ou log. Foram criadas 9 contas
+sintéticas `qa34-*@example.test` (professora, s1…s7 e uma conta de fora).
+
+- **Migrations novas no staging:** aplicadas a partir do commit `4323d41`, com MD5 igual ao do Git, preflight e postflight ok.
+- **Readiness real (`check-runtime.js`):** todos os probes `[OK]`, incluindo os novos (exportações, cache e bucket `flashcard-media`).
+- **E2E pela API real (`scripts/staging/e2e-staging.mjs`, `docs/STAGING_E2E.md`):** **188 PASS, 0 FAIL, 1 SKIP**.
+  - Real: banco, Auth, Storage, fila e worker.
+  - Simulado: só o texto da IA e da transcrição.
+  - Cobertura:
+    - caderno com conflito concorrente;
+    - turma, papéis e envio do aluno até a publicação;
+    - links de apoio e revogação;
+    - 7 alunos compartilham baralhos; **s1 junta os de 4 colegas**, aplica **um** modelo ao baralho inteiro e os originais ficam intactos;
+    - `.apkg` com imagem;
+    - multiaula com exportações;
+    - 5 gerações simultâneas → 1 job;
+    - 57 leituras negadas a outras contas.
+- **Destaque em 3 trechos** (o passo que ficou SKIP no E2E) validado depois, com transcrição de 10 trechos: salvo, lido de volta com a citação exata, citação adulterada → 409, outra conta → lista vazia.
+- **Navegador real** (Playwright pelo proxy): 8 telas, 0 violações axe depois das correções. O login pelo formulário não funciona atrás do proxy (ver "Bloqueios").
+
+**Bugs reais encontrados e corrigidos:**
+
+| Problema | Correção |
+| --- | --- |
+| `join` simultâneo respondia sem `jobId` (4 de 5 pedidos) | espera o job da geração |
+| envio publicado oferecia "confirmar transcrição", que despublicava a aula sem aviso | botão "Despublicar da turma" com confirmação |
+| nome da marca com problema de rótulo (WCAG 2.5.3) em todas as páginas | corrigido |
+| rótulos sobrepostos no diálogo de mescla | corrigido |
+| modelo padrão `llama-3.3-70b-versatile` fora da Groq | novo padrão `openai/gpt-oss-120b` |
+| `gpt-oss` estourava o limite de tokens raciocinando | `LLM_REASONING_EFFORT=low` |
+| `json_validate_failed` derrubava o material integrado | vira saída inválida reparável |
+| readiness não conferia exportações, cache e `flashcard-media` | probes novos |
+| `.env.example` sem 2 flags e 2 variáveis | completado, com teste |
+
+### Teste real de IA (Groq, limitado)
+
+`openai/gpt-oss-120b`, 8 chamadas no total (3 antes do log de uso existir), em duas aulas sintéticas
+de Biologia com 10 trechos cada.
+
+| Geração | Resultado | Latência | Tokens (entrada/saída) |
+| --- | --- | --- | --- |
+| resumo de 1 aula | ok | 1,4–3,2 s | 647 / 509 |
+| 5 questões de 1 aula | ok, enunciados corretos e sem erro de conteúdo | 1,5–4,5 s | 621 / 529 |
+| material integrado de 2 aulas (1ª tentativa) | **falhou**: raciocínio estourou 4000 tokens, `LLM_FAILED` | — | 803 / 4000 |
+| material integrado de 2 aulas (depois da correção) | `ready` em 12,2 s, 2 chamadas (1 mapa + síntese; o outro mapa veio do cache) | 5,4 + 4,3 s | 4012 / 4296 |
+| resumo de novo com `reuse` | `reuse`, sem chamada | imediato | 0 |
+
+**Qualidade do material integrado:**
+
+- 2 seções de resumo (fotossíntese e respiração);
+- 5 questões e 6 cartões;
+- **toda citação é trecho literal da aula certa**, com posição e tempo;
+- nada foi descartado pelo verificador de evidência (`droppedCitations = 0`).
+
+Ressalva de estilo: algumas questões dizem "descrita na transcrição".
+
+**Custo real:** cerca de 6,1 mil tokens de entrada e 9,3 mil de saída registrados (mais 3 chamadas
+anteriores ao log), ou seja, **menos de US$0,01**, a US$0,15 e US$0,60 por milhão de tokens. Os
+servidores com IA real foram desligados depois do teste.
+
+### Prontidão para produção
+
+- `docs/RUNBOOK_PRODUCAO_3_4.md`:
+  - backup verificado;
+  - estado das migrations (`database/checks/production-state-3-4.sql`, somente leitura);
+  - ordem e dependências;
+  - preflight e postflight de cada migration;
+  - configuração antes das flags;
+  - ordem de ativação das flags;
+  - testes de fumaça, reversão e monitoramento.
+- **Ensaio completo** no Postgres 16: banco no estado pré-3.3 → 8 migrations na ordem, cada uma com preflight e postflight → estado final todo aplicado → reaplicação recusada pelas guardas.
+- **Backup e restauração ensaiados**: `pg_dump -Fc` → `pg_restore` num banco vazio → `database/checks/backup-fingerprint.sql` idêntico.
+
+| Banco | 8 migrations da 3.3/3.4 |
+| --- | --- |
+| PGlite (testes) | aplicadas |
+| Postgres 16.15 local | aplicadas (incluindo o ensaio do roteiro) |
+| Staging Supabase | **aplicadas** (as 2 da 3.4 em 21/11, commit `4323d41`) |
+| **Produção (`audioestudo`)** | **não aplicadas**: aguardam backup verificado e autorização |
+
+### Bloqueios e pendências
+
+- **Login pelo formulário atrás do proxy.** O proxy do ambiente de nuvem injeta a chave do servidor em todo pedido ao Supabase, e o Auth passa a recusar o token do usuário.
+  - Para os testes, a API usou `SUPABASE_AUTH_VERIFY=jwks`.
+  - No navegador, a sessão foi gravada a partir de um login real feito fora dele. Isso é uma adaptação do teste, não um bug do produto.
+  - Fora desse proxy, o login normal não é afetado.
+- **Upload ao Storage atrás do proxy.** Foi feito como service role, então as políticas RLS do bucket `audios` não foram exercitadas no staging (só nos testes PGlite).
+- **Auxiliar `qa` no staging.** A extensão `http` e o schema `qa` existem só no staging, para aplicar migrations direto do Git. Podem ser removidos quando não forem mais úteis.
