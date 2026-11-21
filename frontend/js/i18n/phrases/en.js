@@ -1998,6 +1998,7 @@ export default {
   "Sem aula vinculada": "No linked lesson",
   "Sem conexão — guardado neste aparelho. Tentaremos de novo.": "Offline — kept on this device. We will try again.",
   "Sem conexão com o servidor. Verifique a internet e tente de novo; nada foi criado.": "No connection to the server. Check your internet and try again; nothing was created.",
+  "Sem conexão com o servidor. Verifique a internet e tente de novo; o conjunto não será criado duas vezes.": "No connection to the server. Check your internet and try again; the set will not be created twice.",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "No connection: your changes are saved in this browser and will be sent when the connection returns.",
   "Sem conexão.": "No connection.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "No confirmation from the account. Progress stays in this browser and the submission will be retried with the same ID.",
@@ -2379,8 +2380,16 @@ export default {
    "Times in this device's time zone: {0}. Task due dates appear as all-day events. Exporting ICS doesn't send invitations or change other calendars."
   ],
   [
+   "Sem conexão com o servidor. {0} cartões já estão no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "No connection to the server. {0} cards are already in the new set. Try again to save the rest, without duplicating the set."
+  ],
+  [
    "Revisão anterior: esta referência aponta para a revisão {0}; a aula está na revisão {1}. O trecho citado continua legível aqui.",
    "Earlier revision: this reference points to revision {0}; the lesson is at revision {1}. The cited passage is still readable here."
+  ],
+  [
+   "Sem conexão com o servidor. {0} cartão já está no conjunto novo. Tente de novo para salvar o restante, sem duplicar o conjunto.",
+   "No connection to the server. {0} card is already in the new set. Try again to save the rest, without duplicating the set."
   ],
   [
    "Foram geradas {0} de {1}: algumas não tinham trecho da aula que as sustentasse e foram descartadas; gere mais para completar.",

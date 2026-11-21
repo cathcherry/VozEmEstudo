@@ -230,17 +230,53 @@ async function main() {
     assert.equal(data.apkgImports || 0, 0, 'the preview creates nothing');
     assert.equal(await importer.locator('.deck-preview dl').count(), 0, 'sample cards stay out of the live region');
     await importer.locator('.deck-sample dt', { hasText: 'Fórmula do metano?' }).waitFor();
+    // The package takes one look too: a base here.
+    await importer.getByLabel('Aparência do conjunto novo').selectOption('base:window');
     await importer.getByRole('button', { name: 'Criar conjunto' }).click();
     await tools.locator('.deck-tools-result', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
     assert.equal(data.apkgImports, 1);
+    assert.equal(data.sets.at(-1).template_base, 'window');
+    assert.equal(data.sets.at(-1).template_id, null);
+    // A text file: the chosen look (one of the student's templates) applies to the whole new deck.
+    await tools.getByRole('button', { name: 'Importar cartões' }).click();
+    const textLook = importer.getByLabel('Aparência do conjunto novo');
+    await page.waitForFunction(() => document.querySelectorAll('dialog[open] optgroup option').length === 2);
+    assert.equal(await textLook.inputValue(), '', 'the favourite look by default');
+    await importer.getByLabel('Arquivo').setInputFiles({
+      name: 'Citologia.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from(['Organela da respiração?\tMitocôndria', 'A {{c1::membrana}} separa a célula do meio.\t'].join('\n')),
+    });
+    await importer.locator('.deck-preview', { hasText: '2 cartões encontrados' }).waitFor();
+    await textLook.selectOption(`template:${template.id}`);
+    await settle(page);
+    await axeCheck(page, 'dialog[open]', 'Importar texto com aparência');
+    await importer.getByRole('button', { name: 'Criar conjunto' }).click();
+    await tools.locator('.deck-tools-result', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
+    const textDeck = data.decks.at(-1);
+    assert.equal(textDeck.origin, 'text_import');
+    assert.equal(textDeck.templateId, template.id);
+    assert.equal(textDeck.templateBase, undefined, 'a template or a base, never both');
+    const imported = data.sets.at(-1);
+    assert.equal(imported.name, 'Citologia');
+    assert.equal(imported.template_id, template.id, 'the look is stored on the deck, for every card');
+    assert.deepEqual(imported.cards.map((c) => c.note_type), ['basic', 'cloze']);
+    await tools.getByRole('button', { name: 'Abrir o conjunto novo' }).click();
+    await page.waitForFunction(() => document.querySelector('[data-set-look]')?.value.startsWith('template:'));
+    assert.equal(await page.locator('[data-set-look]').inputValue(), `template:${template.id}`);
     // A broken package is explained.
     await tools.getByRole('button', { name: 'Importar cartões' }).click();
     await importer.getByLabel('Arquivo').setInputFiles({ name: 'ruim.apkg', mimeType: 'application/octet-stream', buffer: Buffer.from('nada') });
     await importer.locator('.deck-error', { hasText: 'não é um pacote do Anki' }).waitFor();
-    await page.keyboard.press('Escape');
+    // At 390 px the import dialog, with its look selector, fits without sideways scrolling.
     await page.setViewportSize({ width: 390, height: 844 });
+    await noHorizontalScroll(page, 'importar cartões com aparência (390 px, diálogo aberto)');
+    const importInside = await importer.evaluate((node) => node.scrollWidth - node.clientWidth);
+    assert(importInside <= 1, `import dialog overflows by ${importInside}px at 390 px`);
+    await page.keyboard.press('Escape');
     await noHorizontalScroll(page, 'revisar flashcards 3.0 (390 px)');
     record('Pacote do Anki (.apkg): prévia com cartões, imagens e sons ignorados; importa para um conjunto novo; pacote inválido explicado');
+    record('Importar texto ou .apkg com uma aparência (base ou modelo próprio) para o conjunto novo inteiro');
     await context.close();
   } finally {
     await browser.close();

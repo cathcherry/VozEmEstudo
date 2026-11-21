@@ -205,3 +205,39 @@ export function chunk(list, size = CHUNK) {
   for (let i = 0; i < list.length; i += size) parts.push(list.slice(i, i + size));
   return parts;
 }
+
+/** The server's "same question in one set" rule: trimmed, case-insensitive front. */
+const savedFrontKey = (text) => String(text ?? '').trim().toLowerCase();
+
+/**
+ * Saves a new set through the 3.2 set API: creates it with the first 100 cards, then adds the
+ * rest 100 at a time. `id` must stay the same across retries of one dialog: the server answers a
+ * repeated create with the set it already has (`replayed`), and this then reads that set and
+ * sends only the cards it does not hold yet — a retry after a dropped connection never creates a
+ * second set nor repeats cards. A failure carries `saved` (cards already in the set) and `setId`.
+ */
+export async function saveNewSet({ id, name, cards, origin }, api) {
+  const [first, ...rest] = chunk(cards);
+  let saved = 0;
+  try {
+    const created = await api.createFlashcardSet({ id, name, materialId: null, config: { origin }, cards: first });
+    let pending = rest;
+    saved = first.length;
+    if (created?.replayed) {
+      const existing = await api.getFlashcardSet(id);
+      const have = new Set((existing?.cards || []).map((card) => savedFrontKey(card.front_text ?? card.front)));
+      const missing = cards.filter((card) => !have.has(savedFrontKey(card.front)));
+      saved = cards.length - missing.length;
+      pending = chunk(missing);
+    }
+    for (const part of pending) {
+      await api.addFlashcardSetCards(id, part);
+      saved += part.length;
+    }
+  } catch (error) {
+    error.saved = saved;
+    error.setId = id;
+    throw error;
+  }
+  return { id, saved };
+}
