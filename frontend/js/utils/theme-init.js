@@ -24,8 +24,24 @@
     density: 'comfortable',
     // Interface language only (menus, buttons, messages); never lesson content.
     language: 'pt-BR',
+    // Personalização 3.0: a declarative wallpaper behind the pages (CSS patterns drawn from the
+    // theme's own colours; no uploaded CSS or scripts), per-page overrides, and solid or
+    // translucent "glass" cards. Decoration only: content stays on readable surfaces.
+    wallpaper: 'none',
+    surfaces: 'solid',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
+  const WALLPAPERS = ['none', 'dots', 'grid', 'clouds', 'desktop', 'meadow', 'stars'];
+  const SURFACES = ['solid', 'glass'];
+  // Pages that may have their own wallpaper (file name → key).
+  const WALLPAPER_PAGES = {
+    'painel.html': 'dashboard',
+    'historico.html': 'library',
+    'material.html': 'material',
+    'revisar.html': 'review',
+    'planejar.html': 'plan',
+    'focar.html': 'focus',
+  };
   const DENSITIES = ['comfortable', 'compact'];
   const LANGUAGES = ['pt-BR', 'en', 'es', 'zh-CN'];
   const READ_ALOUD = ['off', 'icons', 'everywhere'];
@@ -59,6 +75,9 @@
     'contrast-dark',
     'soft',
     'ocean',
+    'matcha',
+    'desktop',
+    'planner',
   ];
   const fonts = [
     "Inter, 'Segoe UI', Arial, sans-serif",
@@ -109,6 +128,8 @@
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
+    const page = WALLPAPER_PAGES[location.pathname.split('/').pop()] || '';
+    root.dataset.wallpaper = (page && prefs.pageWallpapers?.[page]) || prefs.wallpaper;
     root.lang = prefs.language;
     // Dates and times in the interface language (a language change reloads the page).
     globalThis.VOZ_LOCALE = prefs.language;
@@ -201,6 +222,9 @@
         'contrast-dark': '#090909',
         soft: '#fff4d9',
         ocean: '#e7f7f7',
+        matcha: '#f3f6ea',
+        desktop: '#e9f1fb',
+        planner: '#fbf6e6',
       }[settings.theme] || settings.background;
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', background);
   }
@@ -237,6 +261,13 @@
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
     if (DENSITIES.includes(value?.density)) result.density = value.density;
+    if (WALLPAPERS.includes(value?.wallpaper)) result.wallpaper = value.wallpaper;
+    if (SURFACES.includes(value?.surfaces)) result.surfaces = value.surfaces;
+    // Per-page wallpapers: only known pages and known wallpapers survive.
+    result.pageWallpapers = {};
+    for (const [page, wallpaper] of Object.entries(value?.pageWallpapers || {}))
+      if (Object.values(WALLPAPER_PAGES).includes(page) && WALLPAPERS.includes(wallpaper))
+        result.pageWallpapers[page] = wallpaper;
     if (LANGUAGES.includes(value?.language)) result.language = value.language;
     if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
     else if (value?.readAloud === 'on') result.readAloud = 'icons';
