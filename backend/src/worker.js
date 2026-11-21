@@ -4,6 +4,7 @@ import { sleep } from './utils/time.js';
 import { claimNextJob } from './repositories/job.repository.js';
 import { executeClaimedJob } from './jobs/job-runner.js';
 import { AppError } from './domain/errors.js';
+import { runNextMultiLessonJob } from './jobs/multi-lesson-runner.js';
 
 let stopping = false;
 process.on('SIGINT', () => {
@@ -28,7 +29,9 @@ while (!stopping) {
       jobs.push(executeClaimedJob(job));
     }
     if (jobs.length) await Promise.allSettled(jobs);
-    else await sleep(env.workerPollMs);
+    // Milestone C: integrated materials have their own queue (FEATURE_MULTI_LESSON); one per loop.
+    const ranMultiLesson = await runNextMultiLessonJob(`${env.workerId}-ml`);
+    if (!jobs.length && !ranMultiLesson) await sleep(env.workerPollMs);
   } catch (error) {
     logger.error('WORKER_LOOP_ERROR', {
       code: error instanceof AppError ? error.code : 'WORKER_LOOP_FAILED',

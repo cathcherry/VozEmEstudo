@@ -40,6 +40,9 @@ async function call(name, params) {
   }
 }
 
+/** Milestone C (multi-lesson) begins and frees its generations through the same mapped calls. */
+export const callGenerationRpc = call;
+
 export const generationReuseEnabled = () => isFeatureEnabled('generation_reuse');
 
 /** Model family: provider + model of the task (a model change is a different generation). */

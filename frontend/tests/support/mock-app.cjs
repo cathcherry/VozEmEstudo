@@ -787,6 +787,9 @@ async function setup(context, base, flags, data, options = {}) {
       return require('./mock-classrooms.cjs').handleClassrooms({
         request, p, method, json, user: currentUser(), data, materials,
       });
+    // Integrated material of several lessons (Milestone C): ./mock-multi-lesson.cjs.
+    if (p.startsWith('/api/multi-lesson'))
+      return require('./mock-multi-lesson.cjs').handleMultiLesson({ request, p, method, json, data, materials });
     return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
   });
   await context.addInitScript(
@@ -890,6 +893,8 @@ const allFlags = {
   quiz_review: true,
   // Off by default: journeys switch it on explicitly (the 3.2 client-side paths stay covered).
   flashcards_v3: false,
+  // Milestone C, off by default; multi-lesson-check.cjs turns it on.
+  multi_lesson: false,
 };
 
 /** Serves the static front end on a free local port. */

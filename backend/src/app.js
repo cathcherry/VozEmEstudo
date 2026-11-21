@@ -23,6 +23,7 @@ import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './rou
 import { publicQuestionList } from './routes/question-share.routes.js';
 import { classroomRouter } from './routes/classroom.routes.js';
 import { notebookRouter } from './routes/notebook.routes.js';
+import { multiLessonRouter } from './routes/multi-lesson.routes.js';
 import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
@@ -111,6 +112,8 @@ if (isFeatureEnabled('flashcards')) app.use('/api/flashcards', requireAuth, flas
 if (isFeatureEnabled('study_tracking')) app.use('/api/study', requireAuth, studyRouter);
 // Private classrooms: members only, never public.
 if (isFeatureEnabled('classrooms')) app.use('/api/classrooms', requireAuth, classroomRouter);
+// Milestone C: integrated materials of several confirmed lessons (private to the account).
+if (isFeatureEnabled('multi_lesson')) app.use('/api/multi-lesson', requireAuth, multiLessonRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {
