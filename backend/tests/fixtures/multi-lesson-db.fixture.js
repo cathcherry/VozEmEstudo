@@ -11,6 +11,19 @@ export const MULTI_LESSON_MIGRATION = '20261121170000_multi_lesson.sql';
 export const KNOWLEDGE_MAP_MIGRATION = '20261121171000_knowledge_map_cache.sql';
 export const readMultiLessonMigration = () => read(MULTI_LESSON_MIGRATION);
 export const readKnowledgeMapMigration = () => read(KNOWLEDGE_MAP_MIGRATION);
+export const EXPORTS_MIGRATION = '20261121180000_multi_lesson_exports.sql';
+export const readExportsMigration = () => read(EXPORTS_MIGRATION);
+
+/**
+ * Milestone C chain plus what the exports need: Flashcards 3.0 (deck function), quiz sessions
+ * (to answer the list through the usual flow) and the exports migration itself.
+ */
+export async function migrateMultiLessonExports(f, { exports = true } = {}) {
+  await migrateMultiLesson(f);
+  await f.db.exec(read('20261121150000_flashcards_3_0.sql'));
+  await f.db.exec(read('20261104223000_quiz_sessions.sql'));
+  if (exports) await f.db.exec(readExportsMigration());
+}
 
 /** Applies the full prerequisite chain, generation reuse and Milestone C (cache optional). */
 export async function migrateMultiLesson(f, { cache = true } = {}) {
