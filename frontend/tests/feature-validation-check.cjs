@@ -88,6 +88,190 @@ async function main() {
     data.calendarPageSize = 0;
     record('Calendário: exportação ICS percorre todas as páginas, mesmo sem "limit" na resposta');
 
+    // ---------- Questions: "Reportar problema" (own flag, saved in the account, undo) ----------
+    {
+      const q = state();
+      q.lessonStage = { 'l-foto': 'questions' };
+      q.profileState = [];
+      const view = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.goto(base + '/material.html?id=l-foto#questoes');
+      const list = p.locator('details.list-questions').first();
+      await list.locator('summary').click();
+      const open = list.getByRole('button', { name: 'Reportar problema' });
+      await open.click();
+      const dialog = p.getByRole('dialog', { name: 'Reportar problema na questão' });
+      await dialog.waitFor();
+      await settle(p);
+      await axeCheck(p, 'dialog[open]', 'Reportar problema');
+      await dialog.getByLabel('Não está na aula').check();
+      await dialog.getByLabel('Detalhe (opcional)').fill('Ribossomo não foi citado.');
+      await dialog.getByRole('button', { name: 'Marcar problema' }).click();
+      await list.locator('.question-report-flag', { hasText: 'Você marcou: Não está na aula' }).waitFor();
+      await p.waitForFunction(() => document.activeElement?.textContent === 'Editar', null, { timeout: 3000 });
+      await p.waitForTimeout(600);
+      const saved = q.profileState.find((row) => row.key === 'question-reports').data.q1;
+      assert.deepEqual(
+        { reason: saved.reason, note: saved.note, materialId: saved.materialId, batchId: saved.batchId },
+        { reason: 'not_in_lesson', note: 'Ribossomo não foi citado.', materialId: 'l-foto', batchId: 'b1' },
+      );
+      assert.equal(saved.statement, 'Onde ocorre a fotossíntese?');
+      // Revisar › Questões lists it with the lesson.
+      await p.goto(base + '/revisar.html#questoes');
+      const flagged = p.locator('[data-question-reports]');
+      await flagged.locator('.question-report-row', { hasText: 'Onde ocorre a fotossíntese?' }).waitFor();
+      assert.match(await flagged.textContent(), /Não está na aula/);
+      assert.equal(
+        await flagged.getByRole('link', { name: 'Abrir Fotossíntese e respiração celular' }).getAttribute('href'),
+        './material.html?id=l-foto#questoes',
+      );
+      await settle(p);
+      await axeCheck(p, '[data-question-reports]', 'Questões marcadas');
+      // Another device (fresh browser, same account) sees the flag; undo keeps a dated removal.
+      const other = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
+      await other.page.goto(base + '/material.html?id=l-foto#questoes');
+      const otherList = other.page.locator('details.list-questions').first();
+      await otherList.locator('summary').click();
+      await otherList.locator('.question-report-flag', { hasText: 'Não está na aula' }).waitFor();
+      await otherList.getByRole('button', { name: 'Desfazer a marcação desta questão' }).click();
+      await otherList.getByRole('button', { name: 'Reportar problema' }).waitFor();
+      await other.page.waitForTimeout(600);
+      assert.equal(q.profileState.find((row) => row.key === 'question-reports').data.q1.removed, true);
+      await other.context.close();
+      await view.context.close();
+      record('Questões: "Reportar problema" com motivo e detalhe, salvo na conta, visto em outro aparelho e desfeito sem voltar');
+    }
+
+    // ---------- A very long lesson (3 h, 2 200 segments): renders, searches without freezing ---
+    {
+      const long = state();
+      long.longLesson = 2200;
+      const view = await openApp(browser, base, allFlags, long, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.addInitScript(() => {
+        window.__longTasks = [];
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) window.__longTasks.push(Math.round(entry.duration));
+        }).observe({ type: 'longtask', buffered: true });
+      });
+      const started = Date.now();
+      await p.goto(base + '/material.html?id=l-foto#transcricao');
+      await p.locator('.transcription-segment').nth(2199).waitFor({ state: 'attached', timeout: 30000 });
+      const renderMs = Date.now() - started;
+      assert(renderMs < 15000, `long lesson rendered in ${renderMs} ms`);
+      await p.evaluate(() => {
+        window.__longTasks = [];
+      });
+      const box = p.locator('.transcript-search input');
+      await box.pressSequentially('glicose', { delay: 40 });
+      const status = p.locator('.search-status');
+      await status.filter({ hasText: /^2200 trechos encontrados$/ }).waitFor({ timeout: 20000 });
+      assert.equal(await p.locator('mark.search-hit').count(), 2200);
+      await p.getByRole('button', { name: 'Próximo resultado' }).click();
+      await status.filter({ hasText: 'Trecho 1 de 2200' }).waitFor();
+      await box.fill('');
+      await p.waitForFunction(() => !document.querySelector('mark.search-hit'), null, { timeout: 20000 });
+      const tasks = await p.evaluate(() => window.__longTasks.sort((a, b) => b - a).slice(0, 3));
+      await view.context.close();
+      record(`Aula muito longa (2 200 trechos, 3 h): abre em ${renderMs} ms; busca sem travar (maior tarefa ${tasks[0] || 0} ms), resultados navegáveis, limpar remove os destaques`);
+    }
+
+    // ---------- Planejar uma unidade: a task per lesson, deadlines spread, re-run adds only new --
+    {
+      const u = state();
+      const extra = (id, title, daysAgo) => ({
+        id, title, subject: 'Biologia', status: 'PRONTO', subject_id: 'sub-bio', unit_id: 'unit-energia',
+        created_at: new Date(Date.now() - daysAgo * 86400000).toISOString(),
+        audio_files: [{ duration_ms: 600000, extension: 'mp3' }],
+      });
+      u.extraMaterials = [extra('l-ciclo', 'Ciclo de Krebs', 3), extra('l-ferm', 'Fermentação', 2)];
+      const view = await openApp(browser, base, allFlags, u, { width: 1280, height: 900 });
+      const p = view.page;
+      await p.goto(base + '/planejar.html#tarefas');
+      const open = p.getByRole('button', { name: 'Planejar uma unidade' });
+      await open.click();
+      const dialog = p.getByRole('dialog', { name: 'Planejar uma unidade' });
+      await dialog.waitFor();
+      await dialog.getByLabel('Unidade').selectOption('unit-energia');
+      await dialog.getByLabel('Objetivo').selectOption('g1');
+      await dialog.getByLabel('Ritmo').selectOption('2');
+      await dialog.getByLabel('Começar em').fill('2026-12-01');
+      await dialog.getByLabel('Começar em').dispatchEvent('change');
+      // Fotossíntese already has a task in this goal: only the other two are planned.
+      await dialog.locator('.unit-plan-summary', { hasText: '1 já tem tarefa neste objetivo' }).waitFor();
+      await dialog.locator('.unit-plan-summary', { hasText: '2 tarefas serão criadas' }).waitFor();
+      await settle(p);
+      await axeCheck(p, 'dialog[open]', 'Planejar uma unidade');
+      const before = u.tasks.length;
+      await dialog.getByRole('button', { name: 'Criar tarefas' }).click();
+      await dialog.waitFor({ state: 'detached' });
+      await p.locator('.app-toast:not([hidden])', { hasText: '2 tarefas criadas para a unidade.' }).waitFor();
+      const created = u.tasks.slice(before);
+      assert.deepEqual(
+        created.map((t) => [t.material_id, t.due_date, t.goal_id]),
+        [['l-ciclo', '2026-12-01', 'g1'], ['l-ferm', '2026-12-03', 'g1']],
+      );
+      await p.locator('[data-planning-panel]', { hasText: 'Estudar: Fermentação' }).first().waitFor();
+      await p.waitForFunction(() => document.activeElement?.matches('[data-unit-plan-open]'), null, { timeout: 3000 });
+      // A new lesson arrives in the unit: running again adds only that one.
+      u.extraMaterials.push(extra('l-glico', 'Glicólise', 1));
+      await p.reload();
+      await open.click();
+      await dialog.getByLabel('Unidade').selectOption('unit-energia');
+      await dialog.getByLabel('Objetivo').selectOption('g1');
+      await dialog.locator('.unit-plan-summary', { hasText: '3 já têm tarefa neste objetivo' }).waitFor();
+      await dialog.locator('.unit-plan-summary', { hasText: '1 tarefa será criada' }).waitFor();
+      await dialog.getByRole('button', { name: 'Criar tarefas' }).click();
+      await dialog.waitFor({ state: 'detached' });
+      assert.equal(u.tasks.at(-1).material_id, 'l-glico');
+      assert.equal(u.tasks.filter((t) => t.goal_id === 'g1' && t.material_id === 'l-foto').length, 1, 'no duplicate task');
+      await view.context.close();
+      record('Planejar uma unidade: uma tarefa por aula com prazos espaçados; usar de novo acrescenta só as aulas novas');
+    }
+
+    // ---------- Calendar › Semana: blocks on a time grid, moved without dragging ------------
+    {
+      const today = new Date();
+      today.setHours(14, 0, 0, 0);
+      const end = new Date(today);
+      end.setHours(15, 0, 0, 0);
+      data.events = [
+        { kind: 'event', id: 'w1', title: 'Revisar genética', startsAt: today.toISOString(), endsAt: end.toISOString(), description: 'cap. 3', materialId: 'l-foto', taskId: null, version: 1 },
+      ];
+      await page.goto(base + '/planejar.html#calendario');
+      await page.reload();
+      await page.getByRole('button', { name: 'Semana', exact: true }).click();
+      const block = page.locator('.week-event', { hasText: 'Revisar genética' });
+      await block.waitFor();
+      assert.equal(await page.getByRole('button', { name: 'Semana', exact: true }).getAttribute('aria-pressed'), 'true');
+      await page.locator('.week-day.is-today .week-event').waitFor();
+      await settle(page);
+      await axeCheck(page, '[data-calendar-panel]', 'Calendário › Semana');
+      // Keyboard: open "Mover" and move 30 minutes later.
+      await block.locator('summary').focus();
+      await page.keyboard.press('Enter');
+      await block.getByRole('button', { name: '30 min mais tarde' }).click();
+      await page.locator('.calendar-status', { hasText: 'Horário movido para' }).waitFor();
+      const moved = data.events.find((e) => e.id === 'w1');
+      assert.equal(new Date(moved.startsAt).getHours(), 14);
+      assert.equal(new Date(moved.startsAt).getMinutes(), 30);
+      assert.equal(Date.parse(moved.endsAt) - Date.parse(moved.startsAt), 3_600_000, 'duration kept');
+      assert.equal(moved.version, 2);
+      assert.equal(moved.description, 'cap. 3', 'other fields kept');
+      assert.equal(moved.materialId, 'l-foto');
+      // Focus comes back to the same block's "Mover".
+      await page.waitForFunction(() => document.activeElement?.closest('.week-move'), null, { timeout: 3000 });
+      // The choice is remembered on this device; the phone shows a list of days.
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.reload();
+      await page.locator('.calendar-week .week-event', { hasText: 'Revisar genética' }).waitFor();
+      await noHorizontalScroll(page, 'calendário semana (390 px)');
+      await page.setViewportSize({ width: 1280, height: 900 });
+      await page.getByRole('button', { name: 'Mês', exact: true }).click();
+      await page.locator('.study-calendar-grid').waitFor();
+      record('Calendário › Semana: blocos na grade de horários, mover 30 min pelo teclado mantém duração e dados, escolha lembrada, lista no celular');
+    }
+
     // ---------- Annotations: pages and the way back to the passage ----------------------
     data.notePageSize = 1;
     await page.goto(base + '/revisar.html#anotacoes');
@@ -165,6 +349,77 @@ async function main() {
     assert.deepEqual(data.createdCards.map((c) => c.front), ['O que é a fase clara?']);
     await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
     record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
+
+    // ---------- Flashcards 3.0: merge own sets and import a text file (new set each) ---------
+    {
+      const cardsOf = (prefix, from, to) =>
+        Array.from({ length: to - from }, (_, i) => ({
+          id: `${prefix}-${from + i}`,
+          front_text: `Pergunta ${from + i}?`,
+          back_text: `Resposta ${from + i}`,
+        }));
+      const ana = cardsOf('ana', 0, 70);
+      const bruno = [
+        ...cardsOf('bruno', 40, 110), // 30 repeated from Ana, 40 new
+        { id: 'bruno-x', front_text: 'pergunta 1', back_text: 'Outra resposta' }, // same question
+      ];
+      data.sets = [
+        { id: 'set-ana', name: 'Ana', card_count: ana.length, due_count: 0, status: 'active', cards: ana },
+        { id: 'set-bruno', name: 'Bruno', card_count: bruno.length, due_count: 0, status: 'active', cards: bruno },
+      ];
+      data.setRequests = 0;
+      await page.goto(base + '/revisar.html#flashcards');
+      await page.reload(); // same URL: goto alone only changes the hash
+      const panel = page.locator('details.flashcard-sets');
+      await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
+      if (!(await panel.evaluate((node) => node.open))) await panel.locator('summary').click();
+      await panel.getByRole('button', { name: 'Mesclar conjuntos' }).click();
+      const mergeDialog = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
+      await mergeDialog.waitFor();
+      await mergeDialog.getByRole('checkbox', { name: /Ana/ }).check();
+      await mergeDialog.getByRole('checkbox', { name: /Bruno/ }).check();
+      await mergeDialog.locator('.deck-preview', { hasText: '111 cartões no conjunto novo' }).waitFor();
+      const preview = await mergeDialog.locator('.deck-preview').textContent();
+      assert.match(preview, /30 cartões repetidos ficam de fora/);
+      assert.match(preview, /1 pergunta aparece com respostas diferentes/);
+      assert.equal(await mergeDialog.getByLabel('Nome do novo conjunto').inputValue(), 'Mesclado: Ana + Bruno');
+      await settle(page);
+      await axeCheck(page, 'dialog[open]', 'Mesclar conjuntos');
+      await mergeDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await panel.locator('[role=status]', { hasText: 'Conjunto mesclado criado com 111 cartões.' }).waitFor();
+      const created = data.sets.at(-1);
+      assert.equal(created.cards.length, 111);
+      assert.equal(created.material_id, null);
+      assert.deepEqual(created.config.origin.sets.map((x) => x.name), ['Ana', 'Bruno']);
+      assert.equal(data.setRequests, 2, 'one create (100) and one add (11)');
+      assert.equal(data.sets[0].cards.length, 70, 'sources unchanged');
+      await panel.locator('h4', { hasText: 'Mesclado: Ana + Bruno' }).waitFor();
+
+      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      const importDialog = page.getByRole('dialog', { name: 'Importar cartões' });
+      await importDialog.waitFor();
+      const anki = ['#separator:tab', '#html:true', 'O que é <b>ATP</b>?\tMoeda de energia', 'A {{c1::clorofila}} absorve luz.\t', 'Só frente\t'].join('\n');
+      await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'Biologia Anki.txt', mimeType: 'text/plain', buffer: Buffer.from(anki) });
+      await importDialog.locator('.deck-preview', { hasText: '2 cartões encontrados' }).waitFor();
+      assert.match(await importDialog.locator('.deck-preview').textContent(), /1 linha ignorada: sem pergunta ou sem resposta/);
+      assert.equal(await importDialog.getByLabel('Nome do novo conjunto').inputValue(), 'Biologia Anki');
+      await settle(page);
+      await axeCheck(page, 'dialog[open]', 'Importar cartões');
+      await importDialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await panel.locator('[role=status]', { hasText: '2 cartões importados para um conjunto novo.' }).waitFor();
+      assert.deepEqual(
+        data.sets.at(-1).cards.map((c) => [c.front_text, c.back_text]),
+        [['O que é ATP?', 'Moeda de energia'], ['A […] absorve luz.', 'A clorofila absorve luz.']],
+      );
+      // An .apkg package is explained, not sent anywhere.
+      await panel.getByRole('button', { name: 'Importar cartões' }).click();
+      await importDialog.getByLabel('Arquivo').setInputFiles({ name: 'deck.apkg', mimeType: 'application/zip', buffer: Buffer.from('PK') });
+      await importDialog.locator('.deck-error', { hasText: 'Notas em texto simples' }).waitFor();
+      assert(await importDialog.getByRole('button', { name: 'Criar conjunto' }).isDisabled());
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.activeElement?.textContent === 'Importar cartões', null, { timeout: 3000 });
+      record('Mesclar conjuntos (repetidos de fora, mais de 100 cartões em partes, originais intactos) e importar arquivo do Anki (HTML, cloze, .apkg explicado)');
+    }
 
     // ---------- Lesson › Flashcards tab: the lesson's sets, review one now -------------------
     data.sets = [];

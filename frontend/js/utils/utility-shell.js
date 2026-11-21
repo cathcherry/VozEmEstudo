@@ -232,12 +232,16 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   const duck = make('input');
   duck.type = 'checkbox';
   duckLabel.append(duck, make('span', 'Baixar enquanto a gravação da aula toca'));
+  const followLabel = make('label', null, 'utility-duck');
+  const followFocus = make('input');
+  followFocus.type = 'checkbox';
+  followLabel.append(followFocus, make('span', 'Tocar junto com o foco (pausa nas pausas)'));
   const soundNote = make(
     'p',
     'Sons gerados no próprio navegador. Ao trocar de página o som para; toque de novo para continuar.',
     'utility-cycles',
   );
-  soundBody.append(soundList, soundToggle, volumeLabel, duckLabel, soundNote);
+  soundBody.append(soundList, soundToggle, volumeLabel, duckLabel, followLabel, soundNote);
   const ambient = createAmbientPlayer({
     initial: remembered,
     onChange: (state) => {
@@ -248,6 +252,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
             kind: state.kind,
             volume: state.volume,
             duck: state.duck,
+            withFocus: state.withFocus,
             playing: state.playing,
           }),
         );
@@ -262,6 +267,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
       soundToggle.setAttribute('aria-pressed', String(state.playing));
       volume.value = String(Math.round(state.volume * 100));
       duck.checked = state.duck;
+      followFocus.checked = state.withFocus;
       panel.dataset.sound = state.playing ? (state.ducked ? 'ducked' : 'playing') : 'off';
       trigger.classList.toggle('has-sound', state.playing);
     },
@@ -274,6 +280,7 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
   });
   volume.addEventListener('input', () => ambient.setVolume(Number(volume.value) / 100));
   duck.addEventListener('change', () => ambient.setDuck(duck.checked));
+  followFocus.addEventListener('change', () => ambient.setWithFocus(followFocus.checked));
   ambient.setVolume(remembered.volume);
   // Ducking: any lesson audio or video on the page.
   const playingMedia = () =>
@@ -493,6 +500,17 @@ export async function initUtilityShell({ userId, materialId = null } = {}) {
     layout(state);
   }
   session.subscribe(render);
+  // "Tocar junto com o foco": only the tab in front plays (each tab has its own player).
+  let focusRunning = session.state().status === 'running' && session.state().mode !== 'short' && session.state().mode !== 'long';
+  session.subscribe((state) => {
+    const studying = state.status === 'running' && state.mode !== 'short' && state.mode !== 'long';
+    if (studying === focusRunning) return;
+    focusRunning = studying;
+    if (!ambient.state().withFocus || !document.hasFocus()) return;
+    if (studying && !ambient.state().playing)
+      void ambient.play().catch(() => toast('Toque em "Tocar" para começar o som.'));
+    else if (!studying && ambient.state().playing) ambient.pause();
+  });
   window
     .matchMedia('(min-width: 1280px)')
     .addEventListener?.('change', () => layout(session.state()));

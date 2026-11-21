@@ -8,6 +8,7 @@ import { emptyState } from '../utils/material-ui.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
 import { initAnnotationsPanel } from './annotations-panel.js';
 import { initQuizHistoryPanel } from './quiz-history-panel.js';
+import { initQuestionReportsPanel } from './question-reports-panel.js';
 
 await initAuthenticatedShell();
 const flags = await getFeatureFlags().catch(() => ({}));
@@ -48,7 +49,10 @@ if (!sections.length) {
         }
       }),
     );
-  if (flags.quiz_v2) loads.push(initQuizHistoryPanel({ materials }));
+  if (flags.quiz_v2) {
+    loads.push(initQuizHistoryPanel({ materials }));
+    void initQuestionReportsPanel({ section: document.querySelector('[data-question-reports]'), materials });
+  }
   if (flags.annotations)
     loads.push(
       initAnnotationsPanel({

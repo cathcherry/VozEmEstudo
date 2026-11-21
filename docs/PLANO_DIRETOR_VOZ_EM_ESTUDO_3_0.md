@@ -95,7 +95,7 @@ Elementos da linguagem visual:
 Pendente:
 
 - ~~aba própria de Flashcards na aula~~: feito em `a31e078` (conjuntos da aula, "Revisar agora" com `?conjunto=`);
-- teste de transcrições muito longas;
+- ~~teste de transcrições muito longas~~: feito. Com 2.200 trechos (3 h), a aula abre em cerca de 0,7 s. A busca na transcrição antes travava de 0,6 a 1,4 s por letra; agora, em aulas longas (300 trechos ou mais), espera uma pausa na digitação, guarda o texto normalizado e processa em fatias entre quadros; aulas normais seguem buscando a cada letra, e a maior tarefa fica perto de 0,15 a 0,25 s;
 - teste do estado "processando" em navegador real.
 
 ## 5. Shell de ferramentas e Focar 3.0
@@ -182,7 +182,7 @@ Pendente:
 
 - ranking explícito de importância pedagógica (hoje o prompt orienta a priorizar o central);
 - evidências em vários fragmentos;
-- reportar, editar ou rejeitar uma questão;
+- ~~reportar uma questão~~: "Reportar problema" na página de responder e nas listas da aula. Motivos: resposta errada, enunciado confuso, não está na aula, repetida ou outro, com detalhe opcional. Fica em `question-reports` (`profile_state`), unido por questão entre aparelhos; a remoção vira uma marca datada que não volta. Revisar › Questões lista as marcadas, com a aula. Editar ou rejeitar a questão para todos ainda precisa de tabela;
 - medição com provedor real (custo e validade) — ainda não feita.
 
 ## 7. Anotações 3.0 e caderno da aula
@@ -225,7 +225,22 @@ Compartilhar uma nota é um ato explícito e por item. Compartilhar um caderno n
 
 ## 8. Flashcards 3.0 — conteúdo, aparência e histórico separados
 
-**Desenho**. A fundação de templates ainda não foi implementada.
+**Primeiras fatias implementadas, sem tabelas novas:**
+
+- Modelos visuais separados do conteúdo (`52b3284`).
+- **Mesclar conjuntos próprios** (Revisar › Conjuntos), com a API de conjuntos que já existe:
+  - prévia com os repetidos exatos (mesma pergunta e resposta, sem diferença de maiúsculas, acentos ou pontuação), que ficam de fora;
+  - perguntas iguais com respostas diferentes são mantidas e apontadas;
+  - o resultado é um conjunto **novo**, sem aula, com `config.origin` (conjuntos de origem);
+  - os originais não mudam e o histórico não é copiado;
+  - envio em partes de 100, com limite de 1.000 cartões.
+- **Importar cartões de arquivo de texto**:
+  - do Anki ("Notas em texto simples", com os cabeçalhos `#separator`, `#html` e `#columns`; HTML vira texto e scripts são descartados; cloze vira frente com `[…]` e verso revelado);
+  - do CSV exportado daqui (a proteção contra fórmulas é desfeita);
+  - de duas colunas em TSV, CSV ou com ponto e vírgula;
+  - arquivos `.apkg` são explicados (exportar como texto), nunca enviados.
+
+**Ainda em desenho** (precisam de tabelas): notas tipadas, `card_templates` com variantes, mescla de baralhos **de colegas** (depende de compartilhamento) e leitura direta de `.apkg`.
 
 O princípio é ter **três camadas independentes**:
 
@@ -329,6 +344,12 @@ Já existe:
 
 - temas, perfis de tema salvos, modos de estudo;
 - Estúdio visual (fundos, fundo por página, vidro, restaurar);
+- imagem ou GIF próprio como fundo e tipografia dos títulos (3.1);
+- **adesivos originais** ao lado do título de cada página:
+  - 8 desenhos próprios em SVG: estrela, coração, matcha, nuvem, folha, brilho, livro e lápis;
+  - até 3, salvos em `stickers` nas preferências sincronizadas;
+  - decorativos (`aria-hidden`): o título lido continua o mesmo;
+  - somem com menos estímulos, no modo para leitores de tela e na impressão;
 - tudo em `audioestudo-ui-preferences` e `audioestudo-theme`, sincronizados por conta.
 
 **Desenho** do esquema declarativo versionado (`voz-studio-v1`), dentro de `profile_state`:
@@ -349,7 +370,7 @@ Já existe:
 
 ## 12. Música
 
-**Primeira fatia implementada (`6439743`):** sons ambientes gerados no navegador (Web Audio: ruído marrom, chuva suave e ondas), sem gravações nem licenças, como a ferramenta "Som" do mesmo painel do Focar. Inclui volume e redução automática (ducking) enquanto a gravação da aula toca, e oferece "Retomar som" depois de trocar de página.
+**Primeira fatia implementada (`6439743`):** sons ambientes gerados no navegador (Web Audio: ruído marrom, chuva suave e ondas), sem gravações nem licenças, como a ferramenta "Som" do mesmo painel do Focar. Inclui volume e redução automática (ducking) enquanto a gravação da aula toca, e oferece "Retomar som" depois de trocar de página. A opção "Tocar junto com o foco" toca o som quando um bloco de foco começa e pausa nas pausas, só na aba em primeiro plano.
 
 **Ainda em desenho:** faixas licenciadas, playlists, Spotify e YouTube.
 
@@ -367,11 +388,30 @@ Já existe (antes desta sessão):
 - calendário mensal com agenda;
 - tempo de estudo com meta semanal.
 
+**Implementado sem migration — "Seu ritmo"** (Focar e Planejar › Tempo):
+
+- 12 semanas contra a meta semanal, com:
+  - média, melhor semana, semanas na meta e dias com estudo;
+  - tabela equivalente;
+  - aulas mais estudadas.
+- Mapa do ano, carregado só quando pedido.
+- Os dados vêm de `GET /api/study/history?days=84|371`, que soma `study_sessions.total_seconds` (o tempo que o servidor creditou) por dia local no fuso da conta.
+- Uma sessão conta no dia em que começou.
+- Sem streaks: semana vazia é só vazia.
+
 Desenho:
 
-- objetivos ligados a unidades, com inclusão de aulas novas por regra explícita;
-- semana em blocos de horário com movimentação acessível (arrastar é opcional);
-- estatísticas semanais e mapa anual opcional;
+- ~~objetivos ligados a unidades, com inclusão de aulas novas por regra explícita~~: **"Planejar uma unidade"**:
+  - cria uma tarefa por aula da unidade dentro de um objetivo, com prazos espaçados (diário, a cada 2 ou 3 dias, semanal ou sem prazo);
+  - usar de novo acrescenta só as aulas sem tarefa naquele objetivo (a regra explícita);
+  - sem tabela nova; um vínculo permanente objetivo↔unidade ainda precisaria de coluna;
+- ~~semana em blocos de horário com movimentação acessível~~: **feito**. Calendário › Semana:
+  - grade de 07:00 a 23:00 com prazos no topo de cada dia;
+  - blocos sobrepostos lado a lado;
+  - menu "Mover" (30 min mais cedo ou mais tarde, dia anterior ou seguinte), que mantém duração, aula, tarefa e descrição;
+  - lista de dias no celular;
+  - sem arrastar e sem tabela nova (usa `PUT /api/calendar` com versão);
+- ~~estatísticas semanais e mapa anual opcional~~ (feito, acima);
 - nada de streaks punitivos; visitas a páginas não contam como estudo.
 
 ## 14. Segurança, dados e custos

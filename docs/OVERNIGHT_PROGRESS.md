@@ -110,3 +110,20 @@ Nenhuma migration foi criada ou aplicada.
 | Som ambiente gerado no navegador (ruído marrom, chuva, ondas) com ducking | `6439743` |
 | Biblioteca: selecionar várias aulas e mover de uma vez (barra de seleção, axe ok) | `37b1e31` |
 | Histórico de blocos do Focar na conta (`focus-history`, união entre aparelhos) | `59dc98e` |
+| Correção de privacidade: "Apagar dados desta conta" também remove Focar, painel e som (achada pelo CI) | `5ddc1b9` |
+
+**PR #9 integrado em `main`** (merge `399bddb`), depois do CI verde em `5ddc1b9`.
+
+## Continuação — branch `feat/ux-navigation` (Flashcards 3.0 sem migrations)
+
+| Marco | Commit |
+| --- | --- |
+| Mesclar conjuntos próprios e importar cartões (Anki em texto, CSV, TSV) para um conjunto novo | `3bea961` |
+| "Seu ritmo": 12 semanas contra a meta, aulas mais estudadas e mapa do ano (`GET /api/study/history`, sem tabela nova) | `0296300` |
+| Adesivos originais ao lado do título (até 3, preferências sincronizadas) | `21b0fc1` |
+| Calendário › Semana: grade de horários, mover sem arrastar | `e3c3e4a` |
+| Aula muito longa: busca na transcrição sem travar (pausa, cache, fatias) + jornada de 2.200 trechos | `8e22974` |
+| Questões: "Reportar problema" (marca própria, sincronizada, desfazer) + Aparência na página de responder | `c5c9967` |
+| Revisar › Questões: lista "Questões marcadas" | `1490c10` |
+| Som ambiente "Tocar junto com o foco" | `61d94df` |
+| Planejar uma unidade (tarefa por aula, prazos espaçados, re-executar acrescenta só as novas) | `3d5b53a` |

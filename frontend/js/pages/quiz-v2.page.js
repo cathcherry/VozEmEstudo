@@ -6,6 +6,7 @@ import {
 import { feedbackForQuestion, firstUnanswered } from '../utils/quiz-v2-view.js';
 import { emptyState, ninoImage } from '../utils/material-ui.js';
 import { renderQuizDiagnosticPanel } from './quiz-diagnostic-panel.js';
+import { reportControl } from '../utils/question-report-ui.js';
 
 function el(tag, text, className) {
   const node = document.createElement(tag);
@@ -203,7 +204,13 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     action.type = 'submit';
     nav.append(previous, action);
     form.append(fieldset, feedback, nav);
-    card.append(label, heading, ...(currentListen ? [currentListen.element] : []), form);
+    card.append(
+      label,
+      heading,
+      ...(currentListen ? [currentListen.element] : []),
+      form,
+      reportControl({ questionId: question.id, materialId, batchId: session.batch_id, statement: question.statement }),
+    );
     main.replaceChildren(progressSection);
     main.append(card);
     if (finished) {

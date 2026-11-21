@@ -6,6 +6,7 @@ import { JSDOM } from 'jsdom';
 import { selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation } from '../js/utils/annotation-anchor.js';
 import { pendingMutation } from '../js/utils/pending-mutation.js';
 import { monthRange,localDay,itemOnDay,calendarIcs } from '../js/utils/calendar-export.js';
+import { renderWeek,weekStartOf,weekRange,moveEvent,addDays } from '../js/pages/calendar-week.js';
 const code=(name)=>readFileSync(new URL(`../js/pages/${name}.js`,import.meta.url),'utf8').replace(/import \{[\s\S]*?\} from '[^']+';/gu,'').replace(/export /gu,'');
 async function until(predicate){for(let n=0;n<30;n++){if(predicate())return;await new Promise((resolve)=>setImmediate(resolve));}assert(predicate());}
 test('annotations capture a saved selection with its revision and preserve text while saving',async()=>{
@@ -24,7 +25,7 @@ test('annotations capture a saved selection with its revision and preserve text 
 test('calendar renders deadlines and creates a timed event linked to the chosen task',async()=>{
   const dom=new JSDOM('<section id="panel" hidden></section>');let received;
   const dependencies={listCalendar:async(q)=>({items:[{kind:'task',id:'task-a',title:'Revisar aula',date:q.fromDay,materialId:'material-a'}],total:1}),
-    saveCalendarEvent:async(body)=>{received=body;return {version:1};},monthRange,localDay,itemOnDay,calendarIcs,downloadText:()=>{},pendingMutation};
+    saveCalendarEvent:async(body)=>{received=body;return {version:1};},monthRange,localDay,itemOnDay,calendarIcs,downloadText:()=>{},pendingMutation,renderWeek,weekStartOf,weekRange,moveEvent,addDays};
   const factory=new Function('document','Option','crypto','confirm',...Object.keys(dependencies),`${code('calendar-panel')};return initCalendarPanel;`);
   try{const doc=dom.window.document;await factory(doc,dom.window.Option,webcrypto,()=>true,...Object.values(dependencies))({panel:doc.querySelector('#panel'),materials:[{id:'material-a',title:'Aula A'}]});
     assert(doc.querySelectorAll('.study-calendar-grid button').length>=28);

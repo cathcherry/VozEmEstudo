@@ -354,13 +354,23 @@ async function setup(context, base, flags, data, options = {}) {
         recordingLanguages: { options: ['pt'], default: 'pt' },
         oauthProviders: [],
       });
-    if (p === '/api/materials' && method === 'GET') return json(materials);
+    if (p === '/api/materials' && method === 'GET') return json([...materials, ...(data.extraMaterials || [])]);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = materials.find((item) => item.id === p.split('/')[3]);
-      return json({
-        ...lessonDetail(m, data.lessonStage?.[m.id] || 'summary'),
-        signedAudioUrl: `${base}/__fixture.wav`,
-      });
+      const detail = lessonDetail(m, data.lessonStage?.[m.id] || 'summary');
+      // `data.longLesson = n`: a very long transcript (n segments of ~25 words, 5 s each).
+      if (data.longLesson) {
+        const words = 'a energia luminosa é captada pela clorofila e convertida em energia química armazenada na glicose durante a fase clara e a fase escura do processo'.split(' ');
+        detail.transcription.transcription_segments = Array.from({ length: data.longLesson }, (_, i) => ({
+          id: `seg-${i}`,
+          position: i,
+          start_ms: i * 5000,
+          end_ms: i * 5000 + 4800,
+          current_text: `${i + 1}. ${Array.from({ length: 25 }, (__, w) => words[(i + w) % words.length]).join(' ')}.`,
+        }));
+        detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
+      }
+      return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
     if (p.endsWith('/playback'))
@@ -401,6 +411,30 @@ async function setup(context, base, flags, data, options = {}) {
       };
       data.tasks.push(task);
       return json(task, 201);
+    }
+    if (p === '/api/flashcards/sets' && method === 'POST') {
+      const body = request.postDataJSON();
+      const set = {
+        id: body.id, name: body.name, material_id: body.materialId, config: body.config,
+        status: 'active', card_count: body.cards.length, due_count: body.cards.length,
+        cards: body.cards.map((c, i) => ({ id: `${body.id}-${i}`, front_text: c.front, back_text: c.back })),
+      };
+      data.sets = [...(data.sets || []), set];
+      data.setRequests = (data.setRequests || 0) + 1;
+      return json(set, 201);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+\/cards$/.test(p) && method === 'POST') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      const { cards } = request.postDataJSON();
+      if (cards.length > 100) return json({ error: { code: 'VALIDATION', message: 'too many' } }, 400);
+      set.cards.push(...cards.map((c, i) => ({ id: `${set.id}-${set.cards.length + i}`, front_text: c.front, back_text: c.back })));
+      set.card_count = set.due_count = set.cards.length;
+      data.setRequests = (data.setRequests || 0) + 1;
+      return json({ added: cards.length }, 201);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'GET') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      return set ? json(set) : json({ error: { code: 'FLASHCARD_NOT_FOUND', message: 'Conjunto não encontrado.' } }, 404);
     }
     if (p === '/api/flashcards/sets') return json(data.sets || []);
     if (/^\/api\/flashcards\/sets\/[^/]+$/.test(p) && method === 'PATCH') {
@@ -454,8 +488,13 @@ async function setup(context, base, flags, data, options = {}) {
     if (p === '/api/calendar' && method === 'PUT') {
       const body = request.postDataJSON();
       data.savedEvents.push(body);
-      data.events.push({ kind: 'event', id: body.id, version: 1, ...body.body });
-      return json({ id: body.id, version: 1 });
+      const existing = data.events.find((event) => event.id === body.id);
+      if (existing && existing.version !== body.version)
+        return json({ error: { code: 'CALENDAR_CONFLICT', message: 'Outro dispositivo alterou este horário.' } }, 409);
+      const version = (existing?.version || 0) + 1;
+      if (existing) Object.assign(existing, body.body, { version });
+      else data.events.push({ kind: 'event', id: body.id, version, ...body.body });
+      return json({ id: body.id, version });
     }
     if (p === '/api/catalog' && method === 'GET') return json(data.catalog || CATALOG);
     if (/^\/api\/catalog\/materials\/[^/]+$/.test(p) && method === 'PATCH') {
@@ -524,6 +563,24 @@ async function setup(context, base, flags, data, options = {}) {
         completedMaterials: 2,
         days,
         activeSession: null,
+      });
+    }
+    if (p === '/api/study/history') {
+      if (data.historyDown) return json({ error: { code: 'STUDY_SCHEMA_REQUIRED', message: 'off' } }, 503);
+      const days = Number(url.searchParams.get('days')) || 84;
+      data.historyRequests = [...(data.historyRequests || []), days];
+      const today = new Date();
+      const list = Array.from({ length: days }, (_, i) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - (days - 1 - i));
+        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        // Deterministic pattern: weekdays studied, varying length; nothing on Sundays.
+        const seconds = data.emptyHistory || d.getDay() === 0 ? 0 : ((i * 37) % 5) * 300 * (1 + ((Math.floor(i / 7) * 5) % 4));
+        return { date: iso, seconds, sessions: seconds ? 1 : 0 };
+      });
+      return json({
+        from: list[0].date, to: list.at(-1).date, timezone: 'America/Sao_Paulo', goalMinutes: 150, days: list,
+        topLessons: data.emptyHistory ? [] : [{ materialId: 'l-foto', seconds: 18000 }, { materialId: 'gone', seconds: 600 }],
       });
     }
     if (p === '/api/study/settings') return json({ ok: true });

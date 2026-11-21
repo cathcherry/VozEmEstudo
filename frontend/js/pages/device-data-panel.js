@@ -25,6 +25,7 @@ const describe = (items) =>
               milestones: 'marcos de estudo',
               'catalog-icons': 'ícones de pastas',
               'focus-history': 'blocos de foco',
+              'question-reports': 'questões marcadas',
             }[item.key] || 'dados do perfil',
     )
     .join(', ');

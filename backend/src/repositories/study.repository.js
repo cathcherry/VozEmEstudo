@@ -39,3 +39,24 @@ export const saveSettings = (userId,data) => call('study_save_settings_admin',{
   p_user_id:userId,p_goal:data.goalMinutes,p_timezone:data.timezone,
 });
 export const overview = (userId) => call('study_overview_admin',{p_user_id:userId});
+
+/** Sessions with credited time since `since` (newest first), at most 10 000 rows. */
+export async function listSessionsSince(userId,since) {
+  const rows=[];
+  for (let page=0; page<10; page+=1) {
+    const {data,error}=await getAdminSupabase().from('study_sessions')
+      .select('material_id,started_at,total_seconds')
+      .eq('user_id',userId).gte('started_at',since).gt('total_seconds',0)
+      .order('started_at',{ascending:false}).range(page*1000,page*1000+999);
+    assertStudyDb(error);
+    rows.push(...(data || []));
+    if (!data || data.length<1000) break;
+  }
+  return rows;
+}
+export async function getSettings(userId) {
+  const {data,error}=await getAdminSupabase().from('study_settings')
+    .select('weekly_goal_minutes,timezone').eq('user_id',userId).maybeSingle();
+  assertStudyDb(error);
+  return {goalMinutes:data?.weekly_goal_minutes ?? 120, timezone:data?.timezone || 'UTC'};
+}

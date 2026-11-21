@@ -22,12 +22,16 @@ export default {
   "20 questões": "20 道题",
   "3 questões": "3 道题",
   "30 dias": "30 天",
+  "30 min mais cedo": "提前 30 分钟",
+  "30 min mais tarde": "推后 30 分钟",
   "5 cartões": "5 张卡片",
   "5 questões": "5 道题",
   "7 dias": "7 天",
   "a aula não sustenta mais questões distintas": "课程内容不足以生成更多不同的题目",
   "A aula para continuar, o que pede atenção hoje (tarefas, cartões, horários) e o seu tempo de estudo na semana. Cada bloco leva à página completa.": "可继续学习的课程、今天需要处理的事项（任务、卡片、学习时段）以及本周学习时间。每个区块都可进入完整页面。",
   "A busca não está disponível agora.": "搜索暂时不可用。",
+  "A cada 2 dias": "每 2 天",
+  "A cada 3 dias": "每 3 天",
   "A conservação original aceita somente MP4.": "保留原始文件仅支持 MP4。",
   "A declaração de permissão não carregou. Recarregue a página.": "授权声明未能加载。请重新加载页面。",
   "A declaração é sua, sem verificação automática de direitos autorais. Cada provedor segue a própria política de dados.": "该声明由你本人作出，不会自动核查版权。各服务商遵循各自的数据政策。",
@@ -43,6 +47,7 @@ export default {
   "A paginação do andamento não pôde ser concluída.": "无法完成进度的分页加载。",
   "A pasta está vazia.": "文件夹为空。",
   "A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.": "浏览器无法预览此格式，但仍可在服务器端截取片段。",
+  "A resposta marcada como certa está errada": "标为正确的答案是错的",
   "A revisão ainda não está ativa": "复习功能尚未启用",
   "A senha não atende aos requisitos de segurança: use pelo menos 8 caracteres com letra minúscula, maiúscula, número e símbolo.": "密码不符合安全要求：至少 8 个字符，并包含小写字母、大写字母、数字和符号。",
   "A sessão anterior já foi encerrada. Inicie uma nova sessão.": "上一个会话已结束。请开始新的会话。",
@@ -90,6 +95,7 @@ export default {
   "Ações do trecho selecionado": "所选片段的操作",
   "Acompanhe a transcrição": "查看转写进度",
   "Adequação educacional": "教育适宜性",
+  "Adesivos no título": "标题旁的贴纸",
   "Adicionar": "添加",
   "Adicionar ao perfil": "添加到个人资料",
   "Adicionar bloco": "添加区块",
@@ -117,6 +123,7 @@ export default {
   "Ainda não há questões desta aula.": "此课程还没有题目。",
   "Ainda não há resumo desta aula.": "本课程还没有摘要。",
   "Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.": "本课程还没有摘要。点击“生成摘要”创建第一份。",
+  "Ainda não há tempo registrado nestas semanas. Comece um bloco de foco e ele aparece aqui.": "这几周还没有记录时间。开始一个专注时段，它就会显示在这里。",
   "Ainda não iniciado": "尚未开始",
   "ainda não respondidas": "尚未作答",
   "Ainda sem temas salvos.": "还没有保存的主题。",
@@ -210,7 +217,9 @@ export default {
   "AssemblyAI": "AssemblyAI",
   "Atalhos de teclado": "键盘快捷键",
   "Até": "截止",
+  "Até 3 adesivos. Tire um para escolher outro.": "最多 3 个贴纸。请先移除一个再选择。",
   "Até 50 revisões mais recentes.": "最多显示最近 50 次复习。",
+  "Atingida": "已达成",
   "Ativar modo para leitores de tela": "开启读屏软件模式",
   "Ativos": "启用中",
   "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tem espaçamento mais aberto; OpenDyslexic tem base mais pesada, pensada para dislexia. Vale testar na prévia.": "Atkinson Hyperlegible 能区分相似字母（I、l、1）；Lexend 间距更宽；OpenDyslexic 字母底部更粗重，专为读写障碍设计。可在预览中试试。",
@@ -233,9 +242,11 @@ export default {
   "Aula pronta para estudar": "课程已可学习",
   "Aula relacionada": "相关课程",
   "Aula relacionada (opcional)": "相关课程（可选）",
+  "Aula removida": "已删除的课程",
   "Aulas": "课程",
   "Aulas em estudo": "学习中的课程",
   "Aulas estudadas": "已学课程",
+  "Aulas mais estudadas": "学习最多的课程",
   "Aulas recentes": "最近的课程",
   "Aulas selecionadas": "已选课程",
   "Aulas sem unidade": "未分单元的课程",
@@ -289,6 +300,7 @@ export default {
   "Branco frio e azul royal.": "冷白与宝蓝。",
   "Branco, preto e links destacados.": "白底黑字，链接醒目。",
   "Breve": "简短",
+  "Brilho": "闪光",
   "Buscar": "搜索",
   "Buscar aulas": "搜索课程",
   "Buscar aulas, questões e transcrições": "搜索课程、题目和转写",
@@ -314,6 +326,7 @@ export default {
   "Cancelar": "取消",
   "Carregando histórico…": "正在加载记录…",
   "Carregando lista…": "正在加载列表…",
+  "Carregando o ano…": "正在加载全年…",
   "Carregando o diagnóstico…": "正在加载诊断…",
   "Carregando os recursos disponíveis…": "正在加载可用资源…",
   "Carregando questão...": "正在加载题目...",
@@ -358,6 +371,7 @@ export default {
   "Com marcações de tempo": "含时间戳",
   "Combinações rápidas": "快速搭配",
   "Começar a estudar": "开始学习",
+  "Começar em": "开始日期",
   "Começar meu material de estudo": "开始制作我的学习资料",
   "Começar o próximo bloco sozinho": "自动开始下一个时段",
   "Começar tentativa": "开始作答",
@@ -457,18 +471,22 @@ export default {
   "Cor do fundo": "背景颜色",
   "Cor do texto": "文字颜色",
   "Cor dos detalhes": "强调色",
+  "Coração": "爱心",
   "Coral": "珊瑚色",
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "颜色、字体和自定义命名主题，以及阅读与专注设置。",
   "Creme quente e terracota.": "暖米色与赤陶色。",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "创建只读链接，包含题目和选项的固定副本。答案、解析、转写、录音和笔记不包含在链接中。",
+  "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "在一个目标下为单元的每节课创建任务。单元有新课时再用一次：只会添加缺少的。",
   "Criando conta...": "正在创建账户...",
   "Criando tarefa de geração...": "正在创建生成任务...",
   "Criando tentativa…": "正在创建答题…",
+  "Criando…": "正在创建…",
   "Criar a partir de um modo": "基于模式创建",
   "Criar bloco": "创建区块",
   "Criar cartão": "创建卡片",
   "Criar cartão manualmente": "手动创建卡片",
   "Criar cartões com IA": "用 AI 创建卡片",
+  "Criar conjunto": "创建卡组",
   "Criar conta": "创建账户",
   "Criar flashcards": "创建记忆卡片",
   "Criar link de leitura": "创建只读链接",
@@ -478,9 +496,12 @@ export default {
   "Criar primeira unidade": "创建第一个单元",
   "Criar primeiro objetivo": "创建第一个目标",
   "Criar questões": "生成题目",
+  "Criar tarefas": "创建任务",
   "Criar um objetivo": "创建目标",
   "Criar uma conta": "创建账户",
+  "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "在每节课的“闪卡”标签中创建卡组，合并卡组或从文件导入卡片。在这里整理、按卡组复习和导出。",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "在每节课的“摘要”标签页中创建卡组。在这里可以整理、按卡组复习和导出。",
+  "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "请先创建一个目标（例如“生物考试”），再回到这里。",
   "Cronológico": "按时间顺序",
   "Cronológico, quando houver datas": "按时间顺序（如有日期）",
   "Cronômetro de estudo": "学习计时器",
@@ -520,6 +541,8 @@ export default {
   "Descer": "下移",
   "Descrição (opcional)": "描述（可选）",
   "Desenvolvedora · Autora do TCC": "开发者 · 毕业设计作者",
+  "Desfazer": "撤销",
+  "Desfazer a marcação desta questão": "撤销此题的标记",
   "Desligada": "关闭",
   "Desligadas": "关闭",
   "Desligado": "关闭",
@@ -528,10 +551,14 @@ export default {
   "Destaque salvo no caderno da aula.": "高亮已保存到课程笔记。",
   "Desvincular tarefa": "取消关联任务",
   "Detalhado": "详细",
+  "Detalhe (opcional)": "详细说明（可选）",
   "Detalhes": "详情",
   "Detalhes do processamento": "处理详情",
   "Detectar automaticamente": "自动检测",
+  "Dia anterior": "前一天",
+  "Dia seguinte": "后一天",
   "Diagnóstico da tentativa": "答题诊断",
+  "Dias com estudo": "学习天数",
   "Dias do mês": "本月日期",
   "Difícil": "困难",
   "Dificuldade": "难度",
@@ -616,8 +643,13 @@ export default {
   "Envio mais recente": "最近上传",
   "Equilibrado": "均衡",
   "Escolha a gravação": "选择录音",
+  "Escolha a unidade": "选择单元",
+  "Escolha até 3. Eles aparecem ao lado do título de cada página e somem com menos estímulos visuais.": "最多选择 3 个。它们显示在每个页面标题旁，开启“减少视觉刺激”时会隐藏。",
   "Escolha como deseja responder": "选择作答方式",
+  "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "选择两个或更多卡组。将用它们的卡片创建一个新卡组；原卡组不变，复习记录不会被复制。",
+  "Escolha o motivo do problema.": "请选择问题原因。",
   "Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.": "选择显示的内容及顺序。更改即时生效，并保存在你的账户中。",
+  "Escolha pelo menos dois conjuntos.": "请至少选择两个卡组。",
   "Escolha pelo menos uma dificuldade e um foco.": "请至少选择一个难度和一个重点。",
   "Escolha pelo menos uma dificuldade e uma habilidade.": "请至少选择一个难度和一项能力。",
   "Escolha um arquivo com conteúdo e até 100 MB.": "请选择一个非空且不超过 100 MB 的文件。",
@@ -671,6 +703,7 @@ export default {
   "Estes dados não puderam ser carregados agora.": "这些数据暂时无法加载。",
   "Estilo": "样式",
   "Estreito": "窄",
+  "Estrela": "星星",
   "Estrelas": "星星",
   "Estudada": "已学习",
   "Estúdio visual": "视觉工作室",
@@ -719,6 +752,7 @@ export default {
   "Ferramenta do painel": "面板工具",
   "Ferramentas": "工具",
   "Ferramentas indisponíveis.": "工具不可用。",
+  "Fica marcado só para você, nesta conta. Ajuda a lembrar de conferir a questão com a aula.": "此标记只有你在本账户中可见，用于提醒你对照课程检查这道题。",
   "Filtrar conquistas": "筛选成就",
   "Filtrar por aula": "按课程筛选",
   "Filtros": "筛选",
@@ -743,6 +777,7 @@ export default {
   "Foco temático": "主题重点",
   "Focos concluídos nesta visita": "本次访问完成的专注",
   "Focos sem conteúdo na aula são omitidos; nada é completado com informação externa.": "课程中没有相关内容的侧重点会被略过；不会用外部信息补充。",
+  "Folha": "叶子",
   "Folha de questões somente para leitura. As respostas não fazem parte deste link.": "只读题目表。答案不包含在此链接中。",
   "Folha do aluno, sem respostas": "学生版，不含答案",
   "Fonte das letras": "字体",
@@ -812,6 +847,7 @@ export default {
   "Hoje": "今天",
   "Horário removido.": "学习时间已删除。",
   "Horário vinculado a uma tarefa.": "学习时间已关联到任务。",
+  "Horas por semana.": "每周小时数。",
   "Hugging Face": "Hugging Face",
   "Ícone": "图标",
   "Ícones discretos": "低调图标",
@@ -832,6 +868,7 @@ export default {
   "Imagens de vídeos não são enviadas.": "视频画面不会被发送。",
   "Importar andamento local sem registro na conta": "导入未记录到账户的本地进度",
   "Importar arquivo": "导入文件",
+  "Importar cartões": "导入卡片",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "导入音频或视频，选择一个片段或整段录音。",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "导入音频或视频。你可以选择要转写片段的开始和结束位置，也可以使用整个文件。还可以将片段下载为 MP4（视频）或 MP3（音频）。",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "导入录音，选择要转写片段的开始和结束位置。",
@@ -873,6 +910,7 @@ export default {
   "Ir para Revisar": "前往复习",
   "Janela": "窗口",
   "jeito de estudar.": "学习方式发声。",
+  "Lápis": "铅笔",
   "Largo": "宽",
   "Largura de": "宽度",
   "Lavanda": "薰衣草",
@@ -893,6 +931,7 @@ export default {
   "Leitura em voz alta: em todo o site": "朗读：全站启用",
   "Leitura fácil": "易读",
   "LEMBRETE": "提醒",
+  "Lendo os cartões…": "正在读取卡片…",
   "Ligar ou desligar o modo foco": "开启或关闭专注模式",
   "Lilás e violeta intenso.": "淡紫与深紫。",
   "Limita o comprimento das linhas de transcrições e resumos.": "限制转写和摘要的行宽。",
@@ -915,10 +954,12 @@ export default {
   "Lista": "列表",
   "Listas de questões": "题目列表",
   "Literária": "文学",
-  "Livre": "自由",
+  "Livre": "空闲",
+  "Livro": "书本",
   "Localização": "位置",
   "Longa": "长",
   "Longas": "长",
+  "Mais (1 h ou mais por dia)": "多（每天 1 小时或以上）",
   "Mais detalhes: subobjetivo, aula e link": "更多详情：子目标、课程和链接",
   "Mais lenta": "较慢",
   "Mais opções": "更多选项",
@@ -928,8 +969,11 @@ export default {
   "Mais revisitados": "最常回顾",
   "Mantenha esta aba visível e em foco para iniciar.": "请保持此标签页可见并处于焦点以开始。",
   "Manter versão deste navegador em conflitos": "冲突时保留此浏览器的版本",
+  "Mapa do ano (role para os lados)": "全年图（左右滚动）",
   "Máquina de escrever": "打字机",
+  "Marcação removida.": "已移除标记。",
   "Marcar aula como estudada": "标记课程为已学习",
+  "Marcar problema": "标记问题",
   "Marcos de estudo": "学习里程碑",
   "Matcha": "抹茶",
   "Materiais da Biblioteca": "资料库中的资料",
@@ -939,8 +983,11 @@ export default {
   "Material de estudo": "学习资料",
   "Máximo — 200%": "最大 — 200%",
   "média": "中",
+  "Média por semana": "每周平均",
   "Médio": "中",
   "Médio — 115%": "中 — 115%",
+  "Melhor semana": "最佳一周",
+  "Menos": "少",
   "Menos de 1 segundo": "不到 1 秒",
   "Menos de 5 minutos: em geral 3 a 5 questões.": "不到 5 分钟：通常 3 到 5 道题。",
   "Menos estímulos visuais": "减少视觉刺激",
@@ -949,6 +996,8 @@ export default {
   "Mês": "月",
   "Mês anterior": "上个月",
   "Mesa digital": "数字桌面",
+  "Mesclar conjuntos": "合并卡组",
+  "Meta": "目标",
   "Meta da semana alcançada. 🎉": "本周目标已达成。🎉",
   "Meta e fuso salvos na conta.": "目标和时区已保存到账户。",
   "Meta e sincronização": "目标与同步",
@@ -993,6 +1042,7 @@ export default {
   "Mostrar senha": "显示密码",
   "Mostrar tarefas": "显示任务",
   "Mostrar tudo": "显示全部",
+  "Mover": "移动",
   "Mover aula": "移动课程",
   "Mover para baixo": "下移",
   "Mover para cá": "移到这里",
@@ -1016,6 +1066,7 @@ export default {
   "Na próxima aula, vamos comparar a eficiência dos dois sistemas com exemplos do dia a dia.": "下节课我们将用日常例子比较两种系统的效率。",
   "Na sua conta": "在你的账户中",
   "Nada marcado neste dia. Que tal reservar um horário curto?": "这一天没有安排。要不要预留一小段时间？",
+  "Não está na aula": "课程中没有讲到",
   "Não feche esta página até o envio terminar.": "上传完成前请勿关闭此页面。",
   "Não foi possível abrir a aula": "无法打开课程",
   "Não foi possível abrir a cópia. Tente novamente.": "无法打开副本。请重试。",
@@ -1031,6 +1082,7 @@ export default {
   "Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.": "无法加载媒体。请重新获取访问权限或尝试其他可用格式。",
   "Não foi possível carregar as revisões.": "无法加载复习。",
   "Não foi possível carregar o andamento da conta. O histórico local foi preservado.": "无法加载账户进度，本地记录已保留。",
+  "Não foi possível carregar o ano agora.": "暂时无法加载全年数据。",
   "Não foi possível carregar o diagnóstico.": "无法加载诊断。",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "无法加载记录。请重新选择卡片以重试。",
   "Não foi possível carregar os conjuntos agora.": "暂时无法加载卡组。",
@@ -1142,6 +1194,7 @@ export default {
   "Nome da lista": "列表名称",
   "Nome da versão": "版本名称",
   "Nome do conjunto": "卡组名称",
+  "Nome do novo conjunto": "新卡组名称",
   "Nome do subobjetivo": "子目标名称",
   "Nome do tema": "主题名称",
   "Nome exibido": "显示名称",
@@ -1167,10 +1220,12 @@ export default {
   "Novo subobjetivo": "新建子目标",
   "Novos cartões": "新卡片",
   "Numa aula, abra": "在课程中打开",
+  "Nuvem": "云朵",
   "Nuvens": "云朵",
   "O acesso foi cancelado ou não pôde ser autorizado. Você pode tentar novamente.": "访问已取消或未获授权。你可以重试。",
   "O app também analisa as imagens do vídeo?": "应用也会分析视频画面吗？",
   "O armazenamento não respondeu.": "存储服务未响应。",
+  "O arquivo passa de 2 MB. Divida-o em partes menores.": "文件超过 2 MB，请拆分成更小的部分。",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala.": "片段音频会发送到外部语音识别服务。",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões. Imagens de vídeos não são enviadas.": "片段音频会发送到外部语音识别服务。转写文本会发送到外部 AI 服务以生成初步提示，并在你确认后生成摘要和题目。视频画面不会被发送。",
   "O áudio está com o serviço de transcrição. Esta página atualiza sozinha.": "音频正在由转写服务处理。此页面会自动更新。",
@@ -1184,6 +1239,7 @@ export default {
   "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "计时器已停止，因为没有任何 Voz em Estudo 页面保持打开并可见。",
   "O cronômetro parou porque nenhuma página ficou aberta e visível.": "计时器已停止，因为没有页面保持打开并可见。",
   "O diagnóstico não corresponde à tentativa.": "诊断与答题记录不匹配。",
+  "O enunciado ou as alternativas estão confusos": "题干或选项不清楚",
   "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado de sincronização no perfil antes de limpar os dados do navegador.": "历史记录、里程碑和偏好设置会同步到你的账户。离线时，更改会保留在本设备上，直到下次同步。清除浏览器数据前，请先在个人资料中查看同步状态。",
   "O importante é continuar aprendendo.": "重要的是持续学习。",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "恢复链接无法使用。请重新申请邮件。",
@@ -1196,6 +1252,7 @@ export default {
   "O que deseja alcançar?": "你想达成什么？",
   "O que é enviado": "发送哪些内容",
   "O que fica reunido em cada material?": "每份资料包含什么？",
+  "O que há de errado?": "有什么问题？",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "在此服务器启用后，学习时间记录会显示在这里。",
   "O som ambiente parou ao trocar de página.": "切换页面后环境音已停止。",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "转写文本会发送到外部 AI 服务，用于初步提示，并在你确认后生成摘要和题目。",
@@ -1216,6 +1273,7 @@ export default {
   "Ocultar": "隐藏",
   "Ocultar do perfil": "从个人资料中隐藏",
   "Ocultar guia": "隐藏指南",
+  "Ocultar o ano": "隐藏全年",
   "Ocultar senha": "隐藏密码",
   "Oculto": "已隐藏",
   "Olá": "你好",
@@ -1249,6 +1307,7 @@ export default {
   "Ouça a gravação e escolha o início e o fim do trecho. Você também pode baixar o recorte antes de continuar.": "收听录音，选择片段的起点和终点。继续之前也可以下载该片段。",
   "Outra quantidade…": "其他数量…",
   "Outras tarefas": "其他任务",
+  "Outro problema": "其他问题",
   "Ouvir": "朗读",
   "Ouvir a página ou o texto selecionado (com leitura em voz alta em todo o site)": "朗读页面或所选文字（需全站启用朗读）",
   "ouvir com atenção": "专心聆听",
@@ -1259,6 +1318,7 @@ export default {
   "Ouvir resumo": "收听摘要",
   "Ouvir trecho": "试听片段",
   "Ouvir, compreender, praticar": "聆听、理解、练习",
+  "Pacotes .apkg ainda não são lidos. No Anki, exporte o baralho como \"Notas em texto simples\" (.txt) e escolha esse arquivo.": "暂不支持读取 .apkg 包。请在 Anki 中将牌组导出为“纯文本笔记”(.txt)，再选择该文件。",
   "Padrão": "标准",
   "Padrão — 100%": "默认 — 100%",
   "Padrão do tema": "主题默认",
@@ -1273,6 +1333,7 @@ export default {
   "para as dúvidas.": "解答疑问。",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "如需修改课程文本，请使用“编辑转写”。",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "要创建新列表，请在资料库中打开课程并使用“题目”标签页。",
+  "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "至少需要两个有卡片的卡组才能合并。",
   "para mudar o tema e": "更改主题，使用",
   "Para revisar": "待复习",
   "para saber o que é salvo na conta ou neste dispositivo.": "了解哪些内容保存在账户或此设备中。",
@@ -1321,6 +1382,7 @@ export default {
   "Personalizar perfil": "自定义个人资料",
   "Pesquisar texto e destaques": "搜索文本和标记",
   "Planejar": "计划",
+  "Planejar uma unidade": "规划一个单元",
   "Planner": "手账",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "媒体播放器。空格键播放或暂停；方向键前进或后退十秒。",
   "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG、JPEG、WebP 或 GIF，最大 8 MB。保存在你的账户中；开启减少动态效果时，GIF 显示为静止画面。",
@@ -1369,6 +1431,7 @@ export default {
   "Primeira aula": "第一节课",
   "Primeira resposta": "首次作答",
   "Primeira revisão": "首次复习",
+  "Primeiros cartões:": "前几张卡片：",
   "Priorizar conceitos ainda não avaliados": "优先考查尚未评估的概念",
   "Privacidade": "隐私",
   "Privacidade e armazenamento": "隐私与存储",
@@ -1394,6 +1457,7 @@ export default {
   "próxima etapa": "下一步",
   "Próxima página": "下一页",
   "Próxima questão": "下一题",
+  "Próxima semana": "下一周",
   "Próximas anotações": "下一页笔记",
   "Próximas tarefas": "近期任务",
   "Próximo mês": "下个月",
@@ -1413,9 +1477,14 @@ export default {
   "Quantidade personalizada": "自定义数量",
   "questão": "道题目",
   "Questão de múltipla escolha": "单选题",
+  "Questão marcada.": "已标记此题。",
+  "Questão sem enunciado salvo": "未保存题干的题目",
   "questões": "道题目",
   "Questões": "题目",
   "Questões de listas anteriores": "以往列表中的题目",
+  "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "你标记了问题的题目。请对照课程检查，解决后撤销标记。",
+  "questões marcadas": "已标记的题目",
+  "Questões marcadas": "已标记的题目",
   "Questões para retomar": "待重做的题目",
   "questões repetidas ou sem fonte foram descartadas": "已舍弃重复或无出处的题目",
   "Qui": "周四",
@@ -1458,7 +1527,10 @@ export default {
   "Renomear esta versão": "重命名此版本",
   "Renomear lista": "重命名列表",
   "Renomear versão do resumo": "重命名摘要版本",
+  "Repete outra questão": "与另一题重复",
   "Repita a mesma avaliação para confirmar o envio anterior.": "请再次选择相同评分以确认上次提交。",
+  "Reportar problema": "报告问题",
+  "Reportar problema na questão": "报告此题的问题",
   "Reproduzir": "播放",
   "Reproduzir a partir deste trecho": "从此片段开始播放",
   "Reproduzir ou pausar": "播放或暂停",
@@ -1514,6 +1586,7 @@ export default {
   "Revogar": "撤销",
   "Revogar este link? Quem tiver o endereço não conseguirá mais abrir a cópia. Esta ação não pode ser desfeita.": "撤销此链接？持有该地址的人将无法再打开副本。此操作无法撤消。",
   "Revogar link": "撤销链接",
+  "Ritmo": "节奏",
   "Ritmo de revisão": "复习节奏",
   "Rodapé": "页脚",
   "Rosa": "粉色",
@@ -1528,6 +1601,7 @@ export default {
   "Salvando perfil…": "正在保存个人资料…",
   "Salvar": "保存",
   "Salvar ajustes": "保存设置",
+  "Salvar alteração": "保存修改",
   "Salvar alterações": "保存更改",
   "Salvar anotação": "保存笔记",
   "Salvar bloco": "保存区块",
@@ -1578,11 +1652,16 @@ export default {
   "Sem disciplina": "无科目",
   "sem fundo": "无背景",
   "Sem fundo": "无背景",
+  "Sem prazo": "无截止日期",
   "Sem subobjetivo": "无子目标",
   "Sem tags": "无标签",
   "Sem tarefas": "无任务",
   "Sem unidade": "无单元",
+  "Semana": "周",
+  "Semana anterior": "上一周",
+  "Semana de": "周起始",
   "Semana, agenda e disciplinas": "本周、日程和科目",
+  "Semanas na meta": "达标周数",
   "Senha": "密码",
   "Senha alterada com sucesso.": "密码已成功更改。",
   "Senha alterada com sucesso. Volte ao login e entre com sua nova senha.": "密码已成功更改。请返回登录页，使用新密码登录。",
@@ -1601,6 +1680,7 @@ export default {
   "Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no": "你的邮箱和登录方式显示在“账户信息”中。姓名、照片、封面和简介可在以下位置修改：",
   "Seu perfil": "你的个人资料",
   "Seu próximo capítulo começa aqui.": "你的下一章从这里开始。",
+  "Seu ritmo": "你的节奏",
   "Seu uso da gravação": "你对录音的使用",
   "Seus dados": "你的数据",
   "Sex": "周五",
@@ -1687,6 +1767,8 @@ export default {
   "Temas salvos": "已保存的主题",
   "Temas, cores, fontes, tamanho do texto, espaçamento e movimento.": "主题、颜色、字体、文字大小、间距和动画。",
   "Templates": "模板",
+  "Tempo": "时间",
+  "Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.": "最近 12 周记入的时间。只计算计时器运行时的时间。",
   "Tempo da sessão": "时段时长",
   "Tempo de estudo": "学习时间",
   "Tempo do bloco": "时段时间",
@@ -1718,6 +1800,7 @@ export default {
   "Títulos": "标题",
   "Tocar": "播放",
   "Tocar a gravação a partir daquele trecho": "从该处播放录音",
+  "Tocar junto com o foco (pausa nas pausas)": "随专注播放（休息时暂停）",
   "Todas": "全部",
   "Todas as aulas": "全部课程",
   "Todas as aulas: busque por título ou tag, agrupe por disciplina e use o menu ⋯ de cada aula para editar informações. Cada aula mostra as etapas de estudo — conferir a transcrição, resumo, questões e flashcards — e o próximo passo.": "全部课程：按标题或标签搜索，按科目分组，并通过每节课的 ⋯ 菜单编辑信息。每节课都会显示学习步骤——核对转写、摘要、题目和记忆卡片——以及下一步。",
@@ -1730,6 +1813,7 @@ export default {
   "Todos os conjuntos": "全部卡组",
   "Todos os materiais": "全部资料",
   "Tópicos": "要点",
+  "Toque em \"Tocar\" para começar o som.": "点按“播放”开始声音。",
   "Toque nas aulas para selecionar": "点按课程进行选择",
   "Transcrevendo o áudio…": "正在转写音频…",
   "Transcrição": "转写",
@@ -1764,6 +1848,8 @@ export default {
   "Um pouco de tudo, em níveis intercalados.": "各方面都有一点，难度交替。",
   "Um símbolo (ex.: ! @ # ?)": "一个符号（如 ! @ # ?）",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "一个说得通的片段。一个记得住的想法。一个开拓思路的问题。",
+  "Uma aula por dia": "每天一节课",
+  "Uma aula por semana": "每周一节课",
   "Uma aula.": "一节课。",
   "Uma cópia para acesso rápido e alterações que aguardam sincronização. O estado temporário de widgets HTML/CSS personalizados pode ser reiniciado ao recarregar. Essa cópia continua neste navegador depois de sair da conta: em computadores compartilhados, use uma janela anônima.": "用于快速访问的副本，以及等待同步的更改。自定义 HTML/CSS 小组件的临时状态在刷新后可能会重置。退出登录后，此副本仍保留在此浏览器中：在共用电脑上请使用无痕窗口。",
   "Uma hora de descobertas": "一小时的发现",
@@ -1787,6 +1873,7 @@ export default {
   "Usar versão da conta em conflitos": "冲突时使用账户版本",
   "Use": "使用",
   "Use o menu": "使用菜单",
+  "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "使用 .txt、.tsv 或 .csv 文件：来自 Anki（文件 › 导出 ›“纯文本笔记”）、本应用导出的 CSV，或问题与答案分两列的列表。",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "请使用 Spotify 歌曲、专辑、歌单、单集或节目的链接。",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "请使用 PNG、JPEG、WebP 或 GIF 图片。",
   "Validade": "有效期",
@@ -1799,7 +1886,9 @@ export default {
   "Velocidade de reprodução": "播放速度",
   "Ver andamento": "查看进度",
   "Ver cartões": "查看卡片",
+  "Ver em tabela": "以表格查看",
   "Ver erro": "查看错误",
+  "Ver o ano": "查看全年",
   "Ver pendentes": "查看未答题",
   "Ver questões": "查看题目",
   "Ver recomendação de quantidade": "查看建议数量",
@@ -1825,6 +1914,7 @@ export default {
   "Vidro translúcido": "半透明玻璃",
   "Vinho": "酒红",
   "Visual padrão restaurado.": "已恢复默认外观。",
+  "Visualização": "视图",
   "Visualização das pastas": "文件夹视图",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "你还没有作答过任何列表。从课程生成题目来练习，并在这里复习错题。",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "你选择内容，并跟进资料准备的每个步骤。",
@@ -1903,6 +1993,10 @@ export default {
    "注意：以下内容尚未上传到账户：{0}。如果现在删除，这些更改将会丢失。"
   ],
   [
+   "Últimas {0} semanas. Melhor semana: {1}. Meta: {2} por semana. A tabela abaixo tem todos os valores.",
+   "最近 {0} 周。最佳一周：{1}。目标：每周 {2}。下方表格列出所有数值。"
+  ],
+  [
    "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
    "生成了 {0}/{1}：模型返回的部分题目格式无效；再生成一些以补足。"
   ],
@@ -1915,12 +2009,32 @@ export default {
    "已记录 {0} 分钟学习 · 目标：{1} · 账户中已完成 {2} 次复习"
   ],
   [
+   "{0} pergunta aparece com respostas diferentes; as duas ficam para você decidir depois.",
+   "{0} 个问题有不同答案；都会保留，供你之后决定。"
+  ],
+  [
+   "{0} perguntas aparecem com respostas diferentes; todas ficam para você decidir depois.",
+   "{0} 个问题有不同答案；都会保留，供你之后决定。"
+  ],
+  [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "时间按此设备的时区显示（{0}）。任务截止日期显示为全天。"
   ],
   [
+   "Horas por semana. Linha tracejada: meta de {0}; barras escuras atingiram a meta.",
+   "每周小时数。虚线：目标 {0}；深色柱表示已达标。"
+  ],
+  [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
    "生成了 {0}/{1}：这节课太短，无法生成更多不同的题目。"
+  ],
+  [
+   "{0} cartões repetidos ficam de fora (mesma pergunta e mesma resposta).",
+   "{0} 张重复卡片被排除（问题和答案都相同）。"
+  ],
+  [
+   "{0} cartão repetido fica de fora (mesma pergunta e mesma resposta).",
+   "{0} 张重复卡片被排除（问题和答案都相同）。"
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
@@ -1943,6 +2057,10 @@ export default {
    "已保存 {0} 张卡片，将加入首页的复习。"
   ],
   [
+   "Últimos 12 meses: {0} dias com estudo, {1} no total.",
+   "最近 12 个月：学习 {0} 天，共 {1}。"
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0}请再次选择相同评分以重试。"
   ],
@@ -1959,8 +2077,20 @@ export default {
    "已保存 {0} 张卡片，将加入首页的复习。"
   ],
   [
+   "{0} linhas ignoradas: sem pergunta ou sem resposta.",
+   "已跳过 {0} 行：缺少问题或答案。"
+  ],
+  [
+   "Últimos 12 meses: {0} dia com estudo, {1} no total.",
+   "最近 12 个月：学习 {0} 天，共 {1}。"
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "回答错误。正确答案是 {0}。{1}"
+  ],
+  [
+   "{0} linha ignorada: sem pergunta ou sem resposta.",
+   "已跳过 {0} 行：缺少问题或答案。"
   ],
   [
    "{0} oculto. Ele continua aqui no modo de edição.",
@@ -2003,16 +2133,40 @@ export default {
    "今天专注 {0} 次 · 距长休息 {1}/{2}"
   ],
   [
+   "{0} cartões importados para um conjunto novo.",
+   "已将 {0} 张卡片导入新卡组。"
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "今天专注 {0} 次 · 距长休息 {1}/{2}"
+  ],
+  [
+   "{0} linhas ignoradas: além do limite de {1}.",
+   "已跳过 {0} 行：超过 {1} 的上限。"
+  ],
+  [
+   "{0} cartão importado para um conjunto novo.",
+   "已将 {0} 张卡片导入新卡组。"
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
    "请输入 1 到 {0} 之间的整数。"
   ],
   [
+   "{0} linha ignorada: além do limite de {1}.",
+   "已跳过 {0} 行：超过 {1} 的上限。"
+  ],
+  [
    "(ou a {0}, se o serviço principal falhar)",
    "（主服务失败时改用 {0}）"
+  ],
+  [
+   "Limite de {0} cartões: {1} ficam de fora.",
+   "上限为 {0} 张卡片：{1} 张被排除。"
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartões.",
+   "已创建合并卡组，共 {0} 张卡片。"
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2023,8 +2177,16 @@ export default {
    "摘要 · 版本 {0} · 来源：版本 {1}"
   ],
   [
+   "Conjunto mesclado criado com {0} cartão.",
+   "已创建合并卡组，共 {0} 张卡片。"
+  ],
+  [
    "{0} não {1}: {2} para “Sem disciplina”.",
    "{0}不会{1}：{2}移至“无科目”。"
+  ],
+  [
+   "Semana de {0}: {1}, {2} dias com estudo",
+   "{0} 起的一周：{1}，学习 {2} 天"
   ],
   [
    "{0} de {1} tarefas concluídas · {2}{3}",
@@ -2033,6 +2195,10 @@ export default {
   [
    "Modo {0} aplicado. Dê um nome e salve.",
    "已应用{0}模式。请命名并保存。"
+  ],
+  [
+   "Semana de {0}: {1}, {2} dia com estudo",
+   "{0} 起的一周：{1}，学习 {2} 天"
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",
@@ -2047,6 +2213,10 @@ export default {
    "答对 {0} / {1} 题（{2}%）。错 {3} 题。"
   ],
   [
+   "{0} linhas ignoradas: longas demais.",
+   "已跳过 {0} 行：内容过长。"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "已完成 {0} / {1} 个任务 · {2}"
   ],
@@ -2055,8 +2225,16 @@ export default {
    "{0} 张卡片 · 今天要复习 {1} 张"
   ],
   [
+   "{0} tarefas criadas para a unidade.",
+   "已为单元创建 {0} 个任务。"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "删除科目“{0}”？\\n\\n{1}"
+  ],
+  [
+   "{0} linha ignorada: longas demais.",
+   "已跳过 {0} 行：内容过长。"
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -2065,6 +2243,10 @@ export default {
   [
    "de {0} min de estudo nesta semana",
    "/ {0} 分钟（本周学习）"
+  ],
+  [
+   "{0} tarefa criada para a unidade.",
+   "已为单元创建 {0} 个任务。"
   ],
   [
    "Meta semanal: {0} de {1} minutos",
@@ -2083,6 +2265,14 @@ export default {
    "{0} 张卡片 · 今天没有待复习"
   ],
   [
+   "{0} já têm tarefa neste objetivo",
+   "{0} 节已在此目标中有任务"
+  ],
+  [
+   "{0} já tem tarefa neste objetivo",
+   "{0} 节已在此目标中有任务"
+  ],
+  [
    "Versão {0} · fonte: revisão {1}",
    "版本 {0} · 来源：版本 {1}"
   ],
@@ -2099,6 +2289,10 @@ export default {
    "{0}. 核对转写：{1}"
   ],
   [
+   "{0}, {1} a {2}. Editar horário",
+   "{0}，{1} 至 {2}。编辑时间"
+  ],
+  [
    "Gerar novas questões para {0}",
    "为{0}生成新题目"
   ],
@@ -2113,6 +2307,10 @@ export default {
   [
    "Adicionar subobjetivo em {0}",
    "为{0}添加子目标"
+  ],
+  [
+   "{0} cartões no conjunto novo",
+   "新卡组中有 {0} 张卡片"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -2133,6 +2331,10 @@ export default {
   [
    "{0} conjuntos · {1} cartões",
    "{0} 个卡组 · {1} 张卡片"
+  ],
+  [
+   "{0} cartão no conjunto novo",
+   "新卡组中有 {0} 张卡片"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2163,6 +2365,10 @@ export default {
    "今天已完成 {0} 次专注"
   ],
   [
+   "{0} tarefas serão criadas",
+   "将创建 {0} 个任务"
+  ],
+  [
    "Opções da disciplina {0}",
    "科目{0}的选项"
   ],
@@ -2173,6 +2379,14 @@ export default {
   [
    "Continuar tentativa: {0}",
    "继续作答：{0}"
+  ],
+  [
+   "Horário movido para {0}.",
+   "时间已移至 {0}。"
+  ],
+  [
+   "Desfazer a marcação: {0}",
+   "撤销标记：{0}"
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -2189,6 +2403,10 @@ export default {
   [
    "{0} foco concluído hoje",
    "今天已完成 {0} 次专注"
+  ],
+  [
+   "{0} cartões encontrados",
+   "找到 {0} 张卡片"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2219,6 +2437,10 @@ export default {
    "已选 {0} 节课"
   ],
   [
+   "{0} tarefa será criada",
+   "将创建 {0} 个任务"
+  ],
+  [
    "Resultados para “{0}”",
    "“{0}”的搜索结果"
   ],
@@ -2229,6 +2451,10 @@ export default {
   [
    "Prazo de tarefa · {0}",
    "任务截止 · {0}"
+  ],
+  [
+   "{0} cartão encontrado",
+   "找到 {0} 张卡片"
   ],
   [
    "Cópia de {0} criada.",
@@ -2271,6 +2497,10 @@ export default {
    "已选 {0} 节课"
   ],
   [
+   "{0} aulas na unidade",
+   "单元中有 {0} 节课"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · {1}到期"
   ],
@@ -2281,6 +2511,10 @@ export default {
   [
    "Áudio ouvido de {0}",
    "{0}的音频收听进度"
+  ],
+  [
+   "{0} aula na unidade",
+   "单元中有 {0} 节课"
   ],
   [
    "Ações da lista {0}",
@@ -2363,6 +2597,10 @@ export default {
    "第 {0} 处，共 {1} 处"
   ],
   [
+   "{0} ({1} cartões)",
+   "{0}（{1} 张卡片）"
+  ],
+  [
    "Questão {0}. {1}",
    "第 {0} 题。{1}"
   ],
@@ -2389,6 +2627,14 @@ export default {
   [
    "{0} em andamento",
    "{0}进行中"
+  ],
+  [
+   "{0} ({1} cartão)",
+   "{0}（{1} 张卡片）"
+  ],
+  [
+   "Você marcou: {0}",
+   "你的标记：{0}"
   ],
   [
    "Explicação: {0}",
@@ -2429,6 +2675,10 @@ export default {
   [
    "Selecionar {0}",
    "选择 {0}"
+  ],
+  [
+   "Agendar em {0}",
+   "安排在 {0}"
   ],
   [
    "- Revisão {0}",
@@ -2491,6 +2741,10 @@ export default {
    "截止：{0}"
   ],
   [
+   "e mais {0}",
+   "另外 {0} 个"
+  ],
+  [
    "Nível {0}",
    "等级 {0}"
   ],
@@ -2505,6 +2759,14 @@ export default {
   [
    "Aula: {0}",
    "课程：{0}"
+  ],
+  [
+   "Mover {0}",
+   "移动 {0}"
+  ],
+  [
+   "Abrir {0}",
+   "打开 {0}"
   ],
   [
    "{0} aula",

@@ -143,6 +143,19 @@ export async function initPlanningPanel({ materials }) {
     });
   document.addEventListener('voz:planning-command', (event) => {
     const action = event.detail?.action;
+    // Tasks created elsewhere on the page (e.g. "Planejar uma unidade"): load them.
+    if (action === 'reload') {
+      void getPlanning()
+        .then((response) => {
+          goals = response.goals || [];
+          subgoals = response.subgoals || [];
+          tasks = response.tasks || [];
+          render();
+          signal('planning', { changed: true });
+        })
+        .catch(() => {});
+      return;
+    }
     if (action === 'goal' || (action === 'task' && !goals.length)) showForm('goal');
     else if (action === 'task') showForm('task');
   });

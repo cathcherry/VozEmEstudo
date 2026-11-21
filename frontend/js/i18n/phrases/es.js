@@ -22,12 +22,16 @@ export default {
   "20 questões": "20 preguntas",
   "3 questões": "3 preguntas",
   "30 dias": "30 días",
+  "30 min mais cedo": "30 min antes",
+  "30 min mais tarde": "30 min después",
   "5 cartões": "5 tarjetas",
   "5 questões": "5 preguntas",
   "7 dias": "7 días",
   "a aula não sustenta mais questões distintas": "la clase no da para más preguntas distintas",
   "A aula para continuar, o que pede atenção hoje (tarefas, cartões, horários) e o seu tempo de estudo na semana. Cada bloco leva à página completa.": "La clase para continuar, lo que requiere atención hoy (tareas, tarjetas, horarios) y tu tiempo de estudio de la semana. Cada bloque lleva a la página completa.",
   "A busca não está disponível agora.": "La búsqueda no está disponible ahora.",
+  "A cada 2 dias": "Cada 2 días",
+  "A cada 3 dias": "Cada 3 días",
   "A conservação original aceita somente MP4.": "Conservar el original solo admite MP4.",
   "A declaração de permissão não carregou. Recarregue a página.": "La declaración de permiso no se cargó. Recarga la página.",
   "A declaração é sua, sem verificação automática de direitos autorais. Cada provedor segue a própria política de dados.": "La declaración es tuya, sin verificación automática de derechos de autor. Cada proveedor sigue su propia política de datos.",
@@ -43,6 +47,7 @@ export default {
   "A paginação do andamento não pôde ser concluída.": "No se pudo completar la paginación del progreso.",
   "A pasta está vazia.": "La carpeta está vacía.",
   "A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.": "La vista previa de este formato no está disponible en el navegador. El recorte desde el servidor sigue disponible.",
+  "A resposta marcada como certa está errada": "La respuesta marcada como correcta está mal",
   "A revisão ainda não está ativa": "El repaso aún no está activo",
   "A senha não atende aos requisitos de segurança: use pelo menos 8 caracteres com letra minúscula, maiúscula, número e símbolo.": "La contraseña no cumple los requisitos de seguridad: usa al menos 8 caracteres con minúscula, mayúscula, número y símbolo.",
   "A sessão anterior já foi encerrada. Inicie uma nova sessão.": "La sesión anterior ya terminó. Inicia una nueva sesión.",
@@ -90,6 +95,7 @@ export default {
   "Ações do trecho selecionado": "Acciones del fragmento seleccionado",
   "Acompanhe a transcrição": "Sigue la transcripción",
   "Adequação educacional": "Adecuación educativa",
+  "Adesivos no título": "Pegatinas junto al título",
   "Adicionar": "Añadir",
   "Adicionar ao perfil": "Añadir al perfil",
   "Adicionar bloco": "Añadir bloque",
@@ -117,6 +123,7 @@ export default {
   "Ainda não há questões desta aula.": "Aún no hay preguntas de esta clase.",
   "Ainda não há resumo desta aula.": "Esta clase aún no tiene resumen.",
   "Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.": "Esta clase aún no tiene resumen. Usa “Generar resumen” para crear el primero.",
+  "Ainda não há tempo registrado nestas semanas. Comece um bloco de foco e ele aparece aqui.": "Aún no hay tiempo registrado en estas semanas. Empieza un bloque de enfoque y aparecerá aquí.",
   "Ainda não iniciado": "Aún no iniciado",
   "ainda não respondidas": "aún sin responder",
   "Ainda sem temas salvos.": "Aún no hay temas guardados.",
@@ -210,7 +217,9 @@ export default {
   "AssemblyAI": "AssemblyAI",
   "Atalhos de teclado": "Atajos de teclado",
   "Até": "Hasta",
+  "Até 3 adesivos. Tire um para escolher outro.": "Hasta 3 pegatinas. Quita una para elegir otra.",
   "Até 50 revisões mais recentes.": "Hasta los 50 repasos más recientes.",
+  "Atingida": "Alcanzada",
   "Ativar modo para leitores de tela": "Activar modo para lectores de pantalla",
   "Ativos": "Activas",
   "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tem espaçamento mais aberto; OpenDyslexic tem base mais pesada, pensada para dislexia. Vale testar na prévia.": "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tiene un espaciado más abierto; OpenDyslexic tiene una base más pesada, pensada para la dislexia. Vale la pena probarlas en la vista previa.",
@@ -233,9 +242,11 @@ export default {
   "Aula pronta para estudar": "Clase lista para estudiar",
   "Aula relacionada": "Clase relacionada",
   "Aula relacionada (opcional)": "Clase relacionada (opcional)",
+  "Aula removida": "Clase eliminada",
   "Aulas": "Clases",
   "Aulas em estudo": "Clases en estudio",
   "Aulas estudadas": "Clases estudiadas",
+  "Aulas mais estudadas": "Clases más estudiadas",
   "Aulas recentes": "Clases recientes",
   "Aulas selecionadas": "Clases seleccionadas",
   "Aulas sem unidade": "Clases sin unidad",
@@ -289,6 +300,7 @@ export default {
   "Branco frio e azul royal.": "Blanco frío y azul rey.",
   "Branco, preto e links destacados.": "Blanco, negro y enlaces destacados.",
   "Breve": "Breve",
+  "Brilho": "Brillo",
   "Buscar": "Buscar",
   "Buscar aulas": "Buscar clases",
   "Buscar aulas, questões e transcrições": "Buscar clases, preguntas y transcripciones",
@@ -314,6 +326,7 @@ export default {
   "Cancelar": "Cancelar",
   "Carregando histórico…": "Cargando historial…",
   "Carregando lista…": "Cargando lista…",
+  "Carregando o ano…": "Cargando el año…",
   "Carregando o diagnóstico…": "Cargando el diagnóstico…",
   "Carregando os recursos disponíveis…": "Cargando los recursos disponibles…",
   "Carregando questão...": "Cargando pregunta...",
@@ -358,6 +371,7 @@ export default {
   "Com marcações de tempo": "Con marcas de tiempo",
   "Combinações rápidas": "Combinaciones rápidas",
   "Começar a estudar": "Empezar a estudiar",
+  "Começar em": "Empezar el",
   "Começar meu material de estudo": "Empezar mi material de estudio",
   "Começar o próximo bloco sozinho": "Empezar el siguiente bloque solo",
   "Começar tentativa": "Empezar intento",
@@ -457,18 +471,22 @@ export default {
   "Cor do fundo": "Color de fondo",
   "Cor do texto": "Color del texto",
   "Cor dos detalhes": "Color de detalles",
+  "Coração": "Corazón",
   "Coral": "Coral",
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "Colores, fuente y temas personalizados con nombre, con ajustes de lectura y enfoque.",
   "Creme quente e terracota.": "Crema cálido y terracota.",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "Crea un enlace de lectura con una copia fija de las preguntas y opciones. Las respuestas, explicaciones, transcripción, grabación y notas no forman parte del enlace.",
+  "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "Crea una tarea para cada clase de la unidad, dentro de un objetivo. Si la unidad recibe clases nuevas, úsalo de nuevo: solo entran las que faltan.",
   "Criando conta...": "Creando cuenta...",
   "Criando tarefa de geração...": "Creando tarea de generación...",
   "Criando tentativa…": "Creando intento…",
+  "Criando…": "Creando…",
   "Criar a partir de um modo": "Crear a partir de un modo",
   "Criar bloco": "Crear bloque",
   "Criar cartão": "Crear tarjeta",
   "Criar cartão manualmente": "Crear tarjeta manualmente",
   "Criar cartões com IA": "Crear tarjetas con IA",
+  "Criar conjunto": "Crear conjunto",
   "Criar conta": "Crear cuenta",
   "Criar flashcards": "Crear tarjetas",
   "Criar link de leitura": "Crear enlace de lectura",
@@ -478,9 +496,12 @@ export default {
   "Criar primeira unidade": "Crear primera unidad",
   "Criar primeiro objetivo": "Crear primer objetivo",
   "Criar questões": "Crear preguntas",
+  "Criar tarefas": "Crear tareas",
   "Criar um objetivo": "Crear un objetivo",
   "Criar uma conta": "Crear una cuenta",
+  "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Crea conjuntos en la pestaña Flashcards de cada clase, combina conjuntos o importa tarjetas de un archivo. Aquí organizas, repasas por conjunto y exportas.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Crea conjuntos en la pestaña Resumen de cada clase. Aquí los organizas, repasas por conjunto y exportas.",
+  "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "Crea un objetivo primero (por ejemplo, \"Examen de Biología\") y vuelve aquí.",
   "Cronológico": "Cronológico",
   "Cronológico, quando houver datas": "Cronológico, cuando haya fechas",
   "Cronômetro de estudo": "Cronómetro de estudio",
@@ -520,6 +541,8 @@ export default {
   "Descer": "Bajar",
   "Descrição (opcional)": "Descripción (opcional)",
   "Desenvolvedora · Autora do TCC": "Desarrolladora · Autora del trabajo de fin de curso",
+  "Desfazer": "Deshacer",
+  "Desfazer a marcação desta questão": "Deshacer la marca de esta pregunta",
   "Desligada": "Desactivada",
   "Desligadas": "Desactivados",
   "Desligado": "Desactivado",
@@ -528,10 +551,14 @@ export default {
   "Destaque salvo no caderno da aula.": "Resaltado guardado en el cuaderno de la clase.",
   "Desvincular tarefa": "Desvincular tarea",
   "Detalhado": "Detallado",
+  "Detalhe (opcional)": "Detalle (opcional)",
   "Detalhes": "Detalles",
   "Detalhes do processamento": "Detalles del procesamiento",
   "Detectar automaticamente": "Detectar automáticamente",
+  "Dia anterior": "Día anterior",
+  "Dia seguinte": "Día siguiente",
   "Diagnóstico da tentativa": "Diagnóstico del intento",
+  "Dias com estudo": "Días con estudio",
   "Dias do mês": "Días del mes",
   "Difícil": "Difícil",
   "Dificuldade": "Dificultad",
@@ -616,8 +643,13 @@ export default {
   "Envio mais recente": "Subida más reciente",
   "Equilibrado": "Equilibrado",
   "Escolha a gravação": "Elige la grabación",
+  "Escolha a unidade": "Elige la unidad",
+  "Escolha até 3. Eles aparecem ao lado do título de cada página e somem com menos estímulos visuais.": "Elige hasta 3. Aparecen junto al título de cada página y desaparecen con menos estímulos visuales.",
   "Escolha como deseja responder": "Elige cómo quieres responder",
+  "Escolha dois ou mais conjuntos. Um conjunto novo é criado com os cartões deles; os originais não mudam e o histórico de revisão não é copiado.": "Elige dos o más conjuntos. Se crea un conjunto nuevo con sus tarjetas; los originales no cambian y el historial de repaso no se copia.",
+  "Escolha o motivo do problema.": "Elige el motivo del problema.",
   "Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.": "Elige qué aparece y en qué orden. Los cambios se ven al instante y quedan guardados en tu cuenta.",
+  "Escolha pelo menos dois conjuntos.": "Elige al menos dos conjuntos.",
   "Escolha pelo menos uma dificuldade e um foco.": "Elige al menos una dificultad y un enfoque.",
   "Escolha pelo menos uma dificuldade e uma habilidade.": "Elige al menos una dificultad y una habilidad.",
   "Escolha um arquivo com conteúdo e até 100 MB.": "Elige un archivo con contenido y de hasta 100 MB.",
@@ -671,6 +703,7 @@ export default {
   "Estes dados não puderam ser carregados agora.": "No se pudieron cargar estos datos ahora.",
   "Estilo": "Estilo",
   "Estreito": "Estrecho",
+  "Estrela": "Estrella",
   "Estrelas": "Estrellas",
   "Estudada": "Estudiada",
   "Estúdio visual": "Estudio visual",
@@ -719,6 +752,7 @@ export default {
   "Ferramenta do painel": "Herramienta del panel",
   "Ferramentas": "Herramientas",
   "Ferramentas indisponíveis.": "Herramientas no disponibles.",
+  "Fica marcado só para você, nesta conta. Ajuda a lembrar de conferir a questão com a aula.": "Solo tú ves esta marca, en esta cuenta. Te ayuda a recordar revisar la pregunta con la clase.",
   "Filtrar conquistas": "Filtrar logros",
   "Filtrar por aula": "Filtrar por clase",
   "Filtros": "Filtros",
@@ -743,6 +777,7 @@ export default {
   "Foco temático": "Enfoque temático",
   "Focos concluídos nesta visita": "Enfoques completados en esta visita",
   "Focos sem conteúdo na aula são omitidos; nada é completado com informação externa.": "Los enfoques sin contenido en la clase se omiten; no se completa nada con información externa.",
+  "Folha": "Hoja",
   "Folha de questões somente para leitura. As respostas não fazem parte deste link.": "Hoja de preguntas de solo lectura. Las respuestas no forman parte de este enlace.",
   "Folha do aluno, sem respostas": "Hoja del estudiante, sin respuestas",
   "Fonte das letras": "Fuente",
@@ -812,6 +847,7 @@ export default {
   "Hoje": "Hoy",
   "Horário removido.": "Horario eliminado.",
   "Horário vinculado a uma tarefa.": "Horario vinculado a una tarea.",
+  "Horas por semana.": "Horas por semana.",
   "Hugging Face": "Hugging Face",
   "Ícone": "Icono",
   "Ícones discretos": "Íconos discretos",
@@ -832,6 +868,7 @@ export default {
   "Imagens de vídeos não são enviadas.": "Las imágenes de los videos no se envían.",
   "Importar andamento local sem registro na conta": "Importar progreso local sin registro en la cuenta",
   "Importar arquivo": "Importar archivo",
+  "Importar cartões": "Importar tarjetas",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "Importa el audio o video y elige un fragmento o la grabación completa.",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "Importa un audio o video. Puedes seleccionar el inicio y el final del fragmento que quieres transcribir o usar el archivo completo. También puedes descargar el recorte en MP4 para video o MP3 para audio.",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "Importa una grabación y selecciona el inicio y el final del fragmento que quieres transcribir.",
@@ -873,6 +910,7 @@ export default {
   "Ir para Revisar": "Ir a Repasar",
   "Janela": "Ventana",
   "jeito de estudar.": "forma de estudiar.",
+  "Lápis": "Lápiz",
   "Largo": "Ancho",
   "Largura de": "Ancho de",
   "Lavanda": "Lavanda",
@@ -893,6 +931,7 @@ export default {
   "Leitura em voz alta: em todo o site": "Lectura en voz alta: en todo el sitio",
   "Leitura fácil": "Lectura fácil",
   "LEMBRETE": "RECORDATORIO",
+  "Lendo os cartões…": "Leyendo las tarjetas…",
   "Ligar ou desligar o modo foco": "Activar o desactivar el modo enfoque",
   "Lilás e violeta intenso.": "Lila y violeta intenso.",
   "Limita o comprimento das linhas de transcrições e resumos.": "Limita la longitud de las líneas de transcripciones y resúmenes.",
@@ -916,9 +955,11 @@ export default {
   "Listas de questões": "Listas de preguntas",
   "Literária": "Literaria",
   "Livre": "Libre",
+  "Livro": "Libro",
   "Localização": "Ubicación",
   "Longa": "Larga",
   "Longas": "Largas",
+  "Mais (1 h ou mais por dia)": "Más (1 h o más por día)",
   "Mais detalhes: subobjetivo, aula e link": "Más detalles: subobjetivo, clase y enlace",
   "Mais lenta": "Más lenta",
   "Mais opções": "Más opciones",
@@ -928,8 +969,11 @@ export default {
   "Mais revisitados": "Más revisitadas",
   "Mantenha esta aba visível e em foco para iniciar.": "Mantén esta pestaña visible y en primer plano para empezar.",
   "Manter versão deste navegador em conflitos": "Mantener la versión de este navegador en conflictos",
+  "Mapa do ano (role para os lados)": "Mapa del año (desplázate hacia los lados)",
   "Máquina de escrever": "Máquina de escribir",
+  "Marcação removida.": "Marca eliminada.",
   "Marcar aula como estudada": "Marcar clase como estudiada",
+  "Marcar problema": "Marcar problema",
   "Marcos de estudo": "Hitos de estudio",
   "Matcha": "Matcha",
   "Materiais da Biblioteca": "Materiales de la Biblioteca",
@@ -939,8 +983,11 @@ export default {
   "Material de estudo": "Material de estudio",
   "Máximo — 200%": "Máximo — 200%",
   "média": "mediana",
+  "Média por semana": "Promedio semanal",
   "Médio": "Medio",
   "Médio — 115%": "Mediano — 115%",
+  "Melhor semana": "Mejor semana",
+  "Menos": "Menos",
   "Menos de 1 segundo": "Menos de 1 segundo",
   "Menos de 5 minutos: em geral 3 a 5 questões.": "Menos de 5 minutos: en general, de 3 a 5 preguntas.",
   "Menos estímulos visuais": "Menos estímulos visuales",
@@ -949,6 +996,8 @@ export default {
   "Mês": "Mes",
   "Mês anterior": "Mes anterior",
   "Mesa digital": "Escritorio digital",
+  "Mesclar conjuntos": "Combinar conjuntos",
+  "Meta": "Meta",
   "Meta da semana alcançada. 🎉": "Meta de la semana alcanzada. 🎉",
   "Meta e fuso salvos na conta.": "Meta y zona horaria guardadas en la cuenta.",
   "Meta e sincronização": "Meta y sincronización",
@@ -993,6 +1042,7 @@ export default {
   "Mostrar senha": "Mostrar contraseña",
   "Mostrar tarefas": "Mostrar tareas",
   "Mostrar tudo": "Mostrar todo",
+  "Mover": "Mover",
   "Mover aula": "Mover clase",
   "Mover para baixo": "Mover abajo",
   "Mover para cá": "Mover aquí",
@@ -1016,6 +1066,7 @@ export default {
   "Na próxima aula, vamos comparar a eficiência dos dois sistemas com exemplos do dia a dia.": "En la próxima clase, compararemos la eficiencia de los dos sistemas con ejemplos cotidianos.",
   "Na sua conta": "En tu cuenta",
   "Nada marcado neste dia. Que tal reservar um horário curto?": "Nada marcado este día. ¿Qué tal reservar un horario corto?",
+  "Não está na aula": "No está en la clase",
   "Não feche esta página até o envio terminar.": "No cierres esta página hasta que termine la subida.",
   "Não foi possível abrir a aula": "No se pudo abrir la clase",
   "Não foi possível abrir a cópia. Tente novamente.": "No se pudo abrir la copia. Inténtalo de nuevo.",
@@ -1031,6 +1082,7 @@ export default {
   "Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.": "No se pudo cargar el contenido. Renueva el acceso o prueba el otro formato disponible.",
   "Não foi possível carregar as revisões.": "No se pudieron cargar los repasos.",
   "Não foi possível carregar o andamento da conta. O histórico local foi preservado.": "No se pudo cargar el progreso de la cuenta. Se conservó el historial local.",
+  "Não foi possível carregar o ano agora.": "No se pudo cargar el año ahora.",
   "Não foi possível carregar o diagnóstico.": "No se pudo cargar el diagnóstico.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "No se pudo cargar el historial. Selecciona la tarjeta de nuevo para reintentarlo.",
   "Não foi possível carregar os conjuntos agora.": "No se pudieron cargar los conjuntos ahora.",
@@ -1142,6 +1194,7 @@ export default {
   "Nome da lista": "Nombre de la lista",
   "Nome da versão": "Nombre de la versión",
   "Nome do conjunto": "Nombre del conjunto",
+  "Nome do novo conjunto": "Nombre del nuevo conjunto",
   "Nome do subobjetivo": "Nombre del subobjetivo",
   "Nome do tema": "Nombre del tema",
   "Nome exibido": "Nombre visible",
@@ -1167,10 +1220,12 @@ export default {
   "Novo subobjetivo": "Nuevo subobjetivo",
   "Novos cartões": "Nuevas tarjetas",
   "Numa aula, abra": "En una clase, abre",
+  "Nuvem": "Nube",
   "Nuvens": "Nubes",
   "O acesso foi cancelado ou não pôde ser autorizado. Você pode tentar novamente.": "El acceso se canceló o no se pudo autorizar. Puedes intentarlo de nuevo.",
   "O app também analisa as imagens do vídeo?": "¿La app también analiza las imágenes del video?",
   "O armazenamento não respondeu.": "El almacenamiento no respondió.",
+  "O arquivo passa de 2 MB. Divida-o em partes menores.": "El archivo supera 2 MB. Divídelo en partes más pequeñas.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala.": "El audio del fragmento se envía a un servicio externo de reconocimiento de voz.",
   "O áudio do trecho é enviado a um serviço externo de reconhecimento de fala. O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões. Imagens de vídeos não são enviadas.": "El audio del fragmento se envía a un servicio externo de reconocimiento de voz. El texto transcrito se envía a un servicio externo de IA para avisos preliminares y, tras tu confirmación, resumen y preguntas. Las imágenes de los videos no se envían.",
   "O áudio está com o serviço de transcrição. Esta página atualiza sozinha.": "El audio está en el servicio de transcripción. Esta página se actualiza sola.",
@@ -1184,6 +1239,7 @@ export default {
   "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "El temporizador se detuvo porque ninguna página de Voz em Estudo quedó abierta y visible.",
   "O cronômetro parou porque nenhuma página ficou aberta e visível.": "El temporizador se detuvo porque ninguna página quedó abierta y visible.",
   "O diagnóstico não corresponde à tentativa.": "El diagnóstico no corresponde al intento.",
+  "O enunciado ou as alternativas estão confusos": "El enunciado o las opciones son confusos",
   "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado de sincronização no perfil antes de limpar os dados do navegador.": "El historial, los hitos y las preferencias se sincronizan con tu cuenta. Sin conexión, los cambios quedan en este dispositivo hasta el próximo envío. Revisa el estado de sincronización en el perfil antes de borrar los datos del navegador.",
   "O importante é continuar aprendendo.": "Lo importante es seguir aprendiendo.",
   "O link de recuperação não pôde ser utilizado. Solicite um novo e-mail.": "No se pudo usar el enlace de recuperación. Solicita un nuevo correo.",
@@ -1196,6 +1252,7 @@ export default {
   "O que deseja alcançar?": "¿Qué quieres lograr?",
   "O que é enviado": "Qué se envía",
   "O que fica reunido em cada material?": "¿Qué reúne cada material?",
+  "O que há de errado?": "¿Qué está mal?",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "El registro de tiempo de estudio aparece aquí cuando se active en este servidor.",
   "O som ambiente parou ao trocar de página.": "El sonido ambiente se detuvo al cambiar de página.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "El texto transcrito se envía a un servicio externo de IA para avisos preliminares y, tras tu confirmación, el resumen y las preguntas.",
@@ -1216,6 +1273,7 @@ export default {
   "Ocultar": "Ocultar",
   "Ocultar do perfil": "Ocultar del perfil",
   "Ocultar guia": "Ocultar guía",
+  "Ocultar o ano": "Ocultar el año",
   "Ocultar senha": "Ocultar contraseña",
   "Oculto": "Oculto",
   "Olá": "Hola",
@@ -1249,6 +1307,7 @@ export default {
   "Ouça a gravação e escolha o início e o fim do trecho. Você também pode baixar o recorte antes de continuar.": "Escucha la grabación y elige el inicio y el final del fragmento. También puedes descargar el recorte antes de continuar.",
   "Outra quantidade…": "Otra cantidad…",
   "Outras tarefas": "Otras tareas",
+  "Outro problema": "Otro problema",
   "Ouvir": "Escuchar",
   "Ouvir a página ou o texto selecionado (com leitura em voz alta em todo o site)": "Escuchar la página o el texto seleccionado (con lectura en voz alta en todo el sitio)",
   "ouvir com atenção": "escuchar con atención",
@@ -1259,6 +1318,7 @@ export default {
   "Ouvir resumo": "Escuchar resumen",
   "Ouvir trecho": "Escuchar fragmento",
   "Ouvir, compreender, praticar": "Escuchar, comprender, practicar",
+  "Pacotes .apkg ainda não são lidos. No Anki, exporte o baralho como \"Notas em texto simples\" (.txt) e escolha esse arquivo.": "Los paquetes .apkg aún no se pueden leer. En Anki, exporta el mazo como \"Notas en texto plano\" (.txt) y elige ese archivo.",
   "Padrão": "Estándar",
   "Padrão — 100%": "Predeterminado — 100%",
   "Padrão do tema": "Predeterminada del tema",
@@ -1273,6 +1333,7 @@ export default {
   "para as dúvidas.": "para las dudas.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "Para corregir el texto de la clase, usa “Editar transcripción”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "Para crear una lista nueva, abre una clase en la Biblioteca y usa la pestaña Preguntas.",
+  "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "Para combinar, necesitas al menos dos conjuntos con tarjetas.",
   "para mudar o tema e": "para cambiar el tema y",
   "Para revisar": "Para repasar",
   "para saber o que é salvo na conta ou neste dispositivo.": "para saber qué se guarda en la cuenta o en este dispositivo.",
@@ -1321,6 +1382,7 @@ export default {
   "Personalizar perfil": "Personalizar perfil",
   "Pesquisar texto e destaques": "Buscar texto y resaltados",
   "Planejar": "Planificar",
+  "Planejar uma unidade": "Planificar una unidad",
   "Planner": "Agenda",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Reproductor. Espacio reproduce o pausa; las flechas avanzan o retroceden diez segundos.",
   "PNG, JPEG, WebP ou GIF até 8 MB. Fica na sua conta; com movimento reduzido, o GIF aparece parado.": "PNG, JPEG, WebP o GIF de hasta 8 MB. Queda en tu cuenta; con movimiento reducido, el GIF aparece quieto.",
@@ -1369,6 +1431,7 @@ export default {
   "Primeira aula": "Primera clase",
   "Primeira resposta": "Primera respuesta",
   "Primeira revisão": "Primer repaso",
+  "Primeiros cartões:": "Primeras tarjetas:",
   "Priorizar conceitos ainda não avaliados": "Priorizar conceptos aún no evaluados",
   "Privacidade": "Privacidad",
   "Privacidade e armazenamento": "Privacidad y almacenamiento",
@@ -1394,6 +1457,7 @@ export default {
   "próxima etapa": "siguiente paso",
   "Próxima página": "Página siguiente",
   "Próxima questão": "Siguiente pregunta",
+  "Próxima semana": "Próxima semana",
   "Próximas anotações": "Notas siguientes",
   "Próximas tarefas": "Próximas tareas",
   "Próximo mês": "Mes siguiente",
@@ -1413,9 +1477,14 @@ export default {
   "Quantidade personalizada": "Cantidad personalizada",
   "questão": "pregunta",
   "Questão de múltipla escolha": "Pregunta de opción múltiple",
+  "Questão marcada.": "Pregunta marcada.",
+  "Questão sem enunciado salvo": "Pregunta sin enunciado guardado",
   "questões": "preguntas",
   "Questões": "Preguntas",
   "Questões de listas anteriores": "Preguntas de listas anteriores",
+  "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "Preguntas en las que marcaste un problema. Revísalas con la clase y deshaz la marca cuando esté resuelto.",
+  "questões marcadas": "preguntas marcadas",
+  "Questões marcadas": "Preguntas marcadas",
   "Questões para retomar": "Preguntas para retomar",
   "questões repetidas ou sem fonte foram descartadas": "se descartaron preguntas repetidas o sin fuente",
   "Qui": "Jue",
@@ -1458,7 +1527,10 @@ export default {
   "Renomear esta versão": "Cambiar el nombre de esta versión",
   "Renomear lista": "Renombrar lista",
   "Renomear versão do resumo": "Renombrar versión del resumen",
+  "Repete outra questão": "Repite otra pregunta",
   "Repita a mesma avaliação para confirmar o envio anterior.": "Repite la misma valoración para confirmar el envío anterior.",
+  "Reportar problema": "Reportar un problema",
+  "Reportar problema na questão": "Reportar un problema en la pregunta",
   "Reproduzir": "Reproducir",
   "Reproduzir a partir deste trecho": "Reproducir desde este fragmento",
   "Reproduzir ou pausar": "Reproducir o pausar",
@@ -1514,6 +1586,7 @@ export default {
   "Revogar": "Revocar",
   "Revogar este link? Quem tiver o endereço não conseguirá mais abrir a cópia. Esta ação não pode ser desfeita.": "¿Revocar este enlace? Quien tenga la dirección ya no podrá abrir la copia. Esta acción no se puede deshacer.",
   "Revogar link": "Revocar enlace",
+  "Ritmo": "Ritmo",
   "Ritmo de revisão": "Ritmo de repaso",
   "Rodapé": "Pie",
   "Rosa": "Rosa",
@@ -1528,6 +1601,7 @@ export default {
   "Salvando perfil…": "Guardando perfil…",
   "Salvar": "Guardar",
   "Salvar ajustes": "Guardar ajustes",
+  "Salvar alteração": "Guardar cambio",
   "Salvar alterações": "Guardar cambios",
   "Salvar anotação": "Guardar nota",
   "Salvar bloco": "Guardar bloque",
@@ -1578,11 +1652,16 @@ export default {
   "Sem disciplina": "Sin asignatura",
   "sem fundo": "sin fondo",
   "Sem fundo": "Sin fondo",
+  "Sem prazo": "Sin plazo",
   "Sem subobjetivo": "Sin subobjetivo",
   "Sem tags": "Sin etiquetas",
   "Sem tarefas": "Sin tareas",
   "Sem unidade": "Sin unidad",
+  "Semana": "Semana",
+  "Semana anterior": "Semana anterior",
+  "Semana de": "Semana del",
   "Semana, agenda e disciplinas": "Semana, agenda y asignaturas",
+  "Semanas na meta": "Semanas en la meta",
   "Senha": "Contraseña",
   "Senha alterada com sucesso.": "Contraseña cambiada correctamente.",
   "Senha alterada com sucesso. Volte ao login e entre com sua nova senha.": "Contraseña cambiada correctamente. Vuelve al inicio de sesión y entra con tu nueva contraseña.",
@@ -1601,6 +1680,7 @@ export default {
   "Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no": "Tu correo y la forma de acceso aparecen en Datos de la cuenta. El nombre, la foto, la portada y la presentación se pueden cambiar en el",
   "Seu perfil": "Tu perfil",
   "Seu próximo capítulo começa aqui.": "Tu próximo capítulo empieza aquí.",
+  "Seu ritmo": "Tu ritmo",
   "Seu uso da gravação": "Tu uso de la grabación",
   "Seus dados": "Tus datos",
   "Sex": "Vie",
@@ -1687,6 +1767,8 @@ export default {
   "Temas salvos": "Temas guardados",
   "Temas, cores, fontes, tamanho do texto, espaçamento e movimento.": "Temas, colores, fuentes, tamaño del texto, espaciado y movimiento.",
   "Templates": "Plantillas",
+  "Tempo": "Tiempo",
+  "Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.": "Tiempo acreditado en las últimas 12 semanas. Solo cuenta el tiempo con el cronómetro activo.",
   "Tempo da sessão": "Tiempo de la sesión",
   "Tempo de estudo": "Tiempo de estudio",
   "Tempo do bloco": "Tiempo del bloque",
@@ -1718,6 +1800,7 @@ export default {
   "Títulos": "Títulos",
   "Tocar": "Reproducir",
   "Tocar a gravação a partir daquele trecho": "Reproducir la grabación desde ese fragmento",
+  "Tocar junto com o foco (pausa nas pausas)": "Sonar junto con el enfoque (se pausa en las pausas)",
   "Todas": "Todas",
   "Todas as aulas": "Todas las clases",
   "Todas as aulas: busque por título ou tag, agrupe por disciplina e use o menu ⋯ de cada aula para editar informações. Cada aula mostra as etapas de estudo — conferir a transcrição, resumo, questões e flashcards — e o próximo passo.": "Todas las clases: busca por título o etiqueta, agrupa por asignatura y usa el menú ⋯ de cada clase para editar su información. Cada clase muestra los pasos de estudio — revisar la transcripción, resumen, preguntas y tarjetas — y el siguiente paso.",
@@ -1730,6 +1813,7 @@ export default {
   "Todos os conjuntos": "Todos los conjuntos",
   "Todos os materiais": "Todos los materiales",
   "Tópicos": "Puntos clave",
+  "Toque em \"Tocar\" para começar o som.": "Toca \"Reproducir\" para iniciar el sonido.",
   "Toque nas aulas para selecionar": "Toca las clases para seleccionarlas",
   "Transcrevendo o áudio…": "Transcribiendo el audio…",
   "Transcrição": "Transcripción",
@@ -1764,6 +1848,8 @@ export default {
   "Um pouco de tudo, em níveis intercalados.": "Un poco de todo, con niveles intercalados.",
   "Um símbolo (ex.: ! @ # ?)": "Un símbolo (p. ej.: ! @ # ?)",
   "Um trecho que faz sentido. Uma ideia que fica. Uma pergunta que abre caminhos.": "Un fragmento que tiene sentido. Una idea que se queda. Una pregunta que abre caminos.",
+  "Uma aula por dia": "Una clase por día",
+  "Uma aula por semana": "Una clase por semana",
   "Uma aula.": "Una clase.",
   "Uma cópia para acesso rápido e alterações que aguardam sincronização. O estado temporário de widgets HTML/CSS personalizados pode ser reiniciado ao recarregar. Essa cópia continua neste navegador depois de sair da conta: em computadores compartilhados, use uma janela anônima.": "Una copia para acceso rápido y cambios que esperan sincronización. El estado temporal de los widgets HTML/CSS personalizados puede reiniciarse al recargar. Esta copia permanece en este navegador después de cerrar sesión: en computadoras compartidas, usa una ventana de incógnito.",
   "Uma hora de descobertas": "Una hora de descubrimientos",
@@ -1787,6 +1873,7 @@ export default {
   "Usar versão da conta em conflitos": "Usar la versión de la cuenta en conflictos",
   "Use": "Usa",
   "Use o menu": "Usa el menú",
+  "Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.": "Usa un archivo .txt, .tsv o .csv: de Anki (Archivo › Exportar › \"Notas en texto plano\"), la exportación CSV de aquí o una lista con pregunta y respuesta en dos columnas.",
   "Use um link de música, álbum, playlist, episódio ou programa do Spotify.": "Usa un enlace de canción, álbum, playlist, episodio o programa de Spotify.",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "Usa una imagen PNG, JPEG, WebP o GIF.",
   "Validade": "Validez",
@@ -1799,7 +1886,9 @@ export default {
   "Velocidade de reprodução": "Velocidad de reproducción",
   "Ver andamento": "Ver progreso",
   "Ver cartões": "Ver tarjetas",
+  "Ver em tabela": "Ver como tabla",
   "Ver erro": "Ver error",
+  "Ver o ano": "Ver el año",
   "Ver pendentes": "Ver pendientes",
   "Ver questões": "Ver preguntas",
   "Ver recomendação de quantidade": "Ver cantidad recomendada",
@@ -1825,6 +1914,7 @@ export default {
   "Vidro translúcido": "Vidrio translúcido",
   "Vinho": "Vino",
   "Visual padrão restaurado.": "Aspecto predeterminado restaurado.",
+  "Visualização": "Vista",
   "Visualização das pastas": "Vista de carpetas",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "Aún no has respondido ninguna lista. Crea preguntas a partir de una clase para practicar y repasar aquí las falladas.",
   "Você escolhe o conteúdo e acompanha cada etapa da preparação do material.": "Tú eliges el contenido y sigues cada etapa de la preparación del material.",
@@ -1903,6 +1993,10 @@ export default {
    "Atención: aún no se enviaron a la cuenta: {0}. Si borras ahora, esos cambios se perderán."
   ],
   [
+   "Últimas {0} semanas. Melhor semana: {1}. Meta: {2} por semana. A tabela abaixo tem todos os valores.",
+   "Últimas {0} semanas. Mejor semana: {1}. Meta: {2} por semana. La tabla de abajo tiene todos los valores."
+  ],
+  [
    "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
    "Se generaron {0} de {1}: el modelo devolvió algunas en formato inválido; genera más para completar."
   ],
@@ -1915,12 +2009,32 @@ export default {
    "{0} min de estudio registrados · meta: {1} · {2} repasos marcados como hechos en tu cuenta"
   ],
   [
+   "{0} pergunta aparece com respostas diferentes; as duas ficam para você decidir depois.",
+   "{0} pregunta aparece con respuestas distintas; ambas se mantienen para que decidas después."
+  ],
+  [
+   "{0} perguntas aparecem com respostas diferentes; todas ficam para você decidir depois.",
+   "{0} preguntas aparecen con respuestas distintas; todas se mantienen para que decidas después."
+  ],
+  [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Horarios en la zona horaria de este dispositivo ({0}). Los plazos de tareas aparecen como día completo."
   ],
   [
+   "Horas por semana. Linha tracejada: meta de {0}; barras escuras atingiram a meta.",
+   "Horas por semana. Línea discontinua: meta de {0}; las barras oscuras alcanzaron la meta."
+  ],
+  [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
    "Se generaron {0} de {1}: la clase es demasiado corta para más preguntas distintas."
+  ],
+  [
+   "{0} cartões repetidos ficam de fora (mesma pergunta e mesma resposta).",
+   "{0} tarjetas repetidas quedan fuera (misma pregunta y misma respuesta)."
+  ],
+  [
+   "{0} cartão repetido fica de fora (mesma pergunta e mesma resposta).",
+   "{0} tarjeta repetida queda fuera (misma pregunta y misma respuesta)."
   ],
   [
    "Expira em {0}. A cópia não acompanha alterações futuras da lista.",
@@ -1943,6 +2057,10 @@ export default {
    "{0} tarjetas guardadas. Entran en el repaso del Inicio."
   ],
   [
+   "Últimos 12 meses: {0} dias com estudo, {1} no total.",
+   "Últimos 12 meses: {0} días con estudio, {1} en total."
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0} Repite la misma valoración para intentarlo de nuevo."
   ],
@@ -1959,8 +2077,20 @@ export default {
    "{0} tarjeta guardada. Entra en el repaso del Inicio."
   ],
   [
+   "{0} linhas ignoradas: sem pergunta ou sem resposta.",
+   "{0} líneas omitidas: sin pregunta o sin respuesta."
+  ],
+  [
+   "Últimos 12 meses: {0} dia com estudo, {1} no total.",
+   "Últimos 12 meses: {0} día con estudio, {1} en total."
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "Respuesta incorrecta. La respuesta esperada es {0}.{1}"
+  ],
+  [
+   "{0} linha ignorada: sem pergunta ou sem resposta.",
+   "{0} línea omitida: sin pregunta o sin respuesta."
   ],
   [
    "{0} oculto. Ele continua aqui no modo de edição.",
@@ -2003,16 +2133,40 @@ export default {
    "{0} enfoques hoy · {1} de {2} hasta la pausa larga"
   ],
   [
+   "{0} cartões importados para um conjunto novo.",
+   "{0} tarjetas importadas a un conjunto nuevo."
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} enfoque hoy · {1} de {2} hasta la pausa larga"
+  ],
+  [
+   "{0} linhas ignoradas: além do limite de {1}.",
+   "{0} líneas omitidas: por encima del límite de {1}."
+  ],
+  [
+   "{0} cartão importado para um conjunto novo.",
+   "{0} tarjeta importada a un conjunto nuevo."
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
    "Indica un número entero de 1 a {0}."
   ],
   [
+   "{0} linha ignorada: além do limite de {1}.",
+   "{0} línea omitida: por encima del límite de {1}."
+  ],
+  [
    "(ou a {0}, se o serviço principal falhar)",
    "(o a {0}, si el servicio principal falla)"
+  ],
+  [
+   "Limite de {0} cartões: {1} ficam de fora.",
+   "Límite de {0} tarjetas: {1} quedan fuera."
+  ],
+  [
+   "Conjunto mesclado criado com {0} cartões.",
+   "Conjunto combinado creado con {0} tarjetas."
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2023,8 +2177,16 @@ export default {
    "Resumen · versión {0} · fuente: versión {1}"
   ],
   [
+   "Conjunto mesclado criado com {0} cartão.",
+   "Conjunto combinado creado con {0} tarjeta."
+  ],
+  [
    "{0} não {1}: {2} para “Sem disciplina”.",
    "{0} no {1}: {2} a “Sin asignatura”."
+  ],
+  [
+   "Semana de {0}: {1}, {2} dias com estudo",
+   "Semana del {0}: {1}, {2} días con estudio"
   ],
   [
    "{0} de {1} tarefas concluídas · {2}{3}",
@@ -2033,6 +2195,10 @@ export default {
   [
    "Modo {0} aplicado. Dê um nome e salve.",
    "Modo {0} aplicado. Ponle un nombre y guárdalo."
+  ],
+  [
+   "Semana de {0}: {1}, {2} dia com estudo",
+   "Semana del {0}: {1}, {2} día con estudio"
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",
@@ -2047,6 +2213,10 @@ export default {
    "{0} de {1} aciertos ({2}%). {3} error."
   ],
   [
+   "{0} linhas ignoradas: longas demais.",
+   "{0} líneas omitidas: demasiado largas."
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "{0} de {1} tareas hechas · {2}"
   ],
@@ -2055,8 +2225,16 @@ export default {
    "{0} tarjetas · {1} para repasar hoy"
   ],
   [
+   "{0} tarefas criadas para a unidade.",
+   "{0} tareas creadas para la unidad."
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "¿Quitar la asignatura “{0}”?\\n\\n{1}"
+  ],
+  [
+   "{0} linha ignorada: longas demais.",
+   "{0} línea omitida: demasiado larga."
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -2065,6 +2243,10 @@ export default {
   [
    "de {0} min de estudo nesta semana",
    "de {0} min de estudio esta semana"
+  ],
+  [
+   "{0} tarefa criada para a unidade.",
+   "{0} tarea creada para la unidad."
   ],
   [
    "Meta semanal: {0} de {1} minutos",
@@ -2083,6 +2265,14 @@ export default {
    "{0} tarjetas · nada pendiente hoy"
   ],
   [
+   "{0} já têm tarefa neste objetivo",
+   "{0} ya tienen tarea en este objetivo"
+  ],
+  [
+   "{0} já tem tarefa neste objetivo",
+   "{0} ya tiene tarea en este objetivo"
+  ],
+  [
    "Versão {0} · fonte: revisão {1}",
    "Versión {0} · fuente: versión {1}"
   ],
@@ -2099,6 +2289,10 @@ export default {
    "{0}. Revisar la transcripción: {1}"
   ],
   [
+   "{0}, {1} a {2}. Editar horário",
+   "{0}, de {1} a {2}. Editar horario"
+  ],
+  [
    "Gerar novas questões para {0}",
    "Generar nuevas preguntas para {0}"
   ],
@@ -2113,6 +2307,10 @@ export default {
   [
    "Adicionar subobjetivo em {0}",
    "Añadir subobjetivo a {0}"
+  ],
+  [
+   "{0} cartões no conjunto novo",
+   "{0} tarjetas en el conjunto nuevo"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -2133,6 +2331,10 @@ export default {
   [
    "{0} conjuntos · {1} cartões",
    "{0} conjuntos · {1} tarjetas"
+  ],
+  [
+   "{0} cartão no conjunto novo",
+   "{0} tarjeta en el conjunto nuevo"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -2163,6 +2365,10 @@ export default {
    "{0} enfoques completados hoy"
   ],
   [
+   "{0} tarefas serão criadas",
+   "Se crearán {0} tareas"
+  ],
+  [
    "Opções da disciplina {0}",
    "Opciones de la asignatura {0}"
   ],
@@ -2173,6 +2379,14 @@ export default {
   [
    "Continuar tentativa: {0}",
    "Seguir el intento: {0}"
+  ],
+  [
+   "Horário movido para {0}.",
+   "Horario movido a {0}."
+  ],
+  [
+   "Desfazer a marcação: {0}",
+   "Deshacer la marca: {0}"
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -2189,6 +2403,10 @@ export default {
   [
    "{0} foco concluído hoje",
    "{0} enfoque completado hoy"
+  ],
+  [
+   "{0} cartões encontrados",
+   "{0} tarjetas encontradas"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2219,6 +2437,10 @@ export default {
    "{0} clases seleccionadas"
   ],
   [
+   "{0} tarefa será criada",
+   "Se creará {0} tarea"
+  ],
+  [
    "Resultados para “{0}”",
    "Resultados para “{0}”"
   ],
@@ -2229,6 +2451,10 @@ export default {
   [
    "Prazo de tarefa · {0}",
    "Plazo de tarea · {0}"
+  ],
+  [
+   "{0} cartão encontrado",
+   "{0} tarjeta encontrada"
   ],
   [
    "Cópia de {0} criada.",
@@ -2271,6 +2497,10 @@ export default {
    "{0} clase seleccionada"
   ],
   [
+   "{0} aulas na unidade",
+   "{0} clases en la unidad"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · caduca el {1}"
   ],
@@ -2281,6 +2511,10 @@ export default {
   [
    "Áudio ouvido de {0}",
    "Audio escuchado de {0}"
+  ],
+  [
+   "{0} aula na unidade",
+   "{0} clase en la unidad"
   ],
   [
    "Ações da lista {0}",
@@ -2363,6 +2597,10 @@ export default {
    "Resultado {0} de {1}"
   ],
   [
+   "{0} ({1} cartões)",
+   "{0} ({1} tarjetas)"
+  ],
+  [
    "Questão {0}. {1}",
    "Pregunta {0}. {1}"
   ],
@@ -2389,6 +2627,14 @@ export default {
   [
    "{0} em andamento",
    "{0} en curso"
+  ],
+  [
+   "{0} ({1} cartão)",
+   "{0} ({1} tarjeta)"
+  ],
+  [
+   "Você marcou: {0}",
+   "Marcaste: {0}"
   ],
   [
    "Explicação: {0}",
@@ -2429,6 +2675,10 @@ export default {
   [
    "Selecionar {0}",
    "Seleccionar {0}"
+  ],
+  [
+   "Agendar em {0}",
+   "Programar el {0}"
   ],
   [
    "- Revisão {0}",
@@ -2491,6 +2741,10 @@ export default {
    "Plazo: {0}"
   ],
   [
+   "e mais {0}",
+   "y {0} más"
+  ],
+  [
    "Nível {0}",
    "Nivel {0}"
   ],
@@ -2505,6 +2759,14 @@ export default {
   [
    "Aula: {0}",
    "Clase: {0}"
+  ],
+  [
+   "Mover {0}",
+   "Mover {0}"
+  ],
+  [
+   "Abrir {0}",
+   "Abrir {0}"
   ],
   [
    "{0} aula",

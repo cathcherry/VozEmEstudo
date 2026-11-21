@@ -6,6 +6,7 @@ import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { getFocusSession } from '../utils/focus-host.js';
+import { initStudyStats } from './study-stats.js';
 
 await initAuthenticatedShell();
 const flags = await getFeatureFlags().catch(() => ({}));
@@ -21,6 +22,7 @@ if (!flags.study_tracking) {
   );
 } else {
   await initStudyTrackingPanel({});
+  void initStudyStats({ container: document.querySelector('[data-study-stats]') });
   const session = await getFocusSession();
   const section = document.querySelector('[data-focus-history]');
   const list = document.querySelector('[data-focus-history-list]');

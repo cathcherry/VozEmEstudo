@@ -511,6 +511,41 @@ async function main() {
       'Celular (390 px): a folha de personalização cabe na tela e "Continuar estudando" permanece',
     );
     await phone.context.close();
+
+    // ---------- Stickers beside page titles: up to 3, synced prefs, hidden with fewer stimuli -
+    {
+      const sticky = await openApp(browser, base, allFlags, state(), { width: 1280, height: 900 });
+      const p = sticky.page;
+      await p.goto(base + '/aparencia.html#estudio-visual');
+      const option = (name) => p.locator('.sticker-option', { hasText: name });
+      await option('Estrela').waitFor();
+      for (const name of ['Matcha', 'Coração', 'Brilho']) await option(name).click();
+      assert.equal(await option('Coração').getAttribute('aria-pressed'), 'true');
+      await option('Livro').click(); // a fourth one is refused, with an explanation
+      assert.equal(await option('Livro').getAttribute('aria-pressed'), 'false');
+      await p.locator('.toast, [role=status]', { hasText: 'Até 3 adesivos' }).first().waitFor();
+      await option('Coração').click(); // toggles off
+      assert.deepEqual(
+        await p.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences')).stickers),
+        ['matcha', 'sparkle'],
+      );
+      await settle(p);
+      await axeCheck(p, '[data-sticker-choices]', 'Adesivos no título');
+      await p.goto(base + '/historico.html');
+      const title = p.locator('main h1');
+      await title.locator('.page-stickers .sticker').nth(1).waitFor();
+      assert.equal((await title.innerText()).trim(), 'Biblioteca', 'the title text is unchanged');
+      assert.equal(await title.locator('.page-stickers').getAttribute('aria-hidden'), 'true');
+      await p.evaluate(() => {
+        const prefs = JSON.parse(localStorage.getItem('audioestudo-ui-preferences'));
+        localStorage.setItem('audioestudo-ui-preferences', JSON.stringify({ ...prefs, lowStimulation: true }));
+      });
+      await p.reload();
+      await title.locator('.page-stickers').waitFor({ state: 'attached' });
+      assert(await title.locator('.page-stickers').isHidden(), 'hidden with fewer visual stimuli');
+      await sticky.context.close();
+      record('Adesivos originais ao lado do título: até 3, salvos nas preferências, título intacto para leitores de tela, somem com menos estímulos');
+    }
   } finally {
     await browser.close();
     server.close();

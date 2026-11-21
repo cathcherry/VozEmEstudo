@@ -294,6 +294,9 @@
     result.setTemplates = {};
     for (const [id, template] of Object.entries(value?.setTemplates || {}).slice(0, 200))
       if (/^[\w-]{1,64}$/.test(id) && CARD_TEMPLATES.includes(template)) result.setTemplates[id] = template;
+    // Stickers beside page titles: known kinds, no repeats, at most 3 (see utils/stickers.js).
+    const STICKER_KINDS = ['star', 'heart', 'matcha', 'cloud', 'leaf', 'sparkle', 'book', 'pencil'];
+    result.stickers = [...new Set((Array.isArray(value?.stickers) ? value.stickers : []).filter((k) => STICKER_KINDS.includes(k)))].slice(0, 3);
     // Per-page wallpapers: only known pages and known wallpapers survive.
     result.pageWallpapers = {};
     for (const [page, wallpaper] of Object.entries(value?.pageWallpapers || {}))
