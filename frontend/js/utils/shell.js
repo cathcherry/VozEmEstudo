@@ -1,7 +1,9 @@
 import { requireSession, signOut } from '../api/auth.api.js';
 import { getAvatar } from './avatars.js';
 import { setStudyUser } from './study-store.js';
-import { initStudySync } from './study-sync.js';
+import { initStudySync, isStudySyncEnabled } from './study-sync.js';
+import { initFocusHost } from './focus-host.js';
+import { initUtilityShell } from './utility-shell.js';
 import { readProfileMedia } from './profile-storage.js';
 import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
@@ -15,6 +17,7 @@ export async function revealStudyNavigation() {
     const root = document.documentElement;
     root.dataset.navReview = String(Boolean(flags.flashcards || flags.annotations || flags.quiz_v2));
     root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
+    root.dataset.navFocus = String(Boolean(flags.study_tracking));
   } catch { /* Navigation keeps the always-available pages. */ }
 }
 
@@ -47,6 +50,12 @@ export async function initAuthenticatedShell() {
   const preferenceSync = initPreferenceCloud(session.user.id).catch(() => { /* Local preferences remain usable. */ });
   try { await initProfileStudySync(session.user.id); } catch { /* Keep local history available. */ }
   try { await initStudySync(session.user.id); } catch { /* Optional sync must never block access. */ }
+  // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
+  if (isStudySyncEnabled()) {
+    initFocusHost(session.user.id);
+    const lessonId = document.body.dataset.page === 'material' ? new URLSearchParams(location.search).get('id') : null;
+    void initUtilityShell({ userId: session.user.id, materialId: lessonId }).catch(() => { /* optional tool */ });
+  }
   await preferenceSync;
   document.querySelectorAll('[data-logout]').forEach((el) => {
     el.addEventListener('click', async (event) => {

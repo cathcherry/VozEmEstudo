@@ -76,8 +76,10 @@ export default {
   "Abrir configurações de leitura e foco": "Open reading and focus settings",
   "Abrir cópia compartilhada": "Open shared copy",
   "Abrir disciplina": "Open subject",
+  "Abrir Focar": "Open Focus",
   "Abrir menu": "Open menu",
   "Abrir no trecho da aula": "Open at this passage",
+  "Abrir painel do cronômetro": "Open timer panel",
   "Abrir perfil": "Open profile",
   "Acervo em construção": "Growing collection",
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "Access the transcript, summary and questions from the Library.",
@@ -119,6 +121,9 @@ export default {
   "Ajustar aparência e leitura": "Adjust appearance and reading",
   "Ajustar meta, fuso e sincronização": "Adjust goal, time zone and sync",
   "Ajuste a cor do texto para melhorar o contraste.": "Adjust the text color to improve contrast.",
+  "Ajustes do foco": "Focus settings",
+  "Ajustes do foco, meta e sincronização": "Focus settings, goal and sync",
+  "Ajustes salvos.": "Settings saved.",
   "Alças do recorte: ← / →": "Clip handles: ← / →",
   "algo novo?": "something new?",
   "Algumas ferramentas estão indisponíveis. A exportação dos textos continua disponível.": "Some tools are unavailable. Exporting the texts is still available.",
@@ -254,11 +259,15 @@ export default {
   "Biblioteca": "Library",
   "Biblioteca indisponível no momento.": "Library unavailable right now.",
   "Biblioteca viva": "Living library",
+  "Bloco concluído.": "Block done.",
   "Bloco de código": "Code block",
+  "Bloco pausado. Retome quando quiser.": "Block paused. Resume whenever you like.",
   "Bloco salvo.": "Block saved.",
+  "Blocos": "Blocks",
   "blocos do perfil": "profile blocks",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube and Spotify blocks load content from those services. You can edit or remove the blocks in your profile. Your profile stays private.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Blocks that show your own study data and update automatically.",
+  "Blocos recentes": "Recent blocks",
   "Bloqueado": "Locked",
   "boas descobertas.": "great discoveries.",
   "Bordô e rosa profundo.": "Burgundy and deep pink.",
@@ -333,6 +342,7 @@ export default {
   "Combinações rápidas": "Quick combinations",
   "Começar a estudar": "Start studying",
   "Começar meu material de estudo": "Start my study material",
+  "Começar o próximo bloco sozinho": "Start the next block automatically",
   "Começar tentativa": "Start attempt",
   "Como as questões ajudam na revisão?": "How do the questions help with review?",
   "Como estudar": "How to study",
@@ -453,6 +463,7 @@ export default {
   "Cronológico": "Chronological",
   "Cronológico, quando houver datas": "Chronological, when there are dates",
   "Cronômetro de estudo": "Study timer",
+  "Cronômetro de foco": "Focus timer",
   "CSS": "CSS",
   "CSV de flashcards": "Flashcards CSV",
   "Curiosidade ativa": "Active curiosity",
@@ -550,7 +561,9 @@ export default {
   "Em processamento": "Processing",
   "Em progresso": "In progress",
   "Em todo o site": "Across the site",
+  "Encerrar": "End",
   "Encerrar a sessão de estudo aberta em outro aparelho ou aba? O tempo já registrado é mantido.": "End the study session open on another device or tab? Time already logged is kept.",
+  "Encerrar bloco": "End block",
   "Encerrar o acesso": "Ending access",
   "Encerrar sessão ativa em outro aparelho ou aba": "End active session on another device or tab",
   "Encontre instruções para enviar aulas, organizar a Biblioteca e usar os recursos de estudo.": "Find instructions for uploading lessons, organizing the Library and using the study features.",
@@ -591,6 +604,7 @@ export default {
   "Escolha uma nova senha para sua conta.": "Choose a new password for your account.",
   "Escolher uma aula": "Choose a lesson",
   "Escolher uma aula na Biblioteca": "Choose a lesson in the Library",
+  "Esconder cápsula (o cronômetro continua)": "Hide capsule (the timer keeps running)",
   "Escreva a anotação ou exclua-a.": "Write the note or delete it.",
   "Escreva a pergunta e a resposta.": "Write the question and the answer.",
   "Escreva algo sobre você ou seus estudos": "Write something about yourself or your studies",
@@ -629,6 +643,7 @@ export default {
   "Estreito": "Narrow",
   "Estudo": "Estudo",
   "Estudo livre": "Free study",
+  "Estudo livre, sem tempo definido": "Free study, no set time",
   "Estudo mais leve, no seu ritmo.": "Lighter studying, at your own pace.",
   "Etapas da transcrição": "Transcription steps",
   "Etapas de estudo desta aula": "Study steps for this lesson",
@@ -664,6 +679,7 @@ export default {
   "Fechar navegação": "Close navigation",
   "Fechar notificação": "Close notification",
   "Fechar organização do material": "Close material organization",
+  "Fechar painel (o cronômetro continua na cápsula)": "Close panel (the timer keeps running in the capsule)",
   "Feedback ao responder": "Feedback when answering",
   "feito com": "made with",
   "Feito por nós.": "Made by us.",
@@ -680,7 +696,10 @@ export default {
   "Flashcards": "Flashcards",
   "Flashcards do dia, criação e conjuntos de cartões, suas tentativas de questões (com \"refazer apenas as erradas\") e todas as anotações. Aparece quando esses recursos estão ativos.": "Today's flashcards, card creation and sets, your question attempts (with \"redo only the wrong ones\") and all your notes. Shown when these features are on.",
   "Flashcards, tentativas de questões e anotações aparecem aqui quando forem ativados neste servidor.": "Flashcards, question attempts and notes appear here once they're enabled on this server.",
+  "Focar": "Focus",
   "Foco": "Focus",
+  "Foco (min)": "Focus (min)",
+  "Foco concluído! Hora de uma pausa.": "Focus done! Time for a break.",
   "Foco concluído! Que tal uma pausa de 5 minutos?": "Focus done! How about a 5-minute break?",
   "Foco concluído. Inicie a pausa de 5 minutos.": "Focus done. Start the 5-minute break.",
   "Foco de 25 minutos": "25-minute focus",
@@ -746,6 +765,7 @@ export default {
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "There's a conflict between devices. Choose below which progress to keep.",
   "Há mudanças salvas só neste navegador, aguardando sincronização.": "Some changes are saved only in this browser and are waiting to sync.",
   "Há uma sessão aberta em outro aparelho ou aba.": "A session is open on another device or tab.",
+  "Há uma sessão de estudo aberta em outro aparelho. Este cronômetro corre, mas o tempo só conta lá.": "A study session is open on another device. This timer runs, but time only counts there.",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "There are local and account versions to compare. Choose which to keep.",
   "Habilidades cognitivas": "Cognitive skills",
   "histórico de estudo": "study history",
@@ -852,6 +872,7 @@ export default {
   "Literária": "Literary",
   "Livre": "Free",
   "Localização": "Breadcrumb",
+  "Longa": "Long",
   "Longas": "Long",
   "Mais detalhes: subobjetivo, aula e link": "More details: sub-goal, lesson and link",
   "Mais lenta": "Slower",
@@ -899,6 +920,7 @@ export default {
   "Minha semana de estudo": "My study week",
   "Minhas anotações": "My notes",
   "Minhas notas": "My notes",
+  "Minimizar em cápsula": "Minimise to capsule",
   "Minutos por dia": "Minutes per day",
   "Minutos registrados nesta semana e a sua meta.": "Minutes logged this week and your goal.",
   "Moderna": "Modern",
@@ -972,6 +994,7 @@ export default {
   "Não foi possível completar a exportação das anotações.": "Couldn't complete the notes export.",
   "Não foi possível completar o calendário.": "Couldn't complete the calendar.",
   "Não foi possível concluir": "Couldn't complete",
+  "Não foi possível concluir a ação.": "The action could not be completed.",
   "Não foi possível concluir a transcrição.": "Couldn't complete the transcription.",
   "Não foi possível concluir o acesso.": "Couldn't complete sign-in.",
   "Não foi possível concluir o acesso. Inicie o login novamente no mesmo navegador.": "Couldn't complete sign-in. Start signing in again in the same browser.",
@@ -1102,6 +1125,10 @@ export default {
   "O caminho principal é enviar uma aula, conferir a transcrição e seguir as etapas de estudo da aula; depois, revisar e planejar os próximos estudos.": "The main path is to upload a lesson, check the transcript and follow the lesson's study steps; then review and plan your next study sessions.",
   "O catálogo não está disponível.": "The catalog isn't available.",
   "O conteúdo gerado automaticamente pode conter erros. Compare-o com a transcrição e revise os trechos necessários.": "Automatically generated content may contain errors. Compare it with the transcript and revise the parts that need it.",
+  "O cronômetro ainda não está ativo": "The timer is not active yet",
+  "O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.": "The timer continues across pages; it stops if none stays open.",
+  "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "The timer stopped because no Voz em Estudo page stayed open and visible.",
+  "O cronômetro parou porque nenhuma página ficou aberta e visível.": "The timer stopped because no page stayed open and visible.",
   "O diagnóstico não corresponde à tentativa.": "The diagnosis doesn't match the attempt.",
   "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado de sincronização no perfil antes de limpar os dados do navegador.": "Your history, milestones and preferences are synced with your account. When offline, changes stay on this device until the next sync. Check the sync status in your profile before clearing browser data.",
   "O importante é continuar aprendendo.": "What matters is to keep learning.",
@@ -1114,6 +1141,7 @@ export default {
   "O que deseja alcançar?": "What do you want to achieve?",
   "O que é enviado": "What is sent",
   "O que fica reunido em cada material?": "What does each material include?",
+  "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "Study time tracking appears here once it is enabled on this server.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "The transcribed text is sent to an external AI service for preliminary warnings and, after you confirm, the summary and questions.",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "Processing by providers follows their own policies. Deleting in the app does not guarantee deletion in those services' systems.",
   "O trecho pode ter até 54 minutos.": "The clip can be up to 54 minutes long.",
@@ -1195,7 +1223,14 @@ export default {
   "Pastas": "Folders",
   "Pausa": "Break",
   "Pausa concluída. Inicie outro foco de 25 minutos.": "Break done. Start another 25-minute focus.",
+  "Pausa concluída. Pronto para outro foco?": "Break over. Ready for another focus block?",
+  "Pausa curta": "Short break",
+  "Pausa curta (min)": "Short break (min)",
   "Pausa de 5 minutos": "5-minute break",
+  "Pausa longa": "Long break",
+  "Pausa longa (min)": "Long break (min)",
+  "Pausa longa a cada (focos)": "Long break every (focus blocks)",
+  "Pausa longa concluída. Bom retorno!": "Long break over. Welcome back!",
   "Pausar": "Pause",
   "Pausar leitura": "Pause reading",
   "PDF (pela impressão do navegador)": "PDF (via browser print)",
@@ -1414,6 +1449,7 @@ export default {
   "Sair desta aba pausa a contagem; nada se perde.": "Leaving this tab pauses the count; nothing is lost.",
   "Salvando perfil…": "Saving profile…",
   "Salvar": "Save",
+  "Salvar ajustes": "Save settings",
   "Salvar alterações": "Save changes",
   "Salvar anotação": "Save note",
   "Salvar bloco": "Save block",
@@ -1455,7 +1491,9 @@ export default {
   "Sem aula": "No lesson",
   "Sem aula vinculada": "No linked lesson",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "No connection: your changes are saved in this browser and will be sent when the connection returns.",
+  "Sem conexão.": "No connection.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "No confirmation from the account. Progress stays in this browser and the submission will be retried with the same ID.",
+  "Sem confirmação do servidor. Tentaremos de novo.": "No confirmation from the server. We will try again.",
   "Sem conjunto": "No set",
   "Sem disciplina": "No subject",
   "sem fundo": "no background",
@@ -1519,6 +1557,7 @@ export default {
   "Sobre tipografia de leitura": "About reading typography",
   "Sobre você": "About you",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "Request received. If sign-up is possible, we'll send a confirmation email. If you already have an account, try signing in or use “Forgot my password”.",
+  "Som ao terminar um bloco": "Sound when a block ends",
   "Somente ao finalizar a lista": "Only when I finish the list",
   "Somente arquivos MP4": "MP4 files only",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "We're Catharine and Gabriela: best friends, students and tech lovers. Voz em Estudo was born from our final project in the Systems Development technical course and from an idea we shared: using what we were learning to help other students.",
@@ -1564,6 +1603,7 @@ export default {
   "Templates": "Templates",
   "Tempo da sessão": "Session time",
   "Tempo de estudo": "Study time",
+  "Tempo do bloco": "Block time",
   "Tempo e progresso de estudo": "Study time and progress",
   "Tentar de novo": "Try again",
   "Tentar novamente": "Try again",
@@ -1625,6 +1665,7 @@ export default {
   "Último acesso": "Last opened",
   "Um cantinho para a sua curiosidade": "A little corner for your curiosity",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "One click adjusts several preferences at once. Then fine-tune each one in Reading and focus. Modes never make text smaller or turn off accessibility options you turned on.",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "One timer for your whole account: it keeps going when you open a lesson, the Library or Review, and shows in a small capsule in the corner of the screen.",
   "Um espaço para descobrir.": "A space to discover.",
   "Um lembrete por linha": "One reminder per line",
   "Um número": "One number",
@@ -1863,6 +1904,14 @@ export default {
    "{0} of 7 days with study · {1} lesson completed"
   ],
   [
+   "{0} focos hoje · {1} de {2} até a pausa longa",
+   "{0} focus blocks today · {1} of {2} until the long break"
+  ],
+  [
+   "{0} foco hoje · {1} de {2} até a pausa longa",
+   "{0} focus block today · {1} of {2} until the long break"
+  ],
+  [
    "Informe uma quantidade inteira de 1 a {0}.",
    "Enter a whole number from 1 to {0}."
   ],
@@ -1999,6 +2048,10 @@ export default {
    "This device's time zone: {0}."
   ],
   [
+   "{0} focos concluídos hoje",
+   "{0} focus blocks done today"
+  ],
+  [
    "Opções da disciplina {0}",
    "Options for subject {0}"
   ],
@@ -2021,6 +2074,10 @@ export default {
   [
    "Adicionar tarefa em {0}",
    "Add task to {0}"
+  ],
+  [
+   "{0} foco concluído hoje",
+   "{0} focus block done today"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2147,6 +2204,10 @@ export default {
    "{0} focus session finished"
   ],
   [
+   "{0} de {1} minutos",
+   "{0} of {1} minutes"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · question {1}"
   ],
@@ -2201,6 +2262,10 @@ export default {
   [
    "{0}. Resumo: {1}",
    "{0}. Summary: {1}"
+  ],
+  [
+   "{0} em andamento",
+   "{0} in progress"
   ],
   [
    "Explicação: {0}",
@@ -2277,6 +2342,10 @@ export default {
   [
    "Mostrar {0}",
    "Show {0}"
+  ],
+  [
+   "{0} pausado",
+   "{0} paused"
   ],
   [
    "Versão {0}",

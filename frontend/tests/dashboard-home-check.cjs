@@ -243,13 +243,9 @@ async function main() {
       ['is-done', 'is-done', 'is-current', 'is-todo'],
     );
     assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
-    assert.equal(
-      await page.locator('.lesson-tools .lesson-tool[open] > summary').first().textContent(),
-      'Cronômetro de estudo',
-    );
-    const stepsBox = await page.locator('[data-lesson-steps]').boundingBox();
-    const toolsBox = await page.locator('.lesson-tools').boundingBox();
-    assert(toolsBox.y > stepsBox.y, 'the timer comes after the lesson content');
+    // The timer is no longer a block in the lesson: it lives in the utility panel and capsule.
+    assert.equal(await page.locator('.lesson-tools').count(), 0);
+    assert.equal(await page.locator('[data-utility-trigger]').count(), 1);
     await settle(page);
     await axeCheck(page, 'main', 'Aula › etapas');
     await shot(page, 'aula-etapas-1440');

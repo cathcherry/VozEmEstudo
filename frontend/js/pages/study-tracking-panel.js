@@ -1,9 +1,11 @@
 import { isStudySyncEnabled,studySync,importLocalProgress } from '../utils/study-sync.js';
-import { StudyClock } from '../utils/study-clock.js';
-import { getStudyOverview,saveStudySettings,startStudySession,tickStudySession } from '../api/study.api.js';
+import { getFocusSession } from '../utils/focus-host.js';
+import { getStudyOverview,saveStudySettings,tickStudySession } from '../api/study.api.js';
 import { toast } from '../utils/toast.js';
 
-// Focus timer and weekly study time. One card starts and pauses a session with a single button;
+// Focus timer and weekly study time. The timer is a view of the account's single focus session
+// (utils/focus-session.js), the same one shown by the side panel and the capsule on every page.
+// One card starts and pauses it with a single button;
 // the week card shows minutes per day against the goal. Goal, time zone and synchronization live
 // in a settings dialog so they never compete with studying. Short feedback goes to toasts.
 const make=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined&&text!==null)node.textContent=text;if(className)node.className=className;return node;};
@@ -11,8 +13,9 @@ const make=(tag,text,className)=>{const node=document.createElement(tag);if(text
 const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
 // Toasts when available (the panel test evaluates this file without the toast module).
 const say=(text,type='info')=>{if(text&&typeof toast==='function')toast(text,{type});};
-const clockLabel=(seconds)=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
-const MODES=[['pomodoro','Foco de 25 minutos','Foco'],['break','Pausa de 5 minutos','Pausa'],['reading','Estudo livre','Livre']];
+const clockLabel=(value)=>{const seconds=Math.max(0,Math.round(value||0));const h=Math.floor(seconds/3600);return `${h?`${h}:`:''}${String(Math.floor((seconds%3600)/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;};
+const MODES=[['pomodoro','Foco','Foco'],['short','Pausa curta','Pausa'],['long','Pausa longa','Longa'],['reading','Estudo livre','Livre']];
+const MODE_NAMES={pomodoro:'Foco',short:'Pausa',long:'Pausa longa',reading:'Estudo livre'};
 const NINO_FOCUS='/assets/brand/avatars/reading.png?v=nino-20261118';
 const NINO_REST='/assets/brand/avatars/rest.png?v=nino-20261118';
 const SVG='http://www.w3.org/2000/svg';
@@ -44,11 +47,12 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const caption=make('span','Foco de 25 minutos','focus-caption');
   const face=make('div',null,'focus-face');face.append(timer,caption);
   dial.append(svg,walker,face);
-  const cycles=make('p',null,'focus-cycles');cycles.setAttribute('aria-label','Focos concluídos nesta visita');
+  const cycles=make('p',null,'focus-cycles');
   const controls=make('div',null,'study-timer-controls focus-controls');
   const primary=make('button','Iniciar foco','primary-action focus-primary');primary.type='button';
-  controls.append(primary);
-  const hint=make('p','Sair desta aba pausa a contagem; nada se perde.','focus-hint');hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
+  const stopButton=make('button','Encerrar bloco','text-action focus-stop');stopButton.type='button';stopButton.hidden=true;
+  controls.append(primary,stopButton);
+  const hint=make('p','O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.','focus-hint');hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
   focus.append(heading,modes,dial,cycles,controls,hint);
 
   // ---------- Week card -------------------------------------------------------------------
@@ -56,7 +60,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const weekHead=make('div',null,'week-head');
   const weekTitle=make('h2','Sua semana');weekTitle.id='week-heading';
   const gear=make('button',null,'icon-action week-settings');gear.type='button';gear.setAttribute('aria-haspopup','dialog');
-  gear.setAttribute('aria-label','Ajustar meta, fuso e sincronização');gear.title='Ajustar meta, fuso e sincronização';
+  gear.setAttribute('aria-label','Ajustes do foco, meta e sincronização');gear.title='Ajustes do foco, meta e sincronização';
   gear.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
   weekHead.append(weekTitle,gear);
   const metrics=make('div',null,'study-metrics');metrics.setAttribute('aria-live','polite');
@@ -65,16 +69,25 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   // ---------- Settings dialog (goal, time zone, synchronization) ---------------------------
   const dialog=make('dialog',null,'settings-dialog app-dialog focus-settings-dialog');dialog.setAttribute('aria-labelledby','focus-settings-title');
   const dialogHead=make('div',null,'focus-settings-head');
-  const dialogTitle=make('h2','Meta e sincronização');dialogTitle.id='focus-settings-title';
+  const dialogTitle=make('h2','Ajustes do foco');dialogTitle.id='focus-settings-title';
   const close=make('button','×','dialog-close');close.type='button';close.setAttribute('aria-label','Fechar');close.addEventListener('click',()=>dialog.close());
   dialogHead.append(dialogTitle,close);
   const settings=make('form',null,'study-settings');
   const goalLabel=make('label','Meta semanal em minutos (0 desativa)');const goal=make('input');goal.type='number';goal.min='0';goal.max='10080';goal.required=true;goal.step='1';goalLabel.append(goal);
   const zoneLabel=make('label','Fuso horário');const zone=make('input');zone.required=true;zone.maxLength=100;zoneLabel.append(zone);
   const useZone=make('button','Usar fuso deste aparelho','text-action');useZone.type='button';useZone.addEventListener('click',()=>{zone.value=Intl.DateTimeFormat().resolvedOptions().timeZone;});
-  const save=make('button','Salvar meta e fuso','primary-action');save.type='submit';
+  const save=make('button','Salvar ajustes','primary-action');save.type='submit';
   const settingsActions=make('div',null,'form-actions');settingsActions.append(useZone,save);
-  settings.append(goalLabel,zoneLabel,settingsActions);
+  // Block durations belong to this account's focus session (kept in this browser).
+  const blocks=make('fieldset',null,'focus-blocks');blocks.append(make('legend','Blocos'));
+  const durations={};
+  for(const [name,label,min,max] of [['focus','Foco (min)',5,120],['short','Pausa curta (min)',1,30],['long','Pausa longa (min)',5,60],['longEvery','Pausa longa a cada (focos)',2,8]]){
+    const field=make('label',label);const input=make('input');input.type='number';input.min=String(min);input.max=String(max);input.step='1';input.required=true;field.append(input);blocks.append(field);durations[name]=input;
+  }
+  const autoLabel=make('label',null,'focus-check');const autoStart=make('input');autoStart.type='checkbox';autoLabel.append(autoStart,make('span','Começar o próximo bloco sozinho'));
+  const soundLabel=make('label',null,'focus-check');const sound=make('input');sound.type='checkbox';soundLabel.append(sound,make('span','Som ao terminar um bloco'));
+  blocks.append(autoLabel,soundLabel);
+  settings.append(blocks,goalLabel,zoneLabel,settingsActions);
   const syncSection=make('section',null,'focus-sync');syncSection.append(make('h3','Sincronização deste navegador'));
   const syncStatus=make('p',null,'focus-sync-status');syncStatus.setAttribute('role','status');syncStatus.setAttribute('aria-live','polite');
   const syncActions=make('div',null,'focus-sync-actions');
@@ -99,7 +112,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   dialog.append(dialogHead,settings,syncSection);
   dialog.addEventListener('click',(event)=>{if(event.target===dialog)dialog.close();});
   dialog.addEventListener('close',()=>gear.focus());
-  gear.addEventListener('click',()=>{dialog.showModal();goal.focus();});
+  gear.addEventListener('click',()=>{fillDurations();dialog.showModal();durations.focus.focus();});
   // A conflict needs a decision: the dialog opens by itself.
   const showSync=(event)=>{syncStatus.textContent=event.detail.message;conflicts.hidden=!event.detail.conflicts;
     week.classList.toggle('has-conflict',Boolean(event.detail.conflicts));
@@ -109,40 +122,39 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const layout=make('div',null,'focus-layout');layout.append(focus,week);
   panel.append(layout,dialog);
 
-  // ---------- Clock -----------------------------------------------------------------------
-  let selected='pomodoro',completed=0,lastMode=null,lastSessionMarker='',lastMessage='';
-  const renderCycles=()=>{cycles.replaceChildren();for(let i=0;i<4;i+=1){const dot=make('span',null,'focus-cycle'+(i<completed%4||(completed&&completed%4===0)?' is-done':''));dot.setAttribute('aria-hidden','true');cycles.append(dot);}
-    cycles.append(make('span',completed?`${completed} ${completed===1?'foco concluído':'focos concluídos'}`:'Nenhum foco concluído ainda','focus-cycles-text'));};
-  const clock=new StudyClock({api:{start:startStudySession,tick:tickStudySession},materialId,uuid:()=>crypto.randomUUID(),
-    onChange:(state)=>{
-      // A finished focus switches the clock to a break: count it.
-      if(lastMode==='pomodoro'&&state.mode==='break'&&!state.running){completed+=1;renderCycles();say('Foco concluído! Que tal uma pausa de 5 minutos?','success');}
-      // Follow the clock when it changes mode by itself (focus → break → focus) or is running.
-      if(lastMode!==null&&state.mode!==lastMode)selected=state.mode;
-      if(state.running)selected=state.mode;
-      lastMode=state.mode;
-      for(const [value,button] of modeButtons){const on=value===(state.running?state.mode:selected);button.setAttribute('aria-checked',String(on));button.tabIndex=on?0:-1;button.disabled=state.running||state.busy;}
-      const current=state.running?state.mode:selected;
-      const seconds=current===state.mode?(current==='reading'?state.elapsed:Math.ceil(state.remaining)):(current==='break'?300:current==='pomodoro'?1500:0);
-      timer.textContent=clockLabel(seconds);
-      const total=current==='break'?300:1500;
-      const progress=current==='reading'?((state.elapsed%3600)/3600):(1-(current===state.mode?state.remaining:total)/total);
-      panel.style.setProperty('--focus-progress',String(Math.max(0,Math.min(1,progress))));
-      caption.textContent=MODES.find(([value])=>value===current)[1];
-      panel.dataset.focusState=state.running?'running':state.busy?'busy':'idle';panel.dataset.focusMode=current;
-      nino.src=current==='break'?NINO_REST:NINO_FOCUS;
-      primary.disabled=state.busy;
-      primary.textContent=state.running?'Pausar':(state.elapsed>0||(current!=='reading'&&state.remaining<total))&&current===state.mode?'Retomar':current==='break'?'Iniciar pausa':current==='reading'?'Iniciar estudo livre':'Iniciar foco';
-      primary.setAttribute('aria-pressed',String(state.running));
-      // Messages that describe the state stay in the card; failures also become a toast.
-      if(state.message&&state.message!==lastMessage){lastMessage=state.message;hint.textContent=state.message;}
-      signal('study-clock',{mode:state.mode,elapsed:state.elapsed,remaining:state.remaining,running:state.running,busy:state.busy,session:state.session?{id:state.session.id}:null});
-      const marker=state.session?`${state.session.id}:${state.session.last_sequence}`:'';
-      if(marker!==lastSessionMarker){lastSessionMarker=marker;void refresh();}
-    },
-  });
+  // ---------- Clock: a view of the shared focus session -------------------------------------
+  const session=await getFocusSession();
+  if(materialId)session.setMaterial(materialId);
+  let lastServer='',lastStatus='';
+  const fillDurations=()=>{const current=session.state().settings;for(const name of Object.keys(durations))durations[name].value=String(current[name]);autoStart.checked=current.autoStart;sound.checked=current.sound;};
+  fillDurations();
+  function render(state){
+    for(const [value,button] of modeButtons){const on=value===state.mode;button.setAttribute('aria-checked',String(on));button.tabIndex=on?0:-1;button.disabled=state.status==='running'||state.busy;}
+    timer.textContent=clockLabel(state.remaining??state.elapsed);
+    const progress=state.planned===null?((state.elapsed%3600)/3600):(1-(state.remaining??0)/(state.planned||1));
+    panel.style.setProperty('--focus-progress',String(Math.max(0,Math.min(1,progress))));
+    caption.textContent=state.mode==='reading'?'Estudo livre':`${MODE_NAMES[state.mode]} de ${Math.round((state.planned||0)/60)} minutos`;
+    panel.dataset.focusState=state.busy?'busy':state.status==='running'?'running':'idle';panel.dataset.focusMode=state.mode;
+    nino.src=state.mode==='pomodoro'||state.mode==='reading'?NINO_FOCUS:NINO_REST;
+    const running=state.status==='running';
+    primary.disabled=state.busy;
+    primary.textContent=running?'Pausar':state.status==='paused'?'Retomar':state.mode==='reading'?'Iniciar estudo livre':state.mode==='pomodoro'?'Iniciar foco':'Iniciar pausa';
+    primary.setAttribute('aria-pressed',String(running));
+    stopButton.hidden=state.status==='idle';
+    // Cycle dots: focus blocks done since the last long break.
+    cycles.replaceChildren();
+    const every=state.settings.longEvery,done=state.cycle%every;
+    for(let i=0;i<every;i+=1){const dot=make('span',null,'focus-cycle'+(i<done?' is-done':''));dot.setAttribute('aria-hidden','true');cycles.append(dot);}
+    cycles.append(make('span',state.completedToday?`${state.completedToday} ${state.completedToday===1?'foco concluído hoje':'focos concluídos hoje'}`:'Nenhum foco concluído ainda','focus-cycles-text'));
+    hint.textContent=state.error||(state.notice?.kind==='stopped_away'?'O cronômetro parou porque nenhuma página ficou aberta e visível.':running?'O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.':state.status==='paused'?'Bloco pausado. Retome quando quiser.':'O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.');
+    signal('study-clock',{mode:state.mode,elapsed:state.elapsed,remaining:state.remaining,running,busy:state.busy,session:state.server?{id:state.server.id}:null});
+    // Credited time changes when a server session closes: refresh the week.
+    const marker=state.server?.id||'';
+    if((marker!==lastServer&&!marker)||(lastStatus==='running'&&state.status!=='running'))void refresh();
+    lastServer=marker;lastStatus=state.status;
+  }
   function notice(error){const text=error?.message||'Não foi possível confirmar a sessão.';hint.textContent=text;say(text,'error');}
-  const select=(value)=>{if(clock.running||clock.busy)return;selected=value;clock.emit(clock.message);};
+  const select=(value)=>{const state=session.state();if(state.status==='running'||state.busy)return;void session.setMode(value);};
   for(const [value,button] of modeButtons){
     button.addEventListener('click',()=>select(value));
     button.addEventListener('keydown',(event)=>{
@@ -153,8 +165,15 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
     });
   }
   primary.addEventListener('click',()=>{
-    if(clock.running)void clock.pause().then(refresh).catch(notice);
-    else void clock.start(selected).catch(notice);
+    const state=session.state();
+    if(state.status==='running')void session.pause().catch(notice);
+    else void session.start({materialId:materialId??undefined}).catch(notice);
+  });
+  stopButton.addEventListener('click',()=>void session.stop().catch(notice));
+  document.addEventListener('voz:focus-notice',(event)=>{
+    const kind=event.detail?.kind;
+    if(kind==='pomodoro_done')say('Foco concluído! Hora de uma pausa.','success');
+    else if(kind==='short_done'||kind==='long_done')say('Pausa concluída. Pronto para outro foco?','info');
   });
 
   // ---------- Week metrics ----------------------------------------------------------------
@@ -192,7 +211,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
       metrics.append(make('p',`${studiedDays} de 7 dias com estudo · ${data.completedMaterials} ${Number(data.completedMaterials)===1?'aula concluída':'aulas concluídas'}`,'week-note'));
       signal('study-overview',data);
       if(initial){goal.value=data.goalMinutes;zone.value=data.timezone;initial=false;}
-      if(data.activeSession&&!clock.session) {
+      if(data.activeSession&&data.activeSession.id!==session.state().server?.id) {
         const box=make('div',null,'week-alert');
         box.append(make('p','Há uma sessão aberta em outro aparelho ou aba.'));
         const end=make('button','Encerrar sessão ativa em outro aparelho ou aba','secondary-action');end.type='button';
@@ -207,24 +226,11 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   }
   settings.addEventListener('submit',(event)=>{
     event.preventDefault();if(!settings.reportValidity())return;save.disabled=true;
-    void saveStudySettings({goalMinutes:Number(goal.value),timezone:zone.value.trim()}).then(()=>{say('Meta e fuso salvos na conta.','success');if(dialog.open)dialog.close();return refresh();})
+    session.updateSettings({focus:durations.focus.value,short:durations.short.value,long:durations.long.value,longEvery:durations.longEvery.value,autoStart:autoStart.checked,sound:sound.checked});
+    void saveStudySettings({goalMinutes:Number(goal.value),timezone:zone.value.trim()}).then(()=>{say('Ajustes salvos.','success');if(dialog.open)dialog.close();return refresh();})
       .catch(notice).finally(()=>{save.disabled=false;});
   });
-  document.addEventListener('voz:tracking-command',(event)=>{
-    const action=event.detail?.action;
-    if(action==='start'&&!clock.running)void clock.start(selected).catch(notice);
-    else if(action==='pause'&&clock.running)void clock.pause().then(refresh).catch(notice);
-  });
-  renderCycles();clock.emit('Sair desta aba pausa a contagem; nada se perde.');
-  let pump;
-  const startPump=()=>{clearInterval(pump);pump=setInterval(()=>{void clock.pump().catch(notice);},1000);};
-  startPump();
-  const hidden=()=>{if(clock.running&&document.visibilityState!=='visible')void clock.pause(false).catch(notice);};
-  const blur=()=>{if(clock.running)void clock.pause(false).catch(notice);};
-  document.addEventListener('visibilitychange',hidden);window.addEventListener('blur',blur);
-  window.addEventListener('pagehide',()=>{
-    clearInterval(pump);if(clock.running)void clock.pause(false).catch(()=>{});
-  });
-  window.addEventListener('pageshow',(event)=>{if(event.persisted){startPump();void refresh();}});
+  session.subscribe(render);
+  window.addEventListener('pageshow',(event)=>{if(event.persisted)void refresh();});
   await refresh();
 }

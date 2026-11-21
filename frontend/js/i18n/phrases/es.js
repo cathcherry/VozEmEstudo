@@ -76,8 +76,10 @@ export default {
   "Abrir configurações de leitura e foco": "Abrir configuración de lectura y enfoque",
   "Abrir cópia compartilhada": "Abrir copia compartida",
   "Abrir disciplina": "Abrir asignatura",
+  "Abrir Focar": "Abrir Enfocar",
   "Abrir menu": "Abrir menú",
   "Abrir no trecho da aula": "Abrir en este fragmento",
+  "Abrir painel do cronômetro": "Abrir panel del temporizador",
   "Abrir perfil": "Abrir perfil",
   "Acervo em construção": "Colección en construcción",
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "Accede a la transcripción, el resumen y las preguntas desde la Biblioteca.",
@@ -119,6 +121,9 @@ export default {
   "Ajustar aparência e leitura": "Ajustar apariencia y lectura",
   "Ajustar meta, fuso e sincronização": "Ajustar meta, zona horaria y sincronización",
   "Ajuste a cor do texto para melhorar o contraste.": "Ajusta el color del texto para mejorar el contraste.",
+  "Ajustes do foco": "Ajustes de enfoque",
+  "Ajustes do foco, meta e sincronização": "Ajustes de enfoque, meta y sincronización",
+  "Ajustes salvos.": "Ajustes guardados.",
   "Alças do recorte: ← / →": "Controles del recorte: ← / →",
   "algo novo?": "algo nuevo?",
   "Algumas ferramentas estão indisponíveis. A exportação dos textos continua disponível.": "Algunas herramientas no están disponibles. La exportación de los textos sigue disponible.",
@@ -254,11 +259,15 @@ export default {
   "Biblioteca": "Biblioteca",
   "Biblioteca indisponível no momento.": "Biblioteca no disponible en este momento.",
   "Biblioteca viva": "Biblioteca viva",
+  "Bloco concluído.": "Bloque terminado.",
   "Bloco de código": "Bloque de código",
+  "Bloco pausado. Retome quando quiser.": "Bloque en pausa. Reanuda cuando quieras.",
   "Bloco salvo.": "Bloque guardado.",
+  "Blocos": "Bloques",
   "blocos do perfil": "bloques del perfil",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "Los bloques de YouTube y Spotify cargan contenido de esos servicios. Puedes editar o quitar los bloques en tu perfil. Tu perfil sigue siendo privado.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Bloques que muestran tus propios datos de estudio y se actualizan solos.",
+  "Blocos recentes": "Bloques recientes",
   "Bloqueado": "Bloqueado",
   "boas descobertas.": "grandes descubrimientos.",
   "Bordô e rosa profundo.": "Burdeos y rosa profundo.",
@@ -333,6 +342,7 @@ export default {
   "Combinações rápidas": "Combinaciones rápidas",
   "Começar a estudar": "Empezar a estudiar",
   "Começar meu material de estudo": "Empezar mi material de estudio",
+  "Começar o próximo bloco sozinho": "Empezar el siguiente bloque solo",
   "Começar tentativa": "Empezar intento",
   "Como as questões ajudam na revisão?": "¿Cómo ayudan las preguntas a repasar?",
   "Como estudar": "Cómo estudiar",
@@ -453,6 +463,7 @@ export default {
   "Cronológico": "Cronológico",
   "Cronológico, quando houver datas": "Cronológico, cuando haya fechas",
   "Cronômetro de estudo": "Cronómetro de estudio",
+  "Cronômetro de foco": "Temporizador de enfoque",
   "CSS": "CSS",
   "CSV de flashcards": "CSV de tarjetas",
   "Curiosidade ativa": "Curiosidad activa",
@@ -550,7 +561,9 @@ export default {
   "Em processamento": "En procesamiento",
   "Em progresso": "En progreso",
   "Em todo o site": "En todo el sitio",
+  "Encerrar": "Terminar",
   "Encerrar a sessão de estudo aberta em outro aparelho ou aba? O tempo já registrado é mantido.": "¿Terminar la sesión de estudio abierta en otro dispositivo o pestaña? El tiempo ya registrado se conserva.",
+  "Encerrar bloco": "Terminar bloque",
   "Encerrar o acesso": "Cerrar el acceso",
   "Encerrar sessão ativa em outro aparelho ou aba": "Terminar la sesión activa en otro dispositivo o pestaña",
   "Encontre instruções para enviar aulas, organizar a Biblioteca e usar os recursos de estudo.": "Encuentra instrucciones para subir clases, organizar la Biblioteca y usar las funciones de estudio.",
@@ -591,6 +604,7 @@ export default {
   "Escolha uma nova senha para sua conta.": "Elige una nueva contraseña para tu cuenta.",
   "Escolher uma aula": "Elegir una clase",
   "Escolher uma aula na Biblioteca": "Elegir una clase en la Biblioteca",
+  "Esconder cápsula (o cronômetro continua)": "Ocultar cápsula (el temporizador sigue)",
   "Escreva a anotação ou exclua-a.": "Escribe la nota o elimínala.",
   "Escreva a pergunta e a resposta.": "Escribe la pregunta y la respuesta.",
   "Escreva algo sobre você ou seus estudos": "Escribe algo sobre ti o tus estudios",
@@ -629,6 +643,7 @@ export default {
   "Estreito": "Estrecho",
   "Estudo": "Estudo",
   "Estudo livre": "Estudio libre",
+  "Estudo livre, sem tempo definido": "Estudio libre, sin tiempo definido",
   "Estudo mais leve, no seu ritmo.": "Estudio más ligero, a tu ritmo.",
   "Etapas da transcrição": "Pasos de la transcripción",
   "Etapas de estudo desta aula": "Etapas de estudio de esta clase",
@@ -664,6 +679,7 @@ export default {
   "Fechar navegação": "Cerrar navegación",
   "Fechar notificação": "Cerrar notificación",
   "Fechar organização do material": "Cerrar organización del material",
+  "Fechar painel (o cronômetro continua na cápsula)": "Cerrar panel (el temporizador sigue en la cápsula)",
   "Feedback ao responder": "Retroalimentación al responder",
   "feito com": "hecho con",
   "Feito por nós.": "Hecho por nosotras.",
@@ -680,7 +696,10 @@ export default {
   "Flashcards": "Tarjetas",
   "Flashcards do dia, criação e conjuntos de cartões, suas tentativas de questões (com \"refazer apenas as erradas\") e todas as anotações. Aparece quando esses recursos estão ativos.": "Tarjetas del día, creación y conjuntos de tarjetas, tus intentos de preguntas (con \"rehacer solo las falladas\") y todas las notas. Aparece cuando estas funciones están activas.",
   "Flashcards, tentativas de questões e anotações aparecem aqui quando forem ativados neste servidor.": "Las tarjetas, los intentos de preguntas y las notas aparecerán aquí cuando se activen en este servidor.",
+  "Focar": "Enfocar",
   "Foco": "Enfoque",
+  "Foco (min)": "Enfoque (min)",
+  "Foco concluído! Hora de uma pausa.": "¡Enfoque completado! Hora de una pausa.",
   "Foco concluído! Que tal uma pausa de 5 minutos?": "¡Enfoque completado! ¿Qué tal una pausa de 5 minutos?",
   "Foco concluído. Inicie a pausa de 5 minutos.": "Enfoque terminado. Inicia la pausa de 5 minutos.",
   "Foco de 25 minutos": "Enfoque de 25 minutos",
@@ -746,6 +765,7 @@ export default {
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "Hay un conflicto entre dispositivos. Elige abajo qué progreso conservar.",
   "Há mudanças salvas só neste navegador, aguardando sincronização.": "Hay cambios guardados solo en este navegador, pendientes de sincronizar.",
   "Há uma sessão aberta em outro aparelho ou aba.": "Hay una sesión abierta en otro dispositivo o pestaña.",
+  "Há uma sessão de estudo aberta em outro aparelho. Este cronômetro corre, mas o tempo só conta lá.": "Hay una sesión de estudio abierta en otro dispositivo. Este temporizador corre, pero el tiempo solo cuenta allí.",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "Hay versiones locales y de la cuenta para comparar. Elige cuál conservar.",
   "Habilidades cognitivas": "Habilidades cognitivas",
   "histórico de estudo": "historial de estudio",
@@ -852,6 +872,7 @@ export default {
   "Literária": "Literaria",
   "Livre": "Libre",
   "Localização": "Ubicación",
+  "Longa": "Larga",
   "Longas": "Largas",
   "Mais detalhes: subobjetivo, aula e link": "Más detalles: subobjetivo, clase y enlace",
   "Mais lenta": "Más lenta",
@@ -899,6 +920,7 @@ export default {
   "Minha semana de estudo": "Mi semana de estudio",
   "Minhas anotações": "Mis notas",
   "Minhas notas": "Mis notas",
+  "Minimizar em cápsula": "Minimizar en cápsula",
   "Minutos por dia": "Minutos por día",
   "Minutos registrados nesta semana e a sua meta.": "Minutos registrados esta semana y tu meta.",
   "Moderna": "Moderna",
@@ -972,6 +994,7 @@ export default {
   "Não foi possível completar a exportação das anotações.": "No se pudo completar la exportación de notas.",
   "Não foi possível completar o calendário.": "No se pudo completar el calendario.",
   "Não foi possível concluir": "No se pudo completar",
+  "Não foi possível concluir a ação.": "No se pudo completar la acción.",
   "Não foi possível concluir a transcrição.": "No se pudo completar la transcripción.",
   "Não foi possível concluir o acesso.": "No se pudo completar el acceso.",
   "Não foi possível concluir o acesso. Inicie o login novamente no mesmo navegador.": "No se pudo completar el acceso. Vuelve a iniciar sesión en el mismo navegador.",
@@ -1102,6 +1125,10 @@ export default {
   "O caminho principal é enviar uma aula, conferir a transcrição e seguir as etapas de estudo da aula; depois, revisar e planejar os próximos estudos.": "El camino principal es subir una clase, revisar la transcripción y seguir los pasos de estudio de la clase; después, repasar y planificar tus próximos estudios.",
   "O catálogo não está disponível.": "El catálogo no está disponible.",
   "O conteúdo gerado automaticamente pode conter erros. Compare-o com a transcrição e revise os trechos necessários.": "El contenido generado automáticamente puede contener errores. Compáralo con la transcripción y revisa los fragmentos necesarios.",
+  "O cronômetro ainda não está ativo": "El temporizador aún no está activo",
+  "O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.": "El temporizador continúa entre páginas; se detiene si ninguna queda abierta.",
+  "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "El temporizador se detuvo porque ninguna página de Voz em Estudo quedó abierta y visible.",
+  "O cronômetro parou porque nenhuma página ficou aberta e visível.": "El temporizador se detuvo porque ninguna página quedó abierta y visible.",
   "O diagnóstico não corresponde à tentativa.": "El diagnóstico no corresponde al intento.",
   "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado de sincronização no perfil antes de limpar os dados do navegador.": "El historial, los hitos y las preferencias se sincronizan con tu cuenta. Sin conexión, los cambios quedan en este dispositivo hasta el próximo envío. Revisa el estado de sincronización en el perfil antes de borrar los datos del navegador.",
   "O importante é continuar aprendendo.": "Lo importante es seguir aprendiendo.",
@@ -1114,6 +1141,7 @@ export default {
   "O que deseja alcançar?": "¿Qué quieres lograr?",
   "O que é enviado": "Qué se envía",
   "O que fica reunido em cada material?": "¿Qué reúne cada material?",
+  "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "El registro de tiempo de estudio aparece aquí cuando se active en este servidor.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "El texto transcrito se envía a un servicio externo de IA para avisos preliminares y, tras tu confirmación, el resumen y las preguntas.",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "El tratamiento por parte de los proveedores sigue sus propias políticas. Eliminar en la aplicación no garantiza la eliminación en los sistemas de esos servicios.",
   "O trecho pode ter até 54 minutos.": "El fragmento puede durar hasta 54 minutos.",
@@ -1195,7 +1223,14 @@ export default {
   "Pastas": "Carpetas",
   "Pausa": "Pausa",
   "Pausa concluída. Inicie outro foco de 25 minutos.": "Pausa terminada. Inicia otro enfoque de 25 minutos.",
+  "Pausa concluída. Pronto para outro foco?": "Pausa terminada. ¿Listo para otro enfoque?",
+  "Pausa curta": "Pausa corta",
+  "Pausa curta (min)": "Pausa corta (min)",
   "Pausa de 5 minutos": "Pausa de 5 minutos",
+  "Pausa longa": "Pausa larga",
+  "Pausa longa (min)": "Pausa larga (min)",
+  "Pausa longa a cada (focos)": "Pausa larga cada (enfoques)",
+  "Pausa longa concluída. Bom retorno!": "Pausa larga terminada. ¡Bienvenido de nuevo!",
   "Pausar": "Pausar",
   "Pausar leitura": "Pausar lectura",
   "PDF (pela impressão do navegador)": "PDF (con la impresión del navegador)",
@@ -1414,6 +1449,7 @@ export default {
   "Sair desta aba pausa a contagem; nada se perde.": "Salir de esta pestaña pausa el conteo; no se pierde nada.",
   "Salvando perfil…": "Guardando perfil…",
   "Salvar": "Guardar",
+  "Salvar ajustes": "Guardar ajustes",
   "Salvar alterações": "Guardar cambios",
   "Salvar anotação": "Guardar nota",
   "Salvar bloco": "Guardar bloque",
@@ -1455,7 +1491,9 @@ export default {
   "Sem aula": "Sin clase",
   "Sem aula vinculada": "Sin clase vinculada",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "Sin conexión: los cambios están guardados en este navegador y se enviarán cuando vuelva la conexión.",
+  "Sem conexão.": "Sin conexión.",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "Sin confirmación de la cuenta. El progreso sigue en este navegador y el envío se repetirá con la misma identificación.",
+  "Sem confirmação do servidor. Tentaremos de novo.": "Sin confirmación del servidor. Lo intentaremos de nuevo.",
   "Sem conjunto": "Sin conjunto",
   "Sem disciplina": "Sin asignatura",
   "sem fundo": "sin fondo",
@@ -1519,6 +1557,7 @@ export default {
   "Sobre tipografia de leitura": "Sobre tipografía de lectura",
   "Sobre você": "Sobre ti",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "Solicitud recibida. Si es posible crear la cuenta, te enviaremos un correo de confirmación. Si ya tienes cuenta, intenta iniciar sesión o usa “Olvidé mi contraseña”.",
+  "Som ao terminar um bloco": "Sonido al terminar un bloque",
   "Somente ao finalizar a lista": "Solo al terminar la lista",
   "Somente arquivos MP4": "Solo archivos MP4",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "Somos Catharine y Gabriela, mejores amigas, estudiantes y apasionadas por la tecnología. Voz em Estudo nació de nuestro trabajo de fin de curso en el Técnico en Desarrollo de Sistemas y de una idea que compartíamos: usar lo que estábamos aprendiendo para ayudar a otros estudiantes.",
@@ -1564,6 +1603,7 @@ export default {
   "Templates": "Plantillas",
   "Tempo da sessão": "Tiempo de la sesión",
   "Tempo de estudo": "Tiempo de estudio",
+  "Tempo do bloco": "Tiempo del bloque",
   "Tempo e progresso de estudo": "Tiempo y progreso de estudio",
   "Tentar de novo": "Intentar de nuevo",
   "Tentar novamente": "Intentar de nuevo",
@@ -1625,6 +1665,7 @@ export default {
   "Último acesso": "Último acceso",
   "Um cantinho para a sua curiosidade": "Un rincón para tu curiosidad",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "Un clic ajusta varias preferencias a la vez. Después, ajusta cada una en Lectura y enfoque. Los modos nunca reducen el texto ni desactivan opciones de accesibilidad que hayas activado.",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "Un temporizador para toda la cuenta: sigue cuando abres una clase, la Biblioteca o Repasar, y aparece en una cápsula discreta en la esquina de la pantalla.",
   "Um espaço para descobrir.": "Un espacio para descubrir.",
   "Um lembrete por linha": "Un recordatorio por línea",
   "Um número": "Un número",
@@ -1863,6 +1904,14 @@ export default {
    "{0} de 7 días con estudio · {1} clase completada"
   ],
   [
+   "{0} focos hoje · {1} de {2} até a pausa longa",
+   "{0} enfoques hoy · {1} de {2} hasta la pausa larga"
+  ],
+  [
+   "{0} foco hoje · {1} de {2} até a pausa longa",
+   "{0} enfoque hoy · {1} de {2} hasta la pausa larga"
+  ],
+  [
    "Informe uma quantidade inteira de 1 a {0}.",
    "Indica un número entero de 1 a {0}."
   ],
@@ -1999,6 +2048,10 @@ export default {
    "Zona horaria de este dispositivo: {0}."
   ],
   [
+   "{0} focos concluídos hoje",
+   "{0} enfoques completados hoy"
+  ],
+  [
    "Opções da disciplina {0}",
    "Opciones de la asignatura {0}"
   ],
@@ -2021,6 +2074,10 @@ export default {
   [
    "Adicionar tarefa em {0}",
    "Añadir tarea a {0}"
+  ],
+  [
+   "{0} foco concluído hoje",
+   "{0} enfoque completado hoy"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2147,6 +2204,10 @@ export default {
    "{0} enfoque completado"
   ],
   [
+   "{0} de {1} minutos",
+   "{0} de {1} minutos"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · pregunta {1}"
   ],
@@ -2201,6 +2262,10 @@ export default {
   [
    "{0}. Resumo: {1}",
    "{0}. Resumen: {1}"
+  ],
+  [
+   "{0} em andamento",
+   "{0} en curso"
   ],
   [
    "Explicação: {0}",
@@ -2277,6 +2342,10 @@ export default {
   [
    "Mostrar {0}",
    "Mostrar {0}"
+  ],
+  [
+   "{0} pausado",
+   "{0} en pausa"
   ],
   [
    "Versão {0}",

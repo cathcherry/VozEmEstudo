@@ -285,6 +285,7 @@ function initializeFocusDock() {
     ['Biblioteca', './historico.html', 'library'],
     ['Revisar', './revisar.html', 'review'],
     ['Planejar', './planejar.html', 'plan'],
+    ['Focar', './focar.html', 'plan'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');

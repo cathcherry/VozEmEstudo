@@ -76,8 +76,10 @@ export default {
   "Abrir configurações de leitura e foco": "打开阅读与专注设置",
   "Abrir cópia compartilhada": "打开分享的副本",
   "Abrir disciplina": "打开科目",
+  "Abrir Focar": "打开专注",
   "Abrir menu": "打开菜单",
   "Abrir no trecho da aula": "在课程中打开此段",
+  "Abrir painel do cronômetro": "打开计时器面板",
   "Abrir perfil": "打开个人资料",
   "Acervo em construção": "资料渐丰",
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "在资料库中查看转写、摘要和题目。",
@@ -119,6 +121,9 @@ export default {
   "Ajustar aparência e leitura": "调整外观与阅读",
   "Ajustar meta, fuso e sincronização": "调整目标、时区和同步",
   "Ajuste a cor do texto para melhorar o contraste.": "调整文字颜色以提高对比度。",
+  "Ajustes do foco": "专注设置",
+  "Ajustes do foco, meta e sincronização": "专注设置、目标与同步",
+  "Ajustes salvos.": "设置已保存。",
   "Alças do recorte: ← / →": "片段手柄：← / →",
   "algo novo?": "新事物吧？",
   "Algumas ferramentas estão indisponíveis. A exportação dos textos continua disponível.": "部分工具不可用。仍可导出文本。",
@@ -254,11 +259,15 @@ export default {
   "Biblioteca": "资料库",
   "Biblioteca indisponível no momento.": "资料库暂时不可用。",
   "Biblioteca viva": "鲜活资料库",
+  "Bloco concluído.": "时段完成。",
   "Bloco de código": "代码块",
+  "Bloco pausado. Retome quando quiser.": "时段已暂停。随时继续。",
   "Bloco salvo.": "区块已保存。",
+  "Blocos": "时段",
   "blocos do perfil": "个人资料区块",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube 和 Spotify 区块会加载这些服务的内容。你可以在个人资料中编辑或移除区块。你的个人资料仍为私密。",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "显示你的学习数据并自动更新的区块。",
+  "Blocos recentes": "最近的时段",
   "Bloqueado": "未解锁",
   "boas descobertas.": "美好的发现。",
   "Bordô e rosa profundo.": "勃艮第红与深粉。",
@@ -333,6 +342,7 @@ export default {
   "Combinações rápidas": "快速搭配",
   "Começar a estudar": "开始学习",
   "Começar meu material de estudo": "开始制作我的学习资料",
+  "Começar o próximo bloco sozinho": "自动开始下一个时段",
   "Começar tentativa": "开始作答",
   "Como as questões ajudam na revisão?": "题目如何帮助复习？",
   "Como estudar": "如何学习",
@@ -453,6 +463,7 @@ export default {
   "Cronológico": "按时间顺序",
   "Cronológico, quando houver datas": "按时间顺序（如有日期）",
   "Cronômetro de estudo": "学习计时器",
+  "Cronômetro de foco": "专注计时器",
   "CSS": "CSS",
   "CSV de flashcards": "记忆卡片 CSV",
   "Curiosidade ativa": "主动求知",
@@ -550,7 +561,9 @@ export default {
   "Em processamento": "处理中",
   "Em progresso": "进行中",
   "Em todo o site": "全站",
+  "Encerrar": "结束",
   "Encerrar a sessão de estudo aberta em outro aparelho ou aba? O tempo já registrado é mantido.": "结束在其他设备或标签页上进行的学习时段？已记录的时间会保留。",
+  "Encerrar bloco": "结束时段",
   "Encerrar o acesso": "结束访问",
   "Encerrar sessão ativa em outro aparelho ou aba": "结束其他设备或标签页上的学习时段",
   "Encontre instruções para enviar aulas, organizar a Biblioteca e usar os recursos de estudo.": "查看上传课程、整理资料库和使用学习功能的说明。",
@@ -591,6 +604,7 @@ export default {
   "Escolha uma nova senha para sua conta.": "为你的账户设置新密码。",
   "Escolher uma aula": "选择课程",
   "Escolher uma aula na Biblioteca": "从资料库选择课程",
+  "Esconder cápsula (o cronômetro continua)": "隐藏胶囊（计时器继续）",
   "Escreva a anotação ou exclua-a.": "请填写笔记或将其删除。",
   "Escreva a pergunta e a resposta.": "写下问题和答案。",
   "Escreva algo sobre você ou seus estudos": "写点关于你或你学习的内容",
@@ -629,6 +643,7 @@ export default {
   "Estreito": "窄",
   "Estudo": "Estudo",
   "Estudo livre": "自由学习",
+  "Estudo livre, sem tempo definido": "自由学习，不设时长",
   "Estudo mais leve, no seu ritmo.": "更轻松地学习，按你的节奏。",
   "Etapas da transcrição": "转写步骤",
   "Etapas de estudo desta aula": "本课程的学习步骤",
@@ -664,6 +679,7 @@ export default {
   "Fechar navegação": "关闭导航",
   "Fechar notificação": "关闭通知",
   "Fechar organização do material": "关闭资料整理",
+  "Fechar painel (o cronômetro continua na cápsula)": "关闭面板（计时器在胶囊中继续）",
   "Feedback ao responder": "作答反馈",
   "feito com": "源于",
   "Feito por nós.": "由我们打造。",
@@ -680,7 +696,10 @@ export default {
   "Flashcards": "记忆卡片",
   "Flashcards do dia, criação e conjuntos de cartões, suas tentativas de questões (com \"refazer apenas as erradas\") e todas as anotações. Aparece quando esses recursos estão ativos.": "今日记忆卡片、卡片创建与卡组、题目答题记录（可“只重做错题”）以及全部笔记。启用这些功能后显示。",
   "Flashcards, tentativas de questões e anotações aparecem aqui quando forem ativados neste servidor.": "记忆卡片、答题记录和笔记在此服务器启用后会显示在这里。",
+  "Focar": "专注",
   "Foco": "重点",
+  "Foco (min)": "专注（分钟）",
+  "Foco concluído! Hora de uma pausa.": "专注完成！该休息一下了。",
   "Foco concluído! Que tal uma pausa de 5 minutos?": "专注完成！休息 5 分钟吧？",
   "Foco concluído. Inicie a pausa de 5 minutos.": "专注完成。开始 5 分钟休息。",
   "Foco de 25 minutos": "25 分钟专注",
@@ -746,6 +765,7 @@ export default {
   "Há conflito entre aparelhos. Escolha abaixo qual andamento manter.": "设备之间存在冲突，请在下方选择保留哪份进度。",
   "Há mudanças salvas só neste navegador, aguardando sincronização.": "有些更改只保存在本浏览器中，正在等待同步。",
   "Há uma sessão aberta em outro aparelho ou aba.": "另一台设备或标签页上有一个未结束的时段。",
+  "Há uma sessão de estudo aberta em outro aparelho. Este cronômetro corre, mas o tempo só conta lá.": "另一台设备上有一个学习时段。此计时器会运行，但时间只计入那边。",
   "Há versões locais e da conta para comparar. Escolha qual manter.": "本地和账户中各有版本，请选择保留哪一个。",
   "Habilidades cognitivas": "认知能力",
   "histórico de estudo": "学习记录",
@@ -852,6 +872,7 @@ export default {
   "Literária": "文学",
   "Livre": "自由",
   "Localização": "位置",
+  "Longa": "长",
   "Longas": "长",
   "Mais detalhes: subobjetivo, aula e link": "更多详情：子目标、课程和链接",
   "Mais lenta": "较慢",
@@ -899,6 +920,7 @@ export default {
   "Minha semana de estudo": "我的学习周",
   "Minhas anotações": "我的笔记",
   "Minhas notas": "我的笔记",
+  "Minimizar em cápsula": "缩小为胶囊",
   "Minutos por dia": "每日分钟数",
   "Minutos registrados nesta semana e a sua meta.": "本周记录的分钟数和你的目标。",
   "Moderna": "现代",
@@ -972,6 +994,7 @@ export default {
   "Não foi possível completar a exportação das anotações.": "无法完成笔记导出。",
   "Não foi possível completar o calendário.": "无法完成日历加载。",
   "Não foi possível concluir": "无法完成",
+  "Não foi possível concluir a ação.": "无法完成该操作。",
   "Não foi possível concluir a transcrição.": "无法完成转写。",
   "Não foi possível concluir o acesso.": "无法完成登录。",
   "Não foi possível concluir o acesso. Inicie o login novamente no mesmo navegador.": "无法完成登录。请在同一浏览器中重新登录。",
@@ -1102,6 +1125,10 @@ export default {
   "O caminho principal é enviar uma aula, conferir a transcrição e seguir as etapas de estudo da aula; depois, revisar e planejar os próximos estudos.": "主要流程是：上传课程、核对转写，然后按课程的学习步骤进行；之后复习并规划接下来的学习。",
   "O catálogo não está disponível.": "目录不可用。",
   "O conteúdo gerado automaticamente pode conter erros. Compare-o com a transcrição e revise os trechos necessários.": "自动生成的内容可能有错误。请与转写对照，并修改需要的部分。",
+  "O cronômetro ainda não está ativo": "计时器尚未启用",
+  "O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.": "计时器在页面之间继续；如果没有页面保持打开，它会停止。",
+  "O cronômetro parou porque nenhuma página do Voz em Estudo ficou aberta e visível.": "计时器已停止，因为没有任何 Voz em Estudo 页面保持打开并可见。",
+  "O cronômetro parou porque nenhuma página ficou aberta e visível.": "计时器已停止，因为没有页面保持打开并可见。",
   "O diagnóstico não corresponde à tentativa.": "诊断与答题记录不匹配。",
   "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado de sincronização no perfil antes de limpar os dados do navegador.": "历史记录、里程碑和偏好设置会同步到你的账户。离线时，更改会保留在本设备上，直到下次同步。清除浏览器数据前，请先在个人资料中查看同步状态。",
   "O importante é continuar aprendendo.": "重要的是持续学习。",
@@ -1114,6 +1141,7 @@ export default {
   "O que deseja alcançar?": "你想达成什么？",
   "O que é enviado": "发送哪些内容",
   "O que fica reunido em cada material?": "每份资料包含什么？",
+  "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "在此服务器启用后，学习时间记录会显示在这里。",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "转写文本会发送到外部 AI 服务，用于初步提示，并在你确认后生成摘要和题目。",
   "O tratamento pelos provedores segue suas próprias políticas. A exclusão no aplicativo não garante a exclusão nos sistemas desses serviços.": "服务商对数据的处理遵循其各自的政策。在应用内删除并不保证这些服务的系统中也会删除。",
   "O trecho pode ter até 54 minutos.": "片段最长可达 54 分钟。",
@@ -1195,7 +1223,14 @@ export default {
   "Pastas": "文件夹",
   "Pausa": "休息",
   "Pausa concluída. Inicie outro foco de 25 minutos.": "休息结束。开始下一轮 25 分钟专注。",
+  "Pausa concluída. Pronto para outro foco?": "休息结束。准备好再专注一次了吗？",
+  "Pausa curta": "短休息",
+  "Pausa curta (min)": "短休息（分钟）",
   "Pausa de 5 minutos": "5 分钟休息",
+  "Pausa longa": "长休息",
+  "Pausa longa (min)": "长休息（分钟）",
+  "Pausa longa a cada (focos)": "每隔几次专注长休息",
+  "Pausa longa concluída. Bom retorno!": "长休息结束。欢迎回来！",
   "Pausar": "暂停",
   "Pausar leitura": "暂停朗读",
   "PDF (pela impressão do navegador)": "PDF（通过浏览器打印）",
@@ -1414,6 +1449,7 @@ export default {
   "Sair desta aba pausa a contagem; nada se perde.": "离开此标签页会暂停计时；不会丢失任何内容。",
   "Salvando perfil…": "正在保存个人资料…",
   "Salvar": "保存",
+  "Salvar ajustes": "保存设置",
   "Salvar alterações": "保存更改",
   "Salvar anotação": "保存笔记",
   "Salvar bloco": "保存区块",
@@ -1455,7 +1491,9 @@ export default {
   "Sem aula": "无课程",
   "Sem aula vinculada": "未关联课程",
   "Sem conexão: as mudanças estão salvas neste navegador e serão enviadas quando a conexão voltar.": "无网络连接：更改已保存在本浏览器中，联网后会自动上传。",
+  "Sem conexão.": "无网络连接。",
   "Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.": "账户未确认。进度仍保存在此浏览器中，将以相同标识重新提交。",
+  "Sem confirmação do servidor. Tentaremos de novo.": "服务器未确认。我们会再试一次。",
   "Sem conjunto": "无卡组",
   "Sem disciplina": "无科目",
   "sem fundo": "无背景",
@@ -1519,6 +1557,7 @@ export default {
   "Sobre tipografia de leitura": "关于阅读字体",
   "Sobre você": "关于你",
   "Solicitação recebida. Se o cadastro for possível, enviaremos um e-mail de confirmação. Se você já tem conta, tente entrar ou use “Esqueci minha senha”.": "已收到请求。如果可以注册，我们会发送确认邮件。如果你已有账户，请尝试登录或使用“忘记密码”。",
+  "Som ao terminar um bloco": "时段结束时播放提示音",
   "Somente ao finalizar a lista": "仅在完成列表后",
   "Somente arquivos MP4": "仅限 MP4 文件",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "我们是 Catharine 和 Gabriela，是最好的朋友、学生，也热爱科技。Voz em Estudo 源于我们系统开发技术课程的毕业设计，以及我们共同的想法：用所学帮助其他同学。",
@@ -1564,6 +1603,7 @@ export default {
   "Templates": "模板",
   "Tempo da sessão": "时段时长",
   "Tempo de estudo": "学习时间",
+  "Tempo do bloco": "时段时间",
   "Tempo e progresso de estudo": "学习时间与进度",
   "Tentar de novo": "重试",
   "Tentar novamente": "重试",
@@ -1582,7 +1622,7 @@ export default {
   "Texto para expandir": "展开的文字",
   "Texto um pouco maior, linhas mais curtas e mais espaço entre elas.": "字号稍大、行更短、行距更宽。",
   "Timestamp do trecho": "片段时间戳",
-  "Tipo de bloco": "区块类型",
+  "Tipo de bloco": "时段类型",
   "Tipo de sessão": "时段类型",
   "Tipos de resultado": "结果类型",
   "Título": "标题",
@@ -1625,6 +1665,7 @@ export default {
   "Último acesso": "最近访问",
   "Um cantinho para a sua curiosidade": "属于你好奇心的小角落",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "一键同时调整多项偏好，之后可在“阅读与专注”中逐项微调。模式不会缩小文字，也不会关闭你已开启的无障碍选项。",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "整个账户共用一个计时器：打开课程、资料库或复习时它都会继续，并显示在屏幕角落的小胶囊中。",
   "Um espaço para descobrir.": "一个探索的空间。",
   "Um lembrete por linha": "每行一条提醒",
   "Um número": "一个数字",
@@ -1863,6 +1904,14 @@ export default {
    "7 天中有 {0} 天学习 · 已完成 {1} 节课"
   ],
   [
+   "{0} focos hoje · {1} de {2} até a pausa longa",
+   "今天专注 {0} 次 · 距长休息 {1}/{2}"
+  ],
+  [
+   "{0} foco hoje · {1} de {2} até a pausa longa",
+   "今天专注 {0} 次 · 距长休息 {1}/{2}"
+  ],
+  [
    "Informe uma quantidade inteira de 1 a {0}.",
    "请输入 1 到 {0} 之间的整数。"
   ],
@@ -1999,6 +2048,10 @@ export default {
    "此设备的时区：{0}。"
   ],
   [
+   "{0} focos concluídos hoje",
+   "今天已完成 {0} 次专注"
+  ],
+  [
    "Opções da disciplina {0}",
    "科目{0}的选项"
   ],
@@ -2021,6 +2074,10 @@ export default {
   [
    "Adicionar tarefa em {0}",
    "为{0}添加任务"
+  ],
+  [
+   "{0} foco concluído hoje",
+   "今天已完成 {0} 次专注"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -2147,6 +2204,10 @@ export default {
    "已完成 {0} 次专注"
   ],
   [
+   "{0} de {1} minutos",
+   "{1} 分钟{0}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · 题目 {1}"
   ],
@@ -2201,6 +2262,10 @@ export default {
   [
    "{0}. Resumo: {1}",
    "{0}. 摘要：{1}"
+  ],
+  [
+   "{0} em andamento",
+   "{0}进行中"
   ],
   [
    "Explicação: {0}",
@@ -2277,6 +2342,10 @@ export default {
   [
    "Mostrar {0}",
    "显示{0}"
+  ],
+  [
+   "{0} pausado",
+   "{0}已暂停"
   ],
   [
    "Versão {0}",

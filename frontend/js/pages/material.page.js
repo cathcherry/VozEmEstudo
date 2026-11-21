@@ -27,7 +27,6 @@ import { initTranscriptPlayer } from '../utils/transcript-player.js';
 import { getPlayback, getCaptions, removeOriginalVideo } from '../api/playback.api.js';
 import { PlayerCaptions } from '../utils/captions.js';
 import { speakControls, speechLang } from '../utils/speech.js';
-import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { isStudySyncEnabled } from '../utils/study-sync.js';
 import { initMaterialTools } from './material-tools.js';
 import { renderMarkdown } from '../utils/markdown.js';
@@ -155,11 +154,7 @@ let playbackIdentity = '',
   playbackRequest = 0;
 let materialToolsInitialized = false,
   notesEnabled = false;
-if (materialId)
-  void initStudyTrackingPanel({ materialId }).catch((error) => {
-    const panel = $('[data-study-tracking-panel]');
-    if (panel && !panel.hidden) panel.textContent = error.message || 'Progresso indisponível.';
-  });
+// The focus timer for this lesson lives in the utility panel (utils/utility-shell.js).
 const messages = {
   summary: $('[data-summary-message]'),
   questions: $('[data-more-questions-message]'),
@@ -221,7 +216,6 @@ function layout() {
   $('.material-tabs').hidden = !showContent || !ready();
   $('[data-material-actions]').hidden = !showContent;
   $('[data-study-footer]').hidden = !showContent || !ready() || !currentMaterial.summaries?.length;
-  $('.lesson-tools').hidden = !showContent;
   $('[data-material-tab="notes"]').hidden = !notesEnabled;
   if (activeTab === 'notes' && !notesEnabled) activeTab = 'transcription';
   for (const name of ['transcription', 'summary', 'questions', 'notes']) {
