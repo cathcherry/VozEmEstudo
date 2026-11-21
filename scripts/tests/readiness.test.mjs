@@ -79,8 +79,12 @@ test('multi-lesson: its tables and generation reuse are probed; the flag needs c
   for (const name of ['ai_generations', 'multi_lesson_materials'])
     assert(results.some((r) => r.ok && r.label.includes(`multi_lesson: ${name} `)), name);
   assert(results.some((r) => !r.ok && r.label.includes('multi_lesson_jobs')));
-  // The knowledge-map cache is optional: never a readiness requirement.
-  assert(!results.some((r) => r.label.includes('knowledge_maps')));
+  // The knowledge-map cache and the exports are optional: reported, never a readiness requirement.
+  for (const name of ['knowledge_maps', 'multi_lesson_exports']) {
+    const probe = results.find((r) => r.label.includes(name));
+    assert(probe, `${name} is probed`);
+    assert.equal(probe.optional, true, `${name} is optional`);
+  }
   assert.deepEqual(readinessFlagErrors(flags), []);
   assert.match(readinessFlagErrors({ multi_lesson: true }).join(' '), /FEATURE_MULTI_LESSON exige FEATURE_CATALOG_UNITS/);
 });
@@ -97,4 +101,15 @@ test('classroom contributions: an optional probe that reports but never blocks',
   assert.equal(probe.optional, true);
   assert.match(probe.label, /20261122090000_classroom_contributions\.sql/);
   assert(results.filter((r) => !r.optional).every((r) => r.ok), 'required probes are unaffected');
+});
+
+test('flashcards 3.0: the private flashcard-media bucket is checked only with the flag on', async () => {
+  const bucket = (data) => ({ from: () => ({ select: async () => ({ data: [], error: null }) }), rpc: async () => ({ data: 'v', error: null }), storage: { getBucket: async () => ({ data, error: null }) } });
+  const flags = { flashcards: true, flashcard_sets: true, flashcards_v3: true };
+  const label = 'Bucket flashcard-media';
+  assert(!createReadinessChecks(bucket({}), { flashcards: true }, 'audios', 'v').some((c) => c.label.startsWith(label)));
+  const ok = await runReadinessChecks(createReadinessChecks(bucket({ public: false, file_size_limit: 2097152 }), flags, 'audios', 'v'));
+  assert.equal(ok.find((r) => r.label.startsWith(label)).ok, true);
+  const open = await runReadinessChecks(createReadinessChecks(bucket({ public: true, file_size_limit: 2097152 }), flags, 'audios', 'v'));
+  assert.equal(open.find((r) => r.label.startsWith(label)).ok, false, 'a public media bucket fails readiness');
 });

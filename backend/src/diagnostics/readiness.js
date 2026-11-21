@@ -25,6 +25,10 @@ export const featureSchema = Object.freeze({
  */
 export const optionalSchema = Object.freeze({
   classroom_contributions: { flag: 'classrooms', migration: '20261122090000_classroom_contributions.sql', tables: { classroom_contributions: 'id,status,feedback,integrated_material_id,shared_item_id' } },
+  // Turning an integrated material into a question list / a deck (503 for that action only).
+  multi_lesson_exports: { flag: 'multi_lesson', migration: '20261121180000_multi_lesson_exports.sql', tables: { multi_lesson_exports: 'id,multi_lesson_id,kind,request_id' } },
+  // Cache of knowledge maps: without it every lesson is mapped again (more AI calls, same result).
+  knowledge_map_cache: { flag: 'multi_lesson', migration: '20261121171000_knowledge_map_cache.sql', tables: { knowledge_maps: 'id,source_revision_id,prompt_version' } },
 });
 
 /** Not flags, but configuration with its own schema (checked when the setting is active). */
@@ -67,6 +71,11 @@ export function createReadinessChecks(db, flags, audioBucket, permissionVersion,
   if (asrProvider === 'assemblyai')
     for (const [name, columns] of Object.entries(configSchema.assemblyai.tables))
       checks.push(table(`ASR_PROVIDER=assemblyai: ${name} — conferir ${configSchema.assemblyai.migration}`, name, columns));
+  if (flags.flashcards_v3) checks.push({
+    label: 'Bucket flashcard-media: privado, imagens, limite 2 MiB',
+    run: () => db.storage.getBucket('flashcard-media'),
+    validate: (data) => data?.public === false && Number(data.file_size_limit) === 2097152,
+  });
   if (flags.mp4_retention) checks.push({
     label: 'Bucket study-videos: privado, MP4, limite 100 MiB',
     run: () => db.storage.getBucket('study-videos'),
