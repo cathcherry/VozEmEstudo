@@ -9,6 +9,10 @@ const accountKeys = (owner) => [
   `voz-study-outbox-v1:${owner}`,
   `voz-profile-blocks-v1:${owner}`,
   `voz-theme-profiles-v1:${owner}`,
+  // Focar session, utility panel layout and ambient sound choices.
+  `voz-focus-v1:${owner}`,
+  `voz-utility-v1:${owner}`,
+  `voz-ambient-v1:${owner}`,
 ];
 const PROFILE_DB = 'voz-profile-local-v1';
 const PROFILE_STORE = 'media';
