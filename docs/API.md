@@ -297,6 +297,9 @@ aulas, `unit` e `subject` exatamente 1 id, `units` até 20.
 | `GET /api/multi-lesson` | — | `200 [{id, title, status, selection_kind, outputs, source_count, excluded_count, error_code, created_at, completed_at}]` (50 mais recentes) |
 | `GET /api/multi-lesson/:id` | — | `200` material com `sources` (congeladas), `excluded`, `status` (`queued`, `running`, `ready`, `failed`), `job` e, quando pronto, `result` |
 | `DELETE /api/multi-lesson/:id` | — | `200 {id, deleted:true}`; se ainda estava na fila, a chave da geração é liberada |
+| `GET /api/multi-lesson/:id/exports` | — | `200 [{id, kind:'questions'\|'flashcards', multiLessonId, materialId, batchId, setId, itemCount, available, createdAt, updatedAt, links}]` |
+| `POST /api/multi-lesson/:id/question-list` | `{requestId, title?≤160}` | `200 {..., kind:'questions', materialId, batchId, replayed, links:{answer, lesson}}` — lista comum da primeira aula de origem utilizável, respondida em `responder.html` |
+| `POST /api/multi-lesson/:id/flashcard-set` (com `flashcard_sets`) | `{requestId, name?≤160}` | `200 {..., kind:'flashcards', setId, skipped, replayed, links:{review}}` — conjunto pessoal em Revisar › Conjuntos |
 
 `result` (quando `ready`): `summary.sections[{heading, text, citations}]`, `questions[{statement,
 options[4], correctIndex, explanation, citations}]`, `flashcards[{front, back, citations}]`,
@@ -317,6 +320,16 @@ pedidos por hora por conta, além do orçamento diário.
 | `MULTI_LESSON_INVALID_SELECTION` | 400 | Seleção malformada. |
 | `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
 | `MULTI_LESSON_SCHEMA_REQUIRED` | 503 | Flag ligada sem a migration. |
+| `MULTI_LESSON_NOT_READY` | 409 | Salvar como lista/conjunto antes de o material ficar pronto. |
+| `MULTI_LESSON_NOTHING_TO_EXPORT` | 409 | O material não tem questões (ou cartões) para salvar. |
+| `MULTI_LESSON_ANCHOR_UNAVAILABLE` | 409 | Nenhuma aula de origem continua do estudante, com permissão e a revisão congelada confirmada. |
+| `MULTI_LESSON_EXPORTS_SCHEMA_REQUIRED` | 503 | Sem `20261121180000_multi_lesson_exports.sql`; a página esconde os botões. |
+
+Salvar como lista ou conjunto (3.4, detalhes em
+[migrations/MULTI_LESSON_EXPORTS.md](migrations/MULTI_LESSON_EXPORTS.md)): só material `ready` do
+próprio estudante; `requestId` é a chave de idempotência e cada material vira no máximo uma lista e
+um conjunto (um segundo pedido devolve o existente com `replayed: true`; se a lista ou o conjunto
+foi excluído, um novo é criado). Limite: 60 pedidos por hora por conta. Nenhuma chamada de IA.
 
 Falhas da geração (em `error_code` do material): `LLM_TEMPORARY_ERROR`, `LLM_FAILED`,
 `LLM_INVALID_OUTPUT`, `MULTI_LESSON_NO_KNOWLEDGE`, `MULTI_LESSON_UNSUPPORTED`,
