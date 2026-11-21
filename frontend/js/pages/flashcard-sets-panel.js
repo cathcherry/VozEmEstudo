@@ -10,6 +10,7 @@ import { downloadText } from '../utils/study-export.js';
 import { buildStudyDocument, toMarkdown, safeFilename } from '../utils/study-document.js';
 import { ninoNote } from '../utils/material-ui.js';
 import { openMergeDialog, openImportDialog } from './deck-tools-panel.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -42,17 +43,19 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
     status.textContent = result.message;
     await load();
     await onChange();
+    document.dispatchEvent(new CustomEvent('voz:flashcards-sets-changed'));
   }
+  const v3 = () => isFeatureEnabled('flashcards_v3').catch(() => false);
   mergeButton.addEventListener('click', async () => {
     const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
     if (usable.length < 2) {
       status.textContent = 'Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.';
       return;
     }
-    await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton }));
+    await afterTool(await openMergeDialog({ sets: usable, opener: mergeButton, v3: await v3() }));
   });
   importButton.addEventListener('click', async () => {
-    await afterTool(await openImportDialog({ opener: importButton }));
+    await afterTool(await openImportDialog({ opener: importButton, v3: await v3() }));
   });
   section.append(
     summary,

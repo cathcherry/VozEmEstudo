@@ -5,6 +5,8 @@ export default [
   {
     ignores: [
       '**/node_modules/**',
+      // Local agent worktrees (never committed).
+      '.claude/**',
       '**/vendor/**',
       '**/artifacts/**',
       '**/evidence/**',

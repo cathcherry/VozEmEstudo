@@ -47,3 +47,29 @@ export const deleteFlashcardSet = (setId) =>
   apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}`, { method: 'DELETE' });
 export const deleteFlashcard = (cardId) =>
   apiFetch(`/api/flashcards/${encodeURIComponent(cardId)}`, { method: 'DELETE' });
+
+// Flashcards 3.0 (FEATURE_FLASHCARDS_V3): typed notes, visual templates, merges and Anki packages.
+export const listCardTemplates = () => apiFetch('/api/flashcards/templates');
+export const saveCardTemplate = (id, data) =>
+  apiFetch(`/api/flashcards/templates/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(data) });
+export const setFlashcardSetTemplate = (setId, data) =>
+  apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}/template`, { method: 'PUT', body: JSON.stringify(data) });
+export const addFlashcardNote = (setId, note) =>
+  apiFetch(`/api/flashcards/sets/${encodeURIComponent(setId)}/notes`, { method: 'POST', body: JSON.stringify(note) });
+export const createFlashcardDeck = (data) =>
+  apiFetch('/api/flashcards/decks', { method: 'POST', body: JSON.stringify(data) });
+export const previewFlashcardMerge = (sources) =>
+  apiFetch('/api/flashcards/merge/preview', { method: 'POST', body: JSON.stringify({ sources }) });
+export const mergeFlashcardSets = (data) =>
+  apiFetch('/api/flashcards/merge', { method: 'POST', body: JSON.stringify(data) });
+export function importApkg(file, { mode = 'preview', id, name, templateBase } = {}) {
+  const params = new URLSearchParams({ mode });
+  if (id) params.set('id', id);
+  if (name) params.set('name', name);
+  if (templateBase) params.set('templateBase', templateBase);
+  return apiFetch(`/api/flashcards/import/apkg?${params}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream' },
+    body: file,
+  });
+}

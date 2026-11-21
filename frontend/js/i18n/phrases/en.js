@@ -105,6 +105,7 @@ export default {
   "Adicione um bloco: seus dados de estudo, notas, uma lista de passos ou um conteAdicione um bloco de texto, código ou incorpore um conteúdo.#250;do incorporado.": "Add a block: your study data, notes, a list of steps or embedded content.",
   "Adicione um bloco: seus dados de estudo, notas, uma lista de passos ou um conteúdo incorporado.": "Add a block: your study data, notes, a list of steps or embedded content.",
   "Adicione uma tarefa para acompanhar este objetivo.": "Add a task to track this goal.",
+  "Afirmação com erro": "Statement with an error",
   "Agenda": "Schedule",
   "Agenda do mês": "This month's schedule",
   "Agendar estudo": "Schedule study",
@@ -169,8 +170,11 @@ export default {
   "Apagar mesmo assim e sair": "Delete anyway and sign out",
   "Apagar o áudio após transcrever": "Delete the audio after transcribing",
   "Aparência": "Appearance",
+  "Aparência aplicada ao conjunto inteiro. Os cartões não mudaram.": "Look applied to the whole set. The cards did not change.",
   "Aparência aplicada com contraste ajustado.": "Appearance applied with adjusted contrast.",
   "Aparência aplicada.": "Appearance applied.",
+  "Aparência deste conjunto": "Look of this set",
+  "Aparência do conjunto novo": "Look of the new set",
   "Aparência dos cartões": "Card look",
   "Aparência e foco": "Appearance and focus",
   "Aparência e leitura": "Appearance and reading",
@@ -275,6 +279,7 @@ export default {
   "Barra inferior": "Bottom bar",
   "Barra inferior: os atalhos ficam fixos na parte de baixo e a barra lateral some. No modo foco, a barra inferior é sempre usada e aparece ao levar o cursor (ou o Tab) até a alça na base da tela.": "Bottom bar: shortcuts stay fixed at the bottom and the sidebar disappears. In focus mode, the bottom bar is always used and appears when you move the cursor (or Tab) to the handle at the bottom of the screen.",
   "Barra lateral": "Sidebar",
+  "Base": "Base",
   "baseado em uma revisão anterior da transcrição": "based on an earlier transcript version",
   "Básico": "Basic",
   "Biblioteca": "Library",
@@ -324,6 +329,7 @@ export default {
   "Campo": "Meadow",
   "Cancelado": "Canceled",
   "Cancelar": "Cancel",
+  "Cantos arredondados": "Rounded corners",
   "Carregando histórico…": "Loading history…",
   "Carregando lista…": "Loading list…",
   "Carregando o ano…": "Loading the year…",
@@ -345,6 +351,7 @@ export default {
   "Catharine": "Catharine",
   "Catharine (perfil profissional, abre em nova aba)": "Catharine (professional profile, opens in a new tab)",
   "Catharine e Gabriela": "Catharine and Gabriela",
+  "Causa": "Cause",
   "Causa e efeito": "Cause and effect",
   "Causa e efeito, quando houver": "Cause and effect, when applicable",
   "Causas e consequências": "Causes and consequences",
@@ -385,11 +392,13 @@ export default {
   "Como você se lembrou?": "How well did you remember?",
   "Compacto": "Compact",
   "Compacto mostra mais conteúdo na tela no Início, em Revisar e em Planejar.": "Compact shows more content on screen in Home, Review and Plan.",
+  "Comparação": "Comparison",
   "Comparações": "Comparisons",
   "Comparativo": "Comparison",
   "Compartilhar": "Share",
   "Compartilhar lista": "Share list",
   "Compartilhar uma cópia para leitura": "Share a read-only copy",
+  "Complemento (opcional)": "Extra (optional)",
   "Compreender": "Understand",
   "Compreensão conceitual": "Conceptual understanding",
   "Comprimento das linhas": "Line length",
@@ -467,6 +476,7 @@ export default {
   "Cópia de leitura | Voz em Estudo": "Read-only copy | Voz em Estudo",
   "Copiar link": "Copy link",
   "Cor das letras": "Text color",
+  "Cor de destaque": "Accent colour",
   "Cor do destaque": "Highlight color",
   "Cor do fundo": "Background color",
   "Cor do texto": "Text color",
@@ -474,6 +484,7 @@ export default {
   "Coração": "Heart",
   "Coral": "Coral",
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "Colors, font and named custom themes, with reading and focus settings.",
+  "Correção": "Correction",
   "Creme quente e terracota.": "Warm cream and terracotta.",
   "Cria um link de leitura com uma cópia congelada das questões e alternativas. Respostas, explicações, transcrição, gravação e anotações não fazem parte do link.": "Creates a read-only link with a frozen copy of the questions and options. Answers, explanations, transcript, recording and notes are not part of the link.",
   "Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.": "Creates a task for each lesson of the unit, inside a goal. If the unit gets new lessons, use it again: only the missing ones are added.",
@@ -502,6 +513,7 @@ export default {
   "Crie conjuntos na aba Flashcards de cada aula, mescle conjuntos ou importe cartões de um arquivo. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Flashcards tab, merge sets or import cards from a file. Here you organize, review by set and export.",
   "Crie conjuntos na aba Resumo de cada aula. Aqui você organiza, revisa por conjunto e exporta.": "Create sets in each lesson's Summary tab. Here you organize, review by set and export.",
   "Crie um objetivo primeiro (por exemplo, \"Prova de Biologia\") e volte aqui.": "Create a goal first (for example, \"Biology exam\") and come back here.",
+  "Critério": "Criterion",
   "Cronológico": "Chronological",
   "Cronológico, quando houver datas": "Chronological, when there are dates",
   "Cronômetro de estudo": "Study timer",
@@ -529,6 +541,7 @@ export default {
   "Declaração de permissão registrada. Agora confira e confirme a transcrição.": "Permission statement recorded. Now check and confirm the transcript.",
   "Declaro que possuo permissão para utilizar esta gravação no Voz em Estudo e enviá-la para transcrição e geração dos materiais de revisão": "I declare that I have permission to use this recording in Voz em Estudo and to upload it for transcription and for generating review materials",
   "Defina objetivos, divida-os em tarefas, marque horários de estudo e acompanhe quanto tempo você estudou.": "Set goals, break them into tasks, schedule study sessions and track how much time you studied.",
+  "Definição": "Definition",
   "Definições": "Definitions",
   "Definições e conceitos-chave": "Definitions and key concepts",
   "Definições e terminologia": "Definitions and terminology",
@@ -546,6 +559,7 @@ export default {
   "Desligada": "Off",
   "Desligadas": "Off",
   "Desligado": "Off",
+  "Destacada": "Lifted",
   "Destacar": "Highlight",
   "Destaque por palavra indisponível: sem tempos de palavra válidos para esta revisão.": "Word highlighting unavailable: no valid word timings for this version.",
   "Destaque salvo no caderno da aula.": "Highlight saved in the lesson notebook.",
@@ -560,6 +574,7 @@ export default {
   "Diagnóstico da tentativa": "Attempt diagnosis",
   "Dias com estudo": "Days studied",
   "Dias do mês": "Days of the month",
+  "Diferença": "Difference",
   "Difícil": "Hard",
   "Dificuldade": "Difficulty",
   "Dificuldade e habilidades": "Difficulty and skills",
@@ -578,6 +593,7 @@ export default {
   "Do áudio ao texto": "From audio to text",
   "Do mais fácil ao mais difícil": "From easiest to hardest",
   "Do mais fácil ao mais difícil, cobrindo vários tipos de raciocínio.": "From easiest to hardest, covering several kinds of reasoning.",
+  "Do tema": "Theme's",
   "Dom": "Sun",
   "Duplicar": "Duplicate",
   "Duração": "Duration",
@@ -599,11 +615,13 @@ export default {
   "Editar horário": "Edit session",
   "Editar informações": "Edit details",
   "Editar informações do perfil": "Edit profile details",
+  "Editar modelo de cartão": "Edit card template",
   "Editar objetivo": "Edit goal",
   "Editar subobjetivo": "Edit subgoal",
   "Editar tarefa": "Edit task",
   "Editar transcrição": "Edit transcript",
   "Editorial (serifa)": "Editorial (serif)",
+  "Efeito": "Effect",
   "Ela pode ter sido excluída ou pertencer a outra conta.": "It may have been deleted or belong to another account.",
   "Em andamento": "In progress",
   "Em Aparência, você pode ajustar o tamanho e o espaçamento do texto, escolher uma tipografia de leitura, reforçar o contraste e personalizar as cores. Há também movimento reduzido, baixa estimulação e modo foco para diminuir distrações.": "In Appearance, you can adjust text size and spacing, choose a reading font, increase contrast and customize colors. There's also reduced motion, low stimulation and focus mode to cut down on distractions.",
@@ -619,6 +637,7 @@ export default {
   "Encerrar o acesso": "Ending access",
   "Encerrar sessão ativa em outro aparelho ou aba": "End active session on another device or tab",
   "Encontre instruções para enviar aulas, organizar a Biblioteca e usar os recursos de estudo.": "Find instructions for uploading lessons, organizing the Library and using the study features.",
+  "Encontre o erro": "Spot the error",
   "Encontre o fio da ideia.": "Find the thread of the idea.",
   "Encontre tudo por aula e disciplina.": "Find everything by lesson and subject.",
   "Enter no horário": "Enter on a timestamp",
@@ -654,6 +673,7 @@ export default {
   "Escolha pelo menos uma dificuldade e uma habilidade.": "Choose at least one difficulty and one skill.",
   "Escolha um arquivo com conteúdo e até 100 MB.": "Choose a non-empty file of up to 100 MB.",
   "Escolha um bloco de dados.": "Choose a data block.",
+  "Escolha um conjunto para cartões com tipo.": "Choose a set for typed cards.",
   "Escolha um material já transcrito e crie um novo lote sem apagar os anteriores.": "Choose an already transcribed material and create a new batch without deleting the previous ones.",
   "Escolha um PNG de até 8 MB.": "Choose a PNG up to 8 MB.",
   "Escolha um template.": "Choose a template.",
@@ -711,6 +731,7 @@ export default {
   "Estudo livre": "Free study",
   "Estudo livre, sem tempo definido": "Free study, no set time",
   "Estudo mais leve, no seu ritmo.": "Lighter studying, at your own pace.",
+  "Etapas (uma por linha)": "Steps (one per line)",
   "Etapas da transcrição": "Transcription steps",
   "Etapas de estudo desta aula": "Study steps for this lesson",
   "Etapas do envio": "Upload steps",
@@ -728,6 +749,7 @@ export default {
   "Excluir esta anotação? Ela deixa de aparecer nesta aula e nas buscas.": "Delete this note? It will no longer appear in this lesson or in searches.",
   "Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.": "Delete this card and its review history? This can't be undone.",
   "Excluir material": "Delete material",
+  "Exemplo (opcional)": "Example (optional)",
   "Exemplo ilustrativo": "Illustrative example",
   "Exemplos da aula": "Examples from the lesson",
   "Expandir barra lateral": "Expand sidebar",
@@ -780,6 +802,7 @@ export default {
   "Folha": "Leaf",
   "Folha de questões somente para leitura. As respostas não fazem parte deste link.": "Read-only question sheet. The answers aren't part of this link.",
   "Folha do aluno, sem respostas": "Student sheet, without answers",
+  "Fonte": "Font",
   "Fonte das letras": "Font",
   "Fonte de leitura": "Reading font",
   "Forma de acesso": "Sign-in method",
@@ -863,6 +886,7 @@ export default {
   "Imagem de capa": "Cover image",
   "Imagem de fundo aplicada.": "Background image applied.",
   "Imagem de fundo removida.": "Background image removed.",
+  "Imagem do cartão": "Card image",
   "Imagem própria": "Your image",
   "Imagem salva neste dispositivo · sincronização pendente": "Image saved on this device · sync pending",
   "Imagens de vídeos não são enviadas.": "Video images are not sent.",
@@ -908,8 +932,13 @@ export default {
   "Ir para a primeira ou a última aba": "Go to the first or last tab",
   "Ir para Leitura e foco": "Go to Reading and focus",
   "Ir para Revisar": "Go to Review",
+  "Item A": "Item A",
+  "Item B": "Item B",
   "Janela": "Window",
   "jeito de estudar.": "way of studying.",
+  "Juntar as respostas em um cartão": "Combine the answers in one card",
+  "Lacunas (cloze)": "Cloze (fill in the blanks)",
+  "Lacunas alinhadas à esquerda": "Blanks aligned left",
   "Lápis": "Pencil",
   "Largo": "Wide",
   "Largura de": "Width of",
@@ -931,6 +960,7 @@ export default {
   "Leitura em voz alta: em todo o site": "Read aloud: across the whole site",
   "Leitura fácil": "Easy reading",
   "LEMBRETE": "REMINDER",
+  "Lendo o pacote do Anki…": "Reading the Anki package…",
   "Lendo os cartões…": "Reading the cards…",
   "Ligar ou desligar o modo foco": "Turn focus mode on or off",
   "Lilás e violeta intenso.": "Lilac and deep violet.",
@@ -969,6 +999,7 @@ export default {
   "Mais revisitados": "Most revisited",
   "Mantenha esta aba visível e em foco para iniciar.": "Keep this tab visible and in focus to start.",
   "Manter versão deste navegador em conflitos": "Keep this browser's version in conflicts",
+  "Manuscrita": "Handwritten",
   "Mapa do ano (role para os lados)": "Year map (scroll sideways)",
   "Máquina de escrever": "Typewriter",
   "Marcação removida.": "Mark removed.",
@@ -1009,6 +1040,7 @@ export default {
   "MEU RITMO DE ESTUDO": "MY STUDY PACE",
   "Meu universo": "My universe",
   "Meus cards": "My cards",
+  "Meus modelos": "My templates",
   "Meus objetivos": "My goals",
   "Meus temas": "My themes",
   "min de estudo nesta semana": "min of study this week",
@@ -1031,7 +1063,7 @@ export default {
   "Modo para leitores de tela ativado.": "Screen reader mode on.",
   "Modo para leitores de tela desativado.": "Screen reader mode off.",
   "Modos de estudo": "Study modes",
-  "Monoespaçada": "Monospace",
+  "Monoespaçada": "Monospaced",
   "Mostrar": "Show",
   "Mostrar biblioteca": "Show library",
   "Mostrar confirmação de senha": "Show password confirmation",
@@ -1054,6 +1086,7 @@ export default {
   "MP4 original": "Original MP4",
   "MP4, MOV, WebM, MP3, WAV, M4A, AAC, OGG, FLAC · até 100 MB": "MP4, MOV, WebM, MP3, WAV, M4A, AAC, OGG, FLAC · up to 100 MB",
   "Muda menus, botões e mensagens. Transcrições, resumos, questões e o que você escreveu continuam no idioma original. O idioma das gravações é escolhido ao enviar cada aula.": "Changes menus, buttons and messages. Transcripts, summaries, questions and what you wrote stay in the original language. The recording language is chosen when you upload each lesson.",
+  "Muda só a aparência: perguntas, respostas, autoria e histórico continuam iguais.": "Changes only the look: questions, answers, authorship and history stay the same.",
   "Muitas descobertas.": "Many discoveries.",
   "Muito grande — 150%": "Extra large — 150%",
   "Múltipla escolha com uma alternativa correta, baseada na revisão confirmada. Listas anteriores e suas tentativas continuam salvas.": "Multiple choice with one correct answer, based on the confirmed version. Earlier lists and their attempts stay saved.",
@@ -1075,6 +1108,7 @@ export default {
   "Não foi possível abrir o armazenamento local.": "Couldn't open local storage.",
   "Não foi possível alterar a senha.": "Couldn't change the password.",
   "Não foi possível aplicar o avatar. Tente novamente.": "Couldn't apply the avatar. Try again.",
+  "Não foi possível aplicar.": "It could not be applied.",
   "Não foi possível atualizar os cartões.": "Couldn't update the cards.",
   "Não foi possível carregar a configuração pública da aplicação.": "Couldn't load the app's public configuration.",
   "Não foi possível carregar a declaração. Recarregue antes de confirmar.": "Couldn't load the statement. Reload before confirming.",
@@ -1121,6 +1155,8 @@ export default {
   "Não foi possível iniciar o envio.": "Couldn't start the upload.",
   "Não foi possível iniciar o login. Tente novamente.": "Couldn't start sign-in. Try again.",
   "Não foi possível iniciar.": "Couldn't start.",
+  "Não foi possível ler o pacote.": "The package could not be read.",
+  "Não foi possível ler os conjuntos.": "The sets could not be read.",
   "Não foi possível mover a aula.": "Couldn't move the lesson.",
   "Não foi possível mover esta aula.": "Couldn't move this lesson.",
   "Não foi possível preparar a gravação.": "Couldn't prepare the recording.",
@@ -1137,6 +1173,7 @@ export default {
   "Não foi possível salvar o andamento neste navegador.": "Couldn't save progress in this browser.",
   "Não foi possível salvar o bloco.": "Couldn't save the block.",
   "Não foi possível salvar o cartão.": "Couldn't save the card.",
+  "Não foi possível salvar o modelo.": "The template could not be saved.",
   "Não foi possível salvar o tema no armazenamento deste navegador.": "Couldn't save the theme in this browser's storage.",
   "Não foi possível salvar seu perfil.": "Couldn't save your profile.",
   "Não foi possível salvar.": "Couldn't save.",
@@ -1194,6 +1231,7 @@ export default {
   "Nome da lista": "List name",
   "Nome da versão": "Version name",
   "Nome do conjunto": "Set name",
+  "Nome do modelo": "Template name",
   "Nome do novo conjunto": "Name of the new set",
   "Nome do subobjetivo": "Subgoal name",
   "Nome do tema": "Theme name",
@@ -1215,6 +1253,8 @@ export default {
   "Novo conjunto": "New set",
   "Novo horário": "New session",
   "Novo lote": "New batch",
+  "Novo modelo": "New template",
+  "Novo modelo de cartão": "New card template",
   "Novo nome do conjunto": "New set name",
   "Novo objetivo": "New goal",
   "Novo subobjetivo": "New subgoal",
@@ -1249,6 +1289,7 @@ export default {
   "O planejamento ainda não está ativo": "Planning isn't active yet",
   "O planejamento está temporariamente indisponível.": "Planning is temporarily unavailable.",
   "O projeto": "The project",
+  "O que acontece / o que fazer": "What happens / what to do",
   "O que deseja alcançar?": "What do you want to achieve?",
   "O que é enviado": "What is sent",
   "O que fica reunido em cada material?": "What does each material include?",
@@ -1327,6 +1368,7 @@ export default {
   "Páginas dos flashcards": "Flashcard pages",
   "Palavra a palavra": "Word by word",
   "Paletas de cores": "Color palettes",
+  "Papel": "Paper",
   "Papel creme, manteiga e lavanda.": "Cream paper, butter and lavender.",
   "para ajustar o conforto de leitura. As preferências são sincronizadas com a sua conta.": "to adjust reading comfort. Your preferences are synced with your account.",
   "Para aprender com você.": "To learn with you.",
@@ -1355,6 +1397,7 @@ export default {
   "Pausar": "Pause",
   "Pausar leitura": "Pause reading",
   "Pausar som": "Pause sound",
+  "Pautado": "Lined",
   "PDF (pela impressão do navegador)": "PDF (via browser print)",
   "Peça um novo link a quem compartilhou com você.": "Ask the person who shared it with you for a new link.",
   "Pendentes": "Pending",
@@ -1365,6 +1408,7 @@ export default {
   "Perfil, blocos, fotos, preferências, histórico e conquistas são sincronizados com sua conta no Supabase. Uma cópia local permite continuar usando o site sem conexão; alterações pendentes são enviadas quando a conexão retorna. Esses dados ficam restritos à sua conta.": "Profile, blocks, photos, preferences, history and milestones are synced with your account in Supabase. A local copy lets you keep using the site offline; pending changes are sent when the connection returns. This data is restricted to your account.",
   "Perfil, layout do Início, preferências e histórico de estudo ficam na sua conta e voltam quando você entrar de novo. Apagar remove só as cópias desta conta neste navegador; outras contas e as preferências do dispositivo continuam.": "Profile, Home layout, preferences and study history stay in your account and come back when you sign in again. Deleting removes only this account's copies from this browser; other accounts and the device preferences stay.",
   "Perfil, objetivo de estudo e oito avatares do Nino, pelo atalho no cabeçalho.": "Profile, study goal and eight Nino avatars, via the shortcut in the header.",
+  "Pergunta": "Question",
   "Pergunta e resposta": "Question and answer",
   "Pergunta ou conceito": "Question or concept",
   "Perguntas e instruções": "Questions and instructions",
@@ -1396,6 +1440,7 @@ export default {
   "Por aula": "By lesson",
   "Por enquanto, destaque dentro de um único trecho.": "For now, highlight within a single passage.",
   "Por enquanto, os embeds aceitam links do YouTube e Spotify.": "For now, embeds accept YouTube and Spotify links.",
+  "Por quê (opcional)": "Why (optional)",
   "Por quê e como: explicações, causas e consequências.": "Why and how: explanations, causes and consequences.",
   "Por tipo de recurso": "By resource type",
   "Por trás do projeto": "Behind the project",
@@ -1427,6 +1472,7 @@ export default {
   "Prévia": "Preview",
   "Prévia da leitura": "Reading preview",
   "Prévia das cores personalizadas": "Custom colors preview",
+  "Prévia do modelo": "Template preview",
   "Prévia do widget": "Widget preview",
   "Primeira aula": "First lesson",
   "Primeira resposta": "First answer",
@@ -1440,6 +1486,7 @@ export default {
   "Processamento": "Processing",
   "Processamento cancelado": "Processing canceled",
   "Processando": "Processing",
+  "Processo": "Process",
   "Processos": "Processes",
   "Processos e mecanismos": "Processes and mechanisms",
   "Procurar": "Search",
@@ -1539,6 +1586,7 @@ export default {
   "Responder": "Answer",
   "Responder a lista": "Answer the list",
   "Responder de novo": "Answer again",
+  "Resposta": "Answer",
   "Resposta correta:": "Correct answer:",
   "Resposta ou explicação": "Answer or explanation",
   "Resposta registrada. O gabarito será apresentado ao concluir.": "Answer recorded. The answer key will be shown when you finish.",
@@ -1609,6 +1657,7 @@ export default {
   "Salvar edição": "Save edit",
   "Salvar horário": "Save session",
   "Salvar meta e fuso": "Save goal and time zone",
+  "Salvar modelo": "Save template",
   "Salvar nome": "Save name",
   "Salvar nova senha": "Save new password",
   "Salvar objetivo": "Save goal",
@@ -1653,6 +1702,7 @@ export default {
   "sem fundo": "no background",
   "Sem fundo": "No background",
   "Sem prazo": "No deadline",
+  "Sem sombra": "No shadow",
   "Sem subobjetivo": "No subgoal",
   "Sem tags": "No tags",
   "Sem tarefas": "No tasks",
@@ -1669,6 +1719,8 @@ export default {
   "Senha atualizada. Volte ao login e entre com sua nova senha.": "Password updated. Go back to sign in and use your new password.",
   "Senha e segurança": "Password and security",
   "Separe por vírgulas. Até 12 tags, sincronizadas com a sua conta.": "Separate with commas. Up to 12 tags, synced with your account.",
+  "Sequência": "Sequence",
+  "Serifa": "Serif",
   "Serviços externos": "External services",
   "Sessão de foco": "Focus session",
   "Sessão em andamento. Sair da aba pausa a contagem.": "Session in progress. Leaving the tab pauses the count.",
@@ -1697,7 +1749,7 @@ export default {
   "Síntese": "Synthesis",
   "Síntese, quando a aula sustentar": "Synthesis, when the lesson supports it",
   "Sistema": "System",
-  "Situação": "Status",
+  "Situação": "Situation",
   "Situações novas, comparações e resolução de problemas.": "New situations, comparisons and problem solving.",
   "Só um instante. Estamos preparando seu espaço de estudo.": "Just a moment. We're getting your study space ready.",
   "Sobre a aula": "About the lesson",
@@ -1722,6 +1774,7 @@ export default {
   "Som": "Sound",
   "Som ambiente": "Ambient sound",
   "Som ao terminar um bloco": "Sound when a block ends",
+  "Sombra": "Shadow",
   "Somente ao finalizar a lista": "Only when I finish the list",
   "Somente arquivos MP4": "MP4 files only",
   "Somos Catharine e Gabriela, melhores amigas, estudantes e apaixonadas por tecnologia. O Voz em Estudo nasceu do nosso TCC no Técnico em Desenvolvimento de Sistemas e de uma ideia que compartilhávamos: usar o que estávamos aprendendo para ajudar outros alunos.": "We're Catharine and Gabriela: best friends, students and tech lovers. Voz em Estudo was born from our final project in the Systems Development technical course and from an idea we shared: using what we were learning to help other students.",
@@ -1737,6 +1790,7 @@ export default {
   "Suas aulas vão aparecer aqui.": "Your lessons will show up here.",
   "Suas disciplinas": "Your subjects",
   "Suas tentativas de questões": "Your question attempts",
+  "Suave": "Soft",
   "Subir": "Move up",
   "Subobjetivo": "Subgoal",
   "Subobjetivo (opcional)": "Subgoal (optional)",
@@ -1782,15 +1836,18 @@ export default {
   "Tente outra busca ou ajuste os filtros.": "Try another search or adjust the filters.",
   "Tente outra busca ou filtro.": "Try another search or filter.",
   "Ter": "Tue",
+  "Termo": "Term",
   "Termo e definição": "Term and definition",
   "Teste o que você aprendeu com uma lista de questões desta aula.": "Test what you've learned with a question list from this lesson.",
   "Texto": "Text",
   "Texto (TXT)": "Text (TXT)",
+  "Texto com lacunas: {{c1::resposta}}": "Text with blanks: {{c1::answer}}",
   "Texto ou código": "Text or code",
   "Texto para expandir": "Text to expand",
   "Texto um pouco maior, linhas mais curtas e mais espaço entre elas.": "Slightly larger text, shorter lines and more space between them.",
   "Timestamp do trecho": "Excerpt timestamp",
   "Tipo de bloco": "Block type",
+  "Tipo de cartão": "Card type",
   "Tipo de sessão": "Session type",
   "Tipos de resultado": "Result types",
   "Título": "Title",
@@ -2029,6 +2086,10 @@ export default {
    "{0} of {1} were generated: the lesson is too short for more distinct questions."
   ],
   [
+   "Contraste baixo entre texto e papel ({0}:1). Pode ficar difícil de ler.",
+   "Low contrast between text and paper ({0}:1). It may be hard to read."
+  ],
+  [
    "{0} cartões repetidos ficam de fora (mesma pergunta e mesma resposta).",
    "{0} repeated cards are left out (same question and same answer)."
   ],
@@ -2041,12 +2102,28 @@ export default {
    "Expires {0}. The copy won't follow future changes to the list."
   ],
   [
+   "{0} perguntas aparecem com respostas diferentes: escolha abaixo.",
+   "{0} questions appear with different answers: choose below."
+  ],
+  [
+   "{0} pergunta aparece com respostas diferentes: escolha abaixo.",
+   "{0} question appears with different answers: choose below."
+  ],
+  [
+   "{0} notas ficaram de fora: limite de {1} cartões por conjunto.",
+   "{0} notes were left out: limit of {1} cards per set."
+  ],
+  [
    "Revisão registrada, mas a lista não pôde ser atualizada. {0}",
    "Review recorded, but the list couldn't be updated. {0}"
   ],
   [
    "{0} O envio será reconciliado antes de iniciar outra sessão.",
    "{0} The submission will be reconciled before another session starts."
+  ],
+  [
+   "{0} nota ficou de fora: limite de {1} cartões por conjunto.",
+   "{0} note was left out: limit of {1} cards per set."
   ],
   [
    "Remover o bloco \"{0}\"? Esta ação não pode ser desfeita.",
@@ -2085,6 +2162,10 @@ export default {
    "Last 12 months: {0} day studied, {1} in total."
   ],
   [
+   "{0} notas ignoradas: sem pergunta ou sem resposta.",
+   "{0} notes skipped: missing question or answer."
+  ],
+  [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
    "Incorrect answer. The expected answer is {0}.{1}"
   ],
@@ -2093,12 +2174,20 @@ export default {
    "{0} line skipped: missing question or answer."
   ],
   [
+   "{0} sons ignorados (áudio ainda não é importado).",
+   "{0} sounds skipped (audio is not imported yet)."
+  ],
+  [
    "{0} oculto. Ele continua aqui no modo de edição.",
    "{0} hidden. It's still here in edit mode."
   ],
   [
    "Arrastar {0}. Use Alt e as setas para reordenar.",
    "Drag {0}. Use Alt and the arrow keys to reorder."
+  ],
+  [
+   "{0} nota ignorada: sem pergunta ou sem resposta.",
+   "{0} note skipped: missing question or answer."
   ],
   [
    "Tema {0} atualizado com as preferências atuais.",
@@ -2111,6 +2200,14 @@ export default {
   [
    "{0} de 7 dias com estudo · {1} aulas concluídas",
    "{0} of 7 days with study · {1} lessons completed"
+  ],
+  [
+   "{0} som ignorado (áudio ainda não é importado).",
+   "{0} sound skipped (audio is not imported yet)."
+  ],
+  [
+   "{0} notas ignoradas: tipo de nota desconhecido.",
+   "{0} notes skipped: unknown note type."
   ],
   [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
@@ -2135,6 +2232,10 @@ export default {
   [
    "{0} cartões importados para um conjunto novo.",
    "{0} cards imported into a new set."
+  ],
+  [
+   "{0} nota ignorada: tipo de nota desconhecido.",
+   "{0} note skipped: unknown note type."
   ],
   [
    "{0} foco hoje · {1} de {2} até a pausa longa",
@@ -2167,6 +2268,10 @@ export default {
   [
    "Conjunto mesclado criado com {0} cartões.",
    "Merged set created with {0} cards."
+  ],
+  [
+   "Mesma pergunta, respostas diferentes: {0}",
+   "Same question, different answers: {0}"
   ],
   [
    "“{0}” ainda não tem tentativa concluída.",
@@ -2313,6 +2418,10 @@ export default {
    "{0} cards in the new set"
   ],
   [
+   "{0} imagens serão importadas",
+   "{0} images will be imported"
+  ],
+  [
    "Horário salvo na conta. {0}",
    "Study session saved to your account. {0}"
   ],
@@ -2367,6 +2476,10 @@ export default {
   [
    "{0} tarefas serão criadas",
    "{0} tasks will be created"
+  ],
+  [
+   "{0} imagem será importada",
+   "{0} image will be imported"
   ],
   [
    "Opções da disciplina {0}",
@@ -2457,6 +2570,10 @@ export default {
    "{0} card found"
   ],
   [
+   "Imagem do cartão: {0}",
+   "Card image: {0}"
+  ],
+  [
    "Cópia de {0} criada.",
    "Copy of {0} created."
   ],
@@ -2499,6 +2616,10 @@ export default {
   [
    "{0} aulas na unidade",
    "{0} lessons in the unit"
+  ],
+  [
+   "Manter a de {0}: {1}",
+   "Keep {0}'s: {1}"
   ],
   [
    "{0} · expira em {1}",
@@ -2779,6 +2900,10 @@ export default {
   [
    "{0} min",
    "{0} min"
+  ],
+  [
+   "De: {0}",
+   "From: {0}"
   ]
  ]
 };

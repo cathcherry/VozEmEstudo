@@ -4,7 +4,7 @@
 
 export const FRONT_MAX = 1000;
 export const BACK_MAX = 2000;
-export const IMPORT_MAX = 1000; // cards per import or merge (10 requests of 100 at most)
+export const IMPORT_MAX = 500; // cards per import or merge: one set holds at most 500 (database rule)
 export const CHUNK = 100; // cards per request accepted by the server
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'" };
@@ -134,6 +134,7 @@ export function parseCardFile(raw) {
     let front = clean(row[frontAt]);
     let back = clean(row[backAt]);
     const cloze = clozeCard(front);
+    const clozeText = cloze ? front : null;
     if (cloze) {
       // The "Back Extra" column, if present, is appended to the answer.
       back = back ? `${cloze.back}\n\n${back}` : cloze.back;
@@ -142,7 +143,8 @@ export function parseCardFile(raw) {
     if (!front || !back) return skipped.push({ line, reason: 'empty' });
     if (front.length > FRONT_MAX || back.length > BACK_MAX) return skipped.push({ line, reason: 'too_long' });
     if (cards.length >= IMPORT_MAX) return skipped.push({ line, reason: 'limit' });
-    cards.push({ front, back });
+    const extra = clozeText ? clean(row[backAt]) : '';
+    cards.push(clozeText ? { front, back, clozeText, ...(extra ? { extra } : {}) } : { front, back });
   });
   return { cards, skipped, format };
 }

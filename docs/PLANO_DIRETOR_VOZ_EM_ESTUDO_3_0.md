@@ -240,7 +240,28 @@ Compartilhar uma nota é um ato explícito e por item. Compartilhar um caderno n
   - de duas colunas em TSV, CSV ou com ponto e vírgula;
   - arquivos `.apkg` são explicados (exportar como texto), nunca enviados.
 
-**Ainda em desenho** (precisam de tabelas): notas tipadas, `card_templates` com variantes, mescla de baralhos **de colegas** (depende de compartilhamento) e leitura direta de `.apkg`.
+**3.3 — implementado** (migration `20261121150000_flashcards_3_0.sql`, flag `FEATURE_FLASHCARDS_V3`; ver `docs/migrations/FLASHCARDS_3_0.md`):
+
+- **Notas tipadas**:
+  - 8 tipos: pergunta e resposta, termo, lacunas, causa e efeito, comparação, sequência, aplicação e encontre o erro;
+  - os campos ficam guardados em `note_fields`, e o servidor renderiza a frente e o verso;
+  - os cartões antigos foram reclassificados explicitamente (`term_definition` → `term`).
+- **Modelos visuais próprios** (`study_card_templates`):
+  - só tokens declarativos: cores, fonte, cantos, fundo, sombra e variações por tipo;
+  - versionados e idempotentes, com limite de 50 por conta;
+  - o editor avisa quando o contraste está baixo, sem bloquear.
+- **Uma aparência por conjunto** (`template_id` ou `template_base`): trocá-la muda só a linha do conjunto, e os testes comprovam que cartões e revisões ficam idênticos.
+- **Mescla no servidor** com prévia de repetidos e decisão por conflito.
+  - Corrige um problema da 3.2: o índice único por pergunta descartava em silêncio as respostas diferentes.
+  - Agora o aluno escolhe manter uma das respostas ou juntá-las.
+  - A procedência fica em `origin_*`, e o novo baralho é pessoal, com agenda nova.
+- **Importação direta de `.apkg`**:
+  - lê a coleção antiga (JSON) e a atual (anki21b, com zstd e protobuf);
+  - descarta scripts e templates do pacote;
+  - guarda as imagens no bucket privado `flashcard-media`;
+  - ignora áudio, e informa isso.
+
+Mescla de baralhos **de colegas**: o mesmo fluxo aceita fontes com `classroomId`, quando a leitura de conjuntos compartilhados em Turmas estiver ligada (Marco E).
 
 O princípio é ter **três camadas independentes**:
 

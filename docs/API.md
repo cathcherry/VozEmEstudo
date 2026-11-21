@@ -162,3 +162,19 @@ Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, 
 4. O MP4 original, quando guardado, segue o mesmo caminho direto (bucket `study-videos`,
    `original/{userId}/{materialId}/source.mp4`) e depois é vinculado por `POST /:id/video`.
 5. Depois da transcrição, o worker apaga o áudio ou o move para `retained/…`, conforme a escolha.
+
+
+## Flashcards 3.0 (`FEATURE_FLASHCARDS_V3`, exige `FEATURE_FLASHCARD_SETS`)
+
+| Método | Rota | Corpo / resposta |
+| --- | --- | --- |
+| GET | `/api/flashcards/templates` | Modelos do usuário (`id, name, base, tokens, variants, version`) |
+| PUT | `/api/flashcards/templates/:id` | `{version, requestId, body:{name?, base?, tokens?, variants?, deleted?}}`; tokens só declarativos. `version: 0` cria |
+| PUT | `/api/flashcards/sets/:setId/template` | `{templateId}` ou `{base}` ou nenhum (favorita). Muda só o conjunto |
+| POST | `/api/flashcards/sets/:setId/notes` | `{noteType, fields}`; o servidor renderiza frente e verso. 409 se a pergunta já existe no conjunto |
+| POST | `/api/flashcards/decks` | `{id, name, origin:'manual'|'text_import', cards:[{noteType, fields}], templateId?, templateBase?}` |
+| POST | `/api/flashcards/merge/preview` | `{sources:[{setId, classroomId?}]}` → `{total, duplicates, resulting, overLimit, conflicts:[{key, front, options:[{cardId, back, label}]}]}` |
+| POST | `/api/flashcards/merge` | `{id, name, sources, decisions:{[key]: 'combine'|'keep:<cardId>'}, templateId?, templateBase?}` → conjunto novo |
+| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê; `create` guarda as imagens e o baralho |
+
+`GET /api/flashcards/sets/:id` e a fila de revisão passam a incluir `note_type`, `note_fields`, `origin_label` e `media:[{name, mime, url}]`, com URL assinada válida por 1 h.

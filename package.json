@@ -31,7 +31,7 @@
     "test:planning-ui": "node --test frontend/tests/planning-ui-check.mjs frontend/tests/lesson-steps.test.mjs frontend/tests/calendar-week.test.mjs frontend/tests/unit-plan.test.mjs",
     "test:quiz-v2-ui": "node --test frontend/tests/quiz-v2-ui.test.mjs frontend/tests/question-reports.test.mjs",
     "test:quiz-diagnostic-ui": "node --test frontend/tests/quiz-diagnostic-ui.test.mjs",
-    "test:flashcards-ui": "node --test frontend/tests/flashcard-ui.test.mjs frontend/tests/deck-tools.test.mjs",
+    "test:flashcards-ui": "node --test frontend/tests/flashcard-ui.test.mjs frontend/tests/deck-tools.test.mjs frontend/tests/card-looks.test.mjs",
     "test:player-v2": "node --test frontend/tests/player-v2.test.mjs frontend/tests/captions.test.mjs frontend/tests/speech.test.mjs",
     "test:study-tracking": "node --test frontend/tests/study-tracking.test.mjs frontend/tests/study-panel.test.mjs frontend/tests/focus-session.test.mjs frontend/tests/ambient-sound.test.mjs frontend/tests/study-stats.test.mjs",
     "test:learning-tools": "node --test frontend/tests/learning-tools.test.mjs frontend/tests/learning-panels.test.mjs",

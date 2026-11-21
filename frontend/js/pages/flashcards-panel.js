@@ -123,6 +123,11 @@ export async function initFlashcardsPanel({ materials }) {
   };
   document.addEventListener('voz:flashcards-command', (event) => {
     const action = event.detail?.action;
+    // Cards or sets changed elsewhere on the page (Flashcards 3.0 tools): load them again.
+    if (action === 'refresh') {
+      void refresh().then(() => afterCreate());
+      return;
+    }
     if (action === 'review') {
       (dueArea.querySelector('button') || count)?.focus?.();
       dueArea.scrollIntoView?.({ block: 'nearest' });
@@ -195,6 +200,7 @@ export async function initFlashcardsPanel({ materials }) {
   const setsEnabled = await isFeatureEnabled('flashcard_sets').catch(() => false);
   const setLabel = make('label', 'Conjunto');
   const setFilter = make('select');
+  setFilter.dataset.flashcardSetFilter = '';
   setFilter.append(new Option('Todos os conjuntos', ''));
   setLabel.append(setFilter);
   const createSetLabel = make('label', 'Conjunto (opcional)');
@@ -354,6 +360,9 @@ export async function initFlashcardsPanel({ materials }) {
       article.append(legend, ratingRow);
     }
     dueArea.append(article);
+    // Flashcards 3.0 decorates the card (look, type, images) without owning this panel.
+    article.dataset.cardId = card.id;
+    signal('flashcard-shown', { card, article });
   }
 
   function renderManagement() {

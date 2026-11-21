@@ -1,4 +1,5 @@
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
+import { signMedia } from './flashcards-v3.repository.js';
 import { AppError, errors } from '../domain/errors.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { SET_CARD_FIELDS } from './flashcard-set.repository.js';
@@ -55,7 +56,27 @@ export async function listOwnedFlashcards(userId, filter, options = {}) {
   });
   const { data, count, error } = await query;
   assertDb(error);
-  return { cards: data || [], total: count || 0, limit: PAGE_LIMIT, offset: options.offset || 0 };
+  // Flashcards 3.0: the queue also shows the note type, origin and imported images.
+  const cards = data || [];
+  if (sets && isFeatureEnabled('flashcards_v3') && cards.length) {
+    const { data: extra, error: extraError } = await getAdminSupabase()
+      .from('study_flashcards')
+      .select('id,note_type,origin_label,media')
+      .eq('user_id', userId)
+      .in('id', cards.map((card) => card.id));
+    if (!extraError) {
+      const byId = new Map((extra || []).map((row) => [row.id, row]));
+      const urls = await signMedia([...new Set((extra || []).flatMap((row) => (row.media || []).map((m) => m.path)))]);
+      for (const card of cards) {
+        const row = byId.get(card.id);
+        if (!row) continue;
+        card.note_type = row.note_type;
+        card.origin_label = row.origin_label;
+        card.media = (row.media || []).map((m) => ({ name: m.name, mime: m.mime, url: urls.get(m.path) || null }));
+      }
+    }
+  }
+  return { cards, total: count || 0, limit: PAGE_LIMIT, offset: options.offset || 0 };
 }
 
 export async function assertOwnedMaterial(userId, materialId) {

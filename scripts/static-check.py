@@ -84,7 +84,7 @@ def main():
         for path in ROOT.rglob("*")
         if path.is_file()
         and path.suffix in {".js", ".cjs", ".mjs"}
-        and not any(part in {"node_modules", ".git"} for part in path.parts)
+        and not any(part in {"node_modules", ".git", ".claude"} for part in path.parts)
     )
     for file in javascript:
         if "vendor" in file.parts:
