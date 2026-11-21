@@ -21,6 +21,7 @@ export async function revealStudyNavigation() {
     root.dataset.navReview = String(Boolean(flags.flashcards || flags.annotations || flags.quiz_v2));
     root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
+    root.dataset.navClassrooms = String(Boolean(flags.classrooms));
   } catch { /* Navigation keeps the always-available pages. */ }
 }
 

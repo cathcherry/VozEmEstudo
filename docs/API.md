@@ -138,9 +138,92 @@ ligado responde `409 QUIZ_SESSION_REQUIRED` (usar tentativas).
 | `/api/calendar`      | `calendar`       | `GET /?from&to` (janela até 62 dias), `PUT /`                                                                                                                                                                                                                            |
 | `/api/sharing`       | `sharing`        | `GET /:materialId`, `POST /:materialId {token, sourceRevisionId, includeTranscript, includeSummary, days}`, `DELETE /:materialId/:shareId`                                                                                                                               |
 
+### Notes 3.0 — `/api/notebooks` (flag `notebooks`, exige `annotations`)
+
+Caderno da aula: um documento **privado** por aula e por conta. Migration
+`20261121130000_notes_3_0.sql` (ver `docs/migrations/NOTES_3_0.md`).
+
+- `GET /api/notebooks/:materialId` → `{ notebook | null, references[], currentRevision, currentRevisionId }`.
+  `notebook` = `{ id, material_id, title, doc, version, visibility: "private", scope: "material", … }`.
+  `references` traz cada destaque citado (mesmo excluído depois): `id, source_revision_id,
+  source_revision, segment_position, end_segment_position, start_offset, end_offset, quote,
+  note_text, color, deleted, start_ms`. Se `source_revision ≠ currentRevision`, a referência
+  aponta para uma revisão anterior (a citação continua legível).
+- `PUT /api/notebooks/:materialId` `{ version, requestId, title?, doc }` → mesma resposta + `replayed`.
+  `version` = 0 para criar; depois a versão atual. Mesmo `requestId` com o mesmo corpo devolve o
+  estado salvo (`replayed: true`); com outro corpo, `409 LEARNING_REQUEST_CONFLICT`. Versão
+  desatualizada → `409 LEARNING_VERSION_CONFLICT` (nunca sobrescreve em silêncio).
+- `doc` = `{ type: "doc", schemaVersion: 1, blocks: [...] }`, no máximo 300 blocos e 160 kB.
+  Blocos (campos estritos, `id` = `[A-Za-z0-9_-]{1,40}` único):
+  `heading {level 2|3, text ≤300}`, `paragraph {text ≤5000}`, `bullet_list`/`ordered_list {items ≤100 × ≤1000}`,
+  `checklist {items: [{text, checked}]}`, `quote {text ≤2000}`,
+  `annotation_ref {annotationId, sourceRevisionId, sourceRevision?}` (o destaque deve ser desta aula
+  e conta, na revisão indicada → senão `409 LEARNING_REFERENCE_INVALID`).
+  Só texto: qualquer texto com `<tag` é recusado (`400 NOTEBOOK_INVALID`); excesso →
+  `413 NOTEBOOK_TOO_LARGE`. Outra conta → `404`. Flag ligada sem a migration →
+  `503 NOTEBOOK_SCHEMA_REQUIRED` (o resto da aula continua funcionando).
+
+Com `notebooks` ligado, `PUT /api/annotations` aceita âncoras em vários trechos (até 50):
+`{ sourceRevisionId, segmentPosition, startOffset, endSegmentPosition, endOffset, quote }`, com
+`endOffset` contado dentro do trecho final e `quote` = pedaços unidos por `\n`. O servidor confere a
+citação contra `segments_snapshot` da revisão (`409 LEARNING_ANCHOR_CONFLICT`) e exige revisão
+confirmada pela conta para destaques (`409 LEARNING_REVISION_UNCONFIRMED`). As respostas e
+`GET /api/annotations` passam a trazer `end_segment_position`, `anchor_version` e `visibility`.
+Sem a flag, o contrato E14 (um trecho) continua idêntico.
+
 `/api/flashcards/preview`: com `flashcard_sets` e `config` usa o gerador v2 (1–50 cartões, estilos,
 dificuldades, foco, lista de evitar); senão o v1 (5/10/20). Uma geração por pessoa por vez
 (`429 GENERATION_BUSY`); fonte acima de 80 mil caracteres → `422 SOURCE_TOO_LARGE`.
+
+## Turmas privadas 🔒 — `/api/classrooms` (flag `classrooms`)
+
+Só para membros; nada é público nem indexável (`Cache-Control: no-store`,
+`X-Robots-Tag: noindex, nofollow`, `Referrer-Policy: no-referrer`). Cada rota chama uma função
+`classroom_*_admin` que confere o papel na turma (`classroom_require_admin`); a conta vem sempre do
+token. Quem não é membro (ou saiu/foi removido) recebe `404 CLASSROOM_NOT_FOUND`; papel
+insuficiente, `403 CLASSROOM_FORBIDDEN`; turma arquivada, `409 CLASSROOM_ARCHIVED`; esquema
+ausente com a flag ligada, `503 CLASSROOMS_SCHEMA_REQUIRED`. Detalhes em
+[migrations/CLASSROOMS.md](migrations/CLASSROOMS.md).
+
+| Método | Rota                                         | Quem                   | Corpo / resposta                                                                                                                                 |
+| ------ | -------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/`                                          | conta                  | Minhas turmas (ativas como membro): `[{id, name, description, status, role, isOwner, canManage, memberCount, lessonCount, teacherName}]`        |
+| POST   | `/`                                          | conta                  | `{id, name, description?, displayName?}` → `201`; quem cria é o professor                                                                        |
+| POST   | `/join`                                      | conta                  | `{code, displayName?}`; limite de 30 tentativas/hora. `404 CLASSROOM_INVITE_INVALID`, `409 CLASSROOM_INVITE_FULL`, `403 CLASSROOM_REMOVED`       |
+| GET    | `/:id`                                       | membro                 | Resumo da turma e meu papel                                                                                                                      |
+| PATCH  | `/:id`                                       | professor              | `{name?, description?, archived?}`                                                                                                               |
+| GET    | `/:id/members`                               | membro                 | `[{userId, displayName, role, joinedAt, isMe}]` (só ativos)                                                                                      |
+| POST   | `/:id/leave`                                 | membro (não professor) | Sai; revoga o que compartilhou e retira envios abertos                                                                                           |
+| PATCH  | `/:id/members/:userId`                       | professor              | `{role: "assistant"\|"student"}`                                                                                                                 |
+| DELETE | `/:id/members/:userId`                       | professor              | Remove na hora (mesmos efeitos de sair)                                                                                                          |
+| GET    | `/:id/invites`                               | professor, monitor     | `[{id, state: active\|expired\|revoked\|full, useCount, maxUses, expiresAt, createdAt}]` — nunca o código                                        |
+| POST   | `/:id/invites`                               | professor, monitor     | `{id, requestId, code, days 1–30, maxUses 1–500}`; `code` gerado no navegador (`XXXX-XXXX-XXXX`), só o SHA-256 é guardado                        |
+| DELETE | `/:id/invites/:inviteId`                     | professor, monitor     | Revoga                                                                                                                                           |
+| GET    | `/:id/lessons`                               | membro                 | Aulas publicadas: `[{id, title, source, revision, author{userId, displayName}, hasSummary, questionListCount, publishedAt}]`                     |
+| POST   | `/:id/lessons`                               | professor, monitor     | `{id, materialId, revisionId, summaryId?, questionBatchIds?, title?}`: material **próprio**, revisão confirmada por quem publica                 |
+| GET    | `/:id/lessons/:lessonId`                     | membro                 | Aula na revisão fixada: `transcript{revision, fullText, segments}`, `summary`, `questionLists` (com gabarito)                                    |
+| DELETE | `/:id/lessons/:lessonId`                     | professor, monitor     | Despublica                                                                                                                                       |
+| GET    | `/:id/submissions`                           | membro                 | Professor/monitor: todos; aluno: só os seus. Cada item traz `status` e `actions` (transições permitidas para quem pergunta)                       |
+| POST   | `/:id/submissions`                           | aluno                  | `{id, materialId, note?}`: gravação própria, com a declaração de permissão vigente                                                               |
+| GET    | `/:id/submissions/:sid`                      | dono do envio, gestão  | Envio, histórico (`events`) e, a partir de `processing`, `review{revisionId, revision, fullText, studentConfirmed}`                              |
+| POST   | `/:id/submissions/:sid/transitions`          | conforme a etapa       | `{to, requestId, revisionId?, note?}` → `409 CLASSROOM_ILLEGAL_TRANSITION` fora do grafo                                                         |
+| GET    | `/:id/flashcard-sets`                        | membro                 | Conjuntos compartilhados (ver abaixo)                                                                                                            |
+| POST   | `/:id/flashcard-sets`                        | membro                 | `{id, setId}`: conjunto **próprio** e ativo                                                                                                      |
+| GET    | `/:id/flashcard-sets/:sharedId`              | membro                 | Cartões do conjunto (ver abaixo)                                                                                                                 |
+| DELETE | `/:id/flashcard-sets/:sharedId`              | dono ou gestão         | Para de compartilhar / oculta da turma                                                                                                           |
+| GET    | `/:id/resources`                             | membro                 | Links de apoio `[{id, title, url, description}]`                                                                                                 |
+| POST   | `/:id/resources`                             | professor, monitor     | `{id, title, url (https), description?}`                                                                                                         |
+| DELETE | `/:id/resources/:resourceId`                 | professor, monitor     | Remove                                                                                                                                           |
+
+**Leitura de conjuntos compartilhados** (base para juntar baralhos de colegas):
+
+- `GET /api/classrooms/:id/flashcard-sets` →
+  `[{sharedId, classroomId, kind:"flashcard_set", setId, name, cardCount, sharedAt, isMine, author:{userId, displayName}}]`.
+  Só conjuntos não revogados, ativos e de autores ainda membros.
+- `GET /api/classrooms/:id/flashcard-sets/:sharedId` → o mesmo objeto com
+  `cards:[{id, front, back, style, difficulty, focus}]` (cartões ativos). **Nunca** inclui datas de
+  revisão, intervalos, repetições, facilidade, histórico de revisões, evidências ou referências à
+  transcrição do autor.
 
 ## Arquivos estáticos
 
@@ -162,3 +245,79 @@ Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, 
 4. O MP4 original, quando guardado, segue o mesmo caminho direto (bucket `study-videos`,
    `original/{userId}/{materialId}/source.mp4`) e depois é vinculado por `POST /:id/video`.
 5. Depois da transcrição, o worker apaga o áudio ou o move para `retained/…`, conforme a escolha.
+
+
+## Flashcards 3.0 (`FEATURE_FLASHCARDS_V3`, exige `FEATURE_FLASHCARD_SETS`)
+
+| Método | Rota | Corpo / resposta |
+| --- | --- | --- |
+| GET | `/api/flashcards/templates` | Modelos do usuário (`id, name, base, tokens, variants, version`) |
+| PUT | `/api/flashcards/templates/:id` | `{version, requestId, body:{name?, base?, tokens?, variants?, deleted?}}`; tokens só declarativos. `version: 0` cria |
+| PUT | `/api/flashcards/sets/:setId/template` | `{templateId}` ou `{base}` ou nenhum (favorita). Muda só o conjunto |
+| POST | `/api/flashcards/sets/:setId/notes` | `{noteType, fields}`; o servidor renderiza frente e verso. 409 se a pergunta já existe no conjunto |
+| POST | `/api/flashcards/decks` | `{id, name, origin:'manual'|'text_import', cards:[{noteType, fields}], templateId?, templateBase?}` |
+| POST | `/api/flashcards/merge/preview` | `{sources:[{setId, classroomId?}]}` → `{total, duplicates, resulting, overLimit, conflicts:[{key, front, options:[{cardId, back, label}]}]}` |
+| POST | `/api/flashcards/merge` | `{id, name, sources, decisions:{[key]: 'combine'|'keep:<cardId>'}, templateId?, templateBase?}` → conjunto novo |
+| POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê; `create` guarda as imagens e o baralho |
+
+`GET /api/flashcards/sets/:id` e a fila de revisão passam a incluir `note_type`, `note_fields`, `origin_label` e `media:[{name, mime, url}]`, com URL assinada válida por 1 h.
+
+
+## Gerações reutilizáveis (`FEATURE_GENERATION_REUSE`)
+
+`POST /api/materials/:id/summaries` e `POST /api/materials/:id/question-batches` aceitam dois campos opcionais:
+
+- `reuse: true`: aceita um resultado equivalente já pronto;
+- `classroomId`: escopo de turma (só professor ou monitor iniciam).
+
+A resposta continua `202 {jobId, materialId}`, agora com `generation: {id, decision: 'start'|'join'|'reuse'}`. Com `join` ou `reuse`, o `jobId` é o do job equivalente, que pode já estar concluído.
+
+Erros:
+
+| Código | Status | Significado |
+| --- | --- | --- |
+| `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
+| `GENERATION_CLASSROOM_STAFF_ONLY` | 403 | Na turma, só professor ou monitor iniciam uma geração. |
+| `GENERATION_SOURCE_FORBIDDEN` | 409 | Fonte não confirmada ou não publicada. |
+| `GENERATION_SCOPE_FORBIDDEN` | 403 | Sem acesso ao escopo. |
+
+## Material integrado 🔒 — `/api/multi-lesson` (flag `multi_lesson`, exige `catalog_units`)
+
+Resumo, questões e (opcionalmente) flashcards integrados de várias aulas confirmadas da própria
+conta. Privado: respostas com `Cache-Control: no-store`. Detalhes, regras e limites em
+[migrations/MULTI_LESSON.md](migrations/MULTI_LESSON.md).
+
+Seleção (`selection`): `{kind: 'lessons'|'unit'|'units'|'subject', ids: uuid[]}` — `lessons` até 50
+aulas, `unit` e `subject` exatamente 1 id, `units` até 20.
+
+| Método e rota | Corpo | Resposta |
+| --- | --- | --- |
+| `POST /api/multi-lesson/preview` | `{selection}` | `200 {kind, included:[{materialId, revisionId, revision, title, subjectId, unitId}], excluded:[{materialId, title, reason:'unconfirmed'|'not_transcribed'}], missing, limit:12, tooMany}` |
+| `POST /api/multi-lesson` | `{id, requestId, title, selection, outputs:['summary'\|'questions'\|'flashcards'], settings?:{questionCount 1–20, flashcardCount 1–30, focus ≤200}, expectedRevisionIds?, reuse?}` | `202 {multiLesson, generation:{id, decision:'start'\|'join'\|'reuse', reuseCount}}` |
+| `GET /api/multi-lesson` | — | `200 [{id, title, status, selection_kind, outputs, source_count, excluded_count, error_code, created_at, completed_at}]` (50 mais recentes) |
+| `GET /api/multi-lesson/:id` | — | `200` material com `sources` (congeladas), `excluded`, `status` (`queued`, `running`, `ready`, `failed`), `job` e, quando pronto, `result` |
+| `DELETE /api/multi-lesson/:id` | — | `200 {id, deleted:true}`; se ainda estava na fila, a chave da geração é liberada |
+
+`result` (quando `ready`): `summary.sections[{heading, text, citations}]`, `questions[{statement,
+options[4], correctIndex, explanation, citations}]`, `flashcards[{front, back, citations}]`,
+`lessons[{label, materialId, revisionId, revision, title, concepts}]` e `report` (descartados,
+citações descartadas, acertos de cache, chamadas). Cada citação: `{materialId, revisionId, revision,
+lessonTitle, position, quote, startMs}`.
+
+`requestId` é a chave de idempotência (repetir o mesmo POST devolve o mesmo material). Limite: 20
+pedidos por hora por conta, além do orçamento diário.
+
+| Código | Status | Significado |
+| --- | --- | --- |
+| `MULTI_LESSON_NO_SOURCES` | 409 | Nenhuma aula da seleção tem a revisão atual confirmada. |
+| `MULTI_LESSON_TOO_MANY_SOURCES` | 409 | Mais de 12 aulas confirmadas. |
+| `MULTI_LESSON_SOURCES_CHANGED` | 409 | A seleção mudou desde a prévia (`expectedRevisionIds`). |
+| `MULTI_LESSON_REQUEST_CONFLICT` | 409 | `requestId` já usado com outro `id`. |
+| `MULTI_LESSON_NOT_FOUND` | 404 | Material, unidade ou disciplina inexistente ou de outra conta. |
+| `MULTI_LESSON_INVALID_SELECTION` | 400 | Seleção malformada. |
+| `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
+| `MULTI_LESSON_SCHEMA_REQUIRED` | 503 | Flag ligada sem a migration. |
+
+Falhas da geração (em `error_code` do material): `LLM_TEMPORARY_ERROR`, `LLM_FAILED`,
+`LLM_INVALID_OUTPUT`, `MULTI_LESSON_NO_KNOWLEDGE`, `MULTI_LESSON_UNSUPPORTED`,
+`TRANSCRIPTION_CONFIRMATION_REQUIRED`, `WORKER_LEASE_EXPIRED`.

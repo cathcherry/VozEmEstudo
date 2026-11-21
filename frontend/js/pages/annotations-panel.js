@@ -8,26 +8,32 @@ const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.Custom
 /** Lesson link for a note: with a highlight, the lesson opens on that passage (searched and bolded). */
 export function lessonHref(note){
   const params=new URLSearchParams({id:note.material_id});
-  const quote=String(note.quote||'').trim();
+  const quote=String(note.quote||'').split('\n')[0].trim();
   if(quote){params.set('busca',quote.length>80?quote.slice(0,80).replace(/\s+\S*$/,''):quote);if(Number.isInteger(note.segment_position))params.set('trecho',String(note.segment_position));}
   return `./material.html?${params}`;
 }
-export async function initAnnotationsPanel({panel,materialId,context,segments,materials=[]}){
+// multiSegment/notebook: Notes 3.0 (FEATURE_NOTEBOOKS): selections may cross segments, and each
+// highlight can be cited in the lesson notebook.
+export async function initAnnotationsPanel({panel,materialId,context,segments,materials=[],multiSegment=false,notebook=false}){
   panel.hidden=false;panel.replaceChildren(make('h2',materialId?'Anotações e destaques':'Buscar nas suas anotações'));
   const status=make('p');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
   let selectedField=null,anchor=null,draftId=crypto.randomUUID(),offset=0,version=0,total=0,pageSize=50;
   const source=()=>context?.();
+  const selectionError=(error)=>error==='multi'?'Por enquanto, destaque dentro de um único trecho.':error==='long'?'Selecione até 1.000 caracteres para destacar.':'Selecione um trecho do texto da transcrição.';
   if(materialId){
     segments.addEventListener('select',(event)=>{if(event.target.tagName==='TEXTAREA')selectedField=event.target;});
+    // Only stored anchor fields; a range adds where it ends (Notes 3.0).
+    const anchorFrom=(selection)=>({segmentPosition:selection.segmentPosition,startOffset:selection.startOffset,endOffset:selection.endOffset,quote:selection.quote,
+      ...(selection.endSegmentPosition!==undefined&&selection.endSegmentPosition!==selection.segmentPosition?{endSegmentPosition:selection.endSegmentPosition}:{})});
     const save=pendingMutation(saveAnnotation,()=>crypto.randomUUID());
     const form=make('form'),textLabel=make('label','Sua anotação'),text=make('textarea');text.maxLength=5000;text.rows=3;textLabel.append(text);
     const colorLabel=make('label','Cor do destaque'),color=make('select');for(const value of ['yellow','green','blue'])color.append(new Option({yellow:'Amarelo',green:'Verde',blue:'Azul'}[value],value));colorLabel.append(color);
     const capture=make('button','Usar seleção da transcrição'),clear=make('button','Remover seleção'),preview=make('p');capture.type=clear.type='button';
     capture.addEventListener('click',()=>{
       if(segments.closest('[data-mode]')?.dataset.mode==='reading'){
-        const result=readingSelectionAnchor(segments);
-        if(result.error){status.textContent=result.error==='multi'?'Por enquanto, destaque dentro de um único trecho.':'Selecione um trecho do texto da transcrição.';return;}
-        anchor={segmentPosition:result.segmentPosition,startOffset:result.startOffset,endOffset:result.endOffset,quote:result.quote,sourceRevisionId:source().review.sourceRevisionId};
+        const result=readingSelectionAnchor(segments,undefined,{multi:multiSegment});
+        if(result.error){status.textContent=selectionError(result.error);return;}
+        anchor={...anchorFrom(result),sourceRevisionId:source().review.sourceRevisionId};
         preview.textContent=`Destaque da revisão ${source().transcription.current_revision}: ${result.quote}`;return;
       }
       const article=selectedField?.closest('.transcription-segment'),position=Number(article?.dataset.segmentPosition);
@@ -47,12 +53,12 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
     const hidePop=()=>{pop.hidden=true;pending=null;};
     const showPop=()=>{
       if(!reading())return hidePop();
-      const result=readingSelectionAnchor(segments);
+      const result=readingSelectionAnchor(segments,undefined,{multi:multiSegment});
       if(result.error==='empty')return hidePop();
       const rect=globalThis.getSelection().getRangeAt(0).getBoundingClientRect();
       pending=result.error?null:result;
       mark.hidden=comment.hidden=Boolean(result.error);
-      popNote.textContent=result.error==='multi'?'Por enquanto, destaque dentro de um único trecho.':'';
+      popNote.textContent=result.error?selectionError(result.error):'';
       popNote.hidden=!result.error;
       pop.hidden=false;
       const width=pop.offsetWidth||180;
@@ -64,7 +70,6 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
     document.addEventListener('mousedown',(event)=>{if(!pop.contains(event.target))hidePop();});
     document.addEventListener('keydown',(event)=>{if(event.key==='Escape')hidePop();});
     document.defaultView?.addEventListener('scroll',hidePop,{passive:true});
-    const anchorFrom=(selection)=>({segmentPosition:selection.segmentPosition,startOffset:selection.startOffset,endOffset:selection.endOffset,quote:selection.quote});
     mark.addEventListener('click',()=>{
       const material=source();if(!pending||!material?.review?.sourceRevisionId)return hidePop();
       const body={sourceRevisionId:material.review.sourceRevisionId,...anchorFrom(pending),noteText:'',color:'yellow'};
@@ -105,6 +110,7 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
         const card=make('article');card.className=`annotation-card annotation-${note.color}`;
         card.append(make('h3',`Revisão ${note.source_revision}${materialId?'':' · '+(titles.get(note.material_id)||'Aula')}`));
         if(note.quote)card.append(make('blockquote',note.quote));
+        if(Number.isInteger(note.end_segment_position)&&note.end_segment_position>note.segment_position){card.classList.add('annotation-range');card.append(make('p',`Abrange ${note.end_segment_position-note.segment_position+1} trechos da transcrição`));}
         if(!materialId){const link=make('a',note.quote?'Abrir no trecho da aula':'Abrir aula');link.href=lessonHref(note);card.append(make('p',note.note_text),link);}
         else{
           const editLabel=make('label','Editar anotação'),edit=make('textarea');edit.value=note.note_text;edit.maxLength=5000;editLabel.append(edit);
@@ -113,6 +119,7 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
           const update=(body,done)=>{save.disabled=remove.disabled=true;void mutate({id:note.id,materialId,version:note.version,body}).then(()=>{status.textContent=done;return load();}).catch((e)=>{status.textContent=e.message;}).finally(()=>{save.disabled=remove.disabled=false;});};
           save.addEventListener('click',()=>{if(!edit.value.trim()&&!note.quote){status.textContent='Escreva a anotação ou exclua-a.';edit.focus();return;}update({noteText:edit.value},'Edição salva na conta.');});
           remove.addEventListener('click',()=>{if(confirm('Excluir esta anotação? Ela deixa de aparecer nesta aula e nas buscas.'))update({deleted:true},'Anotação excluída.');});card.append(editLabel,save,remove);
+          if(notebook&&note.source_revision_id){const cite=make('button','Citar no caderno');cite.type='button';cite.addEventListener('click',()=>signal('notebook-cite',{note}));card.append(cite);}
           if(note.quote){
             const locate=make('button','Ir ao destaque');locate.type='button';
             locate.addEventListener('click',()=>{

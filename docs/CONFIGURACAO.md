@@ -83,7 +83,10 @@ recebe o estado pelas `featureFlags` de `/api/config`.
 | `FEATURE_FLASHCARD_SETS`  | Conjuntos, "Criar flashcards" no resumo, CSV                      | E13 + `flashcard_sets`                        | Não                          |
 | `FEATURE_STUDY_TRACKING`  | Tempo e progresso de estudo sincronizados                         | E08/E09                                       | Não                          |
 | `FEATURE_ANNOTATIONS`     | Destaques e anotações                                             | E14/E15                                       | Não                          |
+| `FEATURE_NOTEBOOKS`       | Caderno da aula; destaques em vários trechos (exige ANNOTATIONS)  | E14 + `20261121130000_notes_3_0.sql`          | Não                          |
 | `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                      | E18/E19                                       | Não                          |
+| `FEATURE_CLASSROOMS`      | Turmas privadas (página Turmas, `/api/classrooms`)                | `flashcard_sets` + `classrooms`; exige `FEATURE_FLASHCARD_SETS` | Não                          |
+| `FEATURE_MULTI_LESSON`    | Material integrado de várias aulas, de uma unidade ou disciplina (exige CATALOG_UNITS) | `generation_reuse` + `20261121170000_multi_lesson.sql` (cache opcional `20261121171000_knowledge_map_cache.sql`) | Não |
 | `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                               | —                                             | —                            |
 
 Ao iniciar pelo `INICIAR.cmd`, uma flag ligada sem a migration (ou combinação inválida) **bloqueia a

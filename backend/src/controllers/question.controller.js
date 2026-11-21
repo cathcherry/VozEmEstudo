@@ -41,10 +41,13 @@ export async function createBatch(req, res, next) {
       {
         sourceRevisionId: req.body?.sourceRevisionId,
         idempotencyKey: req.body?.idempotencyKey,
+        ...(req.body?.reuse === true ? { reuse: true } : {}),
+        ...(typeof req.body?.classroomId === 'string' ? { classroomId: req.body.classroomId } : {}),
       },
       config,
     );
-    res.status(202).json({ jobId: job.id, materialId: job.material_id });
+    // 3.3: with generation reuse the job may be an equivalent one that is running or finished.
+    res.status(202).json({ jobId: job.id, materialId: job.material_id, ...(job.generation ? { generation: job.generation } : {}) });
   } catch (e) {
     next(e);
   }

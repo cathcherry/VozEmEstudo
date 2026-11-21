@@ -62,6 +62,8 @@ export const env = Object.freeze({
   // 0 disables recovery of jobs abandoned by a stopped worker; otherwise at least 60 s.
   workerStaleLeaseSeconds: leaseSeconds(process.env.WORKER_STALE_LEASE_SECONDS),
   jobMaxAttempts: number(process.env.JOB_MAX_ATTEMPTS, 3),
+  // Generations that START an AI call per account per day (reuse and joins never count).
+  aiDailyGenerationLimit: number(process.env.AI_DAILY_GENERATION_LIMIT, 40),
   retryDelay1Ms: number(process.env.JOB_RETRY_DELAY_1_MS, 15000),
   retryDelay2Ms: number(process.env.JOB_RETRY_DELAY_2_MS, 60000),
 

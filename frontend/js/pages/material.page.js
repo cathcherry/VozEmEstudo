@@ -849,7 +849,8 @@ function render(material) {
     })
       .then((tools) => {
         notesEnabled = tools.notesEnabled;
-        if (notesEnabled && !hashTab && studyFor(materialId).lastTab === 'notes' && ready()) activeTab = 'notes';
+        // #anotacoes (or the last tab) opens the notes once the tools say they exist.
+        if (notesEnabled && ready() && (hashTab === 'notes' || (!hashTab && studyFor(materialId).lastTab === 'notes'))) activeTab = 'notes';
         layout();
       })
       .catch((error) => {
@@ -1041,8 +1042,12 @@ async function generate(kind, options) {
             pending.get(operation),
             options.config,
           );
+    // 3.3: the server may follow an equivalent generation instead of paying for a new one.
+    const joined = job.generation?.decision === 'join';
+    if (joined) setStatus(message, 'Uma geração igual já está em andamento. Acompanhando, sem nova chamada à IA.');
+    if (!job.jobId) throw Error('Uma geração igual está começando. Tente de novo em alguns segundos.');
     const result = await pollJob(job.jobId, {
-      onUpdate: (state) => setStatus(message, jobLabel(state)),
+      onUpdate: (state) => setStatus(message, joined ? 'Acompanhando a geração que já estava em andamento…' : jobLabel(state)),
     });
     if (result.status !== 'CONCLUIDA') {
       pending.delete(operation);
@@ -1051,7 +1056,7 @@ async function generate(kind, options) {
     pending.delete(operation);
     if (kind === 'summary') displayedSummary = null;
     await reload();
-    setStatus(message, '');
+    setStatus(message, joined ? 'Pronto: era a mesma geração já em andamento, sem custo extra.' : '', joined ? 'success' : undefined);
     completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');

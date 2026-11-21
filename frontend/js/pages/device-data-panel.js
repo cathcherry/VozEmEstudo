@@ -16,7 +16,9 @@ const describe = (items) =>
         ? `${item.count} ${item.count === 1 ? 'atualização de estudo' : 'atualizações de estudo'}`
         : item.kind === 'media'
           ? 'uma imagem do perfil'
-          : {
+          : item.kind === 'notebook'
+            ? 'um caderno de aula'
+            : {
               preferences: 'preferências',
               'dashboard-layout': 'layout do Início',
               'profile-blocks': 'blocos do perfil',

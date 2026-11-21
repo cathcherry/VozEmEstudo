@@ -22,7 +22,11 @@ test('Anki "Notes in Plain Text" with headers, HTML and a cloze note', () => {
   const { cards, skipped, format } = parseCardFile(file);
   assert.equal(format, 'anki');
   assert.deepEqual(cards[0], { front: 'O que é ATP?', back: 'Moeda de energia\nda célula' });
-  assert.deepEqual(cards[1], { front: 'A […] absorve [radiação].', back: 'A clorofila absorve luz.' });
+  assert.deepEqual(cards[1], {
+    front: 'A […] absorve [radiação].',
+    back: 'A clorofila absorve luz.',
+    clozeText: 'A {{c1::clorofila}} absorve {{c2::luz::radiação}}.',
+  });
   assert.deepEqual(skipped, [{ line: 3, reason: 'empty' }]);
 });
 

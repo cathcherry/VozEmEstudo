@@ -193,7 +193,31 @@ Pendente:
 - As âncoras usam as coordenadas já validadas pelo servidor: revisão, segmento, offsets em code points e citação.
 - No caderno, cada destaque tem **Ouvir mm:ss** (toca o trecho) e **Ir ao destaque** (seleciona as palavras e recusa revisões diferentes).
 
-**Desenho** (exige migrations; não aplicadas):
+**Milestone A — Notes 3.0: implementado e testado automaticamente** (migration aprovada, ainda
+não aplicada em nenhum ambiente; flag `FEATURE_NOTEBOOKS`, exige `FEATURE_ANNOTATIONS`).
+Detalhes: `docs/migrations/NOTES_3_0.md`.
+
+- [x] Âncoras em vários trechos: início `(segment_position, start_offset)`, fim
+  `(end_segment_position, end_offset)`; citação conferida no servidor contra o `segments_snapshot`
+  imutável da revisão confirmada (pedaços unidos por quebra de linha; até 50 trechos).
+- [x] Comentários em vários trechos (mesmo modelo de âncora).
+- [x] Destaques antigos preservados: backfill explícito `end_segment_position = segment_position`;
+  funções E14 intactas; testado com linhas criadas antes da migration (PGlite).
+- [x] Caderno da aula (`study_notebooks`): um por aula e conta, documento de blocos (títulos,
+  parágrafos, listas, checklist, citação, referência a destaque); esquema validado no servidor,
+  só texto (HTML recusado), limites de tamanho.
+- [x] Salvamento automático confiável: `version` + `last_request_id`, retry idempotente, cópia
+  pendente no navegador, estados “Salvo / Salvando… / Não salvo — tentar de novo”, conflito com
+  escolha explícita (manter as duas versões, a do outro aparelho ou a deste).
+- [x] Referências cientes de revisão: o bloco guarda a revisão; a interface avisa “Revisão anterior”
+  e a citação continua legível (também se o destaque for excluído).
+- [x] Privado por padrão: `visibility = 'private'` com constraint que só aceita `private`.
+  Compartilhamento (Milestone E) virá por tabela própria de compartilhamento e relaxando a
+  constraint de forma explícita — nada disso foi implementado.
+- [ ] Pendente: escopos de caderno por unidade/disciplina/pessoal; tabela, link, imagem, código e
+  callout; edição colaborativa; validação manual com contas reais.
+
+**Desenho original** (referência; o implementado segue a migration `20261121130000_notes_3_0.sql`):
 
 ```sql
 -- Âncoras com vários segmentos (aditiva; mantém as colunas atuais para destaques antigos).
@@ -240,7 +264,28 @@ Compartilhar uma nota é um ato explícito e por item. Compartilhar um caderno n
   - de duas colunas em TSV, CSV ou com ponto e vírgula;
   - arquivos `.apkg` são explicados (exportar como texto), nunca enviados.
 
-**Ainda em desenho** (precisam de tabelas): notas tipadas, `card_templates` com variantes, mescla de baralhos **de colegas** (depende de compartilhamento) e leitura direta de `.apkg`.
+**3.3 — implementado** (migration `20261121150000_flashcards_3_0.sql`, flag `FEATURE_FLASHCARDS_V3`; ver `docs/migrations/FLASHCARDS_3_0.md`):
+
+- **Notas tipadas**:
+  - 8 tipos: pergunta e resposta, termo, lacunas, causa e efeito, comparação, sequência, aplicação e encontre o erro;
+  - os campos ficam guardados em `note_fields`, e o servidor renderiza a frente e o verso;
+  - os cartões antigos foram reclassificados explicitamente (`term_definition` → `term`).
+- **Modelos visuais próprios** (`study_card_templates`):
+  - só tokens declarativos: cores, fonte, cantos, fundo, sombra e variações por tipo;
+  - versionados e idempotentes, com limite de 50 por conta;
+  - o editor avisa quando o contraste está baixo, sem bloquear.
+- **Uma aparência por conjunto** (`template_id` ou `template_base`): trocá-la muda só a linha do conjunto, e os testes comprovam que cartões e revisões ficam idênticos.
+- **Mescla no servidor** com prévia de repetidos e decisão por conflito.
+  - Corrige um problema da 3.2: o índice único por pergunta descartava em silêncio as respostas diferentes.
+  - Agora o aluno escolhe manter uma das respostas ou juntá-las.
+  - A procedência fica em `origin_*`, e o novo baralho é pessoal, com agenda nova.
+- **Importação direta de `.apkg`**:
+  - lê a coleção antiga (JSON) e a atual (anki21b, com zstd e protobuf);
+  - descarta scripts e templates do pacote;
+  - guarda as imagens no bucket privado `flashcard-media`;
+  - ignora áudio, e informa isso.
+
+Mescla de baralhos **de colegas**: o mesmo fluxo aceita fontes com `classroomId`, quando a leitura de conjuntos compartilhados em Turmas estiver ligada (Marco E).
 
 O princípio é ter **três camadas independentes**:
 
@@ -279,6 +324,30 @@ Trocar o template nunca regenera nem altera o conteúdo, as respostas, as refer�
 
 ## 9. Aprendizagem multiaula e multiunidade
 
+**Implementado e testado automaticamente (Marco C, 21/11/2026; migrations não aplicadas em nenhum
+ambiente, não validado com provedor de IA real nem manualmente).** Detalhes em
+[migrations/MULTI_LESSON.md](migrations/MULTI_LESSON.md); rotas em [API.md](API.md) (seção
+"Material integrado"); flag `FEATURE_MULTI_LESSON` (desligada; exige `FEATURE_CATALOG_UNITS`).
+
+- ✅ Fontes: várias aulas (seleção na Biblioteca), uma unidade, várias unidades (API) e uma
+  disciplina. ⏳ Objetivo e coleção ainda não.
+- ✅ Item 1: mapa de conhecimento por revisão (conceitos, definições curtas, relações; cada um com
+  posição do trecho + citação conferida no `segments_snapshot`), em cache **opcional**
+  (`20261121171000_knowledge_map_cache.sql`) com chave `(source_revision_id, prompt_version,
+  model_family)`; a revisão já identifica o material. Uma revisão nova é outra chave. Objetivos e
+  pré-requisitos ainda não entram no mapa.
+- ✅ Item 2: a seleção vira a lista de revisões **confirmadas** no momento do pedido, congelada no
+  material integrado (imutável por gatilho); as aulas que ficam de fora aparecem com o motivo.
+- ✅ Item 3: a síntese recebe os mapas, não as transcrições; cada seção/questão/cartão cita aula,
+  revisão e trecho, conferidos no servidor; o que não tem apoio é descartado e informado.
+- ✅ Item 4: materiais antigos ficam com as revisões que os produziram.
+- Custo limitado: até 12 aulas; por tentativa, 1 chamada de mapa por revisão sem cache + 1 síntese
+  + no máximo 1 reparo; 2 tentativas; chave canônica e orçamento diário de `begin_generation_admin`
+  (pedidos iguais simultâneos viram um job; reuso sob pedido).
+- Fila própria (`multi_lesson_jobs`) com lease e retry, executada pelo worker existente.
+- ⏳ Compartilhar material integrado com a turma; transformar as questões em lista tentável e os
+  cartões em conjunto de flashcards.
+
 **Desenho**.
 
 Fontes possíveis: uma aula, várias, uma unidade, uma disciplina, um objetivo ou uma coleção.
@@ -290,7 +359,38 @@ Fontes possíveis: uma aula, várias, uma unidade, uma disciplina, um objetivo o
 
 ## 10. Turmas privadas, amigos e IA compartilhada
 
-**Desenho**.
+**Fundação implementada e testada automaticamente (Marco E, 21/11/2026; não integrada, migration
+não aplicada, não validada manualmente).** Detalhes em
+[migrations/CLASSROOMS.md](migrations/CLASSROOMS.md); rotas em [API.md](API.md) (seção "Turmas privadas").
+
+- Migration candidata `20261121140000_classrooms.sql` (aditiva, com guarda, RLS e funções só do
+  servidor) e flag `FEATURE_CLASSROOMS` (desligada; exige `FEATURE_FLASHCARD_SETS`).
+- Turmas criadas pelo professor (nome, descrição, ativa/arquivada); papéis professor, monitor
+  (o "gestor" deste desenho) e aluno, com uma função central de permissão usada por todas as
+  operações.
+- Convites por código/link com validade (1–30 dias), limite de usos, revogação; só o SHA-256 do
+  código é guardado; entrar, sair, remover membro, promover a monitor.
+- Aulas publicadas pelo professor: material próprio, revisão confirmada e **fixada**; os membros
+  leem transcrição, resumo e listas escolhidos sem nenhum acesso de escrita ao material.
+- Fila de envios dos alunos como máquina de estados no SQL (gatilho + função de transição + log):
+  `submitted` → `approved_for_processing` → `processing` → `transcription_confirmed` (confirmação
+  do professor, separada da do aluno, que continua obrigatória) → `published`; `rejected` e
+  `withdrawn` são finais. A etapa "aprovação para publicar" deste desenho é a ação "Publicar na
+  turma" a partir de `transcription_confirmed`.
+- Conjuntos de flashcards compartilhados explicitamente com a turma (só conteúdo e autoria, nunca
+  agenda ou histórico de revisão), links de apoio do professor.
+- Nada aparece antes de ser publicado ou compartilhado; revogar esconde; sair ou ser removido
+  esconde a turma e retira o que a pessoa compartilhou. Progresso, revisões, anotações e tentativas
+  continuam privados: nenhuma função ou rota das turmas os lê (testado).
+- Página **Turmas** (`turmas.html`) com abas Aulas publicadas, Envios, Flashcards compartilhados e
+  Membros; jornada no navegador com API simulada.
+
+**Ainda não implementado**: geração compartilhada por `generation_key`, regras de quem gera e como
+publicar, cotas, amigos, presença de foco, combinar baralhos de colegas (a leitura necessária já
+existe: `GET /api/classrooms/:id/flashcard-sets[/:sharedId]`), áudio da aula publicada para os
+membros, notificações.
+
+**Desenho** (o que segue continua valendo para as próximas fatias).
 
 **Papéis**: professor (dono), gestor e aluno.
 

@@ -1,0 +1,44 @@
+/* Material integrado (Milestone C): dialog in the library and the integrated-material page. */
+.multi-lesson-dialog { width: min(560px, calc(100vw - 32px)); }
+.multi-lesson-dialog form { display: grid; gap: 10px; }
+.multi-lesson-dialog label { display: grid; gap: 4px; font-weight: 600; }
+.multi-lesson-dialog input:not([type='checkbox']) { width: 100%; box-sizing: border-box; }
+.multi-lesson-outputs { display: grid; gap: 6px; border: 1px solid var(--border-light); border-radius: 12px; padding: 8px 12px; margin: 0; }
+.multi-lesson-outputs label,
+.multi-lesson-reuse { display: flex; gap: 8px; align-items: flex-start; font-weight: 500; }
+.multi-lesson-preview { max-height: 38vh; overflow-y: auto; overflow-wrap: anywhere; }
+.multi-lesson-preview h3 { font-size: 1rem; margin: 8px 0 4px; }
+.multi-lesson-preview ul,
+.multi-lesson-excluded,
+.multi-lesson-sources { margin: 0; padding-left: 1.2em; overflow-wrap: anywhere; }
+.multi-lesson-status[data-state='error'],
+.multi-lesson-page-status[data-state='error'],
+.multi-lesson-error { color: var(--danger, #a3232f); }
+.multi-lesson-error:empty,
+.multi-lesson-page-status:empty { display: none; }
+.multi-lesson-folder-action { white-space: normal; }
+
+.multi-lesson-page { overflow-wrap: anywhere; }
+.multi-lesson-list { list-style: none; padding: 0; display: grid; gap: 8px; }
+.multi-lesson-list-item { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--border-light); border-radius: 14px; background: var(--surface); }
+.multi-lesson-list-item a { font-weight: 650; }
+.multi-lesson-meta { color: var(--text-muted, inherit); }
+.multi-lesson-block { margin-top: 24px; }
+.multi-lesson-section,
+.multi-lesson-question { padding: 14px 16px; border: 1px solid var(--border-light); border-radius: 14px; background: var(--surface); margin: 10px 0; }
+.multi-lesson-section h4 { margin: 0 0 6px; }
+.multi-lesson-questions { padding-left: 1.4em; }
+.multi-lesson-statement { font-weight: 650; }
+.multi-lesson-options { padding-left: 1.6em; }
+.multi-lesson-answer { margin-top: 8px; }
+.multi-lesson-citations { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.multi-lesson-citations li { border-left: 3px solid var(--accent-strong); padding: 4px 0 4px 10px; }
+.multi-lesson-quote { display: block; font-style: italic; }
+.multi-lesson-citation-source { display: block; font-size: 0.92rem; margin-top: 2px; }
+.multi-lesson-cards { list-style: none; padding: 0; display: grid; gap: 8px; }
+.multi-lesson-cards details { padding: 10px 14px; border: 1px solid var(--border-light); border-radius: 12px; background: var(--surface); }
+.multi-lesson-report { margin-top: 16px; padding: 10px 14px; border-radius: 12px; background: var(--accent-soft); }
+.multi-lesson-report h3 { margin: 0 0 4px; font-size: 1rem; }
+.multi-lesson-report p { margin: 4px 0; }
+.multi-lesson-citation-source a,
+.multi-lesson-page .tool-hint a { text-decoration: underline; text-underline-offset: 2px; }

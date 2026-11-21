@@ -127,3 +127,174 @@ Nenhuma migration foi criada ou aplicada.
 | Revisar › Questões: lista "Questões marcadas" | `1490c10` |
 | Som ambiente "Tocar junto com o foco" | `61d94df` |
 | Planejar uma unidade (tarefa por aula, prazos espaçados, re-executar acrescenta só as novas) | `3d5b53a` |
+
+**PR #10 integrado em `main`** (merge `41e2437`), depois do CI verde em `7d39dff`.
+
+## Voz em Estudo 3.3 — migrations aprovadas (branch `feat/ux-navigation`)
+
+O dono autorizou criar e testar migrations; produção só com backup e nova autorização. Cada marco informa separadamente:
+
+- **arquivo no Git**: a migration está versionada;
+- **aplicada**: em qual banco ela rodou de fato.
+
+| Marco | Situação | Commits |
+| --- | --- | --- |
+| B — Flashcards 3.0 | Backend e frontend prontos, com testes (detalhes abaixo). | `55ce18e`, `1567013` |
+| A — Anotações 3.0 (subagente, revisado e integrado) | Âncoras em vários trechos, caderno da aula com autosave, referências cientes de revisão, privado por padrão. | merge `50fd380` |
+| E — Turmas privadas (subagente, revisado e integrado) | Papéis, convites com hash, aulas publicadas com revisão fixada, máquina de estados de envios, conjuntos compartilhados sem histórico. | merge `8a32fc2` |
+| D — Gerações de IA reutilizáveis | Chave canônica ligada aos jobs: reuso autorizado, single flight, orçamento diário, falha honesta. | `d3c9436` |
+| C — Aprendizagem multiaula (subagente, revisado e integrado) | Material integrado de várias aulas, unidades ou disciplina. Só entram revisões confirmadas, com a lista de fontes congelada. Fila própria com lease e no máximo 2 tentativas. Cache de mapas de conhecimento opcional, em migration separada. Citações conferidas na revisão de origem. Usa a reutilização de gerações do marco D. | merge `95b02b9` |
+
+**Flashcards 3.0 em detalhe:**
+
+- notas tipadas;
+- modelos visuais;
+- uma aparência por conjunto;
+- mescla com decisões;
+- `.apkg`.
+
+### Validação da migration de Flashcards 3.0 (`20261121150000_flashcards_3_0.sql`)
+
+| Ambiente | Resultado |
+| --- | --- |
+| PGlite (testes) | 5 testes de SQL real: backfill, agenda e histórico intactos, procedência, modelos, RLS e escrita concorrente. |
+| **Postgres 16.15 local** | Cadeia completa aplicada em ordem (`001` → `profile_state_hardening`, mais `proposals/profile-gamification.sql`, que cria `profile_state` em produção). Dados inseridos antes da migration. Detalhes abaixo. |
+| Staging Supabase | Aplicada em 21/11. Ver "Validação no staging Supabase real". |
+| **Produção** | **Não aplicada.** |
+
+Resultado no Postgres 16.15 local:
+
+- preflight: `prerequisites = t`, `already_applied = f`;
+- a migration foi aplicada;
+- postflight: 2 cartões e 1 revisão, iguais ao preflight; `term_cards = 1`; `untyped_term_cards = 0`; RLS ligado; sem acesso para `anon` nem para `authenticated`; bucket privado;
+- uma segunda aplicação foi recusada com `FLASHCARDS_3_0_ABORT`.
+
+Achado: nenhuma migration cria `public.profile_state`. Ela vem da proposta `database/proposals/profile-gamification.sql`, aplicada à mão. Para recriar um banco do zero, aplique essa proposta antes de `20261120120000_profile_state_hardening.sql`.
+
+### Validação em Postgres 16.15 real (local, 21/11)
+
+Montei um banco novo com a cadeia inteira, de `001_initial.sql` até `20261120120000`, mais a proposta `profile_state`. Antes das migrations novas, criei pelas APIs antigas:
+
+- uma aula com permissão declarada e revisão confirmada;
+- um destaque E14;
+- uma nota solta;
+- um cartão `term_definition`.
+
+Depois apliquei as quatro migrations novas, na ordem de implantação:
+
+| Migration | Preflight | Aplicação | Postflight |
+| --- | --- | --- | --- |
+| `20261121130000_notes_3_0` | pré-requisitos ok; 2 anotações, 1 com âncora | ok | backfill completo (`legacy_rows_not_backfilled = 0`), contagens iguais, RLS ligado, sem acesso do navegador, nenhum compartilhamento |
+| `20261121140000_classrooms` | pré-requisitos ok | ok | RLS ligado nas 8 tabelas, funções só para o servidor |
+| `20261121150000_flashcards_3_0` | 1 cartão a reclassificar | ok | `term_cards = 1`, `untyped_term_cards = 0`, bucket privado |
+| `20261121160000_generation_reuse` | — | ok | — |
+
+**Concorrência real**, com conexões separadas (o PGlite não consegue testar isso):
+
+| Cenário | Resultado |
+| --- | --- |
+| 4 alunos entram ao mesmo tempo num convite de 1 uso | 1 entrou; `use_count = 1`; 3 receberam `CLASSROOM_INVITE_FULL` |
+| 5 pedidos de geração equivalentes ao mesmo tempo | 1 `start` e 4 `join`; uma única linha, ou seja, um único job pago |
+| 2 escritores no mesmo caderno, na versão 1 | um salvou (v2) e o outro recebeu `LEARNING_VERSION_CONFLICT`; nada foi perdido em silêncio |
+
+**Produção: nenhuma destas migrations foi aplicada.**
+
+### Validação no staging Supabase real (`voz-em-estudo-staging`, 21/11)
+
+O projeto de staging estava pausado e vazio: sem migrations e sem tabelas. Reativei o projeto e montei o banco do zero, na mesma ordem de produção:
+
+1. as 19 migrations existentes, mais a proposta `profile_state`;
+2. dados sintéticos pelas funções antigas (sem nenhum dado real):
+   - 2 contas `qa-a@example.test` e `qa-b@example.test`;
+   - uma aula com revisão confirmada;
+   - um destaque E14;
+   - uma nota solta;
+   - um cartão `term_definition`;
+3. os preflights;
+4. as quatro migrations novas;
+5. os postflights.
+
+O texto de cada migration foi lido do GitHub no commit `cbec226`. O MD5 de cada arquivo lido é igual ao MD5 do arquivo local no Git, então o que rodou é exatamente o que está versionado.
+
+| Verificação (postflight) | Resultado |
+| --- | --- |
+| anotações depois do backfill | 2, iguais ao preflight; `legacy_not_backfilled = 0` |
+| anotações compartilhadas | 0 (privado por padrão) |
+| cartões depois da migration | 1; `term_cards = 1` |
+| RLS em todas as tabelas novas | sim |
+| tabelas novas legíveis pelo navegador (`anon`/`authenticated`) | 0 |
+| funções novas chamáveis pelo navegador | 0 |
+| bucket `flashcard-media` público | não |
+
+**Advisors do Supabase (lint real do projeto):**
+
+- **Segurança:**
+  - `rls_enabled_no_policy` (INFO) nas tabelas novas: é intencional. Essas tabelas só são acessadas pelo servidor (`service_role`) e não têm grants para o navegador.
+  - `authenticated_security_definer_function_executable` em `storage_owns_material`: é anterior à 3.3 (`20261120090000`) e intencional, porque as políticas do Storage precisam dela.
+  - `function_search_path_mutable` em `qa.apply_git_migration`: é o auxiliar que usei só no staging (detalhes abaixo).
+  - Proteção contra senhas vazadas desligada: é uma configuração do Auth, não de migration.
+  - Nenhum achado de segurança nos objetos novos.
+- **Desempenho:** só INFO.
+  - Índices nunca usados: esperado num banco recém-criado.
+  - Chaves estrangeiras sem índice de cobertura: algumas são das tabelas novas, por exemplo `ai_generations.material_id` e as chaves `classroom_lessons.*`. Nenhuma está num caminho de leitura quente. Elas só pesam em exclusões em cascata. Se o volume crescer, fica como recomendação para uma migration aditiva futura de índices.
+
+**Teste funcional no staging**, chamando as funções do servidor com as contas sintéticas:
+
+| Passo | Resultado |
+| --- | --- |
+| professora cria a turma e um convite de 1 uso | ok |
+| aluna entra pelo convite | `student` |
+| professora usa o mesmo convite | `alreadyMember`, sem gastar o uso |
+| geração nova, depois o mesmo pedido de novo | `start`, depois `join` (um único job) |
+| depois de concluir, um pedido que aceita reuso | `reuse` |
+| outra conta usa a revisão da professora | `GENERATION_SOURCE_FORBIDDEN` |
+| geração na turma sobre uma aula não publicada | `GENERATION_SOURCE_FORBIDDEN` |
+| salvar o caderno | versão 1 |
+| escrita com versão velha | `LEARNING_VERSION_CONFLICT` |
+| outra conta salva o caderno da aula | `LEARNING_NOT_FOUND` |
+
+**Auxiliar de staging:** para aplicar os arquivos exatamente como estão no Git, criei no staging:
+
+- a extensão `http`;
+- o schema `qa`, com `qa.apply_git_migration(commit, caminho)`.
+
+Isso existe **só no staging**. Não faz parte de nenhuma migration e não deve ir para produção.
+
+| Banco | Notes 3.0 | Turmas | Flashcards 3.0 | Gerações reutilizáveis |
+| --- | --- | --- | --- | --- |
+| PGlite (testes) | aplicada | aplicada | aplicada | aplicada |
+| Postgres 16.15 local | aplicada | aplicada | aplicada | aplicada |
+| Staging Supabase | aplicada | aplicada | aplicada | aplicada |
+| **Produção (`audioestudo`)** | **não** | **não** | **não** | **não** |
+
+### Validação do marco C (`20261121170000_multi_lesson` e `20261121171000_knowledge_map_cache`)
+
+| Ambiente | Resultado |
+| --- | --- |
+| PGlite | 11 testes de SQL, 2 do worker (com provedor falso que conta as chamadas) e 1 HTTP com 5 subtestes |
+| navegador | 6 jornadas com API simulada |
+| Postgres 16.15 local | preflight ok; as duas migrations aplicadas; postflight ok (RLS, nada para o navegador, gatilho de fontes congeladas, cache com RLS); reaplicação recusada com `MULTI_LESSON_ABORT` |
+| Concorrência real (PG16) | 2 workers pedem a fila ao mesmo tempo: um recebe o job e o outro recebe `none` (`skip locked`); um único `attempt_count = 1` |
+| Staging Supabase | preflight ok; aplicadas a partir do commit `95b02b9`, com o MD5 dos dois arquivos igual ao do Git; postflight ok; 0 funções novas chamáveis pelo navegador |
+
+Teste funcional no staging:
+
+| Passo | Resultado |
+| --- | --- |
+| resolver as próprias aulas | 1 incluída |
+| outra conta pede as mesmas aulas | 0 incluídas, 1 em `missing` (nada revelado) |
+| geração nova | `start`, `attach` em `queued` |
+| worker pega o job | `running`, com 1 revisão de fonte |
+| outro worker tenta ler as fontes | `MULTI_LESSON_LEASE_LOST` |
+| tentativa de reescrever as fontes | `MULTI_LESSON_SOURCES_IMMUTABLE` |
+| job concluído | `ready` |
+| pedido equivalente com reuso | `reuse`, sem chamada de IA |
+| outra conta lê o material | `MULTI_LESSON_NOT_FOUND` |
+
+Nenhum provedor de IA real foi chamado: nada foi gasto.
+
+| Banco | Multiaula | Cache de mapas (opcional) |
+| --- | --- | --- |
+| Postgres 16.15 local | aplicada | aplicada |
+| Staging Supabase | aplicada | aplicada |
+| **Produção (`audioestudo`)** | **não** | **não** |

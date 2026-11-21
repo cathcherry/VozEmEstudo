@@ -6,6 +6,7 @@ import { listMaterials } from '../api/material.api.js';
 import { initToolTabs, showToolFailure } from '../utils/tool-tabs.js';
 import { emptyState } from '../utils/material-ui.js';
 import { initFlashcardsPanel } from './flashcards-panel.js';
+import { initFlashcardsV3 } from './flashcards-v3-ui.js';
 import { initAnnotationsPanel } from './annotations-panel.js';
 import { initQuizHistoryPanel } from './quiz-history-panel.js';
 import { initQuestionReportsPanel } from './question-reports-panel.js';
@@ -37,7 +38,9 @@ if (!sections.length) {
   const loads = [];
   if (flags.flashcards)
     loads.push(
-      initFlashcardsPanel({ materials }).then(() => {
+      initFlashcardsPanel({ materials }).then(async () => {
+        if (flags.flashcards_v3 && flags.flashcard_sets)
+          await initFlashcardsV3({ panel: document.querySelector('[data-flashcards-panel]') }).catch(() => {});
         const action = params.get('acao');
         if (action === 'revisar' || action === 'criar') {
           tabs.select('flashcards');

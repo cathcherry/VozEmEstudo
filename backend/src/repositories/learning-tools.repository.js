@@ -9,6 +9,11 @@ const messages={
   LEARNING_ANCHOR_CONFLICT:[409,'A seleção não corresponde à revisão salva. Salve a transcrição e selecione novamente.'],
   LEARNING_CONFIRMATION_REQUIRED:[409,'Confirme a revisão atual antes de compartilhar.'],LEARNING_SUMMARY_REQUIRED:[409,'Gere um resumo da revisão confirmada antes de incluí-lo.'],
   LEARNING_SHARE_LIMIT:[409,'Revogue links antigos antes de criar novos.'],PERMISSION_REQUIRED:[422,'Confirme a permissão da gravação antes de compartilhar.'],
+  // Notes 3.0 (multi-segment anchors and lesson notebooks).
+  LEARNING_REVISION_UNCONFIRMED:[409,'Confirme esta revisão da transcrição antes de destacar trechos dela.'],
+  LEARNING_NOTEBOOK_INVALID:[400,'O caderno tem um bloco inválido ou marcação HTML. Use apenas texto.'],
+  LEARNING_NOTEBOOK_TOO_LARGE:[413,'O caderno passou do limite de tamanho. Divida o conteúdo em menos blocos ou remova trechos.'],
+  LEARNING_REFERENCE_INVALID:[409,'Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.'],
 };
 export function assertLearningDb(error){
   if(!error)return;const mapped=messages[error.message];if(mapped)throw new AppError(error.message,mapped[1],mapped[0]);
@@ -19,6 +24,7 @@ export function assertLearningDb(error){
 async function rpc(name,body){const {data,error}=await getAdminSupabase().rpc(name,body);assertLearningDb(error);return data;}
 export const listNotes=(user,q)=>rpc('study_list_annotations_admin',{p_user_id:user,p_material_id:q.materialId||null,p_query:q.q,p_offset:q.offset});
 export const saveNote=(user,data)=>rpc('study_save_annotation_admin',{p_user_id:user,p_id:data.id,p_material_id:data.materialId,p_version:data.version,p_request_id:data.requestId,p_body:data.body});
+export const saveNoteRange=(user,data)=>rpc('study_save_annotation_range_admin',{p_user_id:user,p_id:data.id,p_material_id:data.materialId,p_version:data.version,p_request_id:data.requestId,p_body:data.body});
 export const calendarFeed=(user,q)=>rpc('study_calendar_feed_admin',{p_user_id:user,p_from:q.from,p_to:q.to,p_from_day:q.fromDay,p_to_day:q.toDay,p_offset:q.offset});
 export const saveCalendar=(user,data)=>rpc('study_save_calendar_admin',{p_user_id:user,p_id:data.id,p_version:data.version,p_request_id:data.requestId,p_body:data.body});
 export const createShare=(user,materialId,data)=>rpc('study_create_share_admin',{p_user_id:user,p_id:data.id,p_material_id:materialId,p_request_id:data.requestId,

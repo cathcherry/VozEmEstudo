@@ -20,6 +20,9 @@ Object.assign(process.env, {
   FEATURE_ANNOTATIONS: 'true',
   FEATURE_CALENDAR: 'true',
   FEATURE_SHARING: 'true',
+  FEATURE_CLASSROOMS: 'true',
+  FEATURE_NOTEBOOKS: 'true',
+  FEATURE_MULTI_LESSON: 'true',
 });
 
 test('flag enabled without its migration: scoped 503 per module, unrelated routes unaffected', async () => {
@@ -56,6 +59,9 @@ test('flag enabled without its migration: scoped 503 per module, unrelated route
       '/api/flashcards/sets',
       '/api/study/overview',
       '/api/annotations',
+      '/api/classrooms',
+      '/api/notebooks/' + USER,
+      '/api/multi-lesson',
       '/api/calendar?from=2026-11-01T00:00:00Z&to=2026-11-30T00:00:00Z&fromDay=2026-11-01&toDay=2026-11-30',
     ]) {
       const { status, body } = await get(path);

@@ -37,8 +37,22 @@ export function createSupabaseHttpFixture() {
     const { db } = await getDatabase();
     const keys = Object.keys(parameters);
     assert(/^[a-z_]+$/.test(name) && keys.every((key) => /^[a-z_]+$/.test(key)));
-    const values = Object.values(parameters).map((value) =>
-      value && typeof value === 'object' ? JSON.stringify(value) : value,
+    // Like PostgREST: a JSON array becomes a Postgres array for array arguments (e.g. uuid[]),
+    // and JSON text for json/jsonb arguments.
+    const types = new Map(
+      (
+        await db.query(
+          'select unnest(proargnames) as name, unnest(proargtypes::oid[]::regtype[]::text[]) as type from pg_proc where proname = $1',
+          [name],
+        )
+      ).rows.map((row) => [row.name, row.type]),
+    );
+    const values = Object.entries(parameters).map(([key, value]) =>
+      Array.isArray(value) && types.get(key)?.endsWith('[]')
+        ? value
+        : value && typeof value === 'object'
+          ? JSON.stringify(value)
+          : value,
     );
     const row = await db.transaction(async (tx) => {
       await tx.exec('set local role service_role');

@@ -60,3 +60,27 @@ test('newer modules are probed: study_authoring, flashcard_sets and AssemblyAI t
   const plain = createReadinessChecks(db, {}, 'audios', 'test-version', { asrProvider: 'huggingface' });
   assert(!plain.some((check) => check.label.includes('ai_job_executions')));
 });
+
+test('classrooms: tables are probed and the flag needs flashcard sets', async () => {
+  const { db } = fixture({ missing: 'classroom_members' });
+  const flags = { flashcards: true, flashcard_sets: true, classrooms: true };
+  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
+  for (const name of ['classrooms', 'classroom_invites', 'classroom_submissions', 'classroom_lessons', 'classroom_shared_items'])
+    assert(results.some((r) => r.ok && r.label.includes(`: ${name} `)), name);
+  assert(results.some((r) => !r.ok && r.label.includes('classroom_members')));
+  assert.deepEqual(readinessFlagErrors(flags), []);
+  assert.match(readinessFlagErrors({ classrooms: true }).join(' '), /FEATURE_CLASSROOMS exige FEATURE_FLASHCARD_SETS/);
+});
+
+test('multi-lesson: its tables and generation reuse are probed; the flag needs catalog units', async () => {
+  const { db } = fixture({ missing: 'multi_lesson_jobs' });
+  const flags = { catalog_units: true, multi_lesson: true };
+  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
+  for (const name of ['ai_generations', 'multi_lesson_materials'])
+    assert(results.some((r) => r.ok && r.label.includes(`multi_lesson: ${name} `)), name);
+  assert(results.some((r) => !r.ok && r.label.includes('multi_lesson_jobs')));
+  // The knowledge-map cache is optional: never a readiness requirement.
+  assert(!results.some((r) => r.label.includes('knowledge_maps')));
+  assert.deepEqual(readinessFlagErrors(flags), []);
+  assert.match(readinessFlagErrors({ multi_lesson: true }).join(' '), /FEATURE_MULTI_LESSON exige FEATURE_CATALOG_UNITS/);
+});

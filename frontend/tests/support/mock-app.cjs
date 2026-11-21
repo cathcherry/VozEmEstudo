@@ -370,6 +370,9 @@ async function setup(context, base, flags, data, options = {}) {
         }));
         detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
       }
+      // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
+      if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
+      if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
       return json({ ...detail, signedAudioUrl: `${base}/__fixture.wav` });
     }
     if (p.endsWith('/captions')) return json({ revision: 1, granularity: 'segment', words: [] });
@@ -411,6 +414,128 @@ async function setup(context, base, flags, data, options = {}) {
       };
       data.tasks.push(task);
       return json(task, 201);
+    }
+    // ---- Flashcards 3.0 (FEATURE_FLASHCARDS_V3) ------------------------------------------------
+    const renderNote = (n) => {
+      const f = n.fields || {};
+      if (n.noteType === 'cloze') {
+        const re = /\{\{c\d+::([\s\S]*?)(?:::([\s\S]*?))?\}\}/g;
+        if (!re.test(f.text || '')) return null;
+        return { front: f.text.replace(re, (_, a, h) => (h ? `[${h}]` : '[…]')), back: f.text.replace(re, '$1') };
+      }
+      if (n.noteType === 'term') return { front: f.term, back: f.definition };
+      return { front: f.front, back: f.back };
+    };
+    const newSet = (id, name, cards, extra = {}) => {
+      const set = {
+        id, name, material_id: null, status: 'active', card_count: cards.length, due_count: cards.length,
+        template_id: extra.templateId || null, template_base: extra.templateBase || null, config: extra.config || {},
+        cards: cards.map((c, i) => ({ id: `${id}-${i}`, front_text: c.front, back_text: c.back, note_type: c.noteType || 'basic', origin_label: c.originLabel || null, set_id: id })),
+      };
+      data.sets = [...(data.sets || []), set];
+      return set;
+    };
+    if (p === '/api/flashcards/templates' && method === 'GET') return json(data.cardTemplates || []);
+    if (/^\/api\/flashcards\/templates\/[^/]+$/.test(p) && method === 'PUT') {
+      const id = p.split('/').pop();
+      const body = request.postDataJSON();
+      const allowed = ['accent', 'paper', 'ink', 'font', 'radius', 'pattern', 'shadow'];
+      if (Object.keys(body.body.tokens || {}).some((k) => !allowed.includes(k)))
+        return json({ error: { code: 'VALIDATION_ERROR', message: 'Os dados enviados são inválidos.' } }, 400);
+      data.cardTemplates = data.cardTemplates || [];
+      const existing = data.cardTemplates.find((t) => t.id === id);
+      const saved = { ...(existing || { id, version: 0 }), ...body.body, version: (existing?.version || 0) + 1 };
+      data.cardTemplates = [saved, ...data.cardTemplates.filter((t) => t.id !== id)];
+      return json(saved);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+\/template$/.test(p) && method === 'PUT') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      if (!set) return json({ error: { code: 'FLASHCARD_NOT_FOUND', message: 'Conjunto não encontrado.' } }, 404);
+      const body = request.postDataJSON();
+      Object.assign(set, { template_id: body.templateId || null, template_base: body.base || null });
+      data.templateApplies = (data.templateApplies || 0) + 1;
+      return json(set);
+    }
+    if (/^\/api\/flashcards\/sets\/[^/]+\/notes$/.test(p) && method === 'POST') {
+      const set = (data.sets || []).find((item) => item.id === p.split('/')[4]);
+      const note = request.postDataJSON();
+      const text = renderNote(note);
+      if (!text) return json({ error: { code: 'FLASHCARD_NOTE_INVALID', message: 'Marque pelo menos uma lacuna com {{c1::resposta}}.' } }, 400);
+      set.cards = set.cards || [];
+      set.cards.push({ id: `${set.id}-${set.cards.length}`, front_text: text.front, back_text: text.back, note_type: note.noteType, set_id: set.id });
+      set.card_count = set.cards.length;
+      data.typedNotes = [...(data.typedNotes || []), note];
+      return json({ added: 1, skipped: [] }, 201);
+    }
+    if (p === '/api/flashcards/decks' && method === 'POST') {
+      const body = request.postDataJSON();
+      const cards = body.cards.map((n) => ({ ...renderNote(n), noteType: n.noteType }));
+      const set = newSet(body.id, body.name, cards, body);
+      data.decks = [...(data.decks || []), body];
+      return json({ ...set, added: cards.length, skipped: [] }, 201);
+    }
+    const mergePlan = (sources) => {
+      const picked = sources.map((s) => {
+        if (!s.classroomId) return (data.sets || []).find((set) => set.id === s.setId);
+        // A deck shared in a class (simulated Turmas): content and author only.
+        const room = (data.classrooms?.rooms || []).find((r) => r.id === s.classroomId);
+        const item = room?.shared.find((x) => x.id === s.sharedId);
+        const author = room?.members.find((m) => m.userId === item?.ownerId)?.displayName || item?.name;
+        return { id: item.setId, name: item.name, ownerLabel: author, cards: item.cards.map((c) => ({ id: c.id, front_text: c.front, back_text: c.back })) };
+      });
+      const seen = new Set();
+      const byFront = new Map();
+      let duplicates = 0;
+      let total = 0;
+      for (const set of picked)
+        for (const card of set.cards || []) {
+          total += 1;
+          const norm = (t) => t.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+          const key = `${norm(card.front_text)}|${norm(card.back_text)}`;
+          if (seen.has(key)) { duplicates += 1; continue; }
+          seen.add(key);
+          const q = norm(card.front_text);
+          if (!byFront.has(q)) byFront.set(q, []);
+          byFront.get(q).push({ card, set });
+        }
+      const conflicts = [...byFront].filter(([, e]) => e.length > 1).map(([key, e]) => ({
+        key, front: e[0].card.front_text,
+        options: e.map(({ card, set }) => ({ cardId: card.id, back: card.back_text, label: set.ownerLabel || set.name, setName: set.name })),
+      }));
+      return { byFront, duplicates, total, conflicts };
+    };
+    if (p === '/api/flashcards/merge/preview' && method === 'POST') {
+      const plan = mergePlan(request.postDataJSON().sources);
+      return json({ total: plan.total, duplicates: plan.duplicates, resulting: plan.byFront.size, overLimit: 0, conflicts: plan.conflicts });
+    }
+    if (p === '/api/flashcards/merge' && method === 'POST') {
+      const body = request.postDataJSON();
+      const plan = mergePlan(body.sources);
+      const cards = [];
+      for (const [key, entries] of plan.byFront) {
+        const choice = body.decisions[key] || 'combine';
+        const kept = choice.startsWith('keep:') ? entries.find((e) => e.card.id === choice.slice(5)) : null;
+        if (entries.length === 1 || kept) {
+          const e = kept || entries[0];
+          cards.push({ front: e.card.front_text, back: e.card.back_text, originLabel: e.set.ownerLabel || e.set.name });
+        } else
+          cards.push({ front: entries[0].card.front_text, back: entries.map((e) => `${e.set.ownerLabel || e.set.name}: ${e.card.back_text}`).join('\n\n'), originLabel: entries.map((e) => e.set.ownerLabel || e.set.name).join(' + ') });
+      }
+      data.merges = [...(data.merges || []), body];
+      const set = newSet(body.id, body.name, cards, body);
+      return json({ ...set, added: cards.length, skipped: [] }, 201);
+    }
+    if (p === '/api/flashcards/import/apkg' && method === 'POST') {
+      const mode = url.searchParams.get('mode');
+      const bytes = request.postDataBuffer() || Buffer.alloc(0);
+      if (bytes.subarray(0, 2).toString() !== 'PK')
+        return json({ error: { code: 'APKG_INVALID', message: 'O arquivo não é um pacote do Anki.' } }, 400);
+      const report = { deckName: 'Química::Orgânica', notes: 2, types: { basic: 1, cloze: 1 }, images: 1, skipped: { empty: 0, unsupported: 0, overLimit: 0, audio: 1, imagesSkipped: 0 },
+        sample: [{ noteType: 'basic', front: 'Fórmula do metano?', back: 'CH4' }, { noteType: 'cloze', front: 'O carbono faz […] ligações.', back: 'O carbono faz 4 ligações.' }] };
+      if (mode === 'preview') return json(report, 201);
+      const set = newSet(url.searchParams.get('id'), url.searchParams.get('name') || report.deckName, report.sample.map((c) => ({ front: c.front, back: c.back, noteType: c.noteType, originLabel: report.deckName })));
+      data.apkgImports = (data.apkgImports || 0) + 1;
+      return json({ ...report, ...set, added: 2 }, 201);
     }
     if (p === '/api/flashcards/sets' && method === 'POST') {
       const body = request.postDataJSON();
@@ -505,6 +630,42 @@ async function setup(context, base, flags, data, options = {}) {
       return json({ id, subject_id: body.subjectId, unit_id: body.unitId, subject: subject?.name || null });
     }
     if (p === '/api/catalog/resources') return json({});
+    // Notes 3.0 lesson notebook: versions like the server (409 on a stale version, replay of the
+    // same request id). `data.notebookFailures` answers 503 to that many saves (unknown outcome).
+    if (/^\/api\/notebooks\/[^/]+$/.test(p)) {
+      const id = p.split('/')[3];
+      data.notebooks = data.notebooks || {};
+      const view = () => {
+        const notebook = data.notebooks[id] || null;
+        const cited = new Set((notebook?.doc.blocks || []).filter((b) => b.type === 'annotation_ref').map((b) => b.annotationId));
+        return {
+          notebook,
+          currentRevision: data.lessonRevision?.[id] || 1,
+          references: (data.notes || []).filter((n) => cited.has(n.id)).map((n) => ({ deleted: false, ...n })),
+        };
+      };
+      if (method === 'GET') return json(view());
+      const body = request.postDataJSON();
+      data.notebookSaves = [...(data.notebookSaves || []), body];
+      if (data.notebookFailures > 0) {
+        data.notebookFailures -= 1;
+        return json({ error: { code: 'DATABASE_TEMPORARY_ERROR', message: 'Banco indisponível.' } }, 503);
+      }
+      const current = data.notebooks[id];
+      if (current && current.last_request_id === body.requestId) return json({ ...view(), replayed: true });
+      if ((current?.version || 0) !== body.version)
+        return json({ error: { code: 'LEARNING_VERSION_CONFLICT', message: 'O registro mudou em outro aparelho. Atualize antes de editar.' } }, 409);
+      data.notebooks[id] = {
+        id: current?.id || `nb-${id}`,
+        material_id: id,
+        title: body.title || '',
+        doc: body.doc,
+        version: (current?.version || 0) + 1,
+        visibility: 'private',
+        last_request_id: body.requestId,
+      };
+      return json({ ...view(), replayed: false });
+    }
     if (p === '/api/annotations' && method === 'PUT') {
       const body = request.postDataJSON();
       data.savedNotes = [...(data.savedNotes || []), body];
@@ -514,7 +675,9 @@ async function setup(context, base, flags, data, options = {}) {
           id: body.id,
           material_id: body.materialId,
           source_revision: 1,
+          source_revision_id: body.body.sourceRevisionId,
           segment_position: body.body.segmentPosition ?? null,
+          end_segment_position: body.body.endSegmentPosition ?? body.body.segmentPosition ?? null,
           start_offset: body.body.startOffset ?? null,
           end_offset: body.body.endOffset ?? null,
           quote: body.body.quote || '',
@@ -619,6 +782,14 @@ async function setup(context, base, flags, data, options = {}) {
         questions: [],
         transcripts: [],
       });
+    // Private classrooms (Turmas): stateful simulation in ./mock-classrooms.cjs.
+    if (p.startsWith('/api/classrooms'))
+      return require('./mock-classrooms.cjs').handleClassrooms({
+        request, p, method, json, user: currentUser(), data, materials,
+      });
+    // Integrated material of several lessons (Milestone C): ./mock-multi-lesson.cjs.
+    if (p.startsWith('/api/multi-lesson'))
+      return require('./mock-multi-lesson.cjs').handleMultiLesson({ request, p, method, json, data, materials });
     return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
   });
   await context.addInitScript(
@@ -720,18 +891,24 @@ const allFlags = {
   catalog_units: true,
   quiz_v2: true,
   quiz_review: true,
+  // Off by default: journeys switch it on explicitly (the 3.2 client-side paths stay covered).
+  flashcards_v3: false,
+  // Milestone C, off by default; multi-lesson-check.cjs turns it on.
+  multi_lesson: false,
 };
 
 /** Serves the static front end on a free local port. */
 async function startServer() {
   const app = express();
-  app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png')));
+  app.get('/favicon.ico', (_req, res) =>
+    res.sendFile('favicon.png', { root: path.join(root, 'assets/brand') }),
+  );
   app.use('/assets', express.static(path.join(root, 'assets')));
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
   app.get('/__fixture.wav', (_req, res) =>
-    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav')),
+    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav'), { dotfiles: 'allow' }),
   );
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));

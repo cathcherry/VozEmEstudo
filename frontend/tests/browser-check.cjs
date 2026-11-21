@@ -171,9 +171,11 @@ async function main() {
         : res.status(401).json({ error: { message: 'Sessão inválida.' } }),
     mediaRouter,
   );
-  app.get('/__fixture.mp4', (_req, res) => res.sendFile(mp4));
-  app.get('/__fixture.wav', (_req, res) => res.sendFile(wav));
-  app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png')));
+  // dotfiles: 'allow' — the checkout itself may sit under a hidden folder (e.g. a worktree).
+  const files = { dotfiles: 'allow' };
+  app.get('/__fixture.mp4', (_req, res) => res.sendFile(mp4, files));
+  app.get('/__fixture.wav', (_req, res) => res.sendFile(wav, files));
+  app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png'), files));
   app.use('/assets', express.static(path.join(root, 'assets')));
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
@@ -730,9 +732,9 @@ async function main() {
     );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
-    // Revisar, Planejar and Focar exist in the dock but stay hidden while their features are off.
+    // Revisar, Planejar, Focar and Turmas exist in the dock but stay hidden while their features are off.
     assert.equal(await page.locator('#focus-dock a:visible').count(), 4);
-    assert.equal(await page.locator('#focus-dock a').count(), 7);
+    assert.equal(await page.locator('#focus-dock a').count(), 8);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
