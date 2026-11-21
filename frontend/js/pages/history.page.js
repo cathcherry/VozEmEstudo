@@ -342,13 +342,29 @@ function row(material, { folderName = null, standalone = false } = {}) {
   return item;
 }
 
+/**
+ * Folder colour: the subject's stored colour when it is one of the palette's, else a stable tone
+ * from its place in the catalog (or its name), cycling lavender, matcha, honey, mist and rose.
+ */
+const FOLDER_TONES = ['lavender', 'matcha', 'honey', 'mist', 'rose'];
+function folderTone(group) {
+  if (FOLDER_TONES.includes(group.color)) return group.color;
+  const index = catalog?.subjects?.findIndex((subject) => subject.id && subject.id === group.id) ?? -1;
+  if (index >= 0) return FOLDER_TONES[index % FOLDER_TONES.length];
+  // Not in the catalog (subject typed on a lesson): its place among the names, alphabetically.
+  const names = [...new Set([...(catalog?.subjects || []).map((subject) => subject.name), group.name])].sort((a, b) =>
+    String(a).localeCompare(String(b), 'pt-BR'),
+  );
+  return FOLDER_TONES[Math.max(0, names.indexOf(group.name)) % FOLDER_TONES.length];
+}
+
 function groupMaterials(visible) {
   const groupsById = new Map();
   const groupsByName = new Map();
   const result = [];
   if (catalogEnabled) {
     for (const subject of catalog.subjects) {
-      const group = { id: subject.id, name: subject.name, materials: [] };
+      const group = { id: subject.id, name: subject.name, color: subject.color_token, materials: [] };
       groupsById.set(subject.id, group);
       groupsByName.set(subject.name.toLocaleLowerCase('pt-BR'), group);
       result.push(group);
@@ -523,6 +539,7 @@ function renderFolderGroups(visible, _needle) {
     if(selected && String(group.id||group.name)!==selected)continue;
     const section = document.createElement('section');
     section.className = 'library-group library-folder-group';
+    section.dataset.folderTone = folderTone(group);
     const folder = document.createElement('details');
     folder.className = 'library-subject-folder';
     const summary = document.createElement('summary');

@@ -688,7 +688,7 @@ async function main() {
     assert((await page.evaluate(() => window.__paints)).every((p) => p.theme === 'night'));
     assert.equal(
       await page.evaluate(() => getComputedStyle(document.body).backgroundColor),
-      'rgb(14, 27, 42)',
+      'rgb(27, 25, 36)',
     );
     await screenshot(page, output, 'dashboard-night.png');
     record('Tema noturno aplicado antes da primeira pintura');
@@ -732,9 +732,9 @@ async function main() {
     );
     await focusDockTrigger.focus();
     assert.equal(await page.locator('#focus-dock').getAttribute('data-open'), 'true');
-    // Revisar, Planejar, Focar and Turmas exist in the dock but stay hidden while their features are off.
+    // Revisar, Planejar, Focar, Turmas and Descobertas exist in the dock but stay hidden while their features are off.
     assert.equal(await page.locator('#focus-dock a:visible').count(), 4);
-    assert.equal(await page.locator('#focus-dock a').count(), 8);
+    assert.equal(await page.locator('#focus-dock a').count(), 9);
     await page.reload();
     await page.waitForFunction(
       () => document.querySelector('[data-dashboard-data]').getAttribute('aria-busy') === 'false',
@@ -1700,7 +1700,13 @@ async function main() {
         await page.waitForTimeout(350);
         // Audit the settled screen, not a card halfway through its entrance fade.
         await page.evaluate(() =>
-          Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))),
+          // Ambient loops (Lume breathing, rain in the desk window) never finish: skip them.
+          Promise.all(
+            document
+              .getAnimations()
+              .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity)
+              .map((a) => a.finished.catch(() => {})),
+          ),
         );
         await page.addScriptTag({ path: axePath });
         const found = await page.evaluate(async () =>
@@ -2386,7 +2392,7 @@ async function main() {
     assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'true', 'persists');
     await page.goto(base + '/aparencia.html');
     assert(await page.locator('#setting-screen-reader').isChecked());
-    await page.locator('#setting-screen-reader').uncheck();
+    await page.locator('#setting-screen-reader-off').check();
     assert.equal(await page.evaluate(() => document.documentElement.dataset.screenReaderMode), 'false');
     record('Modo para leitores de tela: no segundo Tab de cada página, sem decoração nem animação, axe sem violações');
     // Transcript search shows the searched words in bold, ignoring accents and case.

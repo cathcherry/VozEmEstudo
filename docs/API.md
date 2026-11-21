@@ -348,3 +348,28 @@ foi excluído, um novo é criado). Limite: 60 pedidos por hora por conta. Nenhum
 Falhas da geração (em `error_code` do material): `LLM_TEMPORARY_ERROR`, `LLM_FAILED`,
 `LLM_INVALID_OUTPUT`, `MULTI_LESSON_NO_KNOWLEDGE`, `MULTI_LESSON_UNSUPPORTED`,
 `TRANSCRIPTION_CONFIRMATION_REQUIRED`, `WORKER_LEASE_EXPIRED`.
+
+## Investigações, Arquivo de Descobertas e Gabinete 🔒 — 3.5 (flag `discoveries`, exige `annotations`)
+
+Migration `20261123090000_discoveries.sql` (somente staging; ver `docs/migrations/DISCOVERIES.md`).
+Tudo privado à conta, `Cache-Control: no-store`. Sem a migration: `503 DISCOVERIES_SCHEMA_REQUIRED`.
+Nenhuma rota concede colecionável: `newUnlocks` lista o que os gatilhos do banco desbloquearam
+naquela requisição (vazio num reenvio).
+
+| Rota | Corpo | Resposta |
+| --- | --- | --- |
+| `GET /api/investigations/source/:materialId` | — | `{lesson, revisionId, revision, confirmedAt, segments:[{position,startMs,endMs,text}], lessonQuestions, investigations}` (revisão confirmada mais recente; `409 DISCOVERY_REVISION_UNCONFIRMED`) |
+| `PUT /api/investigations/:id` | `{version:0, requestId, body:{materialId, sourceRevisionId, question, questionOrigin?}}` ou `{version, requestId, body:{question?, explanation?, reflection?, explored?}}` | visão da investigação `{investigation, lesson, evidence, links, canComplete, newUnlocks, replayed}` |
+| `GET /api/investigations/:id` | — | visão da investigação |
+| `POST /api/investigations/:id/evidence` | `{id, segmentPosition, endSegmentPosition?, startOffset, endOffset, quote, note?}` | visão + `evidenceId` (`409 DISCOVERY_ANCHOR_CONFLICT` se a citação não bate) |
+| `DELETE /api/investigations/:id/evidence/:evidenceId` | — | visão (a linha fica, oculta) |
+| `GET /api/investigations/:id/link-options` | — | `{questions, flashcards, annotations, notebooks}` da aula |
+| `PUT /api/investigations/:id/links` · `DELETE …/links/:kind/:refId` | `{kind:'question'\|'flashcard'\|'annotation'\|'notebook', refId}` | visão |
+| `POST /api/investigations/:id/complete` | `{requestId}` | visão da descoberta |
+| `GET /api/discoveries` | — | `[{id, title, subject, lessonTitle, createdAt, evidenceCount, connectionCount, revisitCount, stamps}]` |
+| `GET /api/discoveries/:id` | — | `{discovery, lesson, investigation, evidence, links, reflections, connections, revisits, history, stamps}` |
+| `PUT /api/discoveries/:id` | `{version, requestId, title?, explanation?}` | descoberta (nova versão) |
+| `POST /api/discoveries/:id/reflections` | `{id, text}` | descoberta |
+| `POST /api/discoveries/:id/connections` | `{id, otherId, note?}` | descoberta |
+| `GET /api/collection` | — | `{catalog, slots, unlocks:[{id, kind, event, sourceId, investigationId, discoveryId, currentDiscoveryId, materialId, lessonTitle, subject, occurredAt, unlockedAt}], layout:{items, version}, counts}` |
+| `PUT /api/collection/layout` | `{version, requestId, items:[{slot, objectId}]}` | coleção (`409 COLLECTION_NOT_UNLOCKED`, `400 COLLECTION_LAYOUT_INVALID`) |

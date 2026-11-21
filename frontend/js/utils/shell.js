@@ -4,6 +4,7 @@ import { setStudyUser } from './study-store.js';
 import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
 import { initUtilityShell } from './utility-shell.js';
+import { initSoundscape } from './soundscape-ui.js';
 import { initWallpaperImage } from './wallpaper-image.js';
 import { initPageStickers } from './page-stickers.js';
 import { initQuestionReports } from './question-reports.js';
@@ -12,6 +13,8 @@ import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
+// The art system (Lume, stamps, objects, covers): fills every [data-art-slot] on signed-in pages.
+import '../art/art.js';
 
 /** Shows Revisar/Planejar in the navigation when at least one of their tools is enabled. */
 export async function revealStudyNavigation() {
@@ -22,10 +25,57 @@ export async function revealStudyNavigation() {
     root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
     root.dataset.navClassrooms = String(Boolean(flags.classrooms));
+    root.dataset.navDiscoveries = String(Boolean(flags.discoveries));
   } catch { /* Navigation keeps the always-available pages. */ }
 }
 
+/** The art stylesheet, for pages that did not list it (the art fails soft without it). */
+function ensureArtStyles() {
+  if (document.querySelector('link[href$="/css/art.css"]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/css/art.css';
+  document.head.append(link);
+}
+
+/**
+ * Descobertas (the notebook) and, inside it, the Gabinete: added to the sidebar of every page and
+ * shown only when the discoveries feature is on (CSS reads data-nav-discoveries). They stay in
+ * "Estudo silencioso": the mode hides decoration and game flourishes, never a function.
+ */
+export function mountDiscoveryNavigation(doc = document) {
+  const nav = doc.querySelector('.side-navigation .primary-navigation');
+  if (!nav || nav.querySelector('[data-nav-feature="discoveries"]')) return;
+  const page = location.pathname.split('/').pop();
+  const item = (href, label, icon, current, sub = false) => {
+    const link = doc.createElement('a');
+    link.href = href;
+    link.dataset.navFeature = 'discoveries';
+    if (sub) link.className = 'nav-sub';
+    const mark = doc.createElement('span');
+    mark.className = 'nav-art-icon';
+    mark.setAttribute('aria-hidden', 'true');
+    mark.style.setProperty('--art-icon', `url("/assets/art/icons/${icon}.svg")`);
+    const text = doc.createElement('span');
+    text.textContent = label;
+    link.append(mark, text);
+    link.setAttribute('aria-label', label);
+    link.title = label;
+    if (current) {
+      link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
+    }
+    return link;
+  };
+  nav.append(
+    item('./descobertas.html', 'Descobertas', 'notebook', ['descobertas.html', 'investigar.html'].includes(page)),
+    item('./gabinete.html', 'Gabinete', 'cabinet', page === 'gabinete.html', true),
+  );
+}
+
 export async function initAuthenticatedShell() {
+  ensureArtStyles();
+  mountDiscoveryNavigation();
   let session;
   try { session = await requireSession(); }
   catch (error) {
@@ -58,6 +108,8 @@ export async function initAuthenticatedShell() {
   void initWallpaperImage(session.user.id).catch(() => { /* decoration only */ });
   try { initPageStickers(); } catch { /* decoration only */ }
   void initQuestionReports(session.user.id);
+  // Sons ambientes (3.5): top-bar mixer for every signed-in page; never plays before a click.
+  try { initSoundscape({ userId: session.user.id }); } catch { /* optional tool */ }
   // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);

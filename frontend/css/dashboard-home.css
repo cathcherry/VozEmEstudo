@@ -1,799 +1,862 @@
-/* Início (painel.html): a main column for studying now (continue, tasks, flashcards, recent
-   lessons) and one continuous right column for time and planning (week, month, subjects).
-   Colours come from the active theme's tokens. */
+/* Início (painel.html) — "a escrivaninha" (3.5).
+ *
+ * Composition: one desk surface with the single next action (continue the lesson), a row with
+ * today's tasks and flashcards, the recent lessons as a Finder-like list; on the right, quiet
+ * margin notes (week, month, subjects, notes) written straight on the paper — no tall box that can
+ * be left half empty. Columns end together (dashboard-home-check.cjs) because both are grid
+ * items of the same row; the margin column has no background, so leftover height is invisible.
+ * The blocks can be hidden and reordered (utils/dashboard-layout.js); nothing here depends on
+ * their order. */
+@layer pages {
+  body[data-page='dashboard'] {
+    --dash-gap: var(--space-5);
+    --dash-pad: var(--space-5);
+  }
+  html[data-density='compact'] body[data-page='dashboard'] {
+    --dash-gap: var(--space-4);
+    --dash-pad: var(--space-4);
+  }
 
-body[data-page='dashboard'] {
-  --dash-gap: 22px;
-  --dash-radius: 20px;
-  --dash-radius-small: 12px;
-  --dash-hairline: color-mix(in srgb, var(--border-light) 80%, transparent);
-  --dash-quiet: color-mix(in srgb, var(--accent-soft) 60%, var(--surface));
-  --dash-shadow: 0 1px 2px rgb(20 24 32 / 4%), 0 10px 28px -16px rgb(20 24 32 / 18%);
-}
+  /* ---- Greeting -------------------------------------------------------------------------- */
+  body[data-page='dashboard'] .dashboard-heading {
+    align-items: flex-end;
+    margin-bottom: var(--space-5);
+  }
+  body[data-page='dashboard'] .dashboard-heading > div:first-child {
+    display: grid;
+    gap: var(--space-1);
+  }
+  body[data-page='dashboard'] .dash-date {
+    order: -1;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 500;
+  }
+  body[data-page='dashboard'] .dash-date::first-letter {
+    text-transform: uppercase;
+  }
+  body[data-page='dashboard'] .dashboard-heading-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+  body[data-page='dashboard'] .dash-customize-trigger .ui-icon {
+    width: 1rem;
+    height: 1rem;
+  }
 
-/* ---- Greeting ---------------------------------------------------------------------------- */
-body[data-page='dashboard'] .dashboard-heading {
-  align-items: flex-end;
-  margin-bottom: 20px;
-}
-body[data-page='dashboard'] .dashboard-heading h1 {
-  margin: 0;
-}
-body[data-page='dashboard'] .dash-date {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-/* ---- Layout ------------------------------------------------------------------------------ */
-body[data-page='dashboard'] .dash-home {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
-  gap: var(--dash-gap);
-  align-items: stretch;
-}
-body[data-page='dashboard'] .dash-home h2 {
-  margin: 0;
-}
-body[data-page='dashboard'] .dash-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--dash-gap);
-  min-width: 0;
-}
-body[data-page='dashboard'] .dash-pair {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: var(--dash-gap);
-}
-body[data-page='dashboard'] :is(.dash-pair, .dash-card, .dash-week, .dash-notes)[hidden] {
-  display: none;
-}
-
-/* ---- Cards ------------------------------------------------------------------------------- */
-body[data-page='dashboard'] .dash-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-  margin: 0;
-  padding: 22px 24px;
-  border: 1px solid var(--dash-hairline);
-  border-radius: var(--dash-radius);
-  background: var(--surface);
-  box-shadow: var(--dash-shadow);
-}
-body[data-page='dashboard'] .dash-card-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px 12px;
-}
-body[data-page='dashboard'] .dash-card-head h2 {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: Inter, 'Segoe UI', Arial, sans-serif;
-  font-size: 1.02rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.3;
-}
-body[data-page='dashboard'] .dash-card-head .text-action {
-  padding: 2px 0;
-  font-size: 0.85rem;
-}
-body[data-page='dashboard'] .dash-count {
-  min-width: 24px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  color: var(--button-text);
-  background: var(--button-background);
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-align: center;
-}
-body[data-page='dashboard'] .dash-count[hidden] {
-  display: none;
-}
-body[data-page='dashboard'] .dash-card-body {
-  flex: 1;
-  min-width: 0;
-}
-body[data-page='dashboard'] .dash-card-foot:empty {
-  display: none;
-}
-body[data-page='dashboard'] .dash-card-foot .button-link {
-  min-height: 42px;
-  padding: 9px 16px;
-  font-size: 0.875rem;
-}
-body[data-page='dashboard'] .dash-card-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-body[data-page='dashboard'] .dash-figure {
-  margin: 0 0 8px;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-body[data-page='dashboard'] .dash-figure strong {
-  margin-right: 2px;
-  color: var(--text);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 2.1rem;
-  line-height: 1;
-}
-
-/* Tasks */
-body[data-page='dashboard'] .dash-task-list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-body[data-page='dashboard'] .dash-task-list li {
-  display: grid;
-  gap: 1px;
-  padding: 9px 0 9px 16px;
-  border-bottom: 1px solid var(--dash-hairline);
-  background: linear-gradient(var(--accent-strong), var(--accent-strong)) left 15px / 7px 7px
-    no-repeat;
-}
-body[data-page='dashboard'] .dash-task-list li:first-child {
-  padding-top: 2px;
-  background-position: left 8px;
-}
-body[data-page='dashboard'] .dash-task-list li:last-child {
-  border-bottom: 0;
-}
-body[data-page='dashboard'] .dash-task-list li.is-overdue {
-  background-image: linear-gradient(var(--danger), var(--danger));
-}
-body[data-page='dashboard'] .dash-task-title {
-  overflow-wrap: anywhere;
-  font-size: 0.95rem;
-}
-body[data-page='dashboard'] .dash-task-list small {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-body[data-page='dashboard'] .dash-task-list .is-overdue small {
-  color: var(--danger);
-}
-
-/* Flashcards: the question at the front of the queue (the answer stays hidden). */
-body[data-page='dashboard'] .dash-next-card {
-  display: grid;
-  gap: 4px;
-  margin: 4px 0 0;
-  padding: 14px 16px;
-  border-radius: var(--dash-radius-small);
-  background: var(--dash-quiet);
-}
-body[data-page='dashboard'] .dash-next-card small {
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-body[data-page='dashboard'] .dash-next-card span {
-  display: -webkit-box;
-  overflow: hidden;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.05rem;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
-
-/* Recent lessons */
-body[data-page='dashboard'] .dash-recent .dashboard-overview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  margin: -4px 0 0;
-  padding: 0;
-  border: 0;
-  color: var(--muted);
-  font-size: 0.85rem;
-  animation: none;
-}
-body[data-page='dashboard'] .dash-recent .dashboard-overview strong {
-  color: var(--text);
-  font-size: 0.9rem;
-}
-body[data-page='dashboard'] .dash-recent-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-  gap: 12px;
-}
-/* Titles wrap between words (hyphenated if needed), never in the middle of a word. */
-body[data-page='dashboard'] .dash-recent .dashboard-lesson-copy {
-  padding-right: 84px;
-}
-body[data-page='dashboard'] .dash-recent .dashboard-lesson-title {
-  overflow-wrap: break-word;
-  word-break: normal;
-  hyphens: auto;
-}
-body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
-  margin: 0;
-  border-color: transparent;
-  border-radius: var(--dash-radius-small);
-  background: color-mix(in srgb, var(--surface-alt) 70%, var(--surface));
-}
-body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:hover,
-body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:focus-visible {
-  border-color: var(--accent-strong);
-}
-
-/* ---- Right column: one continuous panel ------------------------------------------------- */
-body[data-page='dashboard'] .dash-rail {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 6px 24px;
-  border: 1px solid var(--dash-hairline);
-  border-radius: 24px;
-  background: var(--surface);
-  box-shadow: var(--dash-shadow);
-}
-body[data-page='dashboard'] .dash-rail > .dash-card {
-  padding: 20px 0;
-  border: 0;
-  border-top: 1px solid var(--dash-hairline);
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
-}
-body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden]) ~ .dash-card {
-  border-top: 1px solid var(--dash-hairline);
-}
-body[data-page='dashboard'] .dash-rail > .dash-card:first-child,
-body[data-page='dashboard'] .dash-rail > .dash-card[hidden] + .dash-card {
-  border-top: 0;
-}
-
-/* Week */
-body[data-page='dashboard'] .dash-week-progress {
-  width: 100%;
-  height: 8px;
-  margin-bottom: 12px;
-  accent-color: var(--accent-strong);
-}
-body[data-page='dashboard'] .dash-week-days {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-body[data-page='dashboard'] .dash-week-days li {
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-}
-body[data-page='dashboard'] .dash-day-bar {
-  position: relative;
-  width: 100%;
-  max-width: 22px;
-  height: 52px;
-  overflow: hidden;
-  border-radius: 8px;
-  background: var(--dash-quiet);
-}
-body[data-page='dashboard'] .dash-day-bar::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0;
-  height: calc(var(--fill, 0) * 1%);
-  border-radius: 8px;
-  background: var(--accent-strong);
-}
-body[data-page='dashboard'] .dash-day-label {
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-body[data-page='dashboard'] .dash-week-days .is-today .dash-day-label {
-  color: var(--text);
-  font-weight: 700;
-}
-
-/* Month at a glance + next items */
-body[data-page='dashboard'] .dash-mini-month {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 2px 4px;
-  margin-bottom: 14px;
-  text-align: center;
-}
-body[data-page='dashboard'] .dash-mini-weekday {
-  padding-bottom: 4px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-body[data-page='dashboard'] .dash-mini-day {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  margin: 0 auto;
-  border-radius: 50%;
-  font-size: 0.82rem;
-  font-variant-numeric: tabular-nums;
-}
-body[data-page='dashboard'] .dash-mini-day.is-past {
-  color: var(--muted);
-}
-body[data-page='dashboard'] .dash-mini-day.has-items::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--accent-strong);
-}
-body[data-page='dashboard'] .dash-mini-day.is-today {
-  color: var(--button-text);
-  background: var(--button-background);
-  font-weight: 700;
-}
-body[data-page='dashboard'] .dash-mini-day.is-today.has-items::after {
-  background: currentColor;
-}
-body[data-page='dashboard'] .dash-agenda-list {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-body[data-page='dashboard'] .dash-agenda-list li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-body[data-page='dashboard'] .dash-agenda-when {
-  display: grid;
-  flex: 0 0 46px;
-  justify-items: center;
-  padding: 6px 0;
-  border-radius: var(--dash-radius-small);
-  background: var(--dash-quiet);
-  line-height: 1.05;
-}
-body[data-page='dashboard'] .dash-agenda-when strong {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.15rem;
-}
-body[data-page='dashboard'] .dash-agenda-when span {
-  color: var(--muted);
-  font-size: 0.7rem;
-}
-body[data-page='dashboard'] .dash-agenda-copy {
-  display: grid;
-  min-width: 0;
-}
-body[data-page='dashboard'] .dash-agenda-title {
-  overflow: hidden;
-  font-size: 0.92rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-body[data-page='dashboard'] .dash-agenda-copy small {
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-
-/* Subjects and most revisited topics */
-body[data-page='dashboard'] .dash-rail .subject-shelf {
-  display: grid;
-  gap: 2px;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 6px 8px;
-  border-radius: var(--dash-radius-small);
-}
-body[data-page='dashboard'] .dash-rail .subject-folder:hover {
-  background: var(--dash-quiet);
-  text-decoration: none;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder strong {
-  font-size: 0.9rem;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder small {
-  display: block;
-  color: var(--muted);
-  font-size: 0.78rem;
-}
-body[data-page='dashboard'] .dash-topics[hidden] {
-  display: none;
-}
-body[data-page='dashboard'] .dash-topics h3 {
-  margin: 6px 0 8px;
-  color: var(--muted);
-  font-family: Inter, 'Segoe UI', Arial, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-body[data-page='dashboard'] .dash-topics .topic-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-body[data-page='dashboard'] .dash-topics .topic-list li {
-  display: inline-flex;
-  gap: 6px;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--dash-quiet);
-  font-size: 0.8rem;
-}
-body[data-page='dashboard'] .dash-topics .topic-list small {
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-body[data-page='dashboard'] .dash-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* ---- Continue studying (the one tinted block) -------------------------------------------- */
-body[data-page='dashboard'] .dash-continue {
-  min-width: 0;
-  padding: clamp(20px, 2.6vw, 30px);
-  border-radius: var(--dash-radius);
-  background: var(--dash-quiet);
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: 'copy date' 'topics topics' 'playback playback' 'cue cue';
-  gap: 6px 16px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  animation: none;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover,
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:focus-visible {
-  box-shadow: none;
-  transform: none;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-copy {
-  grid-area: copy;
-  padding: 0;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-title {
-  font-size: clamp(1.55rem, 2.6vw, 2.1rem);
-  line-height: 1.15;
-  white-space: normal;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-subject {
-  font-size: 0.95rem;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-date {
-  position: static;
-  grid-area: date;
-  align-self: start;
-  background: var(--surface);
-  font-size: 0.8rem;
-}
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card:is(:hover, :focus-visible)
-  .dashboard-lesson-date {
-  font-size: 0.8rem;
-}
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card:is(:hover, :focus-visible)
-  .dashboard-lesson-date::after {
-  display: none;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-topics {
-  grid-area: topics;
-  max-height: none;
-  padding: 0;
-  font-size: 0.85rem;
-  opacity: 1;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback {
-  grid-area: playback;
-  flex-wrap: wrap;
-  margin-top: 14px;
-  padding-top: 0;
-  border-top: 0;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback progress {
-  flex-basis: 100%;
-  height: 8px;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-tooltip {
-  position: static;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-  max-width: none;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  opacity: 1;
-  transform: none;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-percent,
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-last-played,
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-duration {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-duration {
-  order: 2;
-  margin-left: auto;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue {
-  position: static;
-  grid-area: cue;
-  justify-self: start;
-  margin-top: 14px;
-  padding: 11px 18px;
-  border-radius: 9px;
-  color: var(--button-text);
-  background: var(--button-background);
-  font-size: 0.95rem;
-  opacity: 1;
-  transform: none;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-cue {
-  filter: brightness(0.95);
-}
-body[data-page='dashboard'] .dash-continue .empty-state-card {
-  margin: 0;
-  border: 0;
-  background: none;
-}
-html[data-high-contrast='true']
-  body[data-page='dashboard']
-  :is(.dash-continue, .dash-pulse a, .dash-agenda-when) {
-  border: 1px solid var(--text);
-}
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card
-  .dashboard-lesson-playback
-  .dashboard-lesson-tooltip,
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card:is(:hover, :focus-visible)
-  .dashboard-lesson-playback
-  .dashboard-lesson-tooltip,
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card
-  .dashboard-lesson-playback:is(:hover, :focus-within)
-  .dashboard-lesson-tooltip {
-  position: static;
-  left: auto;
-  opacity: 1;
-  transform: none;
-}
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card:is(:hover, :focus-visible, :has(.dashboard-lesson-playback:hover))
-  .dashboard-lesson-cue {
-  opacity: 1;
-  transform: none;
-}
-body[data-page='dashboard']
-  .dash-continue
-  .dashboard-lesson-card:is(:hover, :focus-visible)
-  .dashboard-lesson-topics {
-  max-height: none;
-  padding: 0;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-title {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-body[data-page='dashboard'] .dash-continue {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 26px 28px;
-  border-radius: 24px;
-  background: var(--dash-quiet);
-}
-body[data-page='dashboard'] .dash-continue .dash-card-head h2 {
-  color: var(--muted);
-  font-family: Inter, 'Segoe UI', Arial, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback {
-  margin-top: 8px;
-}
-body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue {
-  margin-top: 10px;
-}
-
-/* Annotation results in the global search. */
-body[data-page='dashboard'] .search-note {
-  border-left: 3px solid #b8901b;
-}
-body[data-page='dashboard'] .search-note.annotation-green {
-  border-left-color: #32694a;
-}
-body[data-page='dashboard'] .search-note.annotation-blue {
-  border-left-color: #315d86;
-}
-body[data-page='dashboard'] .search-note-quote {
-  font-style: italic;
-}
-
-/* ---- Responsive -------------------------------------------------------------------------- */
-@media (max-width: 1180px) {
+  /* ---- Layout ---------------------------------------------------------------------------- */
   body[data-page='dashboard'] .dash-home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16.5rem, 19rem);
+    gap: var(--dash-gap) clamp(var(--space-5), 3vw, var(--space-7));
+    align-items: stretch;
+  }
+  body[data-page='dashboard'] .dash-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dash-gap);
+    min-width: 0;
+  }
+  body[data-page='dashboard'] .dash-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--dash-gap);
+  }
+  body[data-page='dashboard'] :is(.dash-pair, .dash-card, .dash-continue)[hidden],
+  body[data-page='dashboard'] [data-user-hidden] {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-home:not(:has(.dash-rail > .dash-card:not([hidden], [data-user-hidden]))) {
     grid-template-columns: minmax(0, 1fr);
   }
-  body[data-page='dashboard'] .dash-rail {
+  body[data-page='dashboard'] .dash-rail:not(:has(> .dash-card:not([hidden], [data-user-hidden]))) {
+    display: none;
+  }
+
+  /* ---- Panels of the main column --------------------------------------------------------- */
+  body[data-page='dashboard'] .dash-main .dash-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    margin: 0;
+    padding: var(--dash-pad);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+  body[data-page='dashboard'] .dash-card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  body[data-page='dashboard'] .dash-card-head h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 650;
+    letter-spacing: 0;
+  }
+  body[data-page='dashboard'] .dash-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font-size: var(--step--1);
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-count[hidden] {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-card-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  body[data-page='dashboard'] .dash-card-foot {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: auto;
+  }
+  body[data-page='dashboard'] .dash-card-foot:empty {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-figure {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body[data-page='dashboard'] .dash-figure strong {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-3);
+    font-weight: 440;
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Tasks: a ruled list; the dot carries the state (late = rose). */
+  body[data-page='dashboard'] .dash-task-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-    gap: 0 28px;
-    padding: 6px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  body[data-page='dashboard'] .dash-rail > .dash-card {
+  body[data-page='dashboard'] .dash-task-list li {
+    position: relative;
+    display: grid;
+    gap: 2px;
+    padding: var(--space-2) 0 var(--space-2) 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  body[data-page='dashboard'] .dash-task-list li:first-child {
+    padding-top: 0;
     border-top: 0;
   }
-}
-@media (max-width: 700px) {
-  body[data-page='dashboard'] {
-    --dash-gap: 16px;
+  body[data-page='dashboard'] .dash-task-list li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: calc(var(--space-2) + 0.45em);
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--lavender);
   }
-  body[data-page='dashboard'] .dash-card {
-    padding: 18px;
+  body[data-page='dashboard'] .dash-task-list li:first-child::before {
+    top: 0.45em;
   }
-  body[data-page='dashboard'] .dash-rail {
-    padding: 4px 18px;
+  body[data-page='dashboard'] .dash-task-list li.is-overdue::before {
+    border-color: var(--rose-ink);
+    background: var(--rose);
   }
-  body[data-page='dashboard'] .dash-rail > .dash-card {
-    padding: 18px 0;
-    border-top: 1px solid var(--dash-hairline);
+  body[data-page='dashboard'] .dash-task-title {
+    color: var(--ink);
+    font-size: var(--step-ui);
+    font-weight: 550;
   }
-  body[data-page='dashboard'] .dash-rail > .dash-card:first-child {
-    border-top: 0;
+  body[data-page='dashboard'] .dash-task-list small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
   }
+  body[data-page='dashboard'] .dash-task-list .is-overdue small {
+    color: var(--rose-ink);
+  }
+
+  /* Flashcards: the question at the front of the queue, as a quoted line (not a box). */
+  body[data-page='dashboard'] .dash-next-card {
+    display: grid;
+    gap: var(--space-1);
+    margin: var(--space-4) 0 0;
+    padding: 0 0 0 var(--space-3);
+    border: 0;
+    border-left: 2px solid var(--lavender);
+    border-radius: 0;
+    background: none;
+  }
+  body[data-page='dashboard'] .dash-next-card small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body[data-page='dashboard'] .dash-next-card span {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 420;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  /* ---- The desk: the one next action ------------------------------------------------------ */
   body[data-page='dashboard'] .dash-continue {
-    padding: 20px;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4) var(--space-5);
+    min-width: 0;
+    padding: clamp(var(--space-5), 3vw, var(--space-6));
+    border: 1px solid var(--line);
+    border-radius: var(--radius-window);
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--lavender) 13%, transparent), transparent 58%),
+      linear-gradient(180deg, var(--paper-raised), color-mix(in srgb, var(--paper-raised) 94%, var(--paper-sunken)));
+    box-shadow: var(--elev-2);
+  }
+  /* Lume lives on the desk above (desk.css), not inside the sheet. */
+  body[data-page='dashboard'] .dash-continue .dash-card-head h2 {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body[data-page='dashboard'] .dash-continue .dash-card-head .text-action {
+    font-size: var(--step-ui);
   }
   body[data-page='dashboard'] .dash-continue .dashboard-lesson-card {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'copy' 'date' 'topics' 'playback' 'cue';
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'copy date' 'topics topics' 'playback playback' 'cue cue';
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ink);
+    text-decoration: none;
+    transform: none;
+    animation: none;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 6px;
+    border-radius: var(--radius-control);
+  }
+  body[data-page='dashboard'] .dashboard-lesson-copy {
+    grid-area: copy;
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+    padding: 0;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: clamp(var(--step-2), 1.3rem + 1vw, var(--step-3));
+    font-weight: 470;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    white-space: normal;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+  body[data-page='dashboard'] .dashboard-lesson-subject {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
   }
   body[data-page='dashboard'] .dash-continue .dashboard-lesson-date {
+    position: static;
+    grid-area: date;
+    align-self: start;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--paper-raised);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-date::after {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-topics {
+    grid-area: topics;
+    max-height: none;
+    padding: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    opacity: 1;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback {
+    grid-area: playback;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-3);
+    padding: 0;
+    border: 0;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback progress {
+    flex: 1 0 100%;
+    width: 100%;
+    height: 6px;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-tooltip,
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-tooltip,
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback:is(:hover, :focus-within) .dashboard-lesson-tooltip {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    opacity: 1;
+    transform: none;
+  }
+  body[data-page='dashboard'] .dash-continue :is(.dashboard-lesson-percent, .dashboard-lesson-last-played, .dashboard-lesson-duration) {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-percent {
+    color: var(--matcha-ink);
+    font-weight: 600;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-duration {
+    order: 2;
+    margin-left: auto;
+  }
+  /* The cue is the page's one primary action (the whole card is the link). */
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue,
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-cue {
+    position: static;
+    grid-area: cue;
     justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-top: var(--space-3);
+    padding: 0 var(--space-5);
+    border: 1px solid color-mix(in srgb, var(--brand-ink) 80%, var(--ink));
+    border-radius: var(--radius-control);
+    background: var(--brand-ink) linear-gradient(180deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
+    color: var(--on-brand);
+    font-size: var(--step-0);
+    font-weight: 600;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      0 1px 2px rgb(var(--shadow-color) / 0.18);
+    opacity: 1;
+    transform: none;
   }
-  body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue {
-    justify-self: stretch;
-    text-align: center;
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-cue {
+    background-color: color-mix(in srgb, var(--brand-ink) 88%, var(--ink));
   }
-}
+  body[data-page='dashboard'] .dash-continue .empty-state-card {
+    border: 0;
+    padding: 0;
+    background: none;
+  }
 
-/* ---- Preferences ------------------------------------------------------------------------- */
-html[data-high-contrast='true']
-  body[data-page='dashboard']
-  :is(.dash-card, .dash-rail, .dash-continue) {
-  border: 1px solid var(--text);
-  box-shadow: none;
-}
-@media (forced-colors: active) {
-  body[data-page='dashboard'] :is(.dash-card, .dash-rail, .dash-continue) {
-    border: 1px solid CanvasText;
+  /* ---- Recent lessons: a Finder-like list ------------------------------------------------- */
+  body[data-page='dashboard'] .dash-recent .dashboard-overview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    margin: calc(var(--space-2) * -1) 0 0;
+    padding: 0;
+    border: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    animation: none;
   }
-  body[data-page='dashboard'] .dash-day-bar::after,
-  body[data-page='dashboard'] .dash-mini-day.has-items::after {
-    background: Highlight;
+  body[data-page='dashboard'] .dash-recent .dashboard-overview strong {
+    color: var(--ink);
+    font-weight: 650;
   }
-  body[data-page='dashboard'] .dash-mini-day.is-today {
-    forced-color-adjust: none;
-    color: HighlightText;
-    background: Highlight;
+  body[data-page='dashboard'] .dash-recent-grid {
+    display: grid;
+    gap: 0;
+    margin: 0 calc(var(--space-2) * -1);
   }
-}
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(7rem, 10rem) 4.5rem;
+    grid-template-areas: 'copy playback date';
+    align-items: center;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-3) var(--space-2);
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--ink);
+    text-decoration: none;
+    transform: none;
+    animation: none;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:first-child {
+    border-top-color: transparent;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:hover {
+    border-radius: var(--radius-control);
+    background: var(--brand-wash);
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:hover + .dashboard-lesson-card {
+    border-top-color: transparent;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:focus-visible {
+    outline: none;
+    border-radius: var(--radius-control);
+    box-shadow: inset 0 0 0 2px var(--brand-ink);
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-copy {
+    gap: 1px;
+    padding: 0;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-title {
+    font-family: var(--font-ui);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-subject {
+    font-size: var(--step--1);
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-date {
+    grid-area: date;
+    position: static;
+    justify-self: end;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-recent :is(.dashboard-lesson-topics, .dashboard-lesson-cue, .dashboard-lesson-tooltip) {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-playback {
+    grid-area: playback;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-playback progress {
+    flex: 1 1 auto;
+    min-width: 2rem;
+    height: 4px;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-duration {
+    flex: none;
+    white-space: nowrap;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-topics {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+  }
+  body[data-page='dashboard'] .dash-topics[hidden] {
+    display: none;
+  }
+  body[data-page='dashboard'] .dash-topics h3 {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  body[data-page='dashboard'] .dash-topics .topic-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  body[data-page='dashboard'] .dash-topics .topic-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 1.85rem;
+    padding: 0 0.35rem 0 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--paper);
+    font-size: var(--step--1);
+  }
+  body[data-page='dashboard'] .dash-topics .topic-list small {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.3rem;
+    height: 1.3rem;
+    padding: 0 0.3rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--matcha) 22%, transparent);
+    color: var(--matcha-ink);
+    font-weight: 650;
+  }
 
-/* Compact subjects (one line each) and a main column that always reaches the rail's end. */
-body[data-page='dashboard'] .dash-main > .dash-recent {
-  flex: 1;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder {
-  min-height: 38px;
-  padding: 4px 8px;
-  border: 0;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder-icon {
-  font-size: 0.95rem;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder > span:last-child {
-  display: flex;
-  flex: 1;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  min-width: 0;
-}
-body[data-page='dashboard'] .dash-rail .subject-folder small {
-  flex: 0 0 auto;
-  margin: 0;
-}
-body[data-page='dashboard'] .dash-topics .topic-list li {
-  align-items: baseline;
-  padding: 4px 10px 4px 12px;
-}
-body[data-page='dashboard'] .dash-topics .topic-list small {
-  min-width: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  color: var(--text);
-  background: var(--surface);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-align: center;
-}
-body[data-page='dashboard'] .dash-recent .dash-topics {
-  margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid var(--dash-hairline);
-}
-body[data-page='dashboard'] .dash-recent .dash-topics h3 {
-  margin-top: 0;
-}
-
-/* Medium screens: the calendar takes one side of the right column, the rest stacks beside it. */
-@media (min-width: 701px) and (max-width: 1180px) {
+  /* ---- Margin notes (right column): sections on the paper itself -------------------------- */
   body[data-page='dashboard'] .dash-rail {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: 'week agenda' 'subjects agenda' 'notes agenda';
-    grid-template-rows: auto auto 1fr;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    grid-template-areas: none;
   }
-  body[data-page='dashboard'] .dash-rail-week {
-    grid-area: week;
+  body[data-page='dashboard'] .dash-rail > .dash-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-5) 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    grid-area: auto;
   }
-  body[data-page='dashboard'] .dash-rail-agenda {
-    grid-area: agenda;
+  body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden], [data-user-hidden]) ~ .dash-card {
+    border-top: 1px solid var(--line);
+  }
+  /* The first visible note sits on the desk's top line. */
+  body[data-page='dashboard'] .dash-rail > .dash-card:not(:has(~ .dash-card)):first-child,
+  body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden], [data-user-hidden]):not(.dash-card:not([hidden], [data-user-hidden]) ~ .dash-card) {
+    padding-top: var(--space-1);
     border-top: 0;
   }
-  body[data-page='dashboard'] .dash-rail-subjects {
-    grid-area: subjects;
-    border-top: 1px solid var(--dash-hairline);
+  body[data-page='dashboard'] .dash-rail .dash-card-head h2 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+    letter-spacing: -0.005em;
   }
-  body[data-page='dashboard'] .dash-rail-notes {
-    grid-area: notes;
-    border-top: 1px solid var(--dash-hairline);
+  body[data-page='dashboard'] .dash-rail .dash-card-head .text-action {
+    font-size: var(--step--1);
   }
-}
-/* The tinted block lowers link contrast in some themes: use the text colour, underlined. */
-body[data-page='dashboard'] .dash-continue .dash-card-head .text-action {
-  color: var(--text);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  body[data-page='dashboard'] .dash-rail .dash-card-foot .button-link {
+    align-self: flex-start;
+  }
+
+  /* Week */
+  body[data-page='dashboard'] .dash-week-progress {
+    width: 100%;
+    height: 6px;
+    margin: var(--space-2) 0 var(--space-3);
+  }
+  body[data-page='dashboard'] .dash-week-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  body[data-page='dashboard'] .dash-week-days li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+  }
+  body[data-page='dashboard'] .dash-day-bar {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 1.25rem;
+    height: 3rem;
+    overflow: hidden;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+  body[data-page='dashboard'] .dash-day-bar::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: calc(var(--fill, 0) * 1%);
+    border-radius: 5px;
+    background: var(--lavender);
+  }
+  body[data-page='dashboard'] .dash-day-label {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body[data-page='dashboard'] .dash-week-days .is-today .dash-day-label {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  body[data-page='dashboard'] .dash-week-days .is-today .dash-day-bar {
+    box-shadow: inset 0 0 0 1.5px var(--brand-ink);
+  }
+
+  /* Month at a glance */
+  body[data-page='dashboard'] .dash-mini-month {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
+    text-align: center;
+  }
+  body[data-page='dashboard'] .dash-mini-weekday {
+    padding-bottom: var(--space-1);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  body[data-page='dashboard'] .dash-mini-day {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    max-height: 2.1rem;
+    border-radius: 50%;
+    color: var(--ink);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  body[data-page='dashboard'] .dash-mini-day.is-past {
+    color: var(--ink-muted);
+  }
+  body[data-page='dashboard'] .dash-mini-day.has-items::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--honey);
+  }
+  body[data-page='dashboard'] .dash-mini-day.is-today {
+    background: var(--brand-ink);
+    color: var(--on-brand);
+    font-weight: 700;
+  }
+  body[data-page='dashboard'] .dash-mini-day.is-today.has-items::after {
+    background: var(--on-brand);
+  }
+  body[data-page='dashboard'] .dash-agenda-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  body[data-page='dashboard'] .dash-agenda-list li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+  }
+  body[data-page='dashboard'] .dash-agenda-when {
+    display: grid;
+    justify-items: center;
+    padding: 0.2rem 0;
+    border-radius: var(--radius-control);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1), 0 0 0 1px var(--line);
+    line-height: 1.1;
+  }
+  body[data-page='dashboard'] .dash-agenda-when strong {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body[data-page='dashboard'] .dash-agenda-when span {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body[data-page='dashboard'] .dash-agenda-copy {
+    display: grid;
+    min-width: 0;
+  }
+  body[data-page='dashboard'] .dash-agenda-title {
+    overflow: hidden;
+    font-size: var(--step-ui);
+    font-weight: 550;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body[data-page='dashboard'] .dash-agenda-copy small {
+    color: var(--ink-muted);
+  }
+
+  /* Subjects: folder rows (the folder glyph is drawn, the emoji is kept for text only). */
+  body[data-page='dashboard'] .dash-rail .subject-shelf {
+    display: grid;
+    gap: 0;
+    margin: 0 calc(var(--space-2) * -1);
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 2.25rem;
+    padding: var(--space-1) var(--space-2);
+    border: 0;
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder:hover {
+    background: var(--brand-wash);
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder-icon {
+    width: 1.15rem;
+    height: 0.9rem;
+    overflow: hidden;
+    border-radius: 2px 3px 3px 3px;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--mist) 55%, #fff), var(--mist));
+    box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--mist-ink) 35%, transparent);
+    color: transparent;
+    font-size: 0;
+    position: relative;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder > span:last-child {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder strong {
+    overflow: hidden;
+    font-size: var(--step-ui);
+    font-weight: 550;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder small {
+    flex: none;
+    color: var(--ink-muted);
+  }
+  body[data-page='dashboard'] .dash-note {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* Annotation results in the global search. */
+  body[data-page='dashboard'] .search-note {
+    border-left: 3px solid var(--honey);
+  }
+  body[data-page='dashboard'] .search-note.annotation-green {
+    border-left-color: var(--matcha);
+  }
+  body[data-page='dashboard'] .search-note.annotation-blue {
+    border-left-color: var(--mist);
+  }
+  body[data-page='dashboard'] .search-note-quote {
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ---- Responsive ------------------------------------------------------------------------ */
+  /* Medium widths: the margin notes move under the desk, two per row. */
+  @media (max-width: 1180px) {
+    body[data-page='dashboard'] .dash-home {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body[data-page='dashboard'] .dash-rail {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+      gap: 0 clamp(var(--space-5), 3vw, var(--space-7));
+      padding-top: var(--space-2);
+      border-top: 1px solid var(--line);
+    }
+    body[data-page='dashboard'] .dash-rail > .dash-card,
+    body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden], [data-user-hidden]) ~ .dash-card {
+      padding-top: var(--space-4);
+      border-top: 0;
+    }
+  }
+  @media (max-width: 700px) {
+    body[data-page='dashboard'] .dash-continue {
+      border-radius: var(--radius-panel);
+    }
+    body[data-page='dashboard'] .dash-continue .dashboard-lesson-cue,
+    body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:is(:hover, :focus-visible) .dashboard-lesson-cue {
+      justify-self: stretch;
+      justify-content: center;
+    }
+    body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: 'copy date' 'playback playback';
+      gap: var(--space-2) var(--space-3);
+    }
+    body[data-page='dashboard'] .dash-rail > .dash-card,
+    body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden], [data-user-hidden]) ~ .dash-card {
+      border-top: 1px solid var(--line);
+    }
+    body[data-page='dashboard'] .dash-rail > .dash-card:first-child {
+      border-top: 0;
+    }
+  }
+
+  /* ---- Preferences ----------------------------------------------------------------------- */
+  html[data-high-contrast='true'] body[data-page='dashboard'] :is(.dash-continue, .dash-main .dash-card, .dash-agenda-when) {
+    border: 1px solid var(--ink);
+  }
+  @media (forced-colors: active) {
+    body[data-page='dashboard'] :is(.dash-main .dash-card, .dash-continue) {
+      border: 1px solid CanvasText;
+    }
+    body[data-page='dashboard'] :is(.dash-day-bar::after, .dash-mini-day.has-items::after) {
+      background: CanvasText;
+    }
+  }
 }

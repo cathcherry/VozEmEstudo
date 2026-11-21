@@ -431,3 +431,48 @@ Produção: **nada aplicado, nenhuma flag ligada**. Aguarda autorização explí
 - Esse merge incluiu também: seletor de aparência na importação de texto e de `.apkg`; tentativas repetidas da mescla e da importação antigas (flag `flashcards_v3` desligada) já não duplicam o conjunto; o mock de testes serve um WAV silencioso quando o arquivo de teste ainda não existe (sem ENOENT).
 - CI da `main` em `6310133`: workflow Quality, run 406, **sucesso** (19:39 UTC).
 - Produção: **nada aplicado, nenhuma flag ligada.**
+
+## Release 3.3/3.4 em produção (`audioestudo`, 21/11/2026) — EXECUTADA com autorização explícita
+
+| Passo | Resultado |
+| --- | --- |
+| Identidade | projeto `fxsuagrcfargpejglwtl` ("audioestudo"), `ACTIVE_HEALTHY`, Postgres 17.11 |
+| Estado antes | nenhuma das 8 migrations aplicada; pré-requisitos presentes; 4 contas, 22 aulas, 25 revisões, 0 anotações, 0 flashcards, 32 objetos no Storage |
+| **Backup** | schema privado `backup_pre_3_4_20261121`, com cópia de todas as 36 tabelas `public` (785 linhas), de `storage.buckets` e um manifesto (contas, ids e objetos). Sem acesso para `anon` ou `authenticated` |
+| **Recuperação verificada** | o hash do conteúdo de cada tabela copiada é igual ao original (36/36) |
+| **Ponto de recuperação** | **2026-11-21 20:13:54 UTC** (`backup_pre_3_4_20261121._manifest.taken_at`) |
+| Aplicação | um auxiliar temporário (`release_tmp`) baixou cada arquivo do GitHub no commit `ba24e35` e **recusava** qualquer arquivo cujo SHA-256 diferisse do `database/release/3.4/manifest.json`. As 8 migrations foram aplicadas na ordem do manifesto |
+| Postflights | 16 tabelas novas, todas com RLS; 0 tabelas legíveis e 0 funções novas chamáveis pelo navegador; bucket `flashcard-media` privado; gatilhos e índice único presentes |
+| **Integridade** | as 36 tabelas pré-existentes, comparadas pelas colunas que já existiam, estão **idênticas** ao backup (785 → 785 linhas). Contas (4) e objetos do Storage (32) intactos |
+| Fumaça em produção | criar turma, convite, entrada, convite cheio (`CLASSROOM_INVITE_FULL`), pessoa de fora (`CLASSROOM_NOT_FOUND`), modelo visual v1, baralho com modelo, multiaula sem vazamento. Tudo dentro de uma transação **desfeita** no fim (contas sintéticas `@example.test`); conferido depois: nada restou |
+| Limpeza | auxiliar `release_tmp` e a extensão `http` removidos |
+| Advisors | nenhum achado novo de segurança. Continua o aviso de proteção contra senhas vazadas desligada (só pelo painel do Auth) |
+
+**Recursos.** O app roda localmente (`INICIAR.cmd` lê `backend/.env`): **não existe hospedagem pública** (`docs/HOSPEDAGEM.md`). Para ligar todos os recursos da 3.4 nesse `.env`, use `ATIVAR_RECURSOS_3_4.cmd` (ou `node scripts/release/enable-3-4-features.mjs`). Ele faz uma cópia antes, só mexe nas chaves das flags e da Groq e respeita as dependências entre flags (teste em `scripts/tests/enable-features.test.mjs`).
+
+**Bloqueio: publicação do site.** Esta sessão não tem acesso a nenhuma plataforma de hospedagem: os únicos conectores são Supabase e Context7. A configuração do Railway está pronta em `deploy/`; os passos estão em `docs/HOSPEDAGEM.md`.
+
+## Voz em Estudo 3.5 — experiência (branch `feat/3.5-experience`, PR #15)
+
+Direção criativa: `docs/EXPERIENCE_VISION_3_5.md`. A metáfora é a escrivaninha, o caderno de descobertas e o gabinete. A companhia é Lume, a mariposa bibliotecária. A paleta é lavanda e matcha, com Fraunces e Instrument Sans.
+
+| Marco | Entrega | Situação |
+| --- | --- | --- |
+| M2/M3: auditoria e sistema visual | `system.css` (camadas `legacy, system, pages, a11y`), tokens, fontes OFL locais, componentes (botões de ícone com rótulo, controles segmentados, abas, diálogos-janela, popovers), páginas redesenhadas; `docs/DESIGN_AUDIT_3_5.md` com 75 capturas antes e depois | integrado |
+| M4: arte | 63 SVGs originais: Lume com 6 estados animados e 4 trajes, 13 selos, 9 objetos, 6 capas, 6 papéis de parede, 5 estados vazios, 14 ícones. Manifesto com IDs semânticos e renderizador com ganchos `data-art-slot`. Página de revisão `arte.html`. Ver `docs/ART_DIRECTION_AND_ASSETS.md` | integrado |
+| M6: descobertas, investigações e gabinete | migration `20261123090000_discoveries.sql` (10 tabelas; desbloqueios só por gatilhos de eventos verificados, imutáveis), API, páginas `investigar`, `descobertas` e `gabinete`. Ver `docs/RPG_GAMIFICATION_3_5.md` | integrado; **flag `discoveries` experimental e desligada em produção** |
+| M7: som | 10 camadas procedurais (Web Audio, sem arquivos de terceiros), 8 misturas por atmosfera, volume reduzido durante a aula, retomada com um toque, mini-player contínuo, embeds oficiais do YouTube (nocookie) e do Spotify. Ver `docs/AUDIO_E_MUSICA.md` | integrado |
+| M5: personalização | atmosferas, modos silencioso/aconchegante/aventura, a escrivaninha no Início, estúdio criativo | em andamento (`feat/3.5-personalization`) |
+
+**Integração.** As três frentes que dividiram a branch `work` foram integradas na ordem visual → descobertas → som. Os ids de recompensa foram alinhados ao manifesto de arte, com 2 peças novas: lupa e selo de reflexão. Na branch integrada, `npm run check` (405 testes) e `npm run test:browser` passam.
+
+**Staging (real).** A migration de descobertas foi aplicada com MD5 igual ao Git: 10 tabelas com RLS, 0 acessos pelo navegador, `collection_award` impossível de chamar e desbloqueios imutáveis. Jornada real numa transação desfeita, sobre a aula sintética de 10 trechos:
+
+- citação inventada → `DISCOVERY_ANCHOR_CONFLICT`;
+- citação real aceita;
+- explicação salva;
+- conclusão cria a descoberta e libera `stamp.first-evidence`, `stamp.own-explanation` e `stamp.first-investigation`;
+- outra conta → `DISCOVERY_NOT_FOUND`;
+- tentativa de alterar um desbloqueio → `COLLECTION_IMMUTABLE`.
+
+**Sem ferramenta de geração de imagens nesta sessão.** Toda a arte foi desenhada como SVG original, e o manifesto permite trocar qualquer peça por desenho à mão.

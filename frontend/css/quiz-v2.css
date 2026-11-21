@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Scoped only to the optional E10 quiz experience, flag OFF by default. */
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-choice { border: 0; margin: 18px 0; padding: 0; }
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-choice legend { font-weight: 600; margin-bottom: 10px; }
@@ -60,4 +62,5 @@
 .quiz-session-main[data-quiz-v2='true'] .quiz-v2-errors li p {
   font-size: .85rem;
   margin: 5px 0 0;
+}
 }

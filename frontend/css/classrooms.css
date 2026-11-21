@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Turmas (private classrooms). Uses the shared tokens and the tool-page / app-dialog patterns. */
 .classrooms-page .classrooms-status:empty {
   display: none;
@@ -270,4 +272,5 @@
 .classrooms-page .classroom-chip[data-state='approved'] {
   color: var(--accent-strong);
   background: var(--accent-soft);
+}
 }

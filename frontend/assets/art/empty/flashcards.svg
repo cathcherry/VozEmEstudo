@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="320" height="240" fill="none">
+<!-- voz-art:generated | id: empty.flashcards | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<ellipse cx="160" cy="128" rx="138" ry="96" fill="#EAF1F7"/>
+  <ellipse cx="160" cy="204" rx="100" ry="8.0" fill="#2E2A3B" opacity="0.08"/>
+  <g transform="translate(0 22)">
+  <rect x="96" y="70" width="128" height="88" rx="10" transform="rotate(-12 160 114)" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="96" y="70" width="128" height="88" rx="10" transform="rotate(8 160 114)" fill="#E3EDDA" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="96" y="76" width="128" height="88" rx="10" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="112" y="92" width="96" height="56" rx="6" stroke="#8E7CC3" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M160 108 V132 M148 120 H172" stroke="#8E7CC3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  </g>
+  <path d="M236 63 Q237.12 68.88 243 70 Q237.12 71.12 236 77 Q234.88 71.12 229 70 Q234.88 68.88 236 63 Z" fill="#E2B14A"/><path d="M84 163.5 Q84.72 167.28 88.5 168 Q84.72 168.72 84 172.5 Q83.28 168.72 79.5 168 Q83.28 167.28 84 163.5 Z" fill="#F1D38C"/>
+</svg>

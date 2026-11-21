@@ -1,0 +1,632 @@
+{
+ "Descobertas": {
+  "en": "Discoveries",
+  "es": "Descubrimientos",
+  "zh-CN": "发现"
+ },
+ "Arrumar a mesa": {
+  "en": "Arrange the desk",
+  "es": "Ordenar el escritorio",
+  "zh-CN": "布置书桌"
+ },
+ "Arraste um objeto até um lugar da mesa. Pelo teclado: escolha o objeto e depois o lugar.": {
+  "en": "Drag an object to a place on the desk. With the keyboard: choose the object, then the place.",
+  "es": "Arrastra un objeto hasta un lugar del escritorio. Con el teclado: elige el objeto y después el lugar.",
+  "zh-CN": "把物品拖到书桌上的位置。使用键盘：先选择物品，再选择位置。"
+ },
+ "Os objetos que você encontrar nas investigações aparecem aqui.": {
+  "en": "Objects you find in your investigations appear here.",
+  "es": "Los objetos que encuentres en tus investigaciones aparecen aquí.",
+  "zh-CN": "你在探究中找到的物品会出现在这里。"
+ },
+ "Abrir o Gabinete": {
+  "en": "Open the Cabinet",
+  "es": "Abrir el Gabinete",
+  "zh-CN": "打开收藏柜"
+ },
+ "Objetos da gaveta": {
+  "en": "Objects in the drawer",
+  "es": "Objetos del cajón",
+  "zh-CN": "抽屉里的物品"
+ },
+ "Suas investigações": {
+  "en": "Your investigations",
+  "es": "Tus investigaciones",
+  "zh-CN": "你的探究"
+ },
+ "Na gaveta": {
+  "en": "In the drawer",
+  "es": "En el cajón",
+  "zh-CN": "在抽屉里"
+ },
+ "Escolha cancelada.": {
+  "en": "Choice cancelled.",
+  "es": "Elección cancelada.",
+  "zh-CN": "已取消选择。"
+ },
+ "A mesa está vazia.": {
+  "en": "The desk is empty.",
+  "es": "El escritorio está vacío.",
+  "zh-CN": "书桌是空的。"
+ },
+ "Xícara de chá": {
+  "en": "Teacup",
+  "es": "Taza de té",
+  "zh-CN": "茶杯"
+ },
+ "Tinteiro": {
+  "en": "Inkwell",
+  "es": "Tintero",
+  "zh-CN": "墨水瓶"
+ },
+ "Cacto": {
+  "en": "Cactus",
+  "es": "Cactus",
+  "zh-CN": "仙人掌"
+ },
+ "Ampulheta": {
+  "en": "Hourglass",
+  "es": "Reloj de arena",
+  "zh-CN": "沙漏"
+ },
+ "Lupa": {
+  "en": "Magnifying glass",
+  "es": "Lupa",
+  "zh-CN": "放大镜"
+ },
+ "Luminária de mesa": {
+  "en": "Desk lamp",
+  "es": "Lámpara de escritorio",
+  "zh-CN": "台灯"
+ },
+ "Pote de espécimes": {
+  "en": "Specimen jar",
+  "es": "Frasco de especímenes",
+  "zh-CN": "标本罐"
+ },
+ "Flor prensada": {
+  "en": "Pressed flower",
+  "es": "Flor prensada",
+  "zh-CN": "压花"
+ },
+ "Globo": {
+  "en": "Globe",
+  "es": "Globo terráqueo",
+  "zh-CN": "地球仪"
+ },
+ "Canto da luminária": {
+  "en": "Lamp corner",
+  "es": "Rincón de la lámpara",
+  "zh-CN": "台灯角落"
+ },
+ "Mesa, à esquerda": {
+  "en": "Desk, left",
+  "es": "Escritorio, a la izquierda",
+  "zh-CN": "书桌左侧"
+ },
+ "Mesa, ao centro": {
+  "en": "Desk, center",
+  "es": "Escritorio, al centro",
+  "zh-CN": "书桌中间"
+ },
+ "Mesa, à direita": {
+  "en": "Desk, right",
+  "es": "Escritorio, a la derecha",
+  "zh-CN": "书桌右侧"
+ },
+ "Prateleira, à esquerda": {
+  "en": "Shelf, left",
+  "es": "Estante, a la izquierda",
+  "zh-CN": "架子左侧"
+ },
+ "Prateleira, à direita": {
+  "en": "Shelf, right",
+  "es": "Estante, a la derecha",
+  "zh-CN": "架子右侧"
+ },
+ "Janela": {
+  "en": "Window",
+  "es": "Ventana",
+  "zh-CN": "窗户"
+ },
+ "Parede": {
+  "en": "Wall",
+  "es": "Pared",
+  "zh-CN": "墙面"
+ },
+ "{0}: escolha um lugar na mesa. Esc cancela.": {
+  "en": "{0}: choose a place on the desk. Esc cancels.",
+  "es": "{0}: elige un lugar del escritorio. Esc cancela.",
+  "zh-CN": "{0}：请选择书桌上的位置。按 Esc 取消。"
+ },
+ "{0} em {1}. Mesa salva.": {
+  "en": "{0} on {1}. Desk saved.",
+  "es": "{0} en {1}. Escritorio guardado.",
+  "zh-CN": "{0} 已放在{1}。书桌已保存。"
+ },
+ "{0} guardado na gaveta. Mesa salva.": {
+  "en": "{0} put away in the drawer. Desk saved.",
+  "es": "{0} guardado en el cajón. Escritorio guardado.",
+  "zh-CN": "{0} 已放回抽屉。书桌已保存。"
+ },
+ "Guardar {0} na gaveta": {
+  "en": "Put {0} in the drawer",
+  "es": "Guardar {0} en el cajón",
+  "zh-CN": "把{0}放回抽屉"
+ },
+ "Novo no Gabinete: {0}": {
+  "en": "New in the Cabinet: {0}",
+  "es": "Nuevo en el Gabinete: {0}",
+  "zh-CN": "收藏柜新增：{0}"
+ },
+ "{0} novidades no Gabinete": {
+  "en": "{0} new items in the Cabinet",
+  "es": "{0} novedades en el Gabinete",
+  "zh-CN": "收藏柜有 {0} 件新物品"
+ },
+ "Semana": {
+  "en": "Week",
+  "es": "Semana",
+  "zh-CN": "本周"
+ },
+ "Disciplinas": {
+  "en": "Subjects",
+  "es": "Asignaturas",
+  "zh-CN": "科目"
+ },
+ "Anotações": {
+  "en": "Notes",
+  "es": "Notas",
+  "zh-CN": "笔记"
+ },
+ "Seu espaço de estudo": {
+  "en": "Your study space",
+  "es": "Tu espacio de estudio",
+  "zh-CN": "你的学习空间"
+ },
+ "Escolha uma atmosfera para a escrivaninha do Início: cores, paisagem na janela, a roupa da Lume e uma mistura sonora. Depois, ajuste o que quiser.": {
+  "en": "Choose an atmosphere for the desk on Home: colors, the view from the window, Lume's outfit and a sound mix. Then adjust whatever you like.",
+  "es": "Elige una atmósfera para el escritorio del Inicio: colores, paisaje en la ventana, la ropa de Lume y una mezcla de sonidos. Después, ajusta lo que quieras.",
+  "zh-CN": "为首页的书桌选择一种氛围：颜色、窗外的景色、Lume 的服装和一段混音。之后可以随意调整。"
+ },
+ "Como personalizar": {
+  "en": "How to personalize",
+  "es": "Cómo personalizar",
+  "zh-CN": "个性化方式"
+ },
+ "Simples": {
+  "en": "Simple",
+  "es": "Simple",
+  "zh-CN": "简单"
+ },
+ "Estúdio": {
+  "en": "Studio",
+  "es": "Estudio",
+  "zh-CN": "工作室"
+ },
+ "Modo de experiência": {
+  "en": "Experience mode",
+  "es": "Modo de experiencia",
+  "zh-CN": "体验模式"
+ },
+ "Estudo silencioso": {
+  "en": "Quiet study",
+  "es": "Estudio silencioso",
+  "zh-CN": "安静学习"
+ },
+ "Estudo aventura": {
+  "en": "Adventure study",
+  "es": "Estudio aventura",
+  "zh-CN": "探险学习"
+ },
+ "Sem Lume, decoração ou selos. Tudo continua funcionando e sendo registrado.": {
+  "en": "No Lume, decoration or stamps. Everything keeps working and being recorded.",
+  "es": "Sin Lume, decoración ni sellos. Todo sigue funcionando y registrándose.",
+  "zh-CN": "没有 Lume、装饰或印章。一切照常运行和记录。"
+ },
+ "A escrivaninha, a Lume e os selos no caderno.": {
+  "en": "The desk, Lume and the stamps in the notebook.",
+  "es": "El escritorio, Lume y los sellos en el cuaderno.",
+  "zh-CN": "书桌、Lume 和笔记本里的印章。"
+ },
+ "Investigações e o Gabinete em destaque, com o caminho até os próximos itens.": {
+  "en": "Investigations and the Cabinet up front, with the way to the next items.",
+  "es": "Investigaciones y el Gabinete destacados, con el camino hasta los próximos objetos.",
+  "zh-CN": "突出显示探究和收藏柜，并显示获得下一件物品的进度。"
+ },
+ "Trocar de modo nunca apaga nada. Vale para a sua conta, em todos os aparelhos.": {
+  "en": "Changing modes never erases anything. It applies to your account, on every device.",
+  "es": "Cambiar de modo nunca borra nada. Vale para tu cuenta, en todos los dispositivos.",
+  "zh-CN": "切换模式不会删除任何内容。适用于你的账户和所有设备。"
+ },
+ "Muda só o que aparece; os seus registros continuam iguais. Vale para a sua conta, em todos os aparelhos.": {
+  "en": "It only changes what is shown; your records stay the same. It applies to your account, on every device.",
+  "es": "Solo cambia lo que se muestra; tus registros siguen iguales. Vale para tu cuenta, en todos los dispositivos.",
+  "zh-CN": "只改变显示的内容；你的记录保持不变。适用于你的账户和所有设备。"
+ },
+ "Atmosferas": {
+  "en": "Atmospheres",
+  "es": "Atmósferas",
+  "zh-CN": "氛围"
+ },
+ "Atmosfera": {
+  "en": "Atmosphere",
+  "es": "Atmósfera",
+  "zh-CN": "氛围"
+ },
+ "Cor de destaque": {
+  "en": "Accent color",
+  "es": "Color de acento",
+  "zh-CN": "强调色"
+ },
+ "Cores da interface": {
+  "en": "Interface colors",
+  "es": "Colores de la interfaz",
+  "zh-CN": "界面颜色"
+ },
+ "Da atmosfera": {
+  "en": "From the atmosphere",
+  "es": "De la atmósfera",
+  "zh-CN": "跟随氛围"
+ },
+ "Do tema escolhido": {
+  "en": "From the chosen theme",
+  "es": "Del tema elegido",
+  "zh-CN": "跟随所选主题"
+ },
+ "Papel": {
+  "en": "Paper",
+  "es": "Papel",
+  "zh-CN": "纸张"
+ },
+ "Pontilhado": {
+  "en": "Dotted",
+  "es": "Punteado",
+  "zh-CN": "点阵"
+ },
+ "Janela da escrivaninha": {
+  "en": "Desk window",
+  "es": "Ventana del escritorio",
+  "zh-CN": "书桌窗户"
+ },
+ "Com paisagem": {
+  "en": "With a view",
+  "es": "Con paisaje",
+  "zh-CN": "显示风景"
+ },
+ "Sem paisagem": {
+  "en": "No view",
+  "es": "Sin paisaje",
+  "zh-CN": "不显示风景"
+ },
+ "Movimento na janela": {
+  "en": "Motion in the window",
+  "es": "Movimiento en la ventana",
+  "zh-CN": "窗内动画"
+ },
+ "Decoração": {
+  "en": "Decoration",
+  "es": "Decoración",
+  "zh-CN": "装饰"
+ },
+ "Pouca": {
+  "en": "Little",
+  "es": "Poca",
+  "zh-CN": "少"
+ },
+ "Equilibrada": {
+  "en": "Balanced",
+  "es": "Equilibrada",
+  "zh-CN": "适中"
+ },
+ "Bastante": {
+  "en": "Plenty",
+  "es": "Bastante",
+  "zh-CN": "多"
+ },
+ "Roupa da Lume": {
+  "en": "Lume's outfit",
+  "es": "Ropa de Lume",
+  "zh-CN": "Lume 的服装"
+ },
+ "Sem roupa": {
+  "en": "No outfit",
+  "es": "Sin ropa",
+  "zh-CN": "无服装"
+ },
+ "Cachecol de inverno": {
+  "en": "Winter scarf",
+  "es": "Bufanda de invierno",
+  "zh-CN": "冬季围巾"
+ },
+ "Capa de chuva": {
+  "en": "Raincoat",
+  "es": "Impermeable",
+  "zh-CN": "雨衣"
+ },
+ "Óculos de leitura": {
+  "en": "Reading glasses",
+  "es": "Gafas de lectura",
+  "zh-CN": "阅读眼镜"
+ },
+ "Chapéu de explorador": {
+  "en": "Explorer hat",
+  "es": "Sombrero de explorador",
+  "zh-CN": "探险帽"
+ },
+ "Da atmosfera ({0})": {
+  "en": "From the atmosphere ({0})",
+  "es": "De la atmósfera ({0})",
+  "zh-CN": "跟随氛围（{0}）"
+ },
+ "Da atmosfera (sem roupa)": {
+  "en": "From the atmosphere (no outfit)",
+  "es": "De la atmósfera (sin ropa)",
+  "zh-CN": "跟随氛围（无服装）"
+ },
+ "Capa do caderno de descobertas": {
+  "en": "Discovery notebook cover",
+  "es": "Tapa del cuaderno de descubrimientos",
+  "zh-CN": "发现笔记本封面"
+ },
+ "Bolinhas lavanda": {
+  "en": "Lavender dots",
+  "es": "Lunares lavanda",
+  "zh-CN": "薰衣草圆点"
+ },
+ "Xadrez mel": {
+  "en": "Honey gingham",
+  "es": "Cuadros miel",
+  "zh-CN": "蜂蜜格纹"
+ },
+ "Marmorizado": {
+  "en": "Marbled",
+  "es": "Marmolado",
+  "zh-CN": "大理石纹"
+ },
+ "Botânico rosa": {
+  "en": "Rose botanical",
+  "es": "Botánico rosa",
+  "zh-CN": "玫瑰植物"
+ },
+ "Noite estrelada": {
+  "en": "Starry night",
+  "es": "Noche estrellada",
+  "zh-CN": "星夜"
+ },
+ "Linho matcha": {
+  "en": "Matcha linen",
+  "es": "Lino matcha",
+  "zh-CN": "抹茶亚麻"
+ },
+ "Prévia": {
+  "en": "Preview",
+  "es": "Vista previa",
+  "zh-CN": "预览"
+ },
+ "A energia da luz vira energia química nos cloroplastos.": {
+  "en": "Light energy becomes chemical energy in the chloroplasts.",
+  "es": "La energía de la luz se convierte en energía química en los cloroplastos.",
+  "zh-CN": "光能在叶绿体中转化为化学能。"
+ },
+ "Fundo e superfícies": {
+  "en": "Background and surfaces",
+  "es": "Fondo y superficies",
+  "zh-CN": "背景与表面"
+ },
+ "Ouvir a mistura sonora {0}": {
+  "en": "Listen to the {0} sound mix",
+  "es": "Escuchar la mezcla sonora {0}",
+  "zh-CN": "收听“{0}”混音"
+ },
+ "Atmosfera {0} aplicada.": {
+  "en": "{0} atmosphere applied.",
+  "es": "Atmósfera {0} aplicada.",
+  "zh-CN": "已应用“{0}”氛围。"
+ },
+ "Cor de destaque: {0}.": {
+  "en": "Accent color: {0}.",
+  "es": "Color de acento: {0}.",
+  "zh-CN": "强调色：{0}。"
+ },
+ "Biblioteca chuvosa": {
+  "en": "Rainy library",
+  "es": "Biblioteca lluviosa",
+  "zh-CN": "雨中图书馆"
+ },
+ "Tarde de matcha": {
+  "en": "Matcha afternoon",
+  "es": "Tarde de matcha",
+  "zh-CN": "抹茶午后"
+ },
+ "Estudo à beira-mar": {
+  "en": "Seaside study",
+  "es": "Estudio junto al mar",
+  "zh-CN": "海边学习"
+ },
+ "Caderno acadêmico antigo": {
+  "en": "Old academic notebook",
+  "es": "Cuaderno académico antiguo",
+  "zh-CN": "旧学术笔记本"
+ },
+ "Pastel sonhador": {
+  "en": "Dreamy pastel",
+  "es": "Pastel soñador",
+  "zh-CN": "梦幻粉彩"
+ },
+ "Estantes, janela molhada e azul de chuva.": {
+  "en": "Bookshelves, a wet window and rainy blue.",
+  "es": "Estanterías, ventana mojada y azul de lluvia.",
+  "zh-CN": "书架、湿漉漉的窗户和雨天的蓝。"
+ },
+ "Papel lavanda, tinta berinjela e luz da tarde.": {
+  "en": "Lavender paper, aubergine ink and afternoon light.",
+  "es": "Papel lavanda, tinta berenjena y luz de la tarde.",
+  "zh-CN": "薰衣草纸张、茄紫墨水和午后阳光。"
+ },
+ "Verde chá, luz de mel e folhas na janela.": {
+  "en": "Tea green, honey light and leaves at the window.",
+  "es": "Verde té, luz de miel y hojas en la ventana.",
+  "zh-CN": "茶绿、蜜色阳光和窗边的树叶。"
+ },
+ "Neve lá fora, lã vermelha e lareira.": {
+  "en": "Snow outside, red wool and a fireplace.",
+  "es": "Nieve afuera, lana roja y chimenea.",
+  "zh-CN": "窗外飘雪、红色毛线和壁炉。"
+ },
+ "Maresia, farol ao longe e azul-turquesa.": {
+  "en": "Sea breeze, a distant lighthouse and turquoise.",
+  "es": "Brisa marina, un faro a lo lejos y azul turquesa.",
+  "zh-CN": "海风、远处的灯塔和青绿色。"
+ },
+ "Berinjela escura, lua e vaga-lumes.": {
+  "en": "Dark aubergine, the moon and fireflies.",
+  "es": "Berenjena oscura, luna y luciérnagas.",
+  "zh-CN": "深茄紫、月亮和萤火虫。"
+ },
+ "Papel pautado, tinta ferrogálica e folhas prensadas.": {
+  "en": "Ruled paper, iron-gall ink and pressed leaves.",
+  "es": "Papel pautado, tinta ferrogálica y hojas prensadas.",
+  "zh-CN": "横线纸、铁胆墨水和压制的树叶。"
+ },
+ "Nuvens de algodão, lilás e menta.": {
+  "en": "Cotton clouds, lilac and mint.",
+  "es": "Nubes de algodón, lila y menta.",
+  "zh-CN": "棉花云、淡紫和薄荷绿。"
+ },
+ "Azul de chuva": {
+  "en": "Rain blue",
+  "es": "Azul de lluvia",
+  "zh-CN": "雨蓝"
+ },
+ "Lavanda": {
+  "en": "Lavender",
+  "es": "Lavanda",
+  "zh-CN": "薰衣草"
+ },
+ "Musgo": {
+  "en": "Moss",
+  "es": "Musgo",
+  "zh-CN": "苔藓"
+ },
+ "Rosa antigo": {
+  "en": "Old rose",
+  "es": "Rosa antiguo",
+  "zh-CN": "古玫瑰"
+ },
+ "Névoa": {
+  "en": "Mist",
+  "es": "Niebla",
+  "zh-CN": "薄雾"
+ },
+ "Matcha": {
+  "en": "Matcha",
+  "es": "Matcha",
+  "zh-CN": "抹茶"
+ },
+ "Mel": {
+  "en": "Honey",
+  "es": "Miel",
+  "zh-CN": "蜂蜜"
+ },
+ "Morango": {
+  "en": "Strawberry",
+  "es": "Fresa",
+  "zh-CN": "草莓"
+ },
+ "Lã vermelha": {
+  "en": "Red wool",
+  "es": "Lana roja",
+  "zh-CN": "红毛线"
+ },
+ "Pinheiro": {
+  "en": "Pine",
+  "es": "Pino",
+  "zh-CN": "松树"
+ },
+ "Geada": {
+  "en": "Frost",
+  "es": "Escarcha",
+  "zh-CN": "霜"
+ },
+ "Turquesa": {
+  "en": "Turquoise",
+  "es": "Turquesa",
+  "zh-CN": "青绿"
+ },
+ "Coral": {
+  "en": "Coral",
+  "es": "Coral",
+  "zh-CN": "珊瑚"
+ },
+ "Areia": {
+  "en": "Sand",
+  "es": "Arena",
+  "zh-CN": "沙色"
+ },
+ "Luz de lavanda": {
+  "en": "Lavender light",
+  "es": "Luz lavanda",
+  "zh-CN": "薰衣草微光"
+ },
+ "Vaga-lume": {
+  "en": "Firefly",
+  "es": "Luciérnaga",
+  "zh-CN": "萤火虫"
+ },
+ "Flor da lua": {
+  "en": "Moonflower",
+  "es": "Flor de luna",
+  "zh-CN": "月光花"
+ },
+ "Tinta azul": {
+  "en": "Blue ink",
+  "es": "Tinta azul",
+  "zh-CN": "蓝墨水"
+ },
+ "Lacre": {
+  "en": "Sealing wax",
+  "es": "Lacre",
+  "zh-CN": "火漆"
+ },
+ "Verde garrafa": {
+  "en": "Bottle green",
+  "es": "Verde botella",
+  "zh-CN": "瓶绿"
+ },
+ "Lilás": {
+  "en": "Lilac",
+  "es": "Lila",
+  "zh-CN": "淡紫"
+ },
+ "Menta": {
+  "en": "Mint",
+  "es": "Menta",
+  "zh-CN": "薄荷"
+ },
+ "Pervinca": {
+  "en": "Periwinkle",
+  "es": "Vincapervinca",
+  "zh-CN": "长春花蓝"
+ },
+ "Fotossíntese": {
+  "en": "Photosynthesis",
+  "es": "Fotosíntesis",
+  "zh-CN": "光合作用"
+ },
+ "Continuar": {
+  "en": "Continue",
+  "es": "Continuar",
+  "zh-CN": "继续"
+ },
+ "Ativado": {
+  "en": "On",
+  "es": "Activado",
+  "zh-CN": "开"
+ },
+ "Desativado": {
+  "en": "Off",
+  "es": "Desactivado",
+  "zh-CN": "关"
+ }
+}
