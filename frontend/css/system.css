@@ -1,0 +1,1268 @@
+/* Voz em Estudo 3.5 — visual system (docs/EXPERIENCE_VISION_3_5.md, docs/DESIGN_AUDIT_3_5.md).
+ *
+ * Loaded FIRST on every page. It declares the cascade layers, so the order no longer depends on
+ * which file loads last or on selector specificity:
+ *
+ *   legacy  — the older stylesheets (style.css, product.css, library.css, page files…). Each one is
+ *             wrapped in `@layer legacy { … }` and is being retired piece by piece.
+ *   system  — this file: tokens, base, components and the app shell.
+ *   pages   — page compositions of the 3.5 redesign (`@layer pages { … }` at the end of a page's
+ *             own file).
+ *   a11y    — the person's accessibility choices (reading font, heading font, contrast, motion).
+ *             Last, so no visual rule can undo them.
+ *
+ * Tokens: the vision's names (--ink, --paper, --lavender…) are the vocabulary; each theme
+ * ("atmosphere") swaps their values, never the names. The default theme (`paper`, shown as
+ * "Escrivaninha lavanda") holds the reference values from the vision.
+ */
+@layer legacy, system, pages, a11y;
+
+/* ---- Fonts (SIL OFL, local; licences beside the files in /assets/fonts) ------------------- */
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/assets/fonts/fraunces-soft-latin.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('/assets/fonts/fraunces-soft-latin-italic.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/assets/fonts/instrument-sans-latin.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  src: url('/assets/fonts/instrument-sans-latin-italic.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@layer system {
+  /* ==== Tokens ============================================================================= */
+  :root {
+    /* Palette constants of the vision (decoration, charts, tags). */
+    --lavender: #8e7cc3;
+    --matcha: #7fa36b;
+    --honey: #e2b14a;
+    --mist: #a9c4d9;
+    --rose: #d98a9b;
+    /* Text-safe companions (≥ 4.5:1 on paper and on white). */
+    --lavender-ink: #5a4896;
+    --matcha-ink: #48683a;
+    --honey-ink: #7c5a12;
+    --mist-ink: #3d5f78;
+    --rose-ink: #9a4357;
+    --error: #b3261e;
+    --error-soft: #fbe9e7;
+
+    /* Semantic tokens: resolved from the active theme's variables. */
+    --ink: var(--text);
+    --ink-muted: var(--muted);
+    --paper: var(--background);
+    --paper-raised: var(--surface);
+    --paper-sunken: var(--surface-alt);
+    --line: color-mix(in srgb, var(--text) 11%, transparent);
+    --line-strong: color-mix(in srgb, var(--text) 20%, transparent);
+    --brand: var(--accent);
+    --brand-ink: var(--accent-strong);
+    --brand-wash: color-mix(in srgb, var(--accent) 13%, transparent);
+    --brand-tint: var(--accent-soft);
+    --on-brand: var(--accent-contrast, #fff);
+
+    /* Type: Fraunces for display, Instrument Sans for the interface. Scale ratio 1.25. */
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-ui: 'Instrument Sans', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --display-axes: 'SOFT' 100;
+    --step--1: 0.8125rem; /* 13 */
+    --step-0: 1rem; /* 16 */
+    --step-1: 1.25rem; /* 20 */
+    --step-2: 1.5625rem; /* 25 */
+    --step-3: 1.953rem; /* 31 */
+    --step-4: 2.441rem; /* 39 */
+    --step-ui: 0.9375rem; /* 15: dense controls and navigation */
+
+    /* Space (4-based) and the few radii, in hierarchy: control < panel < window. */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --radius-control: 8px;
+    --radius-panel: 12px;
+    --radius-window: 18px;
+    --radius-pill: 999px;
+
+    /* Elevation: soft and tactile (a light top edge, a short contact shadow, a long soft one). */
+    --edge-light: rgb(255 255 255 / 0.75);
+    --shadow-color: 46 42 59;
+    --elev-1: inset 0 1px 0 var(--edge-light), 0 1px 2px rgb(var(--shadow-color) / 0.06);
+    --elev-2: inset 0 1px 0 var(--edge-light), 0 1px 2px rgb(var(--shadow-color) / 0.05),
+      0 8px 24px -14px rgb(var(--shadow-color) / 0.22);
+    --elev-3: 0 1px 2px rgb(var(--shadow-color) / 0.08), 0 24px 60px -20px rgb(var(--shadow-color) / 0.38);
+    --recessed: inset 0 1px 2px rgb(var(--shadow-color) / 0.08);
+    --focus-ring: 0 0 0 2px var(--paper-raised), 0 0 0 4px var(--brand-ink);
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --dur: 160ms;
+
+    /* Shell geometry (rem: grows with the text size preference). */
+    --sidebar-width: clamp(220px, 15rem, 320px);
+    --topbar-height: 3.75rem;
+    --content-max: 76rem;
+  }
+  [data-sidebar-collapsed='true'] {
+    --sidebar-width: 4.5rem;
+  }
+
+  /* Default atmosphere: Escrivaninha lavanda (the reference palette of the vision). */
+  :root[data-theme='paper'] {
+    --background: #f7f5fb;
+    --surface: #ffffff;
+    --surface-alt: #efebf6;
+    --text: #2e2a3b;
+    --muted: #625c72;
+    --border: #cdc6dc;
+    --border-light: #e5e0ee;
+    --accent: #6e5bae;
+    --accent-strong: #5a4896;
+    --accent-soft: #ece7f7;
+    --accent-contrast: #ffffff;
+    --button-background: #5a4896;
+    --button-text: #ffffff;
+    --link: #5a4896;
+    --danger: #b3261e;
+    --shadow: none;
+  }
+  /* Jardim noturno: aubergine night, lavender light. */
+  :root[data-theme='night'] {
+    --background: #1b1924;
+    --surface: #24212f;
+    --surface-alt: #2d2939;
+    --text: #efebf7;
+    --muted: #bdb5cf;
+    --border: #575070;
+    --border-light: #3a3549;
+    --accent: #b7a7ea;
+    --accent-strong: #cbbff3;
+    --accent-soft: #352f4a;
+    --accent-contrast: #1b1924;
+    --button-background: #b7a7ea;
+    --button-text: #1b1924;
+    --danger: #ff9b8f;
+    --lavender-ink: #cbbff3;
+    --matcha-ink: #a9cf95;
+    --honey-ink: #f0c975;
+    --mist-ink: #b9d3e6;
+    --rose-ink: #f0aebc;
+    --error: #ff9b8f;
+    --error-soft: #3d2326;
+  }
+  :root:is([data-theme='night'], [data-theme='contrast-dark'], [data-theme='custom']) {
+    --edge-light: rgb(255 255 255 / 0.05);
+    --shadow-color: 0 0 0;
+  }
+  :root[data-theme='contrast-dark'] {
+    --lavender-ink: #d7ccff;
+    --matcha-ink: #bfe3ab;
+    --honey-ink: #ffd88a;
+    --mist-ink: #cfe4f3;
+    --rose-ink: #ffc2cf;
+    --error: #ffb0a6;
+    --error-soft: #3a1d1d;
+  }
+  :root:is([data-theme='contrast-light'], [data-theme='contrast-dark']),
+  [data-high-contrast='true'] {
+    --line: var(--border);
+    --line-strong: var(--text);
+    --edge-light: transparent;
+  }
+
+  /* ==== Base =============================================================================== */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    font-kerning: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--lavender) 32%, transparent);
+  }
+  :is(h1, h2, h3, h4) {
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  body.app-page :is(h1, h2, h3, h4),
+  body.auth-page :is(h1, h2, h3, h4) {
+    font-family: var(--font-ui);
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+    font-weight: 600;
+  }
+  /* Page titles: editorial, medium weight, ink — never giant black. */
+  body.app-page main h1,
+  body.app-page .article-heading h1 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 460;
+    font-size: clamp(var(--step-3), 1.5rem + 1.1vw, var(--step-4));
+    line-height: 1.08;
+    letter-spacing: -0.012em;
+    margin: 0;
+  }
+  body.app-page main h2 {
+    font-size: var(--step-1);
+  }
+  body.app-page main h3 {
+    font-size: var(--step-0);
+  }
+  p {
+    text-wrap: pretty;
+  }
+  a {
+    color: var(--brand-ink);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
+  }
+  small {
+    font-size: var(--step--1);
+  }
+
+  /* ==== Buttons ============================================================================
+   * Primary: filled lavender-ink with a light top edge (tactile, not glossy). One per screen.
+   * Secondary: raised paper with a hairline. Quiet (text-action): ink-coloured text only. */
+  body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action, .pill-action) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-control);
+    font-family: var(--font-ui);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur) var(--ease),
+      box-shadow var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
+    filter: none;
+    transform: none;
+  }
+  body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action) > :is(svg, .ui-icon) {
+    width: 1.1em;
+    height: 1.1em;
+    flex: none;
+  }
+  body .primary-action {
+    color: var(--on-brand);
+    background: var(--brand-ink) linear-gradient(180deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0));
+    border: 1px solid color-mix(in srgb, var(--brand-ink) 80%, var(--ink));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      0 1px 2px rgb(var(--shadow-color) / 0.18);
+  }
+  body .primary-action:hover {
+    background-color: color-mix(in srgb, var(--brand-ink) 88%, var(--ink));
+    color: var(--on-brand);
+    text-decoration: none;
+  }
+  body .primary-action:active {
+    box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.25);
+  }
+  body :is(.secondary-action, .small-action, .table-button, .pill-action) {
+    color: var(--ink);
+    background: var(--paper-raised);
+    border: 1px solid var(--line-strong);
+    box-shadow: var(--elev-1);
+  }
+  body :is(.secondary-action, .small-action, .table-button, .pill-action):hover {
+    background: color-mix(in srgb, var(--paper-raised) 92%, var(--brand));
+    border-color: color-mix(in srgb, var(--brand) 40%, var(--line-strong));
+    color: var(--ink);
+    text-decoration: none;
+  }
+  body :is(.small-action, .table-button) {
+    min-height: 2.25rem;
+    padding-inline: var(--space-3);
+    font-size: var(--step-ui);
+  }
+  body .danger-action {
+    color: #fff;
+    background: var(--error);
+    border: 1px solid color-mix(in srgb, var(--error) 80%, #000);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2);
+  }
+  body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action):disabled,
+  body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action)[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: none;
+  }
+  body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action, .pill-action):focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  body .text-action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 2rem;
+    padding: 0 var(--space-1);
+    margin-inline: calc(var(--space-1) * -1);
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  body .text-action:hover {
+    background: var(--brand-wash);
+    text-decoration: none;
+    color: var(--brand-ink);
+  }
+
+  /* Icon buttons: square, quiet; the name appears as a label on hover and on keyboard focus. */
+  .site-header :is(.menu-toggle, .utility-trigger, .appearance-shortcut, .focus-quick-toggle, .icon-action, .account-menu-trigger),
+  .icon-button {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--ink-muted);
+    box-shadow: none;
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .site-header :is(.menu-toggle, .utility-trigger, .appearance-shortcut, .focus-quick-toggle, .icon-action):hover,
+  .icon-button:hover {
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+    color: var(--ink);
+  }
+  .site-header :is(.menu-toggle, .utility-trigger, .appearance-shortcut, .focus-quick-toggle, .icon-action)[aria-pressed='true'],
+  .site-header .utility-trigger[aria-expanded='true'],
+  .icon-button[aria-pressed='true'] {
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+  }
+  .site-header :is(.menu-toggle, .utility-trigger, .appearance-shortcut, .focus-quick-toggle, .icon-action) :is(svg, .nav-icon, .ui-icon),
+  .icon-button svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .site-header .focus-quick-toggle > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  /* Hover label (decorative copy of the accessible name; screen readers use aria-label). */
+  :is(.site-header [aria-label]:is(button, a):not(.account-menu-trigger), .icon-button[aria-label], [data-tip])::after {
+    content: attr(aria-label);
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    z-index: 80;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--ink);
+    color: var(--paper);
+    font: 500 var(--step--1) / 1.3 var(--font-ui);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -2px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  [data-tip]::after {
+    content: attr(data-tip);
+  }
+  :is(.site-header [aria-label]:is(button, a):not(.account-menu-trigger), .icon-button[aria-label], [data-tip]):is(:hover, :focus-visible)::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition-delay: 350ms;
+  }
+  .site-header [aria-label]:is(button, a):focus-visible::after {
+    transition-delay: 0ms;
+  }
+  .site-header .header-navigation > :last-child [aria-label]::after,
+  .site-header .header-navigation > [aria-label]:last-child::after {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+  .site-header .search-suggestions [aria-label]::after,
+  .site-header .account-menu [aria-label]::after,
+  .site-header .topbar-search [aria-label]::after,
+  .site-header .menu-toggle::after {
+    display: none;
+  }
+
+  /* ==== Fields ============================================================================= */
+  body :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']), select, textarea) {
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-control);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    box-shadow: var(--recessed);
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  body textarea {
+    line-height: 1.55;
+  }
+  body select {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23625c72' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4.5 6.5 3.5 3.5 3.5-3.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem;
+    cursor: pointer;
+  }
+  :root:is([data-theme='night'], [data-theme='contrast-dark']) body select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23d9d2ea' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4.5 6.5 3.5 3.5 3.5-3.5'/%3E%3C/svg%3E");
+  }
+  body select[multiple] {
+    background-image: none;
+    padding-right: 0.75rem;
+  }
+  body :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']), select, textarea):hover {
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line-strong));
+  }
+  body :is(input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']), select, textarea):focus-visible {
+    outline: none;
+    border-color: var(--brand-ink);
+    box-shadow: var(--recessed), 0 0 0 3px color-mix(in srgb, var(--brand) 28%, transparent);
+  }
+  body ::placeholder {
+    color: color-mix(in srgb, var(--ink-muted) 82%, transparent);
+    opacity: 1;
+  }
+  body :is(input[type='checkbox'], input[type='radio']) {
+    accent-color: var(--brand-ink);
+  }
+  body input[type='checkbox']:not(.segment-input) {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+  body input[type='range'] {
+    accent-color: var(--brand-ink);
+  }
+
+  /* Segmented control: replaces on/off switches. Radios inside a fieldset; the checked one is a
+   * raised "key" on a recessed track. Markup: <fieldset class="segmented-control"><legend>…
+   * <label><input type="radio" class="segment-input"><span>…</span></label>… */
+  .segmented-control {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin: 0;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius-control) + 2px);
+    background: var(--paper-sunken);
+    box-shadow: var(--recessed);
+  }
+  .segmented-control > legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .segmented-control label {
+    position: relative;
+    display: inline-flex;
+    margin: 0;
+    cursor: pointer;
+  }
+  .segmented-control .segment-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .segmented-control label > span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0 0.85rem;
+    border-radius: var(--radius-control);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 550;
+    white-space: nowrap;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .segmented-control label:hover > span {
+    color: var(--ink);
+  }
+  .segmented-control .segment-input:checked + span {
+    background: var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--elev-2);
+  }
+  .segmented-control .segment-input:focus-visible + span {
+    box-shadow: var(--focus-ring);
+  }
+  .segmented-control .segment-input:disabled + span {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  /* ==== App shell =========================================================================== */
+  body.app-page {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    min-height: 100dvh;
+    background: var(--paper);
+  }
+
+  /* Sidebar: a Finder-like source list on tinted paper. */
+  /* Wide screens: the sidebar is a grid column the full height of the page; its content stays in
+   * view (sticky). Phones: a drawer (see the media query below). */
+  body.app-page .side-navigation {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    z-index: 40;
+    width: var(--sidebar-width);
+    height: auto;
+    transform: none;
+    visibility: visible;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: color-mix(in srgb, var(--paper-sunken) 62%, var(--paper));
+    box-shadow: none;
+  }
+  body.app-page .side-navigation .sidebar-inner {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    padding: var(--space-4) var(--space-3);
+    overflow-y: auto;
+    gap: 0;
+  }
+  body.app-page .side-navigation .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    margin: 0 0 var(--space-4);
+    padding: 0 var(--space-2);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  body.app-page .side-navigation .sidebar-brand img {
+    width: 30px;
+    height: auto;
+  }
+  body.app-page .side-navigation .brand-name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: 1.125rem;
+    font-weight: 520;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  body.app-page .side-navigation .brand-name :is(.brand-main, .brand-em) {
+    font: inherit;
+    color: inherit;
+  }
+  body.app-page .side-navigation .brand-name .brand-em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+  body.app-page .side-navigation nav {
+    display: grid;
+    gap: 2px;
+    padding: 0;
+  }
+  body.app-page .side-navigation nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.6rem;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--ink);
+    font-size: var(--step-ui);
+    font-weight: 500;
+    line-height: 1.25;
+    text-decoration: none;
+    box-shadow: none;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+  body.app-page .side-navigation nav a .nav-icon {
+    flex: 0 0 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--ink-muted);
+  }
+  body.app-page .side-navigation nav a:hover {
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    color: var(--ink);
+  }
+  body.app-page .side-navigation nav a.active,
+  body.app-page .side-navigation nav a[aria-current='page'] {
+    background: var(--brand-wash);
+    color: var(--ink);
+    font-weight: 650;
+    border: 0;
+    padding-left: 0.6rem;
+    box-shadow: none;
+  }
+  body.app-page .side-navigation nav a:is(.active, [aria-current='page']) .nav-icon {
+    color: var(--brand-ink);
+  }
+  body.app-page .side-navigation nav a:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--brand-ink);
+  }
+  /* The global "Nova transcrição": a raised key, not a second primary button. */
+  body.app-page .side-navigation nav a.nav-create {
+    margin: 0 0 var(--space-4);
+    min-height: 2.5rem;
+    border: 1px solid var(--line-strong);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font-weight: 600;
+    box-shadow: var(--elev-2);
+    filter: none;
+  }
+  body.app-page .side-navigation nav a.nav-create .nav-icon {
+    color: var(--brand-ink);
+  }
+  body.app-page .side-navigation nav a.nav-create:hover {
+    background: color-mix(in srgb, var(--paper-raised) 90%, var(--brand));
+    color: var(--ink);
+    filter: none;
+  }
+  body.app-page .side-navigation nav a.nav-create:is(.active, [aria-current='page']) {
+    border-color: var(--brand-ink);
+    box-shadow: 0 0 0 1px var(--brand-ink), var(--elev-2);
+  }
+  body.app-page .side-navigation .sidebar-settings {
+    margin-top: auto;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .side-navigation .sidebar-settings::before {
+    display: none;
+  }
+  body.app-page .side-navigation .sidebar-settings a > span:last-child {
+    font-size: var(--step-ui);
+    white-space: normal;
+  }
+  body.app-page .side-navigation .sidebar-settings .nav-icon {
+    flex-basis: 1.15rem;
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+  [data-sidebar-collapsed='true'] body.app-page .side-navigation .sidebar-inner {
+    padding-inline: var(--space-2);
+  }
+  [data-sidebar-collapsed='true'] body.app-page .side-navigation nav a {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+  [data-sidebar-collapsed='true'] body.app-page .side-navigation .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* Topbar: a slim toolbar over the page; the page title lives in the page, not here. */
+  body.app-page .site-header.app-topbar {
+    grid-column: 2;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--topbar-height);
+    padding: var(--space-2) clamp(var(--space-4), 3vw, var(--space-6));
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: color-mix(in srgb, var(--paper) 84%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
+    box-shadow: none;
+    flex-wrap: nowrap;
+  }
+  body.app-page .site-header .topbar-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+  body.app-page .site-header .topbar-page-label {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 550;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.app-page .site-header .topbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 22rem;
+    max-width: 30rem;
+    margin-inline: auto;
+    min-width: 0;
+  }
+  body.app-page .site-header .topbar-search > .ui-icon {
+    position: absolute;
+    left: 0.7rem;
+    width: 1rem;
+    height: 1rem;
+    color: var(--ink-muted);
+    pointer-events: none;
+  }
+  body.app-page .site-header .topbar-search input {
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.75rem 0.35rem 2.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--paper-sunken) 70%, var(--paper-raised));
+    font-size: var(--step-ui);
+    box-shadow: var(--recessed);
+  }
+  body.app-page .site-header .header-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-left: auto;
+    flex: none;
+  }
+  body.app-page .site-header .topbar-search + .header-navigation {
+    margin-left: 0;
+  }
+  body.app-page .site-header .account-menu-trigger {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-left: var(--space-1);
+    padding: 0;
+    border-radius: 50%;
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .site-header .account-menu-trigger .user-initials {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 50%;
+    background: transparent;
+  }
+  body.app-page .site-header .account-menu-trigger .user-initials img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Menus and popovers: one look (account menu, search suggestions, row menus). */
+  .account-menu,
+  .search-suggestions,
+  .popover-surface,
+  [role='menu'] {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-3);
+    color: var(--ink);
+  }
+  .account-menu {
+    min-width: 15rem;
+    padding: var(--space-2);
+  }
+  .account-menu :is(a, button) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.6rem;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--ink);
+    font-size: var(--step-ui);
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    box-shadow: none;
+  }
+  .account-menu :is(a, button):hover {
+    background: var(--brand-wash);
+    text-decoration: none;
+  }
+  .account-menu hr {
+    margin: var(--space-2) 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+  .account-menu-identity {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-2) 0.6rem var(--space-3);
+  }
+  .account-menu-identity span {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+
+  /* Main column and footer. */
+  body.app-page > main.article-content {
+    grid-column: 2;
+    width: 100%;
+    max-width: calc(var(--content-max) + 2 * clamp(var(--space-4), 3vw, var(--space-6)));
+    margin: 0 auto;
+    padding: var(--space-5) clamp(var(--space-4), 3vw, var(--space-6)) var(--space-8);
+  }
+  body.app-page > .site-footer {
+    grid-column: 2;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) clamp(var(--space-4), 3vw, var(--space-6));
+    border-top: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page > .site-footer a {
+    color: var(--ink-muted);
+  }
+
+  /* Page heading: title (and an optional lead) on the left, the page's actions on the right. */
+  body.app-page main .article-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-5);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.app-page main .article-heading > div:first-child {
+    min-width: 0;
+    flex: 1 1 20rem;
+  }
+  body.app-page main .article-heading p {
+    max-width: 62ch;
+    margin: var(--space-2) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-0);
+    line-height: 1.55;
+  }
+  body.app-page main .settings-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page main .settings-breadcrumb a {
+    color: var(--ink-muted);
+  }
+
+  /* ==== Panels ==============================================================================
+   * A panel is one raised sheet. Content inside a panel is never boxed again: rows are separated
+   * by hairlines. */
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-2);
+  }
+
+  /* Tabs: an underline row (material and tool pages). */
+  body.app-page :is(.tool-tabs, .material-tabs) {
+    display: flex;
+    gap: var(--space-1);
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    background: none;
+    box-shadow: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab'] {
+    position: relative;
+    min-height: 2.75rem;
+    padding: 0 var(--space-3);
+    border: 0;
+    border-radius: var(--radius-control) var(--radius-control) 0 0;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 550;
+    white-space: nowrap;
+    box-shadow: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab']:hover {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 4%, transparent);
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab'][aria-selected='true'] {
+    color: var(--ink);
+    font-weight: 650;
+    background: transparent;
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab']::after {
+    content: '';
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: transparent;
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab'][aria-selected='true']::after {
+    background: var(--brand-ink);
+  }
+  body.app-page :is(.tool-tabs, .material-tabs) [role='tab']:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--brand-ink);
+  }
+
+  /* ==== Dialogs: refined windows =============================================================
+   * A slim title bar band (drawn by the dialog's background), the close control sits in it. */
+  dialog:not(.dash-customize):not(.utility-panel):not([data-sheet]) {
+    --titlebar: 2.25rem;
+    max-width: min(40rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: calc(var(--titlebar) + var(--space-4)) var(--space-5) var(--space-5);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-window);
+    background:
+      linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--paper-sunken) 70%, var(--paper-raised)) 0,
+          var(--paper-sunken) var(--titlebar),
+          var(--line) var(--titlebar),
+          var(--line) calc(var(--titlebar) + 1px),
+          transparent calc(var(--titlebar) + 1px)
+        )
+        no-repeat,
+      var(--paper-raised);
+    color: var(--ink);
+    box-shadow: var(--elev-3), inset 0 1px 0 var(--edge-light);
+  }
+  dialog:not(.dash-customize):not(.utility-panel):not([data-sheet])::backdrop {
+    background: rgb(30 26 40 / 0.32);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+  dialog:not(.dash-customize):not(.utility-panel):not([data-sheet]) :is(form, .settings-dialog-heading, .dialog-heading) {
+    background: transparent;
+    box-shadow: none;
+  }
+  dialog:not(.dash-customize):not(.utility-panel):not([data-sheet]) :is(h2, h3):first-of-type {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 480;
+    font-size: var(--step-2);
+    letter-spacing: -0.01em;
+  }
+  dialog .dialog-close,
+  dialog [class$='-dialog-close'] {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.5rem;
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 1.2rem;
+    line-height: 1;
+    box-shadow: none;
+  }
+  dialog .dialog-close:hover,
+  dialog [class$='-dialog-close']:hover {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    color: var(--ink);
+  }
+  dialog .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+  }
+
+  /* ==== Toasts ============================================================================== */
+  :is(.app-toast, .auth-toast) {
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-panel);
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: var(--elev-3);
+    font-size: var(--step-ui);
+  }
+
+  /* ==== Empty states ========================================================================
+   * Direction, not mood: what is missing, one action. The art slot stays empty until the art
+   * system mounts something into it. */
+  body.app-page .empty-state-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    padding: var(--space-5);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-panel);
+    background: color-mix(in srgb, var(--paper-raised) 60%, transparent);
+    box-shadow: none;
+  }
+  body.app-page .empty-state-card img {
+    width: 5rem;
+  }
+  body.app-page .empty-state-card :is(h2, h3, strong) {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 480;
+    font-size: var(--step-1);
+  }
+  body.app-page .empty-state-card p {
+    margin: var(--space-1) 0 var(--space-3);
+    color: var(--ink-muted);
+  }
+  [data-art-slot]:empty {
+    display: none;
+  }
+
+  /* ==== Small pieces ======================================================================== */
+  body.app-page progress {
+    appearance: none;
+    height: 6px;
+    border: 0;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--ink) 9%, transparent);
+    overflow: hidden;
+  }
+  body.app-page progress::-webkit-progress-bar {
+    background: color-mix(in srgb, var(--ink) 9%, transparent);
+    border-radius: 3px;
+  }
+  body.app-page progress::-webkit-progress-value {
+    background: var(--matcha);
+    border-radius: 3px;
+  }
+  body.app-page progress::-moz-progress-bar {
+    background: var(--matcha);
+    border-radius: 3px;
+  }
+  body.app-page details > summary {
+    cursor: pointer;
+  }
+  body.app-page hr {
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  /* ==== Phones and tablets ================================================================== */
+  /* The person chose the bottom dock (or focus mode): no sidebar column, no menu button. */
+  html[data-nav-dock='true'] body.app-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  html[data-nav-dock='true'] body.app-page > :is(.site-header, main, .site-footer) {
+    grid-column: 1;
+  }
+  html[data-nav-dock='true'] body.app-page :is(.side-navigation, .menu-toggle, .menu-backdrop) {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    body.app-page {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page > .site-header.app-topbar,
+    body.app-page > main.article-content,
+    body.app-page > .site-footer {
+      grid-column: 1;
+    }
+    body.app-page .side-navigation,
+    [data-sidebar-collapsed='true'] body.app-page .side-navigation {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: min(18rem, 86vw);
+      height: 100dvh;
+      z-index: 60;
+      transform: translateX(-100%);
+      visibility: hidden;
+      box-shadow: var(--elev-3);
+      background: var(--paper);
+    }
+    body.app-page.navigation-open .side-navigation {
+      transform: none;
+      visibility: visible;
+    }
+    body.app-page .side-navigation .sidebar-inner {
+      position: static;
+      height: 100%;
+    }
+    [data-sidebar-collapsed='true'] body.app-page .side-navigation nav a {
+      justify-content: flex-start;
+      padding: 0.35rem 0.6rem;
+    }
+  }
+  @media (max-width: 760px) {
+    body.app-page .site-header.app-topbar {
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+    }
+    body.app-page .site-header .topbar-search {
+      order: 3;
+      flex: 1 0 100%;
+      max-width: none;
+      margin: 0;
+    }
+    body.app-page > main.article-content {
+      padding: var(--space-4) var(--space-4) var(--space-7);
+    }
+    body.app-page main .article-heading {
+      margin-bottom: var(--space-5);
+    }
+    dialog:not(.dash-customize):not(.utility-panel):not([data-sheet]) {
+      padding-inline: var(--space-4);
+    }
+  }
+}
+
+/* ==== The person's accessibility choices (always last) ===================================== */
+@layer a11y {
+  /* Title typography chosen in Aparência (Estúdio visual). */
+  html[data-heading-font='modern'] {
+    --font-display: 'Instrument Sans', Inter, system-ui, sans-serif;
+    --display-axes: normal;
+  }
+  html[data-heading-font='rounded'] {
+    --font-display: 'Trebuchet MS', 'Arial Rounded MT Bold', system-ui, sans-serif;
+    --display-axes: normal;
+  }
+  html[data-heading-font='friendly'] {
+    --font-display: Lexend, system-ui, sans-serif;
+    --display-axes: normal;
+  }
+  html[data-heading-font='typewriter'] {
+    --font-display: 'Courier New', ui-monospace, monospace;
+    --display-axes: normal;
+  }
+  /* A reading font (Atkinson, Lexend, OpenDyslexic, Verdana) wins over every brand face. */
+  html:not([data-reading-font='default'])[data-reading-font] {
+    --font-ui: var(--reading-font-family);
+    --font-display: var(--reading-font-family);
+    --display-axes: normal;
+  }
+  html:not([data-reading-font='default'])[data-reading-font] body :is(h1, h2, h3, h4, p, a, li, button, input, select, textarea, label, span, strong, small) {
+    font-family: var(--reading-font-family);
+  }
+  /* A custom theme carries its own interface font. */
+  html[data-theme='custom'][data-reading-font='default'] {
+    --font-ui: var(--custom-font-family);
+  }
+  /* Less stimulation and screen-reader mode: no hover labels, no decoration. */
+  html:is([data-low-stimulation='true'], [data-screen-reader-mode='true']) :is(.site-header [aria-label], .icon-button, [data-tip])::after {
+    display: none;
+  }
+  html[data-reduced-motion='true'] *,
+  html[data-reduced-motion='true'] *::before,
+  html[data-reduced-motion='true'] *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0s !important;
+      animation-duration: 0s !important;
+    }
+  }
+  @media (forced-colors: active) {
+    body :is(.primary-action, .secondary-action, .small-action, .table-button, .danger-action),
+    .segmented-control .segment-input:checked + span {
+      border: 2px solid ButtonText;
+    }
+  }
+}

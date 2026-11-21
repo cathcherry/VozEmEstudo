@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Voz em Estudo — temas, componentes e layout. */
 :root {
   --background: #fffbf6;
@@ -980,4 +982,5 @@ html:not([data-nav-classrooms='true']) [data-nav-feature='classrooms'] { display
    where the sidebar is folded into the menu (narrow screens and focus mode). */
 @media (min-width: 901px) {
   html:not([data-focus-mode='true']) .app-page .article-heading > .primary-action[href='./nova-transcricao.html'] { display: none; }
+}
 }

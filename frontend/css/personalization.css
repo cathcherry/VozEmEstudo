@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Personalization 2.0: Início layout (hidden cards, block order, density) and its side sheet.
    Colours come from the active theme's tokens. */
 
@@ -1054,3 +1056,4 @@ html:is([data-low-stimulation='true'], [data-screen-reader-mode='true']) .page-s
 .report-dialog textarea { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; font: inherit; font-weight: 400; resize: vertical; }
 .report-error { margin: 8px 0 0; color: var(--danger); }
 .report-error:empty { display: none; }
+}

@@ -1,4 +1,7 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 body[data-page='material'] .media-player:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
+}
 }

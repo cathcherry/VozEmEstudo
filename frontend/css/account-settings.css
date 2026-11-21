@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 .settings-hub { max-width:1180px; }
 .settings-hub-card { min-width:0; padding:clamp(18px,2.5vw,26px); border:1px solid var(--border-light); border-radius:16px; background:var(--surface); box-shadow:0 5px 22px color-mix(in srgb,var(--text) 4%,transparent); }
 .settings-account-card { margin:0 0 18px; }
@@ -29,4 +31,4 @@
 .settings-details-card summary { cursor:pointer; font-size:.85rem; font-weight:600; }
 .settings-details-card p { color:var(--muted); font-size:.8rem; line-height:1.6; max-width:80ch; }
 .settings-hub [id] { scroll-margin-top:110px; }
-
+}

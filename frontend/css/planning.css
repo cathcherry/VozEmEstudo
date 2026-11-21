@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* E05/E06: only in the dashboard and while FEATURE_PLANNING is true. */
 body:is([data-page='plan'],[data-page='review']) [data-planning-panel][hidden] { display: none; }
 body:is([data-page='plan'],[data-page='review']) .planning-panel {
@@ -212,3 +214,4 @@ body:is([data-page='plan'],[data-page='review']) .planning-controls select { wid
 body:is([data-page='plan'],[data-page='review']) .planning-more { display: grid; gap: 14px; }
 body:is([data-page='plan'],[data-page='review']) .planning-more[hidden] { display: none; }
 body:is([data-page='plan'],[data-page='review']) .planning-more-toggle { justify-self: start; }
+}

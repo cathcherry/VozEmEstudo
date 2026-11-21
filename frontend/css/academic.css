@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 .upload-choice-review,
 .transcription-review-box,
 .content-warning-panel {
@@ -298,4 +300,4 @@ body[data-page='transcription'] .form-actions {
     font-size: 0.8rem;
   }
 }
-
+}

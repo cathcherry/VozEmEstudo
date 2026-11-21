@@ -1,3 +1,5 @@
+/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
+@layer legacy {
 /* Voz em Estudo | autenticação: regras exclusivas para login, cadastro e recuperação.
    Base visual: style.css > marque.css > product.css > library.css > voz-redesign.css.
    Esta folha é sempre a ÚLTIMA destas três páginas. Não adicionar novas
@@ -160,3 +162,4 @@ body.auth-page .password-rules li { display:flex; align-items:center; gap:6px; m
 body.auth-page .password-rules li::before { content:''; flex:0 0 8px; width:8px; height:8px; border:1.5px solid currentColor; border-radius:50%; }
 body.auth-page .password-rules li[data-ok='true'] { color:var(--success,#1f7a4d); }
 body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; border:0; width:auto; height:auto; flex-basis:auto; font-size:.8rem; line-height:1; }
+}
