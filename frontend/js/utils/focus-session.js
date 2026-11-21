@@ -32,6 +32,20 @@ export const LEADER_MS = 4000;
 export const HEARTBEAT_MS = 15000;
 const HISTORY_LIMIT = 60;
 
+/**
+ * Union of two block histories (this browser and the account copy): a block is identified by its
+ * mode and end time, the newest come first and the list keeps its usual limit.
+ */
+export function mergeFocusHistory(a, b) {
+  const seen = new Map();
+  for (const entry of [...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])]) {
+    if (!entry || !Number.isFinite(Number(entry.endedAt)) || typeof entry.mode !== 'string') continue;
+    const id = `${entry.mode}:${entry.endedAt}`;
+    if (!seen.has(id)) seen.set(id, entry);
+  }
+  return [...seen.values()].sort((x, y) => y.endedAt - x.endedAt).slice(0, HISTORY_LIMIT);
+}
+
 const clampInt = (value, min, max, fallback) => {
   const number = Math.round(Number(value));
   return Number.isFinite(number) ? Math.min(max, Math.max(min, number)) : fallback;
@@ -460,6 +474,14 @@ export function createFocusSession({
     pump,
     handOff,
     onStorage,
+    /** Adds blocks recorded on another device (account copy). */
+    mergeHistory(entries) {
+      const state = read();
+      const merged = mergeFocusHistory(state.history, entries);
+      if (JSON.stringify(merged) === JSON.stringify(state.history)) return state;
+      state.history = merged;
+      return write(state);
+    },
     clearNotice() {
       const state = read();
       if (!state.notice) return state;

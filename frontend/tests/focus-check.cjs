@@ -195,6 +195,36 @@ async function main() {
       await two.context.close();
       record('Durações do Focar salvas nas preferências da conta e aplicadas em outro navegador');
     }
+
+    // ---------- Block history follows the account -------------------------------------------
+    {
+      const cloud = state();
+      const endedAt = Date.now() - 3_600_000;
+      cloud.profileState = [
+        {
+          user_id: 'user-dashboard',
+          key: 'focus-history',
+          updated_at: new Date(endedAt).toISOString(),
+          data: [{ mode: 'pomodoro', seconds: 1500, endedAt, materialId: 'l-foto', materialTitle: 'Bloco do notebook' }],
+        },
+      ];
+      const fresh = await openApp(browser, base, allFlags, cloud, { width: 1280, height: 900 });
+      await fresh.page.goto(base + '/focar.html');
+      await fresh.page.locator('[data-focus-history-list] li', { hasText: 'Bloco do notebook' }).waitFor();
+      // A block finished here is added to the account copy, next to the other device's.
+      await fresh.page.evaluate(async () => {
+        const { getFocusSession } = await import('./js/utils/focus-host.js');
+        const session = await getFocusSession();
+        session.mergeHistory([{ mode: 'short', seconds: 300, endedAt: Date.now(), materialId: null }]);
+      });
+      await fresh.page.waitForFunction(() => document.querySelectorAll('[data-focus-history-list] li').length === 2);
+      await fresh.page.waitForTimeout(2500);
+      const row = cloud.profileState.find((item) => item.key === 'focus-history');
+      assert.equal(row.data.length, 2, 'both blocks in the account copy');
+      assert.equal(row.data[1].materialTitle, 'Bloco do notebook');
+      await fresh.context.close();
+      record('Histórico de blocos na conta: o de outro aparelho aparece aqui, e o novo soma aos dois sem apagar nada');
+    }
   } finally {
     await browser.close();
     server.close();

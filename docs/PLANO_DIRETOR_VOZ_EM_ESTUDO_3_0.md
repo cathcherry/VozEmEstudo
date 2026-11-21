@@ -128,10 +128,10 @@ Fechar ou esconder qualquer uma delas não para a sessão.
 
 Pendente:
 
-- a duração escolhida fica por navegador, não sincronizada;
-- o histórico de ciclos não vai para a conta (precisaria de uma chave `profile_state` ou de uma tabela);
-- notificações do sistema;
-- atalho "Iniciar foco" no Início;
+- ~~a duração escolhida fica por navegador~~: sincronizada na conta (`focusSettings`, `f494ef4`);
+- ~~o histórico de ciclos não vai para a conta~~: chave `focus-history` em `profile_state`, com união por bloco (sem migration);
+- ~~notificações do sistema~~: opcionais, só com a aba oculta (`4c6052f`);
+- ~~atalho "Iniciar foco" no Início~~: feito (`98a1e3a`);
 - teste em aparelhos reais com suspensão.
 
 ## 6. Questões 3.0

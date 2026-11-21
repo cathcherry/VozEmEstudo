@@ -24,6 +24,7 @@ const describe = (items) =>
               'study-history': 'histórico de estudo',
               milestones: 'marcos de estudo',
               'catalog-icons': 'ícones de pastas',
+              'focus-history': 'blocos de foco',
             }[item.key] || 'dados do perfil',
     )
     .join(', ');

@@ -274,6 +274,7 @@ export default {
   "Bloco pausado. Retome quando quiser.": "Block paused. Resume whenever you like.",
   "Bloco salvo.": "Block saved.",
   "Blocos": "Blocks",
+  "blocos de foco": "focus blocks",
   "blocos do perfil": "profile blocks",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube and Spotify blocks load content from those services. You can edit or remove the blocks in your profile. Your profile stays private.",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "Blocks that show your own study data and update automatically.",

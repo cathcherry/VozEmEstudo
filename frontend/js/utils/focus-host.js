@@ -1,11 +1,14 @@
 // One FocusSession per page for the signed-in account: it pumps once a second, hands the run over
 // when the page unloads, follows other tabs through `storage` events and plays the end-of-block
 // chime. Every view (Focar page, Planejar, side panel, capsule) uses `getFocusSession()`.
-import { createFocusSession } from './focus-session.js';
+import { createFocusSession, mergeFocusHistory } from './focus-session.js';
+import { loadCloudState, registerCloudMerge, saveCloudState } from './profile-cloud.js';
 import { startStudySession, tickStudySession } from '../api/study.api.js';
 import { getUiPreferences, setUiPreference } from './preferences.js';
 
 let session = null;
+// The block history follows the account: both copies are combined, never overwritten.
+registerCloudMerge('focus-history', mergeFocusHistory);
 let resolveReady;
 const ready = new Promise((resolve) => {
   resolveReady = resolve;
@@ -38,6 +41,33 @@ function chime() {
   } catch {
     /* sound is optional */
   }
+}
+
+function syncHistory(userId) {
+  let sent = JSON.stringify(session.state().history);
+  let timer;
+  loadCloudState(userId, 'focus-history', null)
+    .then((remote) => {
+      if (Array.isArray(remote)) session.mergeHistory(remote);
+      // Blocks recorded here before the account had a copy are uploaded once.
+      if (JSON.stringify(remote) !== JSON.stringify(session.state().history)) send();
+    })
+    .catch(() => {});
+  function send() {
+    const history = session.state().history;
+    sent = JSON.stringify(history);
+    void saveCloudState(userId, 'focus-history', history).catch(() => {});
+  }
+  // While a run has a leader, only that tab uploads (other tabs see the same storage). Idle tabs
+  // may both upload; the account merge makes that harmless.
+  session.subscribe((state) => {
+    if (timer || (state.leader && !state.isLeader) || JSON.stringify(state.history) === sent) return;
+    // Views are refreshed every second, so the upload is scheduled once, not pushed back.
+    timer = setTimeout(() => {
+      timer = null;
+      send();
+    }, 1500);
+  });
 }
 
 export function initFocusHost(userId) {
@@ -118,6 +148,7 @@ export function initFocusHost(userId) {
     if (action === 'start') void session.start().catch(() => {});
     if (action === 'pause') void session.pause().catch(() => {});
   });
+  syncHistory(userId);
   pump();
   resolveReady(session);
   return session;

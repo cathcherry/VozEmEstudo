@@ -274,6 +274,7 @@ export default {
   "Bloco pausado. Retome quando quiser.": "时段已暂停。随时继续。",
   "Bloco salvo.": "区块已保存。",
   "Blocos": "时段",
+  "blocos de foco": "专注时段",
   "blocos do perfil": "个人资料区块",
   "Blocos do YouTube e Spotify carregam conteúdo desses serviços. Você pode editar ou remover os blocos no perfil. O perfil permanece privado.": "YouTube 和 Spotify 区块会加载这些服务的内容。你可以在个人资料中编辑或移除区块。你的个人资料仍为私密。",
   "Blocos que mostram seus próprios dados de estudo e se atualizam sozinhos.": "显示你的学习数据并自动更新的区块。",
