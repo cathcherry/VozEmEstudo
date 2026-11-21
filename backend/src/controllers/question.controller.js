@@ -42,6 +42,7 @@ export async function createBatch(req, res, next) {
         sourceRevisionId: req.body?.sourceRevisionId,
         idempotencyKey: req.body?.idempotencyKey,
         ...(req.body?.reuse === true ? { reuse: true } : {}),
+        ...(typeof req.body?.classroomId === 'string' ? { classroomId: req.body.classroomId } : {}),
       },
       config,
     );

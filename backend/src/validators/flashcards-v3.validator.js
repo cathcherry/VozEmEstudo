@@ -69,7 +69,11 @@ export const validateDeckCreate = (body) =>
 
 export const validateAddNote = (body) => note.parse(body);
 
-const source = z.object({ setId: uuid, classroomId: uuid.optional() }).strict();
+// Own set ({setId}) or a set shared in a class ({classroomId, sharedId}).
+const source = z
+  .object({ setId: uuid.optional(), classroomId: uuid.optional(), sharedId: uuid.optional() })
+  .strict()
+  .refine((s) => (s.classroomId ? Boolean(s.sharedId) : Boolean(s.setId)), 'Fonte inválida.');
 export const validateMergePreview = (body) =>
   z.object({ sources: z.array(source).min(2).max(12) }).strict().parse(body);
 export const validateMerge = (body) =>

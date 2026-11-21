@@ -107,23 +107,23 @@ export async function enqueueInitial(userId, materialId, input = {}) {
 export async function enqueueSummary(userId, materialId, rawInput) {
   await materials.getOwnedMaterial(userId, materialId);
   // `reuse` (3.3) accepts an equivalent finished result instead of a new AI call.
-  const { reuse, ...input } = rawInput || {};
+  const { reuse, classroomId, ...input } = rawInput || {};
   const { selection, options } = validateSummaryGeneration(input);
   // Preserve params for legacy callers (including retries of already queued jobs).
   const params = input.options === undefined ? {} : { summaryOptions: options };
   if (generationReuseEnabled())
-    return queueGeneration(userId, materialId, 'summary', params, selection, reuse === true, (p) =>
+    return queueGeneration(userId, materialId, 'summary', params, selection, { allowReuse: reuse === true, classroomId }, (p) =>
       createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, p, selection));
   return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, params, selection);
 }
 export async function enqueueQuestions(userId, materialId, count, rawInput, config) {
   await materials.getOwnedMaterial(userId, materialId);
-  const { reuse, ...input } = rawInput || {};
+  const { reuse, classroomId, ...input } = rawInput || {};
   const selection = validateGeneration(input);
   // Without a config the request keeps its legacy params shape (and idempotency comparison).
   const params = config === undefined ? { count } : { count, config };
   if (generationReuseEnabled())
-    return queueGeneration(userId, materialId, 'questions', params, selection, reuse === true, (p) =>
+    return queueGeneration(userId, materialId, 'questions', params, selection, { allowReuse: reuse === true, classroomId }, (p) =>
       isFeatureEnabled('study_authoring')
         ? createQuestionListJob(userId, materialId, p, selection)
         : createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, p, selection));
@@ -137,7 +137,7 @@ export async function enqueueQuestions(userId, materialId, count, rawInput, conf
  * keeps polling a job. `reuse` → the finished job of the equivalent result; `join` → the job that
  * is already running; `start` → a new job tagged with its generation id.
  */
-async function queueGeneration(userId, materialId, kind, params, selection, allowReuse, queue) {
+async function queueGeneration(userId, materialId, kind, params, selection, { allowReuse, classroomId }, queue) {
   const outcome = await beginGeneration({
     userId,
     materialId,
@@ -145,6 +145,7 @@ async function queueGeneration(userId, materialId, kind, params, selection, allo
     sourceRevisionId: selection.sourceRevisionId,
     params,
     allowReuse,
+    classroomId: typeof classroomId === 'string' && /^[0-9a-f-]{36}$/i.test(classroomId) ? classroomId : null,
   });
   const generation = outcome.generation;
   if (outcome.decision !== 'start') {

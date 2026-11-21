@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import { createAcademicDatabase, revisionIds } from './fixtures/academic-db.fixture.js';
 import { identities, resourceIds } from './fixtures/ownership.fixture.js';
 import { generationKey } from '../src/domain/generation-key.js';
+import { createHash, randomUUID } from 'node:crypto';
+import { migrateClassrooms } from './fixtures/classroom-db.fixture.js';
 
 const migration = readFileSync(
   new URL('../../database/migrations/20261121160000_generation_reuse.sql', import.meta.url),
@@ -20,6 +22,8 @@ test('generation reuse migration is guarded, additive and server-only', () => {
 
 async function prepared() {
   const f = await createAcademicDatabase();
+  // Deployment order: classrooms (14:00) before generation reuse (16:00).
+  await migrateClassrooms(f);
   await f.db.exec(migration);
   const a = identities.a.id;
   await f.permit(identities.a, resourceIds.materialA);
@@ -100,7 +104,7 @@ test('a job that ended without bookkeeping is reconciled; sources and scopes are
     // Another account cannot use A's revision as a source, nor act in A's scope.
     await assert.rejects(f.begin(f.key({ count: 7 }), { user: f.b }), /GENERATION_SOURCE_FORBIDDEN/);
     await assert.rejects(f.begin(f.key({ count: 7 }), { scope: ['user', f.b] }), /GENERATION_SCOPE_FORBIDDEN/);
-    await assert.rejects(f.begin(f.key({ count: 7 }), { scope: ['classroom', f.a] }), /GENERATION_SCOPE_FORBIDDEN/);
+    await assert.rejects(f.begin(f.key({ count: 7 }), { scope: ['classroom', randomUUID()] }), /GENERATION_SCOPE_FORBIDDEN/);
     // An unconfirmed revision cannot be a source.
     await f.db.query('delete from public.transcription_confirmations where user_id=$1', [f.a]);
     await assert.rejects(f.begin(f.key({ count: 8 })), /GENERATION_SOURCE_FORBIDDEN/);
@@ -112,6 +116,39 @@ test('a job that ended without bookkeeping is reconciled; sources and scopes are
       }),
       /permission denied/,
     );
+  } finally {
+    await f.db.close();
+  }
+});
+
+test('class scope: members reuse a generation of a published lesson; only staff start one; outsiders and unpublished sources refused', async () => {
+  const f = await prepared();
+  try {
+    const sha = (text) => createHash('sha256').update(text).digest('hex');
+    const classId = randomUUID();
+    await f.call('classroom_create_admin', [f.a, classId, 'Física 2B', '', 'Prof. A']);
+    await f.call('classroom_create_invite_admin', [f.a, classId, randomUUID(), randomUUID(), sha('CONVITE-2B'), 7, 10]);
+    await f.call('classroom_join_admin', [f.b, sha('CONVITE-2B'), 'Aluna B']);
+    const key = generationKey({ scope: `classroom:${classId}`, sources: [revisionIds.a], kind: 'summary', settings: { length: 'short' }, promptVersion: 'summary-v3', modelFamily: 'groq' });
+    const begin = (user) =>
+      f.call('begin_generation_admin', [user, key, 'classroom', classId, 'summary', [revisionIds.a], 'summary-v3', 'groq', resourceIds.materialA, false, 30]);
+    // The revision is not published in this class yet.
+    await assert.rejects(begin(f.a), /GENERATION_SOURCE_FORBIDDEN/);
+    await f.call('classroom_publish_lesson_admin', [f.a, classId, randomUUID(), JSON.stringify({ materialId: resourceIds.materialA, revisionId: revisionIds.a })]);
+    // A student cannot spend the class budget on a new generation.
+    await assert.rejects(begin(f.b), /GENERATION_CLASSROOM_STAFF_ONLY/);
+    const started = await begin(f.a);
+    assert.equal(started.decision, 'start');
+    assert.equal((await begin(f.b)).decision, 'join', 'a member follows the running generation');
+    await f.call('complete_generation_admin', [started.generation.id, JSON.stringify({ summaryId: 's-1' })]);
+    const reused = await begin(f.b);
+    assert.equal(reused.decision, 'reuse', 'members always reuse the class result');
+    assert.deepEqual(reused.generation.result, { summaryId: 's-1' });
+    // Someone outside the class cannot use it.
+    await assert.rejects(begin(identities.e.id), /GENERATION_SCOPE_FORBIDDEN/);
+    // A member who left loses access.
+    await f.call('classroom_leave_admin', [f.b, classId]);
+    await assert.rejects(begin(f.b), /GENERATION_SCOPE_FORBIDDEN/);
   } finally {
     await f.db.close();
   }

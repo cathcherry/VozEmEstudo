@@ -475,7 +475,14 @@ async function setup(context, base, flags, data, options = {}) {
       return json({ ...set, added: cards.length, skipped: [] }, 201);
     }
     const mergePlan = (sources) => {
-      const picked = sources.map((s) => (data.sets || []).concat(data.classroomSets || []).find((set) => set.id === s.setId));
+      const picked = sources.map((s) => {
+        if (!s.classroomId) return (data.sets || []).find((set) => set.id === s.setId);
+        // A deck shared in a class (simulated Turmas): content and author only.
+        const room = (data.classrooms?.rooms || []).find((r) => r.id === s.classroomId);
+        const item = room?.shared.find((x) => x.id === s.sharedId);
+        const author = room?.members.find((m) => m.userId === item?.ownerId)?.displayName || item?.name;
+        return { id: item.setId, name: item.name, ownerLabel: author, cards: item.cards.map((c) => ({ id: c.id, front_text: c.front, back_text: c.back })) };
+      });
       const seen = new Set();
       const byFront = new Map();
       let duplicates = 0;

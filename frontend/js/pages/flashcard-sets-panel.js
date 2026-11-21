@@ -11,6 +11,7 @@ import { buildStudyDocument, toMarkdown, safeFilename } from '../utils/study-doc
 import { ninoNote } from '../utils/material-ui.js';
 import { openMergeDialog, openImportDialog } from './deck-tools-panel.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { listClassrooms, listSharedSets } from '../api/classroom.api.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -48,6 +49,22 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   const v3 = () => isFeatureEnabled('flashcards_v3').catch(() => false);
   mergeButton.addEventListener('click', async () => {
     const usable = sets.filter((set) => (set.card_count ?? 0) > 0);
+    // Flashcards 3.0 + Turmas: decks classmates shared in my classes can be merged too (read only).
+    if ((await v3()) && (await isFeatureEnabled('classrooms').catch(() => false))) {
+      const classes = await listClassrooms().catch(() => []);
+      for (const room of Array.isArray(classes) ? classes : classes?.classrooms || []) {
+        const shared = await listSharedSets(room.id).catch(() => []);
+        for (const item of shared)
+          if (!item.isMine && item.cardCount > 0)
+            usable.push({
+              id: `${room.id}:${item.sharedId}`,
+              classroomId: room.id,
+              sharedId: item.sharedId,
+              name: `${item.name} — ${item.author?.displayName || 'colega'} (${room.name})`,
+              card_count: item.cardCount,
+            });
+      }
+    }
     if (usable.length < 2) {
       status.textContent = 'Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.';
       return;

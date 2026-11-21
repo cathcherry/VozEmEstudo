@@ -1,6 +1,6 @@
 -- Voz em Estudo 3.3 / Gerações de IA reutilizáveis — MIGRACAO CANDIDATA (nao aplicada em producao).
--- Depende de: 001_initial (processing_jobs, transcription_versions) e 20261009101846_academic_review
--- (transcription_confirmations). Aditiva: nada existente e removido ou substituido; nenhum dado
+-- Depende de: 001_initial (processing_jobs, transcription_versions), 20261009101846_academic_review
+-- (transcription_confirmations) e 20261121140000_classrooms (escopo de turma). Aditiva: nada existente e removido ou substituido; nenhum dado
 -- existente e transformado (a tabela nova comeca vazia).
 -- Liga a chave canonica de geracao (backend/src/domain/generation-key.js) aos jobs:
 --   * single flight persistente: um job vivo por chave (indice unico parcial + lock por chave);
@@ -8,16 +8,17 @@
 --   * invalidacao por versao: a chave inclui revisoes de origem, versao do prompt e familia do modelo;
 --   * orcamento diario por conta (so pedidos que iniciam uma chamada contam; reutilizar e gratis);
 --   * falha honesta: uma geracao que falhou libera a chave; um job perdido e reconciliado.
--- Escopo de turma ('classroom'): previsto no esquema; a verificacao de membro e acrescentada pela
--- integracao com Turmas (ver docs/migrations/GENERATION_REUSE.md).
+-- Escopo de turma ('classroom'): membros ativos reutilizam ou acompanham; so professor ou monitor
+-- iniciam uma geracao nova; as fontes sao revisoes publicadas naquela turma.
 begin;
 set local lock_timeout = '5s';
 set local statement_timeout = '120s';
 
 do $guard$
 begin
-  if to_regclass('public.processing_jobs') is null or to_regclass('public.transcription_confirmations') is null then
-    raise exception 'GENERATION_REUSE_ABORT: aplicar 001_initial e academic_review antes';
+  if to_regclass('public.processing_jobs') is null or to_regclass('public.transcription_confirmations') is null
+    or to_regclass('public.classroom_members') is null or to_regclass('public.classroom_lessons') is null then
+    raise exception 'GENERATION_REUSE_ABORT: aplicar 001_initial, academic_review e classrooms antes';
   end if;
   if to_regclass('public.ai_generations') is not null then
     raise exception 'GENERATION_REUSE_ABORT: ai_generations ja existe; nao reaplicar';
@@ -62,12 +63,22 @@ create function public.begin_generation_admin(
   p_user_id uuid, p_key text, p_scope_kind text, p_scope_id uuid, p_kind text, p_sources uuid[],
   p_prompt_version text, p_model_family text, p_material_id uuid, p_allow_reuse boolean, p_daily_limit integer)
 returns jsonb language plpgsql security invoker set search_path = '' as $$
-declare v_gen public.ai_generations; v_job public.processing_jobs; v_used integer;
+declare v_gen public.ai_generations; v_job public.processing_jobs; v_used integer; v_role text;
 begin
-  if p_scope_kind = 'user' and p_scope_id <> p_user_id then raise exception 'GENERATION_SCOPE_FORBIDDEN'; end if;
-  if p_scope_kind <> 'user' then raise exception 'GENERATION_SCOPE_FORBIDDEN'; end if;
+  if p_scope_kind = 'classroom' then
+    -- Active member of an active class; sources must be revisions published in that class.
+    select m.role into v_role from public.classroom_members m join public.classrooms c on c.id = m.classroom_id
+      where m.classroom_id = p_scope_id and m.user_id = p_user_id and m.status = 'active' and c.status = 'active';
+    if v_role is null then raise exception 'GENERATION_SCOPE_FORBIDDEN'; end if;
+    if exists (select 1 from unnest(p_sources) s(id) where not exists (
+        select 1 from public.classroom_lessons l
+        where l.classroom_id = p_scope_id and l.status = 'published' and l.published_revision_id = s.id)) then
+      raise exception 'GENERATION_SOURCE_FORBIDDEN';
+    end if;
+  elsif p_scope_kind <> 'user' or p_scope_id <> p_user_id then
+    raise exception 'GENERATION_SCOPE_FORBIDDEN';
   -- Every source must be a revision of the caller's own material that the caller confirmed.
-  if exists (
+  elsif exists (
     select 1 from unnest(p_sources) s(id)
     where not exists (
       select 1 from public.transcription_versions tv
@@ -103,7 +114,8 @@ begin
     if v_gen.status in ('pending', 'running') then
       return jsonb_build_object('decision', 'join', 'generation', to_jsonb(v_gen));
     end if;
-    if p_allow_reuse then
+    -- In a class the shared result is the point: members always reuse it.
+    if p_allow_reuse or (p_scope_kind = 'classroom' and v_role = 'student') then
       update public.ai_generations set reuse_count = reuse_count + 1, updated_at = now() where id = v_gen.id
         returning * into v_gen;
       return jsonb_build_object('decision', 'reuse', 'generation', to_jsonb(v_gen));
@@ -113,6 +125,8 @@ begin
   end if;
   -- Every generation that started an AI call counts (superseded and failed ones included);
   -- reusing or joining creates no row and is free.
+  -- Only the teacher or an assistant spends the class budget on a new generation.
+  if p_scope_kind = 'classroom' and v_role = 'student' then raise exception 'GENERATION_CLASSROOM_STAFF_ONLY'; end if;
   select count(*) into v_used from public.ai_generations
     where requested_by = p_user_id and created_at > now() - interval '1 day';
   if p_daily_limit is not null and v_used >= p_daily_limit then raise exception 'GENERATION_BUDGET_EXCEEDED'; end if;

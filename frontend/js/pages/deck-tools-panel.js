@@ -224,7 +224,7 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
     ui.preview.replaceChildren(make('p', 'Lendo os cartões…', 'flashcard-muted'));
     if (v3) {
       try {
-        const sources = picked.map((set) => (set.classroomId ? { setId: set.id, classroomId: set.classroomId } : { setId: set.id }));
+        const sources = picked.map((set) => (set.classroomId ? { classroomId: set.classroomId, sharedId: set.sharedId } : { setId: set.id }));
         const preview = await previewFlashcardMerge(sources);
         if (mine !== ticket) return;
         merged = { sources, preview };

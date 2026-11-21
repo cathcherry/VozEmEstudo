@@ -22,6 +22,7 @@ const messages = {
   GENERATION_BUDGET_EXCEEDED: [429, () => `Você chegou ao limite de ${env.aiDailyGenerationLimit} gerações com IA por dia. O que já foi gerado continua disponível; tente de novo amanhã.`],
   GENERATION_SOURCE_FORBIDDEN: [409, () => 'Confirme a transcrição desta aula antes de gerar.'],
   GENERATION_SCOPE_FORBIDDEN: [403, () => 'Você não tem acesso a este espaço de geração.'],
+  GENERATION_CLASSROOM_STAFF_ONLY: [403, () => 'Na turma, só o professor ou um monitor inicia uma geração nova. Você pode usar as que já existem.'],
   GENERATION_NOT_FOUND: [404, () => 'Geração não encontrada.'],
 };
 function mapError(error) {
@@ -68,9 +69,11 @@ export function settingsOf(kind, params = {}) {
   return { style: options.style, length: options.length, focus: options.focus, audience: options.audience, format: options.format };
 }
 
-export async function beginGeneration({ userId, materialId, kind, sourceRevisionId, params, allowReuse = false }) {
+export async function beginGeneration({ userId, materialId, kind, sourceRevisionId, params, allowReuse = false, classroomId = null }) {
+  // In a class the key is shared by its members (sources must be published there).
+  const scope = classroomId ? { kind: 'classroom', id: classroomId } : { kind: 'user', id: userId };
   const key = generationKey({
-    scope: `user:${userId}`,
+    scope: `${scope.kind}:${scope.id}`,
     sources: [sourceRevisionId],
     kind,
     settings: settingsOf(kind, params),
@@ -80,8 +83,8 @@ export async function beginGeneration({ userId, materialId, kind, sourceRevision
   return call('begin_generation_admin', {
     p_user_id: userId,
     p_key: key,
-    p_scope_kind: 'user',
-    p_scope_id: userId,
+    p_scope_kind: scope.kind,
+    p_scope_id: scope.id,
     p_kind: kind,
     p_sources: [sourceRevisionId],
     p_prompt_version: PROMPTS[kind],

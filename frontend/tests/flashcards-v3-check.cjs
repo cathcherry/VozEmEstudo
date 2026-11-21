@@ -121,6 +121,44 @@ async function main() {
     assert.equal(data.sets[0].cards.length, 3, 'Ana keeps her own cards (2 + the typed one)');
     record('Mesclar no servidor: repetidos de fora, escolha por pergunta com respostas diferentes, uma aparência para o conjunto novo');
 
+    // ---------- Merge with a classmate's deck shared in a class (Turmas) ---------------------
+    {
+      const cls = state();
+      cls.sets = [{ id: 'set-mine', name: 'Meu', card_count: 1, due_count: 0, status: 'active', cards: [card('m1', 'O que é ATP?', 'Moeda de energia')] }];
+      cls.classrooms = {
+        requests: [],
+        rooms: [{
+          id: 'room-1', name: 'Biologia 3A', description: '', status: 'active',
+          members: [
+            { userId: 'teacher-1', displayName: 'Prof. Lia', role: 'teacher', status: 'active' },
+            { userId: 'user-dashboard', displayName: 'Marina', role: 'student', status: 'active' },
+            { userId: 'colega-1', displayName: 'Caio', role: 'student', status: 'active' },
+          ],
+          invites: [], lessons: [], submissions: [], resources: [],
+          shared: [{ id: 'shared-caio', setId: 'set-caio', name: 'Fotossíntese', ownerId: 'colega-1', cards: [
+            { id: 'cc1', front: 'Onde ocorre a fotossíntese?', back: 'No cloroplasto' },
+            { id: 'cc2', front: 'O que é ATP?', back: 'Moeda de energia' },
+          ] }],
+        }],
+      };
+      const view = await openApp(browser, base, { ...flags, classrooms: true }, cls, { width: 1280, height: 900 });
+      await view.page.goto(base + '/revisar.html#flashcards');
+      const sets = view.page.locator('details.flashcard-sets');
+      await sets.locator('h4', { hasText: 'Meu' }).waitFor({ state: 'attached' });
+      if (!(await sets.evaluate((n) => n.open))) await sets.locator('summary').click();
+      await sets.getByRole('button', { name: 'Mesclar conjuntos' }).click();
+      const dialog = view.page.getByRole('dialog', { name: 'Mesclar conjuntos' });
+      await dialog.getByRole('checkbox', { name: /^Meu/ }).check();
+      await dialog.getByRole('checkbox', { name: /Fotossíntese — Caio \(Biologia 3A\)/ }).check();
+      await dialog.locator('.deck-preview', { hasText: '2 cartões no conjunto novo' }).waitFor();
+      await dialog.getByRole('button', { name: 'Criar conjunto' }).click();
+      await sets.locator('[role=status]', { hasText: 'Conjunto mesclado criado com 2 cartões.' }).waitFor();
+      assert.deepEqual(cls.merges.at(-1).sources, [{ setId: 'set-mine' }, { classroomId: 'room-1', sharedId: 'shared-caio' }]);
+      assert.equal(cls.classrooms.rooms[0].shared[0].cards.length, 2, "Caio's shared deck is unchanged");
+      await view.context.close();
+      record('Mesclar com baralho compartilhado na turma: aparece com autor e turma, entra como fonte só de leitura, o original não muda');
+    }
+
     // ---------- Anki package ------------------------------------------------------------------
     await panel.getByRole('button', { name: 'Importar cartões' }).click();
     const importer = page.getByRole('dialog', { name: 'Importar cartões' });

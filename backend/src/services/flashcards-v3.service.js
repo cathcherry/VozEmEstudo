@@ -4,6 +4,8 @@ import { buildNote, NoteError } from '../domain/flashcard-notes.js';
 import { planMerge, previewMerge, resolveMerge } from '../domain/deck-merge.js';
 import { readApkg, ApkgError } from '../domain/apkg.js';
 import { AppError } from '../domain/errors.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
+import { rpc } from '../repositories/rpc.js';
 import {
   validateTemplateSave,
   validateSetTemplate,
@@ -30,15 +32,16 @@ const asNote = (input) => {
 async function readSources(store, classroomReader, userId, sources) {
   const seen = new Set();
   const out = [];
-  for (const { setId, classroomId } of sources) {
-    if (seen.has(setId)) continue;
-    seen.add(setId);
+  for (const { setId, classroomId, sharedId } of sources) {
+    const key = classroomId ? `${classroomId}:${sharedId}` : setId;
+    if (seen.has(key)) continue;
+    seen.add(key);
     if (classroomId) {
       if (!classroomReader)
         throw new AppError('CLASSROOMS_DISABLED', 'Turmas ainda não estão ativas neste servidor.', 400);
-      const shared = await classroomReader(userId, classroomId, setId);
+      const shared = await classroomReader(userId, classroomId, sharedId);
       out.push({
-        setId,
+        setId: shared.setId,
         name: shared.name,
         kind: 'classroom',
         author: { id: shared.ownerId, label: shared.ownerLabel || shared.name },
@@ -52,7 +55,46 @@ async function readSources(store, classroomReader, userId, sources) {
   return out;
 }
 
-export function buildFlashcardsV3Service({ store = repository, classroomReader = null, parse = readApkg } = {}) {
+/**
+ * A set shared in a class, read through the classroom permission check (members only; content
+ * and authorship only — never anyone's review history). Requires FEATURE_CLASSROOMS.
+ */
+export async function readSharedClassroomSet(
+  userId,
+  classroomId,
+  sharedId,
+  { call = rpc, enabled = isFeatureEnabled('classrooms') } = {},
+) {
+  if (!enabled) throw new AppError('CLASSROOMS_DISABLED', 'Turmas ainda não estão ativas neste servidor.', 400);
+  let shared;
+  try {
+    shared = await call('classroom_get_shared_flashcard_set_admin', { p_user_id: userId, p_classroom_id: classroomId, p_shared_id: sharedId });
+  } catch (error) {
+    if (['CLASSROOM_NOT_FOUND', 'CLASSROOM_SHARED_NOT_FOUND'].includes(error?.message) || error?.code === 'PGRST202')
+      throw new AppError('FLASHCARD_NOT_FOUND', 'Conjunto compartilhado não encontrado.', 404);
+    throw error;
+  }
+  return {
+    setId: shared.setId,
+    name: shared.name,
+    ownerId: shared.author?.userId || null,
+    ownerLabel: shared.author?.displayName || shared.name,
+    cards: (shared.cards || []).map((card) => ({
+      id: card.id,
+      front_text: card.front,
+      back_text: card.back,
+      status: 'active',
+      note_type: card.noteType || 'basic',
+      note_fields: card.noteFields || {},
+    })),
+  };
+}
+
+export function buildFlashcardsV3Service({
+  store = repository,
+  classroomReader = (userId, classroomId, sharedId) => readSharedClassroomSet(userId, classroomId, sharedId),
+  parse = readApkg,
+} = {}) {
   return {
     listTemplates: (userId) => store.listTemplates(userId),
     saveTemplate: (userId, id, body) => store.saveTemplate(userId, id, validateTemplateSave(body)),

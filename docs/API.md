@@ -261,3 +261,22 @@ Com `SERVE_FRONTEND=true` (padrão), o mesmo servidor entrega `frontend/pages`, 
 | POST | `/api/flashcards/import/apkg?mode=preview|create&id=&name=&templateBase=` | Corpo `application/octet-stream` com até 40 MB. `preview` só lê; `create` guarda as imagens e o baralho |
 
 `GET /api/flashcards/sets/:id` e a fila de revisão passam a incluir `note_type`, `note_fields`, `origin_label` e `media:[{name, mime, url}]`, com URL assinada válida por 1 h.
+
+
+## Gerações reutilizáveis (`FEATURE_GENERATION_REUSE`)
+
+`POST /api/materials/:id/summaries` e `POST /api/materials/:id/question-batches` aceitam dois campos opcionais:
+
+- `reuse: true`: aceita um resultado equivalente já pronto;
+- `classroomId`: escopo de turma (só professor ou monitor iniciam).
+
+A resposta continua `202 {jobId, materialId}`, agora com `generation: {id, decision: 'start'|'join'|'reuse'}`. Com `join` ou `reuse`, o `jobId` é o do job equivalente, que pode já estar concluído.
+
+Erros:
+
+| Código | Status | Significado |
+| --- | --- | --- |
+| `GENERATION_BUDGET_EXCEEDED` | 429 | Orçamento diário de gerações esgotado. |
+| `GENERATION_CLASSROOM_STAFF_ONLY` | 403 | Na turma, só professor ou monitor iniciam uma geração. |
+| `GENERATION_SOURCE_FORBIDDEN` | 409 | Fonte não confirmada ou não publicada. |
+| `GENERATION_SCOPE_FORBIDDEN` | 403 | Sem acesso ao escopo. |

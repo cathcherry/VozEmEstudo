@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { createSupabaseHttpFixture } from './fixtures/supabase-http.fixture.js';
 import { identities, resourceIds } from './fixtures/ownership.fixture.js';
 import { revisionIds } from './fixtures/academic-db.fixture.js';
+import { migrateClassrooms } from './fixtures/classroom-db.fixture.js';
 
 const migration = readFileSync(new URL('../../database/migrations/20261121160000_generation_reuse.sql', import.meta.url), 'utf8');
 
@@ -20,7 +21,9 @@ test('generation reuse over HTTP: concurrent requests share one job, reuse on re
     AI_DAILY_GENERATION_LIMIT: '3',
     MOCK_EXTERNAL_SERVICES: 'true',
   });
-  const { db } = await f.getDatabase();
+  const database = await f.getDatabase();
+  const { db } = database;
+  await migrateClassrooms(database);
   await db.exec(migration);
   f.state.tables.ai_generations = [];
   for (const name of Object.keys(f.state.tables)) f.state.tables[name] = (await db.query('select * from public.' + name)).rows;
