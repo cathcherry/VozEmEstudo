@@ -88,7 +88,7 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
         b.addEventListener('click', async () => {
           b.disabled = true;
           try {
-            await handler();
+            await handler(b);
           } catch (error) {
             status.textContent = error.message || 'Não foi possível concluir.';
           } finally {
@@ -98,12 +98,13 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
         actions.append(b);
       };
       button('Ver cartões', async () => onSelect(set.id));
-      button('Renomear', async () => {
+      button('Renomear', async (opener) => {
         const name = await askText({
           title: 'Renomear conjunto',
           label: 'Nome do conjunto',
           value: set.name,
           confirmLabel: 'Salvar nome',
+          opener,
           maxLength: 120,
         });
         if (!name || name === set.name) return;

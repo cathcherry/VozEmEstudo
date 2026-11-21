@@ -5,7 +5,7 @@ let counter = 0;
 
 /**
  * Asks for one line of text. Resolves with the trimmed value, or null when cancelled.
- * @param {{title: string, label: string, value?: string, confirmLabel?: string, maxLength?: number, hint?: string}} options
+ * @param {{title: string, label: string, value?: string, confirmLabel?: string, maxLength?: number, hint?: string, opener?: HTMLElement}} options
  */
 export function askText({
   title,
@@ -14,8 +14,11 @@ export function askText({
   confirmLabel = 'Salvar',
   maxLength = 120,
   hint = '',
+  opener: requestedOpener = null,
 }) {
-  const opener = document.activeElement;
+  // Pass the control that opened the dialog: a caller may disable it meanwhile, and a disabled
+  // control loses focus (document.activeElement becomes <body>).
+  const opener = requestedOpener || document.activeElement;
   const id = `app-dialog-${++counter}`;
   const dialog = document.createElement('dialog');
   dialog.className = 'settings-dialog app-dialog';
