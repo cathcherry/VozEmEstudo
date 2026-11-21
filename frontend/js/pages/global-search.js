@@ -1,3 +1,4 @@
+import { t as translate } from '../i18n/i18n.js';
 import { searchLibrary } from '../api/search.api.js';
 import { listMaterials } from '../api/material.api.js';
 import { materialHref } from '../utils/library-ui.js';
@@ -66,8 +67,8 @@ export function resultGroups(result) {
  */
 export function initGlobalSearch({ form, main, heading, notes = null, openNotes = null }) {
   const input = form.querySelector('input[type=search]');
-  input.setAttribute('aria-label', 'Buscar em aulas, questões e transcrições');
-  input.placeholder = 'Buscar aulas, questões e transcrições';
+  input.setAttribute('aria-label', translate('search.label'));
+  input.placeholder = translate('search.placeholder');
   input.setAttribute('role', 'combobox');
   input.setAttribute('aria-autocomplete', 'list');
   input.setAttribute('aria-expanded', 'false');

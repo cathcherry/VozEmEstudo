@@ -519,3 +519,29 @@ body[data-profile-editing] .account-page .profile-block-grid > .profile-block {
 .study-preset[aria-pressed='true'] strong::after {
   content: ' ✓';
 }
+
+/* ---- Aparência: interface language ------------------------------------------------------- */
+.language-section .language-row {
+  max-width: 520px;
+}
+.language-section .language-note {
+  max-width: 68ch;
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Phones: the page name beside ☰ keeps to one line in every language (CJK used to wrap by
+   character in the fixed 44 px slot). */
+@media (max-width: 600px) {
+  .site-header.app-topbar .topbar-title {
+    flex: 0 1 auto;
+    min-width: 44px;
+  }
+  .site-header.app-topbar .topbar-page-label {
+    overflow: hidden;
+    max-width: 40vw;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

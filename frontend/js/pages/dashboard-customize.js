@@ -2,12 +2,12 @@
 // their column and sets the card density. Every change applies at once (the page itself is the
 // preview) and is saved to the account; "Restaurar padrão" brings back the default layout.
 import { getFeatureFlags } from '../utils/feature-flags.js';
+import { t } from '../i18n/i18n.js';
 import { cachedCloudState, loadCloudState, saveCloudState } from '../utils/profile-cloud.js';
 import {
   DASHBOARD_LAYOUT_KEY,
   DASHBOARD_UNITS,
   DASHBOARD_WIDGETS,
-  UNIT_LABELS,
   applyDashboardLayout,
   defaultDashboardLayout,
   isDefaultDashboardLayout,
@@ -44,15 +44,18 @@ export async function initDashboardCustomize({ owner }) {
     list.replaceChildren();
     for (const column of ['main', 'rail']) {
       const group = make('section', null, 'customize-group');
-      const heading = make('h3', column === 'main' ? 'Coluna principal' : 'Coluna lateral');
+      const heading = make(
+        'h3',
+        t(column === 'main' ? 'customize.mainColumn' : 'customize.sideColumn'),
+      );
       heading.id = `customize-${column}`;
       group.setAttribute('aria-labelledby', heading.id);
       const items = make('ol', null, 'customize-units');
       if (column === 'main') {
         const fixed = make('li', null, 'customize-unit is-fixed');
         fixed.append(
-          make('strong', 'Continuar estudando'),
-          make('span', 'Sempre no topo', 'customize-note'),
+          make('strong', t('dashboard.continue')),
+          make('span', t('customize.alwaysOnTop'), 'customize-note'),
         );
         items.append(fixed);
       }
@@ -60,7 +63,8 @@ export async function initDashboardCustomize({ owner }) {
       order.forEach((unit, index) => {
         const item = make('li', null, 'customize-unit');
         item.dataset.unit = unit;
-        const title = make('strong', UNIT_LABELS[unit]);
+        const unitLabel = t(`widget.${unit}`);
+        const title = make('strong', unitLabel);
         title.id = `customize-unit-${unit}`;
         const toggles = make('div', null, 'customize-toggles');
         for (const widget of DASHBOARD_WIDGETS.filter((candidate) => candidate.unit === unit)) {
@@ -77,21 +81,23 @@ export async function initDashboardCustomize({ owner }) {
               `[data-widget-toggle="${widget.id}"]`,
             ),
           );
-          const caption = make('span', unit === 'plan' ? widget.label : 'Mostrar');
+          const caption = make(
+            'span',
+            unit === 'plan' ? t(`widget.${widget.id}`) : t('customize.show'),
+          );
           label.append(input, caption);
-          if (!available)
-            label.append(make('span', 'Recurso desligado neste servidor', 'customize-note'));
+          if (!available) label.append(make('span', t('customize.off'), 'customize-note'));
           toggles.append(label);
         }
         const moves = make('div', null, 'customize-moves');
-        for (const [direction, text, symbol] of [
-          [-1, 'para cima', '↑'],
-          [1, 'para baixo', '↓'],
+        for (const [direction, key, symbol] of [
+          [-1, 'customize.moveUp', '↑'],
+          [1, 'customize.moveDown', '↓'],
         ]) {
           const button = make('button', symbol, 'icon-action customize-move');
           button.type = 'button';
           button.dataset.move = `${unit}:${direction}`;
-          button.setAttribute('aria-label', `Mover ${UNIT_LABELS[unit]} ${text}`);
+          button.setAttribute('aria-label', t(key, { label: unitLabel }));
           button.disabled = direction < 0 ? index === 0 : index === order.length - 1;
           button.addEventListener('click', () => {
             const next = moveUnit(layout, unit, direction);
@@ -122,14 +128,12 @@ export async function initDashboardCustomize({ owner }) {
     edited = true;
     layout = applyDashboardLayout(next);
     render(focus);
-    say('Salvando…');
+    say(t('common.saving'));
     const copy = structuredClone(layout);
     saving = saving.then(async () => {
       const synced = await saveCloudState(owner, DASHBOARD_LAYOUT_KEY, copy);
       say(
-        synced
-          ? 'Salvo na sua conta.'
-          : 'Salvo neste dispositivo. A sincronização será feita depois.',
+        synced ? t('customize.saved') : t('customize.savedLocal'),
         synced ? 'success' : 'warning',
       );
     });
@@ -137,7 +141,7 @@ export async function initDashboardCustomize({ owner }) {
 
   reset?.addEventListener('click', () => {
     update(defaultDashboardLayout(), '[data-customize-done]');
-    say('Layout padrão restaurado.', 'success');
+    say(t('customize.restored'), 'success');
   });
   trigger?.addEventListener('click', () => {
     say('');

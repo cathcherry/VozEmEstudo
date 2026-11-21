@@ -22,9 +22,12 @@
     screenReaderMode: false,
     // Card spacing in study pages: 'comfortable' (default) or 'compact' (more on screen).
     density: 'comfortable',
+    // Interface language only (menus, buttons, messages); never lesson content.
+    language: 'pt-BR',
   });
   const NAVIGATIONS = ['sidebar', 'dock'];
   const DENSITIES = ['comfortable', 'compact'];
+  const LANGUAGES = ['pt-BR', 'en', 'es', 'zh-CN'];
   const READ_ALOUD = ['off', 'icons', 'everywhere'];
   const SPEECH_RATES = ['slow', 'normal', 'fast', 'faster'];
   const RULERS = ['off', 'ruler', 'focus'];
@@ -99,6 +102,7 @@
   }
   function applyUi(prefs) {
     for (const key of Object.keys(defaults)) root.dataset[key] = String(prefs[key]);
+    root.lang = prefs.language;
     // Bottom dock navigation: always in focus mode (auto-hidden), or chosen as the normal
     // navigation in Aparência (always visible). The sidebar is not shown in either case.
     root.dataset.navDock = String(prefs.focusMode || prefs.navigation === 'dock');
@@ -224,6 +228,7 @@
     if (RULERS.includes(value?.readingRuler)) result.readingRuler = value.readingRuler;
     if (NAVIGATIONS.includes(value?.navigation)) result.navigation = value.navigation;
     if (DENSITIES.includes(value?.density)) result.density = value.density;
+    if (LANGUAGES.includes(value?.language)) result.language = value.language;
     if (READ_ALOUD.includes(value?.readAloud)) result.readAloud = value.readAloud;
     else if (value?.readAloud === 'on') result.readAloud = 'icons';
     if (SPEECH_RATES.includes(value?.speechRate)) result.speechRate = value.speechRate;
@@ -302,6 +307,7 @@
       speechRate: current.speechRate,
       screenReaderMode: current.screenReaderMode,
       density: current.density,
+      language: current.language,
     });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);

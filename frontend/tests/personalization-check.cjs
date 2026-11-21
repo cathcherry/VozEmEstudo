@@ -387,6 +387,80 @@ async function main() {
       );
     }
 
+    // ---------- Interface language ---------------------------------------------------------
+    {
+      const langData = state();
+      langData.profileState = [];
+      const lang = await openApp(browser, base, allFlags, langData);
+      const p = lang.page;
+      await p.goto(base + '/painel.html');
+      await ready(p);
+      assert.equal(await p.evaluate(() => document.documentElement.lang), 'pt-BR');
+      assert.equal(
+        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
+        'Revisar',
+      );
+      await p.goto(base + '/aparencia.html');
+      await Promise.all([p.waitForNavigation(), p.locator('#setting-language').selectOption('en')]);
+      await p.locator('h1', { hasText: 'Appearance' }).waitFor();
+      assert(
+        await p.locator('[data-language-partial]').isVisible(),
+        'says the translation is partial',
+      );
+      await p.goto(base + '/painel.html');
+      await ready(p);
+      assert.equal(await p.evaluate(() => document.documentElement.lang), 'en');
+      assert.equal(
+        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
+        'Review',
+      );
+      assert.equal(
+        await p.locator('.primary-navigation a[href="./revisar.html"]').getAttribute('aria-label'),
+        'Review',
+      );
+      assert.match(
+        await p.locator('[data-cards-actions] .button-link').textContent(),
+        /^Review 5 cards$/,
+      );
+      assert.match(await p.locator('[data-overview]').textContent(), /lessons in your library/);
+      // Lesson content is never translated.
+      assert.match(
+        await p.locator('.dash-continue').textContent(),
+        /Fotossíntese e respiração celular/,
+      );
+      await p.locator('[data-dashboard-customize]').click();
+      await p.getByRole('button', { name: 'Move Your subjects up' }).waitFor();
+      await p.keyboard.press('Escape');
+      await p.locator('.account-menu-trigger').click();
+      assert.equal(await p.getByRole('button', { name: 'Sign out' }).count(), 1);
+      await p.keyboard.press('Escape');
+      await settle(p);
+      await axeCheck(p, 'body', 'Início em inglês');
+      await shot(p, 'inicio-en-1440');
+      // Saved with the other preferences of the account.
+      await until(
+        () =>
+          JSON.parse(
+            row(langData, 'user-dashboard', 'preferences').data['audioestudo-ui-preferences'],
+          ).language === 'en',
+        'language saved to the account',
+      );
+      await p.goto(base + '/aparencia.html');
+      await Promise.all([
+        p.waitForNavigation(),
+        p.locator('#setting-language').selectOption('pt-BR'),
+      ]);
+      await p.locator('h1', { hasText: 'Aparência' }).waitFor();
+      assert.equal(
+        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
+        'Revisar',
+      );
+      await lang.context.close();
+      record(
+        'Idioma da interface: troca e recarrega, lang do documento, menus e mensagens dinâmicas traduzidos, conteúdo das aulas intacto, salvo na conta, volta ao português',
+      );
+    }
+
     // ---------- Phone: the sheet fits and the essential card stays -------------------------
     const phone = await openApp(browser, base, allFlags, state(), { width: 390, height: 844 });
     await phone.page.goto(base + '/painel.html');

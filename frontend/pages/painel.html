@@ -12,51 +12,51 @@
 <div class="header-navigation"><a class="appearance-shortcut" href="./aparencia.html" aria-label="Aparência e temas" title="Aparência e temas"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z"/></svg></a><div class="focus-reading-tools" data-focus-reading-tools hidden><button type="button" data-focus-size="down" aria-label="Diminuir texto">A−</button><button type="button" data-focus-size="up" aria-label="Aumentar texto">A+</button></div>
 <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/></svg><span data-focus-toggle-label>Modo foco</span></button>
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
-<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1>Olá<span data-first-name></span></h1><span class="dash-date" data-today></span></div><div class="dashboard-heading-actions"><button type="button" class="secondary-action dash-customize-trigger" data-dashboard-customize aria-haspopup="dialog" hidden><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Personalizar</span></button><a class="primary-action button-link" href="./nova-transcricao.html">Nova transcrição <span aria-hidden="true">+</span></a></div></header>
+<main class="article-content dash-home-page" id="conteudo-principal" tabindex="-1"><header class="article-heading dashboard-heading"><div><h1><span data-i18n="dashboard.hello">Olá</span><span data-first-name></span></h1><span class="dash-date" data-today></span></div><div class="dashboard-heading-actions"><button type="button" class="secondary-action dash-customize-trigger" data-dashboard-customize aria-haspopup="dialog" hidden><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="dashboard.customize">Personalizar</span></button><a class="primary-action button-link" href="./nova-transcricao.html"><span data-i18n="nav.newTranscription">Nova transcrição</span> <span aria-hidden="true">+</span></a></div></header>
 <div class="dash-home" data-dashboard-data aria-busy="true">
 <div class="dash-main">
-<section class="dash-continue" aria-labelledby="continue-heading"><div class="dash-card-head"><h2 id="continue-heading">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action">Aulas em estudo</a></div><div data-continue-list></div></section>
+<section class="dash-continue" aria-labelledby="continue-heading"><div class="dash-card-head"><h2 id="continue-heading" data-i18n="dashboard.continue">Continuar estudando</h2><a href="./historico.html?study=active" class="text-action" data-i18n="dashboard.inStudy">Aulas em estudo</a></div><div data-continue-list></div></section>
 <div class="dash-pair" data-plan-section data-widget-unit="plan" hidden>
 <section class="dash-card" data-tasks-widget data-widget="tasks" hidden aria-labelledby="tasks-heading">
-<div class="dash-card-head"><h2 id="tasks-heading">Próximas tarefas <span class="dash-count" data-tasks-count hidden></span></h2><a class="text-action" href="./planejar.html#tarefas">Ver todas</a></div>
+<div class="dash-card-head"><h2 id="tasks-heading"><span data-i18n="dashboard.tasks">Próximas tarefas</span> <span class="dash-count" data-tasks-count hidden></span></h2><a class="text-action" href="./planejar.html#tarefas" data-i18n="common.seeAllF">Ver todas</a></div>
 <div class="dash-card-body" data-tasks-preview></div>
 <div class="dash-card-foot" data-tasks-actions></div>
 </section>
 <section class="dash-card" data-cards-widget data-widget="cards" hidden aria-labelledby="cards-heading">
-<div class="dash-card-head"><h2 id="cards-heading">Flashcards <span class="dash-count" data-cards-count hidden></span></h2><a class="text-action" href="./revisar.html#flashcards">Ver todos</a></div>
+<div class="dash-card-head"><h2 id="cards-heading"><span data-i18n="dashboard.flashcards">Flashcards</span> <span class="dash-count" data-cards-count hidden></span></h2><a class="text-action" href="./revisar.html#flashcards" data-i18n="common.seeAllM">Ver todos</a></div>
 <div class="dash-card-body" data-cards-preview></div>
 <div class="dash-card-foot" data-cards-actions></div>
 </section>
 </div>
-<section class="dash-card dash-recent focus-secondary" data-recent-section data-widget="recent" data-widget-unit="recent" aria-labelledby="recent-heading"><div class="dash-card-head"><h2 id="recent-heading">Aulas recentes</h2><a href="./historico.html" class="text-action">Abrir Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div><div class="dash-topics" data-topics-section><h3>Mais revisitados</h3><ol class="studied-topics topic-list" data-topic-list></ol></div></section>
+<section class="dash-card dash-recent focus-secondary" data-recent-section data-widget="recent" data-widget-unit="recent" aria-labelledby="recent-heading"><div class="dash-card-head"><h2 id="recent-heading" data-i18n="dashboard.recent">Aulas recentes</h2><a href="./historico.html" class="text-action" data-i18n="dashboard.openLibrary">Abrir Biblioteca</a></div><p class="dashboard-overview" data-overview role="status" aria-label="Resumo da Biblioteca" data-i18n="dashboard.libraryLoading" data-i18n-attr="aria-label:dashboard.librarySummary">Carregando seus materiais…</p><div class="dash-recent-grid" data-recent-list></div><div class="dash-topics" data-topics-section><h3 data-i18n="dashboard.mostVisited">Mais revisitados</h3><ol class="studied-topics topic-list" data-topic-list></ol></div></section>
 </div>
 <aside class="dash-rail" aria-label="Semana, agenda e disciplinas">
 <section class="dash-card dash-rail-week" data-week-widget data-widget="week" data-widget-unit="week" hidden aria-labelledby="week-heading">
-<div class="dash-card-head"><h2 id="week-heading">Sua semana</h2><a class="text-action" href="./planejar.html#tempo">Detalhes</a></div>
+<div class="dash-card-head"><h2 id="week-heading" data-i18n="dashboard.week">Sua semana</h2><a class="text-action" href="./planejar.html#tempo" data-i18n="dashboard.details">Detalhes</a></div>
 <div class="dash-card-body" data-week-body></div>
 </section>
 <section class="dash-card dash-rail-agenda" data-events-widget data-widget="agenda" data-widget-unit="agenda" hidden aria-labelledby="events-heading">
-<div class="dash-card-head"><h2 id="events-heading" data-agenda-month>Agenda</h2><a class="text-action" href="./planejar.html#calendario">Calendário</a></div>
+<div class="dash-card-head"><h2 id="events-heading" data-agenda-month>Agenda</h2><a class="text-action" href="./planejar.html#calendario" data-i18n="dashboard.calendar">Calendário</a></div>
 <div class="dash-card-body" data-events-preview></div>
 <div class="dash-card-foot" data-events-actions></div>
 </section>
 <section class="dash-card dash-rail-subjects focus-secondary" data-widget="subjects" data-widget-unit="subjects" aria-labelledby="subjects-heading">
-<div class="dash-card-head"><h2 id="subjects-heading">Suas disciplinas</h2></div>
+<div class="dash-card-head"><h2 id="subjects-heading" data-i18n="dashboard.subjects">Suas disciplinas</h2></div>
 <div class="subject-shelf" data-subject-list></div>
 </section>
 <section class="dash-card dash-rail-notes focus-secondary" data-notes-widget data-widget="notes" data-widget-unit="notes" hidden aria-labelledby="notes-heading">
-<div class="dash-card-head"><h2 id="notes-heading">Anotações</h2><a class="text-action" href="./revisar.html#anotacoes" data-notes-link>Ver todas</a></div>
+<div class="dash-card-head"><h2 id="notes-heading" data-i18n="dashboard.notes">Anotações</h2><a class="text-action" href="./revisar.html#anotacoes" data-notes-link>Ver todas</a></div>
 <p class="dash-note" data-notes-summary></p>
 </section>
 </aside>
 </div>
 <dialog class="dash-customize" data-dashboard-customize-dialog aria-labelledby="customize-title" aria-describedby="customize-intro">
 <div class="dash-customize-sheet">
-<header class="dash-customize-head"><h2 id="customize-title" tabindex="-1">Personalizar o Início</h2><button class="dialog-close" type="button" data-customize-done aria-label="Fechar">&#215;</button></header>
-<p id="customize-intro" class="dash-customize-intro">Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.</p>
-<label class="dash-customize-density" for="dashboard-density">Espaçamento dos cartões<select id="dashboard-density" data-ui-setting="density"><option value="comfortable">Confortável</option><option value="compact">Compacto</option></select></label>
+<header class="dash-customize-head"><h2 id="customize-title" tabindex="-1" data-i18n="customize.title">Personalizar o Início</h2><button class="dialog-close" type="button" data-customize-done aria-label="Fechar" data-i18n-attr="aria-label:common.close">&#215;</button></header>
+<p id="customize-intro" class="dash-customize-intro" data-i18n="customize.intro">Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.</p>
+<label class="dash-customize-density" for="dashboard-density"><span data-i18n="customize.density">Espaçamento dos cartões</span><select id="dashboard-density" data-ui-setting="density"><option value="comfortable" data-i18n="customize.comfortable">Confortável</option><option value="compact" data-i18n="customize.compact">Compacto</option></select></label>
 <div data-customize-list class="customize-list"></div>
-<footer class="dash-customize-foot"><button type="button" class="text-action" data-customize-reset>Restaurar padrão</button><p class="dash-customize-status" data-customize-status role="status" aria-live="polite"></p><button type="button" class="primary-action" data-customize-done>Concluir</button></footer>
+<footer class="dash-customize-foot"><button type="button" class="text-action" data-customize-reset data-i18n="customize.reset">Restaurar padrão</button><p class="dash-customize-status" data-customize-status role="status" aria-live="polite"></p><button type="button" class="primary-action" data-customize-done data-i18n="customize.done">Concluir</button></footer>
 </div>
 </dialog></main>
 <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>

@@ -3,9 +3,16 @@ import { initReadingRuler } from './reading-ruler.js';
 import { initShortcutsHelp } from './shortcuts.js';
 import { initPageReader } from './page-reader.js';
 import { STUDY_PRESETS, applyStudyPreset, activeStudyPreset } from './study-presets.js';
+import { t, translateDocument } from '../i18n/i18n.js';
 
 const appearance = window.VozAppearance;
 let uiPreferences = appearance.loadUi();
+// The page was translated for this language; another one (chosen here or synced from the
+// account) reloads the page so every message, including dynamic ones, changes together.
+const pageLanguage = uiPreferences.language;
+function reloadIfLanguageChanged() {
+  if (uiPreferences.language !== pageLanguage) location.reload();
+}
 let syncNavigation = () => {};
 let focusDock = null;
 let focusDockTrigger = null;
@@ -25,14 +32,14 @@ function updateControls() {
     }
   });
   document.querySelectorAll('[data-focus-toggle]').forEach((b) => {
-    const name = uiPreferences.focusMode ? 'Sair do modo foco' : 'Modo foco';
+    const name = uiPreferences.focusMode ? t('focus.exit') : t('focus.toggle');
     b.setAttribute('aria-pressed', String(uiPreferences.focusMode));
     b.setAttribute('aria-label', name);
     b.setAttribute('aria-keyshortcuts', 'Alt+F');
     b.dataset.tooltip = name;
     b.removeAttribute('title');
     const label = b.querySelector('[data-focus-toggle-label]');
-    if (label) label.textContent = 'Modo foco';
+    if (label) label.textContent = t('focus.toggle');
   });
   document.querySelectorAll('[data-focus-reading-tools]').forEach((n) => {
     n.hidden = !uiPreferences.focusMode;
@@ -59,22 +66,23 @@ function updateControls() {
 function renderStudyPresets() {
   const host = document.querySelector('[data-study-presets]');
   if (!host || host.childElementCount) return;
-  for (const [id, preset] of Object.entries(STUDY_PRESETS)) {
+  for (const id of Object.keys(STUDY_PRESETS)) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'study-preset';
     button.dataset.studyPreset = id;
     const name = document.createElement('strong');
-    name.textContent = preset.label;
+    name.textContent = t(`presets.${id}`);
     const text = document.createElement('span');
-    text.textContent = preset.description;
+    text.textContent = t(`presets.${id}Text`);
     button.append(name, text);
     button.addEventListener('click', () => {
       const saved = saveUi(applyStudyPreset(uiPreferences, id));
       const status = document.querySelector('[data-study-preset-status]');
-      if (status) status.textContent = `${preset.label} aplicado.`;
+      const applied = t('presets.applied', { label: t(`presets.${id}`) });
+      if (status) status.textContent = applied;
       if (!saved) showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
-      else showToast(`${preset.label} aplicado. Ajuste os detalhes em Leitura e foco.`);
+      else showToast(applied);
     });
     host.append(button);
   }
@@ -82,7 +90,7 @@ function renderStudyPresets() {
 function saveUi(next) {
   // Saved themes store everything except focus mode, so toggling focus keeps the theme active.
   // Focus mode and read-aloud choices are not part of a theme, so they never deselect one.
-  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density'];
+  const notTheme = ['focusMode', 'readAloud', 'speechRate', 'screenReaderMode', 'density', 'language'];
   const changesTheme = Object.keys(appearance.defaults).some(
     (key) => !notTheme.includes(key) && next[key] !== uiPreferences[key],
   );
@@ -98,6 +106,7 @@ function updateUiPreference(key, value) {
   if (!(key in appearance.defaults)) return;
   if (!saveUi({ ...uiPreferences, [key]: value }))
     showToast('Aplicado, mas não foi possível salvar neste navegador.', 'error');
+  if (key === 'language') reloadIfLanguageChanged();
 }
 function showToast(message, type = 'info') {
   toast(message, { type });
@@ -394,6 +403,8 @@ function syncScreenReaderToggle() {
   toggle.setAttribute('aria-pressed', String(uiPreferences.screenReaderMode));
 }
 function initialize() {
+  // Before navigation reads link labels into aria-label/title.
+  translateDocument(document);
   initializeNavigation();
   if (document.body.classList.contains('app-page')) {
     initReadingRuler();
@@ -416,6 +427,10 @@ function initialize() {
     }),
   );
   renderStudyPresets();
+  // Aparência: say plainly that other languages are not complete yet.
+  document.querySelectorAll('[data-language-partial]').forEach((note) => {
+    note.hidden = uiPreferences.language === 'pt-BR';
+  });
   updateControls();
   markTheme();
   document
@@ -670,6 +685,7 @@ function initialize() {
     markTheme();
     populateColors();
     renderProfiles();
+    reloadIfLanguageChanged();
   }
   window.addEventListener('voz-user-change', () => renderProfiles());
   window.addEventListener('voz-preferences-change', refresh);

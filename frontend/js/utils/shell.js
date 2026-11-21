@@ -6,6 +6,7 @@ import { readProfileMedia } from './profile-storage.js';
 import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud } from './preference-cloud.js';
 import { getFeatureFlags } from './feature-flags.js';
+import { t } from '../i18n/i18n.js';
 
 /** Shows Revisar/Planejar in the navigation when at least one of their tools is enabled. */
 export async function revealStudyNavigation() {
@@ -37,7 +38,7 @@ export async function initAuthenticatedShell() {
   document.querySelectorAll('.sidebar-settings a[href="./aparencia.html"]').forEach((link) => {
     link.href = './configuracoes.html';
     const label = link.querySelector('span');
-    if (label) label.textContent = 'Configurações';
+    if (label) label.textContent = t('nav.settings');
   });
   setStudyUser(session.user.id);
   // Preferences first: they affect what the user sees, and the sync must track local changes
@@ -73,7 +74,7 @@ export function updateUserIdentity(user) {
 }
 
 function setupAccountMenus(user) {
-  const displayName = user?.user_metadata?.display_name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Minha conta';
+  const displayName = user?.user_metadata?.display_name || user?.user_metadata?.full_name || user?.user_metadata?.name || t('nav.myAccount');
   document.querySelectorAll('.account-link').forEach((oldLink, index) => {
     if (oldLink.dataset.accountMenuReady) return;
     const wrapper = document.createElement('div');
@@ -81,7 +82,7 @@ function setupAccountMenus(user) {
     const trigger = document.createElement('button');
     trigger.type = 'button';
     trigger.className = 'account-link account-menu-trigger';
-    trigger.setAttribute('aria-label', `Abrir menu da conta de ${displayName}`);
+    trigger.setAttribute('aria-label', t('account.openMenu', { name: displayName }));
     trigger.setAttribute('aria-expanded', 'false');
     const menuId = `account-menu-${index + 1}`;
     trigger.setAttribute('aria-controls', menuId);
@@ -100,15 +101,15 @@ function setupAccountMenus(user) {
     identity.append(name, email);
     const profile = document.createElement('a');
     profile.href = './conta.html';
-    profile.textContent = 'Perfil';
+    profile.textContent = t('account.profile');
     const settings = document.createElement('a');
     settings.href = './configuracoes.html';
-    settings.textContent = 'Configurações';
+    settings.textContent = t('nav.settings');
     const divider = document.createElement('hr');
     const logout = document.createElement('button');
     logout.type = 'button';
     logout.dataset.logout = '';
-    logout.textContent = 'Sair da conta';
+    logout.textContent = t('account.logout');
     const message = document.createElement('span');
     message.className = 'account-menu-status';
     message.dataset.logoutMessage = '';
