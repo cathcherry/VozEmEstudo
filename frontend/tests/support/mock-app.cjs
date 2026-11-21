@@ -550,6 +550,24 @@ async function setup(context, base, flags, data, options = {}) {
         activeSession: null,
       });
     }
+    if (p === '/api/study/history') {
+      if (data.historyDown) return json({ error: { code: 'STUDY_SCHEMA_REQUIRED', message: 'off' } }, 503);
+      const days = Number(url.searchParams.get('days')) || 84;
+      data.historyRequests = [...(data.historyRequests || []), days];
+      const today = new Date();
+      const list = Array.from({ length: days }, (_, i) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - (days - 1 - i));
+        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        // Deterministic pattern: weekdays studied, varying length; nothing on Sundays.
+        const seconds = data.emptyHistory || d.getDay() === 0 ? 0 : ((i * 37) % 5) * 300 * (1 + ((Math.floor(i / 7) * 5) % 4));
+        return { date: iso, seconds, sessions: seconds ? 1 : 0 };
+      });
+      return json({
+        from: list[0].date, to: list.at(-1).date, timezone: 'America/Sao_Paulo', goalMinutes: 150, days: list,
+        topLessons: data.emptyHistory ? [] : [{ materialId: 'l-foto', seconds: 18000 }, { materialId: 'gone', seconds: 600 }],
+      });
+    }
     if (p === '/api/study/settings') return json({ ok: true });
     if (p === '/api/quiz-sessions' && method === 'GET') return json(data.quizSessions);
     if (p === '/api/study/sessions' && method === 'POST') {

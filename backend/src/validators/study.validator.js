@@ -1,6 +1,9 @@
 import { z } from 'zod';
 const uuid = z.string().uuid();
 export const studyId = (value) => uuid.parse(value);
+export const validateHistoryQuery = (query) => z.object({
+  days: z.coerce.number().int().refine((n) => n === 84 || n === 371).default(84),
+}).strict().parse(query);
 export const validateProgressQuery = (body) => z.object({
   offset: z.coerce.number().int().min(0).max(1000000).default(0),
 }).strict().parse(body);

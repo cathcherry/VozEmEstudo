@@ -117,6 +117,7 @@ export default {
   "Ainda não há questões desta aula.": "There are no questions for this lesson yet.",
   "Ainda não há resumo desta aula.": "This lesson has no summary yet.",
   "Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.": "This lesson has no summary yet. Use “Generate summary” to create the first one.",
+  "Ainda não há tempo registrado nestas semanas. Comece um bloco de foco e ele aparece aqui.": "No time recorded in these weeks yet. Start a focus block and it shows up here.",
   "Ainda não iniciado": "Not started yet",
   "ainda não respondidas": "not answered yet",
   "Ainda sem temas salvos.": "No saved themes yet.",
@@ -211,6 +212,7 @@ export default {
   "Atalhos de teclado": "Keyboard shortcuts",
   "Até": "Due",
   "Até 50 revisões mais recentes.": "Up to the 50 most recent reviews.",
+  "Atingida": "Reached",
   "Ativar modo para leitores de tela": "Turn on screen reader mode",
   "Ativos": "Active",
   "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tem espaçamento mais aberto; OpenDyslexic tem base mais pesada, pensada para dislexia. Vale testar na prévia.": "Atkinson Hyperlegible tells similar letters apart (I, l, 1); Lexend has wider spacing; OpenDyslexic has a heavier base, designed for dyslexia. Try them in the preview.",
@@ -233,9 +235,11 @@ export default {
   "Aula pronta para estudar": "Lesson ready to study",
   "Aula relacionada": "Related lesson",
   "Aula relacionada (opcional)": "Related lesson (optional)",
+  "Aula removida": "Removed lesson",
   "Aulas": "Lessons",
   "Aulas em estudo": "Lessons in progress",
   "Aulas estudadas": "Lessons studied",
+  "Aulas mais estudadas": "Lessons studied most",
   "Aulas recentes": "Recent lessons",
   "Aulas selecionadas": "Selected lessons",
   "Aulas sem unidade": "Lessons without a unit",
@@ -314,6 +318,7 @@ export default {
   "Cancelar": "Cancel",
   "Carregando histórico…": "Loading history…",
   "Carregando lista…": "Loading list…",
+  "Carregando o ano…": "Loading the year…",
   "Carregando o diagnóstico…": "Loading the diagnosis…",
   "Carregando os recursos disponíveis…": "Loading available resources…",
   "Carregando questão...": "Loading question...",
@@ -535,6 +540,7 @@ export default {
   "Detalhes do processamento": "Processing details",
   "Detectar automaticamente": "Detect automatically",
   "Diagnóstico da tentativa": "Attempt diagnosis",
+  "Dias com estudo": "Days studied",
   "Dias do mês": "Days of the month",
   "Difícil": "Hard",
   "Dificuldade": "Difficulty",
@@ -817,6 +823,7 @@ export default {
   "Hoje": "Today",
   "Horário removido.": "Study time removed.",
   "Horário vinculado a uma tarefa.": "Study time linked to a task.",
+  "Horas por semana.": "Hours per week.",
   "Hugging Face": "Hugging Face",
   "Ícone": "Icon",
   "Ícones discretos": "Subtle icons",
@@ -926,6 +933,7 @@ export default {
   "Localização": "Breadcrumb",
   "Longa": "Long",
   "Longas": "Long",
+  "Mais (1 h ou mais por dia)": "More (1 h or more a day)",
   "Mais detalhes: subobjetivo, aula e link": "More details: sub-goal, lesson and link",
   "Mais lenta": "Slower",
   "Mais opções": "More options",
@@ -935,6 +943,7 @@ export default {
   "Mais revisitados": "Most revisited",
   "Mantenha esta aba visível e em foco para iniciar.": "Keep this tab visible and in focus to start.",
   "Manter versão deste navegador em conflitos": "Keep this browser's version in conflicts",
+  "Mapa do ano (role para os lados)": "Year map (scroll sideways)",
   "Máquina de escrever": "Typewriter",
   "Marcar aula como estudada": "Mark lesson as studied",
   "Marcos de estudo": "Study milestones",
@@ -946,8 +955,11 @@ export default {
   "Material de estudo": "Study material",
   "Máximo — 200%": "Maximum — 200%",
   "média": "medium",
+  "Média por semana": "Weekly average",
   "Médio": "Medium",
   "Médio — 115%": "Medium — 115%",
+  "Melhor semana": "Best week",
+  "Menos": "Less",
   "Menos de 1 segundo": "Under 1 second",
   "Menos de 5 minutos: em geral 3 a 5 questões.": "Under 5 minutes: usually 3 to 5 questions.",
   "Menos estímulos visuais": "Fewer visual stimuli",
@@ -957,6 +969,7 @@ export default {
   "Mês anterior": "Previous month",
   "Mesa digital": "Digital desk",
   "Mesclar conjuntos": "Merge sets",
+  "Meta": "Goal",
   "Meta da semana alcançada. 🎉": "Weekly goal reached. 🎉",
   "Meta e fuso salvos na conta.": "Goal and time zone saved to your account.",
   "Meta e sincronização": "Goal and sync",
@@ -1039,6 +1052,7 @@ export default {
   "Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.": "Couldn't load the media. Renew access or try the other available format.",
   "Não foi possível carregar as revisões.": "Couldn't load the reviews.",
   "Não foi possível carregar o andamento da conta. O histórico local foi preservado.": "Couldn't load account progress. Local history was kept.",
+  "Não foi possível carregar o ano agora.": "The year could not be loaded right now.",
   "Não foi possível carregar o diagnóstico.": "Couldn't load the diagnosis.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "Couldn't load the history. Select the card again to retry.",
   "Não foi possível carregar os conjuntos agora.": "Couldn't load the sets right now.",
@@ -1226,6 +1240,7 @@ export default {
   "Ocultar": "Hide",
   "Ocultar do perfil": "Hide from profile",
   "Ocultar guia": "Hide guide",
+  "Ocultar o ano": "Hide the year",
   "Ocultar senha": "Hide password",
   "Oculto": "Hidden",
   "Olá": "Hello",
@@ -1595,7 +1610,9 @@ export default {
   "Sem tags": "No tags",
   "Sem tarefas": "No tasks",
   "Sem unidade": "No unit",
+  "Semana de": "Week of",
   "Semana, agenda e disciplinas": "Week, schedule and subjects",
+  "Semanas na meta": "Weeks on goal",
   "Senha": "Password",
   "Senha alterada com sucesso.": "Password changed successfully.",
   "Senha alterada com sucesso. Volte ao login e entre com sua nova senha.": "Password changed successfully. Go back to sign in and use your new password.",
@@ -1614,6 +1631,7 @@ export default {
   "Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no": "Your email and sign-in method appear in Account details. Name, photo, cover and bio can be changed in your",
   "Seu perfil": "Your profile",
   "Seu próximo capítulo começa aqui.": "Your next chapter starts here.",
+  "Seu ritmo": "Your pace",
   "Seu uso da gravação": "Your use of the recording",
   "Seus dados": "Your data",
   "Sex": "Fri",
@@ -1700,6 +1718,8 @@ export default {
   "Temas salvos": "Saved themes",
   "Temas, cores, fontes, tamanho do texto, espaçamento e movimento.": "Themes, colors, fonts, text size, spacing and motion.",
   "Templates": "Templates",
+  "Tempo": "Time",
+  "Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.": "Time credited over the last 12 weeks. Only time with the timer running counts.",
   "Tempo da sessão": "Session time",
   "Tempo de estudo": "Study time",
   "Tempo do bloco": "Block time",
@@ -1813,7 +1833,9 @@ export default {
   "Velocidade de reprodução": "Playback speed",
   "Ver andamento": "View progress",
   "Ver cartões": "View cards",
+  "Ver em tabela": "Show as table",
   "Ver erro": "View error",
+  "Ver o ano": "Show the year",
   "Ver pendentes": "View unanswered",
   "Ver questões": "View questions",
   "Ver recomendação de quantidade": "See recommended number",
@@ -1917,6 +1939,10 @@ export default {
    "Warning: not sent to your account yet: {0}. If you delete now, these changes will be lost."
   ],
   [
+   "Últimas {0} semanas. Melhor semana: {1}. Meta: {2} por semana. A tabela abaixo tem todos os valores.",
+   "Last {0} weeks. Best week: {1}. Goal: {2} per week. The table below has every value."
+  ],
+  [
    "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
    "{0} of {1} were generated: the model returned some in an invalid format; generate more to complete the list."
   ],
@@ -1939,6 +1965,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Times in this device's time zone ({0}). Task deadlines show as all-day."
+  ],
+  [
+   "Horas por semana. Linha tracejada: meta de {0}; barras escuras atingiram a meta.",
+   "Hours per week. Dashed line: goal of {0}; dark bars reached the goal."
   ],
   [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
@@ -1973,6 +2003,10 @@ export default {
    "{0} cards saved. They join your review on Home."
   ],
   [
+   "Últimos 12 meses: {0} dias com estudo, {1} no total.",
+   "Last 12 months: {0} days studied, {1} in total."
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0} Repeat the same rating to try again."
   ],
@@ -1991,6 +2025,10 @@ export default {
   [
    "{0} linhas ignoradas: sem pergunta ou sem resposta.",
    "{0} lines skipped: missing question or answer."
+  ],
+  [
+   "Últimos 12 meses: {0} dia com estudo, {1} no total.",
+   "Last 12 months: {0} day studied, {1} in total."
   ],
   [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
@@ -2093,12 +2131,20 @@ export default {
    "{0} won't {1}: {2} to “No subject”."
   ],
   [
+   "Semana de {0}: {1}, {2} dias com estudo",
+   "Week of {0}: {1}, {2} days studied"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}{3}",
    "{0} of {1} tasks completed · {2}{3}"
   ],
   [
    "Modo {0} aplicado. Dê um nome e salve.",
    "{0} mode applied. Give it a name and save."
+  ],
+  [
+   "Semana de {0}: {1}, {2} dia com estudo",
+   "Week of {0}: {1}, {2} day studied"
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",

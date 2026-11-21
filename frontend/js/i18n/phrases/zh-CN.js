@@ -117,6 +117,7 @@ export default {
   "Ainda não há questões desta aula.": "此课程还没有题目。",
   "Ainda não há resumo desta aula.": "本课程还没有摘要。",
   "Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.": "本课程还没有摘要。点击“生成摘要”创建第一份。",
+  "Ainda não há tempo registrado nestas semanas. Comece um bloco de foco e ele aparece aqui.": "这几周还没有记录时间。开始一个专注时段，它就会显示在这里。",
   "Ainda não iniciado": "尚未开始",
   "ainda não respondidas": "尚未作答",
   "Ainda sem temas salvos.": "还没有保存的主题。",
@@ -211,6 +212,7 @@ export default {
   "Atalhos de teclado": "键盘快捷键",
   "Até": "截止",
   "Até 50 revisões mais recentes.": "最多显示最近 50 次复习。",
+  "Atingida": "已达成",
   "Ativar modo para leitores de tela": "开启读屏软件模式",
   "Ativos": "启用中",
   "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tem espaçamento mais aberto; OpenDyslexic tem base mais pesada, pensada para dislexia. Vale testar na prévia.": "Atkinson Hyperlegible 能区分相似字母（I、l、1）；Lexend 间距更宽；OpenDyslexic 字母底部更粗重，专为读写障碍设计。可在预览中试试。",
@@ -233,9 +235,11 @@ export default {
   "Aula pronta para estudar": "课程已可学习",
   "Aula relacionada": "相关课程",
   "Aula relacionada (opcional)": "相关课程（可选）",
+  "Aula removida": "已删除的课程",
   "Aulas": "课程",
   "Aulas em estudo": "学习中的课程",
   "Aulas estudadas": "已学课程",
+  "Aulas mais estudadas": "学习最多的课程",
   "Aulas recentes": "最近的课程",
   "Aulas selecionadas": "已选课程",
   "Aulas sem unidade": "未分单元的课程",
@@ -314,6 +318,7 @@ export default {
   "Cancelar": "取消",
   "Carregando histórico…": "正在加载记录…",
   "Carregando lista…": "正在加载列表…",
+  "Carregando o ano…": "正在加载全年…",
   "Carregando o diagnóstico…": "正在加载诊断…",
   "Carregando os recursos disponíveis…": "正在加载可用资源…",
   "Carregando questão...": "正在加载题目...",
@@ -535,6 +540,7 @@ export default {
   "Detalhes do processamento": "处理详情",
   "Detectar automaticamente": "自动检测",
   "Diagnóstico da tentativa": "答题诊断",
+  "Dias com estudo": "学习天数",
   "Dias do mês": "本月日期",
   "Difícil": "困难",
   "Dificuldade": "难度",
@@ -817,6 +823,7 @@ export default {
   "Hoje": "今天",
   "Horário removido.": "学习时间已删除。",
   "Horário vinculado a uma tarefa.": "学习时间已关联到任务。",
+  "Horas por semana.": "每周小时数。",
   "Hugging Face": "Hugging Face",
   "Ícone": "图标",
   "Ícones discretos": "低调图标",
@@ -926,6 +933,7 @@ export default {
   "Localização": "位置",
   "Longa": "长",
   "Longas": "长",
+  "Mais (1 h ou mais por dia)": "多（每天 1 小时或以上）",
   "Mais detalhes: subobjetivo, aula e link": "更多详情：子目标、课程和链接",
   "Mais lenta": "较慢",
   "Mais opções": "更多选项",
@@ -935,6 +943,7 @@ export default {
   "Mais revisitados": "最常回顾",
   "Mantenha esta aba visível e em foco para iniciar.": "请保持此标签页可见并处于焦点以开始。",
   "Manter versão deste navegador em conflitos": "冲突时保留此浏览器的版本",
+  "Mapa do ano (role para os lados)": "全年图（左右滚动）",
   "Máquina de escrever": "打字机",
   "Marcar aula como estudada": "标记课程为已学习",
   "Marcos de estudo": "学习里程碑",
@@ -946,8 +955,11 @@ export default {
   "Material de estudo": "学习资料",
   "Máximo — 200%": "最大 — 200%",
   "média": "中",
+  "Média por semana": "每周平均",
   "Médio": "中",
   "Médio — 115%": "中 — 115%",
+  "Melhor semana": "最佳一周",
+  "Menos": "少",
   "Menos de 1 segundo": "不到 1 秒",
   "Menos de 5 minutos: em geral 3 a 5 questões.": "不到 5 分钟：通常 3 到 5 道题。",
   "Menos estímulos visuais": "减少视觉刺激",
@@ -957,6 +969,7 @@ export default {
   "Mês anterior": "上个月",
   "Mesa digital": "数字桌面",
   "Mesclar conjuntos": "合并卡组",
+  "Meta": "目标",
   "Meta da semana alcançada. 🎉": "本周目标已达成。🎉",
   "Meta e fuso salvos na conta.": "目标和时区已保存到账户。",
   "Meta e sincronização": "目标与同步",
@@ -1039,6 +1052,7 @@ export default {
   "Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.": "无法加载媒体。请重新获取访问权限或尝试其他可用格式。",
   "Não foi possível carregar as revisões.": "无法加载复习。",
   "Não foi possível carregar o andamento da conta. O histórico local foi preservado.": "无法加载账户进度，本地记录已保留。",
+  "Não foi possível carregar o ano agora.": "暂时无法加载全年数据。",
   "Não foi possível carregar o diagnóstico.": "无法加载诊断。",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "无法加载记录。请重新选择卡片以重试。",
   "Não foi possível carregar os conjuntos agora.": "暂时无法加载卡组。",
@@ -1226,6 +1240,7 @@ export default {
   "Ocultar": "隐藏",
   "Ocultar do perfil": "从个人资料中隐藏",
   "Ocultar guia": "隐藏指南",
+  "Ocultar o ano": "隐藏全年",
   "Ocultar senha": "隐藏密码",
   "Oculto": "已隐藏",
   "Olá": "你好",
@@ -1595,7 +1610,9 @@ export default {
   "Sem tags": "无标签",
   "Sem tarefas": "无任务",
   "Sem unidade": "无单元",
+  "Semana de": "周起始",
   "Semana, agenda e disciplinas": "本周、日程和科目",
+  "Semanas na meta": "达标周数",
   "Senha": "密码",
   "Senha alterada com sucesso.": "密码已成功更改。",
   "Senha alterada com sucesso. Volte ao login e entre com sua nova senha.": "密码已成功更改。请返回登录页，使用新密码登录。",
@@ -1614,6 +1631,7 @@ export default {
   "Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no": "你的邮箱和登录方式显示在“账户信息”中。姓名、照片、封面和简介可在以下位置修改：",
   "Seu perfil": "你的个人资料",
   "Seu próximo capítulo começa aqui.": "你的下一章从这里开始。",
+  "Seu ritmo": "你的节奏",
   "Seu uso da gravação": "你对录音的使用",
   "Seus dados": "你的数据",
   "Sex": "周五",
@@ -1700,6 +1718,8 @@ export default {
   "Temas salvos": "已保存的主题",
   "Temas, cores, fontes, tamanho do texto, espaçamento e movimento.": "主题、颜色、字体、文字大小、间距和动画。",
   "Templates": "模板",
+  "Tempo": "时间",
+  "Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.": "最近 12 周记入的时间。只计算计时器运行时的时间。",
   "Tempo da sessão": "时段时长",
   "Tempo de estudo": "学习时间",
   "Tempo do bloco": "时段时间",
@@ -1813,7 +1833,9 @@ export default {
   "Velocidade de reprodução": "播放速度",
   "Ver andamento": "查看进度",
   "Ver cartões": "查看卡片",
+  "Ver em tabela": "以表格查看",
   "Ver erro": "查看错误",
+  "Ver o ano": "查看全年",
   "Ver pendentes": "查看未答题",
   "Ver questões": "查看题目",
   "Ver recomendação de quantidade": "查看建议数量",
@@ -1917,6 +1939,10 @@ export default {
    "注意：以下内容尚未上传到账户：{0}。如果现在删除，这些更改将会丢失。"
   ],
   [
+   "Últimas {0} semanas. Melhor semana: {1}. Meta: {2} por semana. A tabela abaixo tem todos os valores.",
+   "最近 {0} 周。最佳一周：{1}。目标：每周 {2}。下方表格列出所有数值。"
+  ],
+  [
    "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
    "生成了 {0}/{1}：模型返回的部分题目格式无效；再生成一些以补足。"
   ],
@@ -1939,6 +1965,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "时间按此设备的时区显示（{0}）。任务截止日期显示为全天。"
+  ],
+  [
+   "Horas por semana. Linha tracejada: meta de {0}; barras escuras atingiram a meta.",
+   "每周小时数。虚线：目标 {0}；深色柱表示已达标。"
   ],
   [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
@@ -1973,6 +2003,10 @@ export default {
    "已保存 {0} 张卡片，将加入首页的复习。"
   ],
   [
+   "Últimos 12 meses: {0} dias com estudo, {1} no total.",
+   "最近 12 个月：学习 {0} 天，共 {1}。"
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0}请再次选择相同评分以重试。"
   ],
@@ -1991,6 +2025,10 @@ export default {
   [
    "{0} linhas ignoradas: sem pergunta ou sem resposta.",
    "已跳过 {0} 行：缺少问题或答案。"
+  ],
+  [
+   "Últimos 12 meses: {0} dia com estudo, {1} no total.",
+   "最近 12 个月：学习 {0} 天，共 {1}。"
   ],
   [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
@@ -2093,12 +2131,20 @@ export default {
    "{0}不会{1}：{2}移至“无科目”。"
   ],
   [
+   "Semana de {0}: {1}, {2} dias com estudo",
+   "{0} 起的一周：{1}，学习 {2} 天"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}{3}",
    "已完成 {0}/{1} 项任务 · {2}{3}"
   ],
   [
    "Modo {0} aplicado. Dê um nome e salve.",
    "已应用{0}模式。请命名并保存。"
+  ],
+  [
+   "Semana de {0}: {1}, {2} dia com estudo",
+   "{0} 起的一周：{1}，学习 {2} 天"
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",

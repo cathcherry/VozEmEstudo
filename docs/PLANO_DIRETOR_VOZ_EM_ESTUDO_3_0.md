@@ -382,11 +382,22 @@ Já existe (antes desta sessão):
 - calendário mensal com agenda;
 - tempo de estudo com meta semanal.
 
+**Implementado sem migration — "Seu ritmo"** (Focar e Planejar › Tempo):
+
+- 12 semanas contra a meta semanal, com:
+  - média, melhor semana, semanas na meta e dias com estudo;
+  - tabela equivalente;
+  - aulas mais estudadas.
+- Mapa do ano, carregado só quando pedido.
+- Os dados vêm de `GET /api/study/history?days=84|371`, que soma `study_sessions.total_seconds` (o tempo que o servidor creditou) por dia local no fuso da conta.
+- Uma sessão conta no dia em que começou.
+- Sem streaks: semana vazia é só vazia.
+
 Desenho:
 
 - objetivos ligados a unidades, com inclusão de aulas novas por regra explícita;
 - semana em blocos de horário com movimentação acessível (arrastar é opcional);
-- estatísticas semanais e mapa anual opcional;
+- ~~estatísticas semanais e mapa anual opcional~~ (feito, acima);
 - nada de streaks punitivos; visitas a páginas não contam como estudo.
 
 ## 14. Segurança, dados e custos

@@ -117,6 +117,7 @@ export default {
   "Ainda não há questões desta aula.": "Aún no hay preguntas de esta clase.",
   "Ainda não há resumo desta aula.": "Esta clase aún no tiene resumen.",
   "Ainda não há resumo desta aula. Use “Gerar resumo” para criar o primeiro.": "Esta clase aún no tiene resumen. Usa “Generar resumen” para crear el primero.",
+  "Ainda não há tempo registrado nestas semanas. Comece um bloco de foco e ele aparece aqui.": "Aún no hay tiempo registrado en estas semanas. Empieza un bloque de enfoque y aparecerá aquí.",
   "Ainda não iniciado": "Aún no iniciado",
   "ainda não respondidas": "aún sin responder",
   "Ainda sem temas salvos.": "Aún no hay temas guardados.",
@@ -211,6 +212,7 @@ export default {
   "Atalhos de teclado": "Atajos de teclado",
   "Até": "Hasta",
   "Até 50 revisões mais recentes.": "Hasta los 50 repasos más recientes.",
+  "Atingida": "Alcanzada",
   "Ativar modo para leitores de tela": "Activar modo para lectores de pantalla",
   "Ativos": "Activas",
   "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tem espaçamento mais aberto; OpenDyslexic tem base mais pesada, pensada para dislexia. Vale testar na prévia.": "Atkinson Hyperlegible diferencia letras parecidas (I, l, 1); Lexend tiene un espaciado más abierto; OpenDyslexic tiene una base más pesada, pensada para la dislexia. Vale la pena probarlas en la vista previa.",
@@ -233,9 +235,11 @@ export default {
   "Aula pronta para estudar": "Clase lista para estudiar",
   "Aula relacionada": "Clase relacionada",
   "Aula relacionada (opcional)": "Clase relacionada (opcional)",
+  "Aula removida": "Clase eliminada",
   "Aulas": "Clases",
   "Aulas em estudo": "Clases en estudio",
   "Aulas estudadas": "Clases estudiadas",
+  "Aulas mais estudadas": "Clases más estudiadas",
   "Aulas recentes": "Clases recientes",
   "Aulas selecionadas": "Clases seleccionadas",
   "Aulas sem unidade": "Clases sin unidad",
@@ -314,6 +318,7 @@ export default {
   "Cancelar": "Cancelar",
   "Carregando histórico…": "Cargando historial…",
   "Carregando lista…": "Cargando lista…",
+  "Carregando o ano…": "Cargando el año…",
   "Carregando o diagnóstico…": "Cargando el diagnóstico…",
   "Carregando os recursos disponíveis…": "Cargando los recursos disponibles…",
   "Carregando questão...": "Cargando pregunta...",
@@ -535,6 +540,7 @@ export default {
   "Detalhes do processamento": "Detalles del procesamiento",
   "Detectar automaticamente": "Detectar automáticamente",
   "Diagnóstico da tentativa": "Diagnóstico del intento",
+  "Dias com estudo": "Días con estudio",
   "Dias do mês": "Días del mes",
   "Difícil": "Difícil",
   "Dificuldade": "Dificultad",
@@ -817,6 +823,7 @@ export default {
   "Hoje": "Hoy",
   "Horário removido.": "Horario eliminado.",
   "Horário vinculado a uma tarefa.": "Horario vinculado a una tarea.",
+  "Horas por semana.": "Horas por semana.",
   "Hugging Face": "Hugging Face",
   "Ícone": "Icono",
   "Ícones discretos": "Íconos discretos",
@@ -926,6 +933,7 @@ export default {
   "Localização": "Ubicación",
   "Longa": "Larga",
   "Longas": "Largas",
+  "Mais (1 h ou mais por dia)": "Más (1 h o más por día)",
   "Mais detalhes: subobjetivo, aula e link": "Más detalles: subobjetivo, clase y enlace",
   "Mais lenta": "Más lenta",
   "Mais opções": "Más opciones",
@@ -935,6 +943,7 @@ export default {
   "Mais revisitados": "Más revisitadas",
   "Mantenha esta aba visível e em foco para iniciar.": "Mantén esta pestaña visible y en primer plano para empezar.",
   "Manter versão deste navegador em conflitos": "Mantener la versión de este navegador en conflictos",
+  "Mapa do ano (role para os lados)": "Mapa del año (desplázate hacia los lados)",
   "Máquina de escrever": "Máquina de escribir",
   "Marcar aula como estudada": "Marcar clase como estudiada",
   "Marcos de estudo": "Hitos de estudio",
@@ -946,8 +955,11 @@ export default {
   "Material de estudo": "Material de estudio",
   "Máximo — 200%": "Máximo — 200%",
   "média": "mediana",
+  "Média por semana": "Promedio semanal",
   "Médio": "Medio",
   "Médio — 115%": "Mediano — 115%",
+  "Melhor semana": "Mejor semana",
+  "Menos": "Menos",
   "Menos de 1 segundo": "Menos de 1 segundo",
   "Menos de 5 minutos: em geral 3 a 5 questões.": "Menos de 5 minutos: en general, de 3 a 5 preguntas.",
   "Menos estímulos visuais": "Menos estímulos visuales",
@@ -957,6 +969,7 @@ export default {
   "Mês anterior": "Mes anterior",
   "Mesa digital": "Escritorio digital",
   "Mesclar conjuntos": "Combinar conjuntos",
+  "Meta": "Meta",
   "Meta da semana alcançada. 🎉": "Meta de la semana alcanzada. 🎉",
   "Meta e fuso salvos na conta.": "Meta y zona horaria guardadas en la cuenta.",
   "Meta e sincronização": "Meta y sincronización",
@@ -1039,6 +1052,7 @@ export default {
   "Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.": "No se pudo cargar el contenido. Renueva el acceso o prueba el otro formato disponible.",
   "Não foi possível carregar as revisões.": "No se pudieron cargar los repasos.",
   "Não foi possível carregar o andamento da conta. O histórico local foi preservado.": "No se pudo cargar el progreso de la cuenta. Se conservó el historial local.",
+  "Não foi possível carregar o ano agora.": "No se pudo cargar el año ahora.",
   "Não foi possível carregar o diagnóstico.": "No se pudo cargar el diagnóstico.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "No se pudo cargar el historial. Selecciona la tarjeta de nuevo para reintentarlo.",
   "Não foi possível carregar os conjuntos agora.": "No se pudieron cargar los conjuntos ahora.",
@@ -1226,6 +1240,7 @@ export default {
   "Ocultar": "Ocultar",
   "Ocultar do perfil": "Ocultar del perfil",
   "Ocultar guia": "Ocultar guía",
+  "Ocultar o ano": "Ocultar el año",
   "Ocultar senha": "Ocultar contraseña",
   "Oculto": "Oculto",
   "Olá": "Hola",
@@ -1595,7 +1610,9 @@ export default {
   "Sem tags": "Sin etiquetas",
   "Sem tarefas": "Sin tareas",
   "Sem unidade": "Sin unidad",
+  "Semana de": "Semana del",
   "Semana, agenda e disciplinas": "Semana, agenda y asignaturas",
+  "Semanas na meta": "Semanas en la meta",
   "Senha": "Contraseña",
   "Senha alterada com sucesso.": "Contraseña cambiada correctamente.",
   "Senha alterada com sucesso. Volte ao login e entre com sua nova senha.": "Contraseña cambiada correctamente. Vuelve al inicio de sesión y entra con tu nueva contraseña.",
@@ -1614,6 +1631,7 @@ export default {
   "Seu e-mail e a forma de acesso aparecem em Dados da conta. Nome, foto, capa e apresentação podem ser alterados no": "Tu correo y la forma de acceso aparecen en Datos de la cuenta. El nombre, la foto, la portada y la presentación se pueden cambiar en el",
   "Seu perfil": "Tu perfil",
   "Seu próximo capítulo começa aqui.": "Tu próximo capítulo empieza aquí.",
+  "Seu ritmo": "Tu ritmo",
   "Seu uso da gravação": "Tu uso de la grabación",
   "Seus dados": "Tus datos",
   "Sex": "Vie",
@@ -1700,6 +1718,8 @@ export default {
   "Temas salvos": "Temas guardados",
   "Temas, cores, fontes, tamanho do texto, espaçamento e movimento.": "Temas, colores, fuentes, tamaño del texto, espaciado y movimiento.",
   "Templates": "Plantillas",
+  "Tempo": "Tiempo",
+  "Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.": "Tiempo acreditado en las últimas 12 semanas. Solo cuenta el tiempo con el cronómetro activo.",
   "Tempo da sessão": "Tiempo de la sesión",
   "Tempo de estudo": "Tiempo de estudio",
   "Tempo do bloco": "Tiempo del bloque",
@@ -1813,7 +1833,9 @@ export default {
   "Velocidade de reprodução": "Velocidad de reproducción",
   "Ver andamento": "Ver progreso",
   "Ver cartões": "Ver tarjetas",
+  "Ver em tabela": "Ver como tabla",
   "Ver erro": "Ver error",
+  "Ver o ano": "Ver el año",
   "Ver pendentes": "Ver pendientes",
   "Ver questões": "Ver preguntas",
   "Ver recomendação de quantidade": "Ver cantidad recomendada",
@@ -1917,6 +1939,10 @@ export default {
    "Atención: aún no se enviaron a la cuenta: {0}. Si borras ahora, esos cambios se perderán."
   ],
   [
+   "Últimas {0} semanas. Melhor semana: {1}. Meta: {2} por semana. A tabela abaixo tem todos os valores.",
+   "Últimas {0} semanas. Mejor semana: {1}. Meta: {2} por semana. La tabla de abajo tiene todos los valores."
+  ],
+  [
    "Foram geradas {0} de {1}: o modelo devolveu algumas em formato inválido; gere mais para completar.",
    "Se generaron {0} de {1}: el modelo devolvió algunas en formato inválido; genera más para completar."
   ],
@@ -1939,6 +1965,10 @@ export default {
   [
    "Horários no fuso deste aparelho ({0}). Prazos de tarefas aparecem como dia inteiro.",
    "Horarios en la zona horaria de este dispositivo ({0}). Los plazos de tareas aparecen como día completo."
+  ],
+  [
+   "Horas por semana. Linha tracejada: meta de {0}; barras escuras atingiram a meta.",
+   "Horas por semana. Línea discontinua: meta de {0}; las barras oscuras alcanzaron la meta."
   ],
   [
    "Foram geradas {0} de {1}: a aula é curta demais para mais questões distintas.",
@@ -1973,6 +2003,10 @@ export default {
    "{0} tarjetas guardadas. Entran en el repaso del Inicio."
   ],
   [
+   "Últimos 12 meses: {0} dias com estudo, {1} no total.",
+   "Últimos 12 meses: {0} días con estudio, {1} en total."
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0} Repite la misma valoración para intentarlo de nuevo."
   ],
@@ -1991,6 +2025,10 @@ export default {
   [
    "{0} linhas ignoradas: sem pergunta ou sem resposta.",
    "{0} líneas omitidas: sin pregunta o sin respuesta."
+  ],
+  [
+   "Últimos 12 meses: {0} dia com estudo, {1} no total.",
+   "Últimos 12 meses: {0} día con estudio, {1} en total."
   ],
   [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
@@ -2093,12 +2131,20 @@ export default {
    "{0} no {1}: {2} a “Sin asignatura”."
   ],
   [
+   "Semana de {0}: {1}, {2} dias com estudo",
+   "Semana del {0}: {1}, {2} días con estudio"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}{3}",
    "{0} de {1} tareas completadas · {2}{3}"
   ],
   [
    "Modo {0} aplicado. Dê um nome e salve.",
    "Modo {0} aplicado. Ponle un nombre y guárdalo."
+  ],
+  [
+   "Semana de {0}: {1}, {2} dia com estudo",
+   "Semana del {0}: {1}, {2} día con estudio"
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",

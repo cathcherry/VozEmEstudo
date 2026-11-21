@@ -6,6 +6,7 @@ const action=(fn) => async(req,res,next) => { try { res.json(await fn(req)); } c
 studyRouter.get('/progress',action((req) => studyService.list(req.user.id,req.query)));
 studyRouter.put('/progress/:materialId',action((req) => studyService.save(req.user.id,req.params.materialId,req.body)));
 studyRouter.get('/overview',action((req) => studyService.overview(req.user.id)));
+studyRouter.get('/history',action((req) => studyService.history(req.user.id,req.query)));
 studyRouter.put('/settings',action((req) => studyService.settings(req.user.id,req.body)));
 studyRouter.post('/sessions',action((req) => studyService.start(req.user.id,req.body)));
 studyRouter.post('/sessions/:sessionId/tick',action((req) => studyService.tick(req.user.id,req.params.sessionId,req.body)));

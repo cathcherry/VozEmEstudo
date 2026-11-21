@@ -8,6 +8,7 @@ import { emptyState } from '../utils/material-ui.js';
 import { initPlanningPanel } from './planning-panel.js';
 import { initCalendarPanel } from './calendar-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
+import { initStudyStats } from './study-stats.js';
 
 await initAuthenticatedShell();
 const flags = await getFeatureFlags().catch(() => ({}));
@@ -62,7 +63,12 @@ if (!sections.length) {
         },
       ),
     );
-  if (flags.study_tracking) loads.push(initStudyTrackingPanel({ materials }));
+  if (flags.study_tracking)
+    loads.push(
+      initStudyTrackingPanel({ materials }).then(() =>
+        initStudyStats({ container: document.querySelector('[data-study-stats]'), materials }),
+      ),
+    );
   const results = await Promise.allSettled(loads);
   // Tools load in the same order as their tabs (`sections`).
   results.forEach((result, index) => {

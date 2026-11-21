@@ -227,6 +227,45 @@ async function main() {
       await fresh.context.close();
       record('Histórico de blocos na conta: o de outro aparelho aparece aqui, e o novo soma aos dois sem apagar nada');
     }
+
+    // ---------- "Seu ritmo": 12 weeks, lessons studied most, optional year ----------------
+    {
+      const stats = state();
+      const view = await openApp(browser, base, allFlags, stats, { width: 390, height: 844 });
+      await view.page.goto(base + '/focar.html');
+      const section = view.page.locator('[data-study-stats]');
+      await section.locator('.stats-bars li').nth(11).waitFor();
+      assert.equal(await section.locator('.stats-bars li').count(), 12);
+      assert.match(await section.locator('figcaption').textContent(), /meta de 2 h 30 min/);
+      await section.locator('.stats-table summary').click();
+      assert.equal(await section.locator('.stats-table tbody tr').count(), 12);
+      await section.locator('.stats-lessons a', { hasText: 'Fotossíntese e respiração celular' }).waitFor();
+      await section.locator('.stats-lessons', { hasText: 'Aula removida' }).waitFor();
+      assert.deepEqual(stats.historyRequests, [84], 'the year is only asked for on demand');
+      await section.getByRole('button', { name: 'Ver o ano' }).click();
+      await section.locator('.stats-year-grid [data-level="4"]').first().waitFor();
+      assert.deepEqual(stats.historyRequests, [84, 371]);
+      assert.equal(await section.getByRole('button', { name: 'Ocultar o ano' }).getAttribute('aria-expanded'), 'true');
+      await settle(view.page);
+      await axeCheck(view.page, '[data-study-stats]', 'Seu ritmo');
+      await noHorizontalScroll(view.page, 'seu ritmo (390 px)');
+      await view.context.close();
+      // Nothing recorded yet: an invitation, not an empty chart. Unavailable: hidden.
+      const empty = state();
+      empty.emptyHistory = true;
+      const fresh = await openApp(browser, base, allFlags, empty, { width: 1280, height: 900 });
+      await fresh.page.goto(base + '/focar.html');
+      await fresh.page.locator('[data-study-stats] .stats-empty').waitFor();
+      assert.equal(await fresh.page.locator('[data-study-stats] .stats-chart').count(), 0);
+      empty.emptyHistory = false;
+      empty.historyDown = true;
+      await fresh.page.reload();
+      await fresh.page.locator('.focus-time').waitFor();
+      await fresh.page.waitForTimeout(500);
+      assert(await fresh.page.locator('[data-study-stats]').isHidden(), 'hidden when the history is unavailable');
+      await fresh.context.close();
+      record('Seu ritmo: 12 semanas com a meta, tabela, aulas mais estudadas e mapa do ano sob demanda; vazio convida; indisponível some');
+    }
   } finally {
     await browser.close();
     server.close();
