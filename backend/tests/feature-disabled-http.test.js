@@ -13,6 +13,7 @@ const FLAGGED = {
   annotations: '/api/annotations',
   calendar: '/api/calendar',
   catalog_units: '/api/catalog',
+  notebooks: '/api/notebooks/x',
 };
 
 function probe(env) {

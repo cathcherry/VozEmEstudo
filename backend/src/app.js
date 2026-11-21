@@ -21,6 +21,7 @@ import { mediaRouter } from './routes/media.routes.js';
 import { studyRouter } from './routes/study.routes.js';
 import { annotationRouter,calendarRouter,sharingRouter,publicShare } from './routes/learning-tools.routes.js';
 import { publicQuestionList } from './routes/question-share.routes.js';
+import { notebookRouter } from './routes/notebook.routes.js';
 import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
@@ -94,6 +95,8 @@ app.get('/api/config', (_req, res) => {
 app.use('/api/media', requireAuth, mediaRouter);
 app.use('/api/materials', requireAuth, materialRouter);
 if(isFeatureEnabled('annotations'))app.use('/api/annotations',requireAuth,annotationRouter);
+// Notes 3.0: lesson notebooks (and multi-segment anchors in /api/annotations).
+if (isFeatureEnabled('notebooks')) app.use('/api/notebooks', requireAuth, notebookRouter);
 if(isFeatureEnabled('calendar'))app.use('/api/calendar',requireAuth,calendarRouter);
 if(isFeatureEnabled('sharing')){
   app.use('/api/sharing',requireAuth,sharingRouter);
