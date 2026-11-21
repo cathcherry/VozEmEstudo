@@ -109,4 +109,4 @@ Nenhuma migration foi criada ou aplicada.
 | Tipografia dos títulos | `4f35699` |
 | Som ambiente gerado no navegador (ruído marrom, chuva, ondas) com ducking | `6439743` |
 | Biblioteca: selecionar várias aulas e mover de uma vez (barra de seleção, axe ok) | `37b1e31` |
-| Histórico de blocos do Focar na conta (`focus-history`, união entre aparelhos) | (este commit) |
+| Histórico de blocos do Focar na conta (`focus-history`, união entre aparelhos) | `59dc98e` |
