@@ -126,4 +126,4 @@ Nenhuma migration foi criada ou aplicada.
 | Questões: "Reportar problema" (marca própria, sincronizada, desfazer) + Aparência na página de responder | `c5c9967` |
 | Revisar › Questões: lista "Questões marcadas" | `1490c10` |
 | Som ambiente "Tocar junto com o foco" | `61d94df` |
-| Planejar uma unidade (tarefa por aula, prazos espaçados, re-executar acrescenta só as novas) | (este commit) |
+| Planejar uma unidade (tarefa por aula, prazos espaçados, re-executar acrescenta só as novas) | `3d5b53a` |
