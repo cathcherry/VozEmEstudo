@@ -126,7 +126,8 @@ if (env.serveFrontend) {
   app.use('/js', express.static(path.join(frontendRoot, 'js')));
   app.use('/assets', express.static(path.join(frontendRoot, 'assets')));
   app.get('/favicon.ico', (_req, res) =>
-    res.sendFile(path.join(frontendRoot, 'assets/brand/favicon.png')),
+    // `root` keeps the dotfile check to the relative part: the app may live under a hidden folder.
+    res.sendFile('favicon.png', { root: path.join(frontendRoot, 'assets/brand') }),
   );
   app.use(express.static(path.join(frontendRoot, 'pages')));
   app.get('/', (_req, res) => res.redirect('/index.html'));
