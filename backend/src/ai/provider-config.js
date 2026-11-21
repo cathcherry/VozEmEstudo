@@ -66,7 +66,8 @@ export const ASSEMBLYAI_STT_3_7_LANGUAGES = Object.freeze([
   'zu',
 ]);
 const DEFAULT_SELECTABLE_LANGUAGES = ASSEMBLYAI_STT_3_7_LANGUAGES;
-const GROQ_DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+// llama-3.3-70b-versatile is no longer offered by Groq (checked on the account's model list, 21/11/2026).
+const GROQ_DEFAULT_MODEL = 'openai/gpt-oss-120b';
 
 const text = (value) => String(value ?? '').trim();
 const list = (value) =>
@@ -158,6 +159,13 @@ export function createAiConfig(source = process.env) {
       text(source.ASSEMBLYAI_LLM_GATEWAY_URL) || 'https://llm-gateway.assemblyai.com/v1'
     ).replace(/\/$/, ''),
     // 'json_object' requests JSON mode; 'none' relies only on prompts + local validation.
+    // gpt-oss models reason before answering; the reasoning counts against max_completion_tokens.
+    groqReasoningEffort: choose(
+      'LLM_REASONING_EFFORT',
+      source.LLM_REASONING_EFFORT,
+      ['low', 'medium', 'high'],
+      'low',
+    ),
     assemblyaiGatewayJsonMode: choose(
       'ASSEMBLYAI_LLM_JSON_MODE',
       source.ASSEMBLYAI_LLM_JSON_MODE,

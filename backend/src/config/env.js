@@ -47,7 +47,7 @@ export const env = Object.freeze({
     .filter((p) => ['google', 'github'].includes(p)),
 
   groqApiKey: process.env.GROQ_API_KEY || '',
-  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
 
   hfToken: process.env.HF_TOKEN || '',
   hfAsrSpaceId: process.env.HF_ASR_SPACE_ID || 'openai/whisper',
