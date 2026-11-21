@@ -127,3 +127,46 @@ Nenhuma migration foi criada ou aplicada.
 | Revisar › Questões: lista "Questões marcadas" | `1490c10` |
 | Som ambiente "Tocar junto com o foco" | `61d94df` |
 | Planejar uma unidade (tarefa por aula, prazos espaçados, re-executar acrescenta só as novas) | `3d5b53a` |
+
+**PR #10 integrado em `main`** (merge `41e2437`), depois do CI verde em `7d39dff`.
+
+## Voz em Estudo 3.3 — migrations aprovadas (branch `feat/ux-navigation`)
+
+O dono autorizou criar e testar migrations; produção só com backup e nova autorização. Cada marco informa separadamente:
+
+- **arquivo no Git**: a migration está versionada;
+- **aplicada**: em qual banco ela rodou de fato.
+
+| Marco | Situação | Commits |
+| --- | --- | --- |
+| B — Flashcards 3.0 | Backend e frontend prontos, com testes (detalhes abaixo). | `55ce18e`, `1567013` |
+| A — Anotações 3.0 | Em desenvolvimento por um subagente, numa worktree isolada. | — |
+| E — Turmas privadas | Em desenvolvimento por um subagente, numa worktree isolada. | — |
+| D — Gerações de IA reutilizáveis | A fazer. | — |
+| C — Aprendizagem multiaula | A fazer. | — |
+
+**Flashcards 3.0 em detalhe:**
+
+- notas tipadas;
+- modelos visuais;
+- uma aparência por conjunto;
+- mescla com decisões;
+- `.apkg`.
+
+### Validação da migration de Flashcards 3.0 (`20261121150000_flashcards_3_0.sql`)
+
+| Ambiente | Resultado |
+| --- | --- |
+| PGlite (testes) | 5 testes de SQL real: backfill, agenda e histórico intactos, procedência, modelos, RLS e escrita concorrente. |
+| **Postgres 16.15 local** | Cadeia completa aplicada em ordem (`001` → `profile_state_hardening`, mais `proposals/profile-gamification.sql`, que cria `profile_state` em produção). Dados inseridos antes da migration. Detalhes abaixo. |
+| Staging Supabase | Ainda não aplicada. O projeto `voz-em-estudo-staging` está pausado. |
+| **Produção** | **Não aplicada.** |
+
+Resultado no Postgres 16.15 local:
+
+- preflight: `prerequisites = t`, `already_applied = f`;
+- a migration foi aplicada;
+- postflight: 2 cartões e 1 revisão, iguais ao preflight; `term_cards = 1`; `untyped_term_cards = 0`; RLS ligado; sem acesso para `anon` nem para `authenticated`; bucket privado;
+- uma segunda aplicação foi recusada com `FLASHCARDS_3_0_ABORT`.
+
+Achado: nenhuma migration cria `public.profile_state`. Ela vem da proposta `database/proposals/profile-gamification.sql`, aplicada à mão. Para recriar um banco do zero, aplique essa proposta antes de `20261120120000_profile_state_hardening.sql`.
