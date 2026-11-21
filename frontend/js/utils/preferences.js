@@ -359,6 +359,7 @@ function initializeFocusDock() {
     appearance: '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z"/>',
     reading: '<path d="M3 20 10 4l7 16M6 14h8M20 4v16"/>',
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01"/>',
+    classrooms: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 5a3 3 0 0 1 0 6M21 20a6 6 0 0 0-4-5.6"/>',
   };
   const links = [
     ['Início', './painel.html', 'dashboard'],
@@ -367,6 +368,7 @@ function initializeFocusDock() {
     ['Revisar', './revisar.html', 'review'],
     ['Planejar', './planejar.html', 'plan'],
     ['Focar', './focar.html', 'plan'],
+    ['Turmas', './turmas.html', 'classrooms'],
     ['Configurações', './configuracoes.html', 'appearance'],
   ];
   focusDockTrigger = document.createElement('button');
@@ -383,7 +385,7 @@ function initializeFocusDock() {
     const link = document.createElement('a');
     link.href = href;
     link.className = 'focus-dock-link';
-    if (iconName === 'review' || iconName === 'plan') link.dataset.navFeature = iconName;
+    if (['review', 'plan', 'classrooms'].includes(iconName)) link.dataset.navFeature = iconName;
     link.setAttribute('aria-label', label);
     const path = location.pathname.split('/').at(-1) || 'painel.html';
     if (

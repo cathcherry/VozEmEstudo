@@ -562,6 +562,11 @@ async function setup(context, base, flags, data, options = {}) {
         questions: [],
         transcripts: [],
       });
+    // Private classrooms (Turmas): stateful simulation in ./mock-classrooms.cjs.
+    if (p.startsWith('/api/classrooms'))
+      return require('./mock-classrooms.cjs').handleClassrooms({
+        request, p, method, json, user: currentUser(), data, materials,
+      });
     return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
   });
   await context.addInitScript(
@@ -668,13 +673,15 @@ const allFlags = {
 /** Serves the static front end on a free local port. */
 async function startServer() {
   const app = express();
-  app.get('/favicon.ico', (_req, res) => res.sendFile(path.join(root, 'assets/brand/favicon.png')));
+  app.get('/favicon.ico', (_req, res) =>
+    res.sendFile('favicon.png', { root: path.join(root, 'assets/brand') }),
+  );
   app.use('/assets', express.static(path.join(root, 'assets')));
   app.use('/js', express.static(path.join(root, 'js')));
   app.use('/css', express.static(path.join(root, 'css')));
   app.use(express.static(path.join(root, 'pages')));
   app.get('/__fixture.wav', (_req, res) =>
-    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav')),
+    res.sendFile(path.join(root, 'tests', 'artifacts', 'fixture.wav'), { dotfiles: 'allow' }),
   );
   const server = app.listen(0, '127.0.0.1');
   await new Promise((resolve) => server.once('listening', resolve));
