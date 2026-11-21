@@ -129,6 +129,31 @@ async function main() {
     await panel.locator('.utility-stop').click();
     record('Esconder a cápsula não para o cronômetro; retomar e encerrar pelo painel');
 
+    // ---------- Ambient sound: a second tool of the same panel, with ducking ----------------
+    await page.goto(base + '/material.html?id=l-foto');
+    await page.locator('[data-utility-trigger]').waitFor();
+    if (await page.locator('#utility-panel').isHidden()) await page.locator('[data-utility-trigger]').click();
+    await page.locator('[data-utility-tool="sound"]').click();
+    await page.locator('#utility-panel-title', { hasText: 'Som ambiente' }).waitFor();
+    await page.locator('.utility-sound-option', { hasText: 'Chuva suave' }).click();
+    await page.locator('.utility-sound-toggle').click();
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
+    await settle(page);
+    await axeCheck(page, '#utility-panel', 'Painel › Som ambiente');
+    // The lesson recording plays: the sound goes down; it pauses: the sound comes back.
+    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('play')));
+    await page.locator('#utility-panel[data-sound="ducked"]').waitFor();
+    await page.evaluate(() => document.querySelector('audio, video')?.dispatchEvent(new Event('pause')));
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor();
+    const saved = await page.evaluate(() => Object.entries(localStorage).find(([k]) => k.startsWith('voz-ambient-v1:'))?.[1]);
+    assert.equal(JSON.parse(saved).kind, 'rain');
+    await page.reload();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'O som ambiente parou ao trocar de página.' }).waitFor();
+    await page.getByRole('button', { name: 'Retomar som' }).click();
+    await page.locator('#utility-panel[data-sound="playing"]').waitFor({ state: 'attached' });
+    await page.locator('[data-utility-tool="focus"]').click().catch(() => {});
+    record('Som ambiente (gerado no navegador): outra ferramenta do mesmo painel; abaixa durante a gravação da aula; oferece "Retomar som" após trocar de página');
+
     // ---------- Início: one click starts focusing ------------------------------------------
     await page.goto(base + '/painel.html');
     const shortcut = page.locator('[data-focus-shortcut]');
