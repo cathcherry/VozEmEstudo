@@ -591,6 +591,13 @@ export async function initFlashcardsPanel({ materials }) {
         );
     await reloadSets();
     afterCreate = reloadSets;
+    // Coming from a lesson's Flashcards tab (?conjunto=id): review that set.
+    const requested = new URLSearchParams(document.defaultView?.location?.search || '').get('conjunto');
+    if (requested && [...setFilter.options].some((option) => option.value === requested)) {
+      setFilter.value = requested;
+      if (typeof syncLooks === 'function') syncLooks();
+      changeView(0);
+    }
     deleteCardButton.addEventListener('click', () => {
       const id = managerSelect.value;
       if (!id || saving || !confirm('Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.')) return;

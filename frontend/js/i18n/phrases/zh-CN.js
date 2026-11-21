@@ -74,6 +74,7 @@ export default {
   "Abrir aula": "打开课程",
   "Abrir Biblioteca": "打开资料库",
   "Abrir configurações de leitura e foco": "打开阅读与专注设置",
+  "Abrir conjunto": "打开卡组",
   "Abrir cópia compartilhada": "打开分享的副本",
   "Abrir disciplina": "打开科目",
   "Abrir Focar": "打开专注",
@@ -110,6 +111,7 @@ export default {
   "Ainda não ativado neste servidor": "此服务器尚未启用",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "此转写尚无分析。你可以在上方请求提示。",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "暂无卡组。请在课程的“摘要”标签页中创建。",
+  "Ainda não há flashcards desta aula": "这节课还没有抽认卡",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "还没有题目列表。使用“生成列表”创建第一个。",
   "Ainda não há questões desta aula.": "此课程还没有题目。",
   "Ainda não há resumo desta aula.": "本课程还没有摘要。",
@@ -1011,6 +1013,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "无法加载诊断。",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "无法加载记录。请重新选择卡片以重试。",
   "Não foi possível carregar os conjuntos agora.": "暂时无法加载卡组。",
+  "Não foi possível carregar os flashcards.": "无法加载抽认卡。",
   "Não foi possível carregar os links.": "无法加载链接。",
   "Não foi possível carregar os materiais.": "无法加载资料。",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "无法加载资源。按课程查看仍可使用。",
@@ -1467,6 +1470,7 @@ export default {
   "Revisão rápida": "快速复习",
   "Revisar": "复习",
   "Revisar › Anotações": "复习 › 笔记",
+  "Revisar agora": "立即复习",
   "Revisar envio": "检查上传",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "复习我的笔记\\n练习一道题\\n休息一下",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "核对转写。编辑后，基于旧版本的摘要和题目可能需要更新。",
@@ -1697,6 +1701,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "将音频转为转写、摘要和题目，不丢失课程上下文。",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "将课程音频和视频转为可编辑的转写、摘要和题目。选择想复习的片段，在资料库中查看整理好的资料。",
   "Transforme o conteúdo da sua aula em material para revisar.": "将你的课程内容变成复习资料。",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "把这节课的摘要变成卡片，在接下来几天复习。",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "把摘要变成卡片，在接下来几天复习。",
   "Translúcido": "半透明",
   "Trecho": "片段",
@@ -2006,6 +2011,10 @@ export default {
    "已完成 {0} / {1} 个任务 · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} 张卡片 · 今天要复习 {1} 张"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "删除科目“{0}”？\\n\\n{1}"
   ],
@@ -2028,6 +2037,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "已加载 {0} / {1} 项。"
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} 张卡片 · 今天没有待复习"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2078,12 +2091,20 @@ export default {
    "{0} XP · {1}/{2} 个里程碑"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} 个卡组 · {1} 张卡片"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "未找到“{0}”的相关结果"
   ],
   [
    "Ver resultado e erros: {0}",
    "查看结果和错题：{0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} 个卡组 · {1} 张卡片"
   ],
   [
    "Pelo menos {0} caracteres",

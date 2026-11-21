@@ -74,6 +74,7 @@ export default {
   "Abrir aula": "Open lesson",
   "Abrir Biblioteca": "Open Library",
   "Abrir configurações de leitura e foco": "Open reading and focus settings",
+  "Abrir conjunto": "Open set",
   "Abrir cópia compartilhada": "Open shared copy",
   "Abrir disciplina": "Open subject",
   "Abrir Focar": "Open Focus",
@@ -110,6 +111,7 @@ export default {
   "Ainda não ativado neste servidor": "Not enabled on this server yet",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "There are no analyses of this transcript yet. You can request the warnings above.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "No sets yet. Create one in a lesson's Summary tab.",
+  "Ainda não há flashcards desta aula": "No flashcards for this lesson yet",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "No question lists yet. Use “Generate list” to create the first one.",
   "Ainda não há questões desta aula.": "There are no questions for this lesson yet.",
   "Ainda não há resumo desta aula.": "This lesson has no summary yet.",
@@ -1011,6 +1013,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "Couldn't load the diagnosis.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "Couldn't load the history. Select the card again to retry.",
   "Não foi possível carregar os conjuntos agora.": "Couldn't load the sets right now.",
+  "Não foi possível carregar os flashcards.": "The flashcards could not be loaded.",
   "Não foi possível carregar os links.": "Couldn't load the links.",
   "Não foi possível carregar os materiais.": "Couldn't load the materials.",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "Couldn't load the resources. The per-lesson view is still available.",
@@ -1467,6 +1470,7 @@ export default {
   "Revisão rápida": "Quick review",
   "Revisar": "Review",
   "Revisar › Anotações": "Review › Notes",
+  "Revisar agora": "Review now",
   "Revisar envio": "Review upload",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "Review my notes\\nPractice a question\\nTake a break",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "Check the transcript. Summaries and questions from earlier versions may need updating after an edit.",
@@ -1697,6 +1701,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "Turn audio into a transcript, summary and questions without losing the lesson's context.",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "Turn lesson audio and video into editable transcripts, summaries and questions. Choose the parts you want to review and find your materials organized in the Library.",
   "Transforme o conteúdo da sua aula em material para revisar.": "Turn your lesson content into material to review.",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "Turn this lesson's summary into cards to review over the next few days.",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "Turn the summary into cards to review over the next few days.",
   "Translúcido": "Translucent",
   "Trecho": "Clip",
@@ -2006,6 +2011,10 @@ export default {
    "{0} of {1} tasks done · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} cards · {1} to review today"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "Remove the subject “{0}”?\\n\\n{1}"
   ],
@@ -2028,6 +2037,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "{0} of {1} items loaded."
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} cards · nothing due today"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2078,12 +2091,20 @@ export default {
    "{0} XP · {1}/{2} milestones"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} sets · {1} cards"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "Nothing found for “{0}”"
   ],
   [
    "Ver resultado e erros: {0}",
    "See result and mistakes: {0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} set · {1} cards"
   ],
   [
    "Pelo menos {0} caracteres",

@@ -166,6 +166,23 @@ async function main() {
     await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
     record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
 
+    // ---------- Lesson › Flashcards tab: the lesson's sets, review one now -------------------
+    data.sets = [];
+    await page.goto(base + '/material.html?id=l-foto#flashcards');
+    await page.locator('#tab-flashcards[aria-selected="true"]').waitFor();
+    await page.locator('[data-lesson-sets] .nino-note', { hasText: 'Ainda não há flashcards desta aula' }).waitFor();
+    data.sets = [{ id: 'set-foto', name: 'Fotossíntese — conceitos', card_count: 8, due_count: 3, status: 'active' }];
+    await page.reload();
+    const setRow = page.locator('.lesson-set-row', { hasText: 'Fotossíntese — conceitos' });
+    await setRow.waitFor();
+    assert.match(await setRow.textContent(), /8 cartões · 3 para revisar hoje/);
+    await settle(page);
+    await axeCheck(page, '[data-flashcards-section]', 'Aula › Flashcards');
+    await setRow.getByRole('link', { name: 'Revisar agora' }).click();
+    await page.waitForURL('**/revisar.html?conjunto=set-foto#flashcards');
+    await page.waitForFunction(() => [...document.querySelectorAll('select')].some((s) => s.value === 'set-foto'));
+    record('Aula › Flashcards: conjuntos da aula com cartões e pendentes; "Revisar agora" abre Revisar já filtrado no conjunto');
+
     // ---------- Biblioteca: Finder-like list view inside a folder ----------------------------
     await page.goto(base + '/historico.html?folder=sub-bio&unit=unit-energia');
     await page.getByRole('button', { name: 'Lista' }).click();

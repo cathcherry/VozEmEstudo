@@ -74,6 +74,7 @@ export default {
   "Abrir aula": "Abrir clase",
   "Abrir Biblioteca": "Abrir Biblioteca",
   "Abrir configurações de leitura e foco": "Abrir configuración de lectura y enfoque",
+  "Abrir conjunto": "Abrir conjunto",
   "Abrir cópia compartilhada": "Abrir copia compartida",
   "Abrir disciplina": "Abrir asignatura",
   "Abrir Focar": "Abrir Enfocar",
@@ -110,6 +111,7 @@ export default {
   "Ainda não ativado neste servidor": "Aún no activado en este servidor",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "Aún no hay análisis de esta transcripción. Puedes solicitar los avisos de arriba.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "Aún no hay conjuntos. Crea uno en la pestaña Resumen de una clase.",
+  "Ainda não há flashcards desta aula": "Aún no hay flashcards de esta clase",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "Aún no hay listas de preguntas. Usa “Generar lista” para crear la primera.",
   "Ainda não há questões desta aula.": "Aún no hay preguntas de esta clase.",
   "Ainda não há resumo desta aula.": "Esta clase aún no tiene resumen.",
@@ -1011,6 +1013,7 @@ export default {
   "Não foi possível carregar o diagnóstico.": "No se pudo cargar el diagnóstico.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "No se pudo cargar el historial. Selecciona la tarjeta de nuevo para reintentarlo.",
   "Não foi possível carregar os conjuntos agora.": "No se pudieron cargar los conjuntos ahora.",
+  "Não foi possível carregar os flashcards.": "No se pudieron cargar las flashcards.",
   "Não foi possível carregar os links.": "No se pudieron cargar los enlaces.",
   "Não foi possível carregar os materiais.": "No se pudieron cargar los materiales.",
   "Não foi possível carregar os recursos. A visualização por aula continua disponível.": "No se pudieron cargar los recursos. La vista por clase sigue disponible.",
@@ -1467,6 +1470,7 @@ export default {
   "Revisão rápida": "Repaso rápido",
   "Revisar": "Repasar",
   "Revisar › Anotações": "Repasar › Notas",
+  "Revisar agora": "Repasar ahora",
   "Revisar envio": "Revisar subida",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "Repasar mis notas\\nPracticar una pregunta\\nTomar un descanso",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "Revisa la transcripción. Los resúmenes y preguntas de versiones anteriores pueden necesitar actualizarse después de una edición.",
@@ -1697,6 +1701,7 @@ export default {
   "Transforme áudio em transcrição, resumo e questões sem perder o contexto da aula.": "Convierte audio en transcripción, resumen y preguntas sin perder el contexto de la clase.",
   "Transforme áudios e vídeos de aulas em transcrições editáveis, resumos e questões. Escolha os trechos que quer revisar e encontre seus materiais organizados na Biblioteca.": "Convierte audios y videos de clases en transcripciones editables, resúmenes y preguntas. Elige los fragmentos que quieres repasar y encuentra tus materiales organizados en la Biblioteca.",
   "Transforme o conteúdo da sua aula em material para revisar.": "Convierte el contenido de tu clase en material para repasar.",
+  "Transforme o resumo desta aula em cartões para revisar nos próximos dias.": "Convierte el resumen de esta clase en tarjetas para repasar en los próximos días.",
   "Transforme o resumo em cartões para revisar nos próximos dias.": "Convierte el resumen en tarjetas para repasar en los próximos días.",
   "Translúcido": "Translúcido",
   "Trecho": "Fragmento",
@@ -2006,6 +2011,10 @@ export default {
    "{0} de {1} tareas hechas · {2}"
   ],
   [
+   "{0} cartões · {1} para revisar hoje",
+   "{0} tarjetas · {1} para repasar hoy"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "¿Quitar la asignatura “{0}”?\\n\\n{1}"
   ],
@@ -2028,6 +2037,10 @@ export default {
   [
    "{0} de {1} registros carregados.",
    "{0} de {1} elementos cargados."
+  ],
+  [
+   "{0} cartões · nada pendente hoje",
+   "{0} tarjetas · nada pendiente hoy"
   ],
   [
    "Versão {0} · fonte: revisão {1}",
@@ -2078,12 +2091,20 @@ export default {
    "{0} XP · {1}/{2} hitos"
   ],
   [
+   "{0} conjuntos · {1} cartões",
+   "{0} conjuntos · {1} tarjetas"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "No se encontró nada para “{0}”"
   ],
   [
    "Ver resultado e erros: {0}",
    "Ver resultado y errores: {0}"
+  ],
+  [
+   "{0} conjunto · {1} cartões",
+   "{0} conjunto · {1} tarjetas"
   ],
   [
    "Pelo menos {0} caracteres",
