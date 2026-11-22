@@ -15,6 +15,8 @@ Prevenir conflitos de aparência entre telas sem reescrever o design atual. O hi
 | `frontend/css/academic.css` | Upload, material e conferência acadêmica | Estilos acadêmicos sem interferir em autenticação |
 | `frontend/css/system.css` | **3.5:** tokens, base, componentes e moldura; declara as camadas `legacy, system, pages, a11y` e carrega primeiro | Ver `docs/DESIGN_AUDIT_3_5.md`; arquivos antigos ficam em `@layer legacy`, composições novas em `@layer pages` |
 | `frontend/css/materials.css` | **3.6:** materiais esqueuomórficos (papel, capas, fita, gavetas…) e o seletor de emblemas; importado por `system.css` na camada `system` | Novos materiais e variantes; nunca regras de página. Ver [Materiais (3.6)](#materiais-36) |
+| `frontend/css/journal.css` | **3.6 (Marco D):** composição de `diario.html` (estante, livro com lombada, página, decorações, bandeja, páginas virando), camada `pages` | Regras do Diário de estudo |
+| `frontend/css/lesson-notebook.css` | **3.6 (Marco D):** o caderno da aula (Notes 3.0) como caderno de verdade (capa fechada, lombada, página, abas, divisores, fichas com washi), camada `pages`, carregado por `material.html` | Regras do caderno da aula |
 | `frontend/css/auth-pages.css` | Login, cadastro, recuperação, senha e notificações de autenticação | **Fonte de verdade de ajustes das três páginas**, com `body.auth-page`; carregada por último |
 
 ## Regras de alteração
@@ -60,6 +62,11 @@ volume. Controles de função continuam leves: borda de luz em cima e sombra cur
 | `.label-holder` | — | porta-etiqueta de latão |
 | `.embossed-label` | `data-tint="matcha\|rose\|ink"` (lavanda por padrão) | etiqueta de rotuladora |
 | `.mat-scope` | `data-tone="dark"` | prévia com superfície própria (galeria, cartões de tema) |
+| `.cover-face` | filhos `<img>` (arte `cover.*`) e `.cover-face-label` | capa com o título escrito na plaqueta (fonte `--font-hand`, tamanho pela largura da capa) |
+| `.swatch` / `.swatch-radio` / `.swatch-paper` | `.swatch-paper.paper[data-paper]`; `.cover-radio` para capas | amostras de papel e capa como botões de opção, com anel de seleção e de foco |
+
+**Fonte manuscrita.** `--font-hand` (Caveat, OFL, local) só em títulos de caderno e diário; o
+texto continua em Instrument Sans.
 
 **Tokens.** `--mat-sheet`, `--mat-rule`, `--mat-margin`, `--mat-dot`, `--mat-kraft`, `--mat-cream`,
 `--mat-wood*`, `--mat-brass*`, `--mat-pewter*`, `--mat-lift-1`, `--mat-lift-2`, `--mat-noise` e

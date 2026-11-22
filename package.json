@@ -34,7 +34,7 @@
     "test:flashcards-ui": "node --test frontend/tests/flashcard-ui.test.mjs frontend/tests/deck-tools.test.mjs frontend/tests/card-looks.test.mjs",
     "test:player-v2": "node --test frontend/tests/player-v2.test.mjs frontend/tests/captions.test.mjs frontend/tests/speech.test.mjs",
     "test:study-tracking": "node --test frontend/tests/study-tracking.test.mjs frontend/tests/study-panel.test.mjs frontend/tests/focus-session.test.mjs frontend/tests/soundscape.test.mjs frontend/tests/study-stats.test.mjs",
-    "test:learning-tools": "node --test frontend/tests/learning-tools.test.mjs frontend/tests/learning-panels.test.mjs frontend/tests/notebook.test.mjs frontend/tests/discoveries-ui.test.mjs",
+    "test:learning-tools": "node --test frontend/tests/learning-tools.test.mjs frontend/tests/learning-panels.test.mjs frontend/tests/notebook.test.mjs frontend/tests/discoveries-ui.test.mjs frontend/tests/scrapbook.test.mjs",
     "test:personalization": "node --test frontend/tests/atmospheres.test.mjs frontend/tests/dashboard-layout.test.mjs frontend/tests/dashboard-home.test.mjs frontend/tests/profile-editor.test.mjs frontend/tests/study-presets.test.mjs frontend/tests/i18n.test.mjs frontend/tests/i18n-phrases.test.mjs frontend/tests/stickers.test.mjs",
     "test:classrooms-ui": "node --test frontend/tests/classrooms-ui.test.mjs",
     "test:art": "node --test frontend/tests/art-manifest.test.mjs",

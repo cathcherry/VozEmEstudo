@@ -12,6 +12,16 @@
  *  - Nothing here animates on its own; hover lifts are skipped under reduced motion.
  */
 
+/* ==== Handwritten display face (titles only; body text stays Instrument Sans) ================= */
+/* Caveat (SIL OFL 1.1, frontend/assets/fonts/CAVEAT-OFL.txt), variable 400–700, Latin subset. */
+@font-face {
+  font-family: 'Caveat';
+  src: url('/assets/fonts/caveat-latin-wght.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==== Tokens ================================================================================ */
 /* `.mat-scope` recomputes the tokens inside a preview that has its own surface colours
    (theme cards in Aparência, the art review page); data-tone="dark" gives it the night values. */
@@ -38,6 +48,8 @@
   --mat-pewter-light: #f4f2f8;
   --mat-pewter-deep: #6f6a80;
   --mat-shadow: 46 42 59;
+  /* Hand lettering for notebook and journal titles; readable fallbacks if the font is blocked. */
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', var(--font-display, cursive);
   /* Contact + ambient: the paper sits on the desk, light from the top left. */
   --mat-lift-1:
     0 1px 1px rgb(var(--mat-shadow) / 0.08), 0 3px 8px -4px rgb(var(--mat-shadow) / 0.16);
@@ -873,6 +885,83 @@ dialog:has(.emblem-picker) {
   margin: 0.25rem 0 0;
   color: var(--ink-muted);
   font-size: var(--step--1);
+}
+
+
+/* ==== Scrapbook pieces shared by the lesson notebook and the Diário de estudo (3.6) ========== */
+/* Cover face: a cover.* art with the title written on its label plate (same plate in all covers). */
+.cover-face {
+  position: relative;
+  display: block;
+  container-type: inline-size;
+  aspect-ratio: 3 / 4;
+}
+.cover-face > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.cover-face-label {
+  position: absolute;
+  left: 35.5%;
+  top: 21.4%;
+  width: 41%;
+  height: 11.6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: #2e2a3b;
+  font-family: var(--font-hand);
+  font-weight: 650;
+  font-size: 8.6cqi;
+  line-height: 0.95;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Paper and cover pickers: radio swatches with a visible checked ring and focus ring. */
+.swatch {
+  overflow-wrap: normal;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  font-size: 0.78rem;
+  text-align: center;
+  cursor: pointer;
+}
+.swatch-radio,
+.cover-radio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 1;
+  opacity: 0;
+  cursor: pointer;
+}
+.swatch-paper {
+  width: 2.6rem;
+  height: 3.1rem;
+}
+.swatch-paper.paper:is([data-paper='grid'], [data-paper='dot']) {
+  background-size: 0.5rem 0.5rem;
+  background-position: 0.25rem 0.25rem;
+}
+.swatch-paper[data-paper='ruled'] {
+  --rule-gap: 0.45rem;
+  background-position: -1.6rem 0, 0 0.3rem;
+}
+.swatch-radio:checked + .swatch-paper,
+.cover-radio:checked + img {
+  outline: 3px solid var(--brand-ink);
+  outline-offset: 2px;
+}
+.swatch-radio:focus-visible + .swatch-paper,
+.cover-radio:focus-visible + img {
+  box-shadow: var(--focus-ring);
 }
 
 /* ==== Motion, high contrast, forced colours ================================================ */
