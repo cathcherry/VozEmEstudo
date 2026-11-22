@@ -2,7 +2,6 @@ import { isStudySyncEnabled,studySync,importLocalProgress } from '../utils/study
 import { getFocusSession } from '../utils/focus-host.js';
 import { getStudyOverview,saveStudySettings,tickStudySession } from '../api/study.api.js';
 import { toast } from '../utils/toast.js';
-import { iconMarkup } from '../utils/icons.js';
 
 // Focus timer and weekly study time. The timer is a view of the account's single focus session
 // (utils/focus-session.js), the same one shown by the side panel and the capsule on every page.
@@ -62,7 +61,8 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const weekTitle=make('h2','Sua semana');weekTitle.id='week-heading';
   const gear=make('button',null,'icon-action week-settings');gear.type='button';gear.setAttribute('aria-haspopup','dialog');
   gear.setAttribute('aria-label','Ajustes do foco, meta e sincronização');gear.title='Ajustes do foco, meta e sincronização';
-  gear.innerHTML=iconMarkup('settings');
+  // Sprite icon written out (tests evaluate this file without imports); name from utils/icons.js.
+  gear.innerHTML='<svg class="ui-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="settings"><use href="/assets/icons/sprite.svg#i-settings"/></svg>';
   weekHead.append(weekTitle,gear);
   const metrics=make('div',null,'study-metrics');metrics.setAttribute('aria-live','polite');
   week.append(weekHead,metrics);
