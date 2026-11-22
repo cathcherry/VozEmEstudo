@@ -14,6 +14,7 @@ import { t, intlLocale } from '../i18n/i18n.js';
 import { initDeskScene, setDeskContext } from './desk-scene.js';
 import { isToday } from '../utils/desk.js';
 import { initRailTabs } from './dashboard-rail-tabs.js';
+import { icon as uiIcon } from '../utils/icons.js';
 
 const session=await initAuthenticatedShell();
 // The escrivaninha (atmosphere, objects, Lume) and, on narrow screens, the margin notes as tabs.
@@ -157,7 +158,7 @@ async function load() {
     const tones=['lavender','matcha','honey','mist','rose']; let toneIndex=0;
     for(const [subject,items] of [...subjects].sort((a,b)=>a[0].localeCompare(b[0],intlLocale()))) {
       const link=document.createElement('a'); link.className='subject-folder'; link.dataset.folderTone=tones[toneIndex++%tones.length]; link.href='./historico.html?subject='+encodeURIComponent(subject);
-      const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.textContent='📁'; icon.setAttribute('aria-hidden','true');
+      const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.append(uiIcon('folder',{size:18})); icon.setAttribute('aria-hidden','true');
       const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=t('dashboard.subjectLessons',{count:items.length})+(reviewed?' · '+t('dashboard.subjectStudied',{count:reviewed}):''); copy.append(title,detail); link.append(icon,copy); shelf.append(link);
     }
     if (!subjects.size) { const p=document.createElement('p'); p.className='quiet-empty'; p.textContent=t('dashboard.noSubjects'); shelf.append(p); }

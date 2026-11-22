@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+<!-- voz-art:generated | id: emblem.pesquisa | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<rect x="5" y="6.5" width="54" height="54" rx="13" fill="#2E2A3B" opacity="0.1"/>
+  <rect x="4" y="4" width="56" height="55" rx="13" fill="#FAEDCB" stroke="#B9862A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"/>
+  <rect x="7.5" y="7.5" width="49" height="48" rx="10" stroke="#B9862A" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.22"/>
+  <path d="M10 7.2 Q32 5.4 54 7.2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>
+  <path d="M12 10 H32 L39 17 V50 H12 Z" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M32 10 V17 H39" fill="#FAEDCB" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M16.5 22 H31 M16.5 27.5 H34 M16.5 33 H25" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    <path d="M45.4 45.4 L54 54" stroke="#2E2A3B" stroke-width="6.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/><path d="M45.4 45.4 L54 54" stroke="#C9A27E" stroke-width="3.4" stroke-linecap="round"/>
+    <circle cx="38" cy="38" r="10.4" fill="#EAF1F7" fill-opacity="0.85" stroke="#2E2A3B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M32 35 Q33.4 31.6 37 30.6" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1"/>
+    <path d="M33.5 40 H42.5" stroke="#B9862A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>

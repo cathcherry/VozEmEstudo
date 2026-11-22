@@ -318,7 +318,7 @@
       var(--paper-raised);
     box-shadow: var(--elev-2);
   }
-  body.app-page .focus-page :is(.focus-heading, .week-head h2, .study-stats > h2, .focus-history > h2) {
+  body.app-page :is(.focus-page, #tempo) :is(.focus-heading, .week-head h2, .study-stats > h2, .focus-history > h2) {
     font-family: var(--font-display);
     font-variation-settings: var(--display-axes);
     font-size: var(--step-1);
@@ -385,7 +385,7 @@
   }
 
   /* ---- The week, written in the margin ----------------------------------------------------- */
-  body.app-page .focus-page .week-card {
+  body.app-page :is(.focus-page, #tempo) .week-card {
     align-self: start;
     gap: var(--space-4);
     padding: var(--space-2) 0 0;
@@ -394,7 +394,7 @@
     background: none;
     box-shadow: none;
   }
-  body.app-page .focus-page .week-settings {
+  body.app-page :is(.focus-page, #tempo) .week-settings {
     width: 2.25rem;
     height: 2.25rem;
     border: 1px solid var(--line);
@@ -402,42 +402,42 @@
     background: var(--paper-raised);
     box-shadow: var(--elev-1);
   }
-  body.app-page .focus-page .week-total strong {
+  body.app-page :is(.focus-page, #tempo) .week-total strong {
     font-family: var(--font-display);
     font-variation-settings: var(--display-axes);
     font-size: var(--step-3);
   }
-  body.app-page .focus-page .week-total {
+  body.app-page :is(.focus-page, #tempo) .week-total {
     color: var(--ink-muted);
     font-size: var(--step-ui);
   }
-  body.app-page .focus-page .week-goal {
+  body.app-page :is(.focus-page, #tempo) .week-goal {
     height: 6px;
   }
-  body.app-page .focus-page .week-goal::-webkit-progress-value {
+  body.app-page :is(.focus-page, #tempo) .week-goal::-webkit-progress-value {
     background: var(--matcha);
   }
-  body.app-page .focus-page .week-goal::-moz-progress-bar {
+  body.app-page :is(.focus-page, #tempo) .week-goal::-moz-progress-bar {
     background: var(--matcha);
   }
-  body.app-page .focus-page .study-day-list.week-columns {
+  body.app-page :is(.focus-page, #tempo) .study-day-list.week-columns {
     height: 9.5rem;
     padding-top: var(--space-4);
     border-top: 1px solid var(--line);
   }
-  body.app-page .focus-page .week-columns .study-day-bar {
+  body.app-page :is(.focus-page, #tempo) .week-columns .study-day-bar {
     width: min(100%, 1.75rem);
     border-radius: 6px;
     background: var(--paper-sunken);
   }
-  body.app-page .focus-page .week-columns .study-day-bar::after {
+  body.app-page :is(.focus-page, #tempo) .week-columns .study-day-bar::after {
     border-radius: 6px;
     background: var(--brand-ink);
   }
-  body.app-page .focus-page .week-columns li.is-today .week-day {
+  body.app-page :is(.focus-page, #tempo) .week-columns li.is-today .week-day {
     color: var(--brand-ink);
   }
-  body.app-page .focus-page .week-note {
+  body.app-page :is(.focus-page, #tempo) .week-note {
     padding-top: var(--space-3);
     border-top: 1px solid var(--line);
     color: var(--ink-muted);
@@ -445,7 +445,7 @@
   }
 
   /* ---- Seu ritmo: one panel ------------------------------------------------------------------ */
-  body.app-page .focus-page .study-stats {
+  body.app-page :is(.focus-page, #tempo) .study-stats {
     margin-top: var(--space-7);
     padding: var(--space-5) var(--space-6) var(--space-5);
     border: 1px solid var(--line);
@@ -453,86 +453,86 @@
     background: var(--paper-raised);
     box-shadow: var(--elev-1);
   }
-  body.app-page .focus-page .stats-intro {
+  body.app-page :is(.focus-page, #tempo) .stats-intro {
     color: var(--ink-muted);
     font-size: var(--step-ui);
   }
-  body.app-page .focus-page .stats-tiles {
+  body.app-page :is(.focus-page, #tempo) .stats-tiles {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
     margin: var(--space-4) 0 var(--space-5);
     border-block: 1px solid var(--line);
   }
-  body.app-page .focus-page .stats-tile {
+  body.app-page :is(.focus-page, #tempo) .stats-tile {
     padding: var(--space-3) var(--space-4);
     border: 0;
     border-radius: 0;
     background: none;
   }
-  body.app-page .focus-page .stats-tile + .stats-tile {
+  body.app-page :is(.focus-page, #tempo) .stats-tile + .stats-tile {
     border-left: 1px solid var(--line);
   }
-  body.app-page .focus-page .stats-tile:first-child {
+  body.app-page :is(.focus-page, #tempo) .stats-tile:first-child {
     padding-left: 0;
   }
-  body.app-page .focus-page .stats-tile dt {
+  body.app-page :is(.focus-page, #tempo) .stats-tile dt {
     color: var(--ink-muted);
     font-size: var(--step--1);
   }
-  body.app-page .focus-page .stats-tile dd {
+  body.app-page :is(.focus-page, #tempo) .stats-tile dd {
     font-family: var(--font-display);
     font-variation-settings: var(--display-axes);
     font-size: var(--step-2);
   }
-  body.app-page .focus-page .stats-chart {
+  body.app-page :is(.focus-page, #tempo) .stats-chart {
     padding: 0;
     border: 0;
     border-radius: 0;
     background: none;
   }
-  body.app-page .focus-page .stats-chart figcaption {
+  body.app-page :is(.focus-page, #tempo) .stats-chart figcaption {
     color: var(--ink-muted);
     font-size: var(--step--1);
   }
-  body.app-page .focus-page .stats-bar {
+  body.app-page :is(.focus-page, #tempo) .stats-bar {
     background: var(--brand-ink);
   }
-  body.app-page .focus-page .stats-bars li:not(.is-goal) .stats-bar {
+  body.app-page :is(.focus-page, #tempo) .stats-bars li:not(.is-goal) .stats-bar {
     background: color-mix(in srgb, var(--lavender) 55%, var(--paper-raised));
   }
-  body.app-page .focus-page .stats-table {
+  body.app-page :is(.focus-page, #tempo) .stats-table {
     margin-top: var(--space-4);
     padding-top: var(--space-2);
     border-top: 1px solid var(--line);
   }
-  body.app-page .focus-page .stats-table summary {
+  body.app-page :is(.focus-page, #tempo) .stats-table summary {
     padding-left: 0;
     color: var(--brand-ink);
     font-size: var(--step-ui);
   }
-  body.app-page .focus-page .stats-lessons {
+  body.app-page :is(.focus-page, #tempo) .stats-lessons {
     margin-top: var(--space-4);
   }
-  body.app-page .focus-page .stats-lessons h3 {
+  body.app-page :is(.focus-page, #tempo) .stats-lessons h3 {
     font-size: var(--step-ui);
     font-weight: 650;
   }
-  body.app-page .focus-page .stats-lessons li {
+  body.app-page :is(.focus-page, #tempo) .stats-lessons li {
     font-size: var(--step-ui);
   }
-  body.app-page .focus-page .stats-year-toggle {
+  body.app-page :is(.focus-page, #tempo) .stats-year-toggle {
     margin-top: var(--space-4);
   }
 
   /* ---- Recent blocks ---------------------------------------------------------------------------- */
-  body.app-page .focus-page .focus-history {
+  body.app-page :is(.focus-page, #tempo) .focus-history {
     margin-top: var(--space-7);
   }
-  body.app-page .focus-page .focus-history-list {
+  body.app-page :is(.focus-page, #tempo) .focus-history-list {
     gap: 0;
     border-top: 1px solid var(--line);
   }
-  body.app-page .focus-page .focus-history-list li {
+  body.app-page :is(.focus-page, #tempo) .focus-history-list li {
     padding: var(--space-2) 0;
     border: 0;
     border-bottom: 1px solid var(--line);
@@ -551,18 +551,83 @@
     body.app-page .focus-page .focus-mode {
       padding: 0 var(--space-3);
     }
-    body.app-page .focus-page .study-stats {
+    body.app-page :is(.focus-page, #tempo) .study-stats {
       padding: var(--space-4);
     }
-    body.app-page .focus-page .stats-tiles {
+    body.app-page :is(.focus-page, #tempo) .stats-tiles {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    body.app-page .focus-page .stats-tile:nth-child(odd) {
+    body.app-page :is(.focus-page, #tempo) .stats-tile:nth-child(odd) {
       padding-left: 0;
       border-left: 0;
     }
-    body.app-page .focus-page .stats-tile:nth-child(n + 3) {
+    body.app-page :is(.focus-page, #tempo) .stats-tile:nth-child(n + 3) {
       border-top: 1px solid var(--line);
+    }
+  }
+}
+
+/* ==== 3.6: one focus engine ==================================================================
+ * Focar runs the session (and names the lesson the block counts for); Planejar › Tempo de estudo
+ * is history and analysis: the week in the margin with "Iniciar foco" (a link to Focar), "Seu
+ * ritmo" beside it, the recent blocks below. No timer outside Focar. */
+@layer pages {
+  body.app-page .focus-page .focus-lesson {
+    max-width: 28ch;
+    margin: calc(var(--space-2) * -1) 0 0;
+    overflow: hidden;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body.app-page .focus-page .focus-more {
+    margin: var(--space-6) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page #tempo:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  body.app-page #tempo .study-tracking-panel {
+    margin: 0;
+  }
+  body.app-page #tempo .focus-layout.is-week-only {
+    display: block;
+  }
+  body.app-page #tempo :is(.study-stats, .focus-history) {
+    margin-top: 0;
+  }
+  body.app-page #tempo .week-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  body.app-page #tempo .week-head h2 {
+    flex: 1;
+    margin: 0;
+  }
+  body.app-page #tempo .week-focus-link {
+    min-height: 2.25rem;
+    padding-inline: var(--space-3);
+    font-size: var(--step-ui);
+    white-space: nowrap;
+  }
+  @media (min-width: 1100px) {
+    body.app-page #tempo:not([hidden]) {
+      grid-template-columns: minmax(17rem, 21rem) minmax(0, 1fr);
+      gap: var(--space-6) var(--space-7);
+    }
+    body.app-page #tempo .study-stats {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+    body.app-page #tempo .focus-history {
+      grid-column: 1;
     }
   }
 }

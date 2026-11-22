@@ -122,7 +122,7 @@ export function setUiPreferences(patch) {
 export const getUiPreferences = () => ({ ...uiPreferences });
 function updateUiPreference(key, value) {
   if (key === 'wallpaper' || key === 'pageWallpapers') queueMicrotask(() => window.dispatchEvent(new Event('voz-wallpaper-change')));
-  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings', 'stickers', 'deskStarters'].includes(key)) return;
+  if (!(key in appearance.defaults) && !['pageWallpapers', 'setTemplates', 'focusSettings', 'stickers', 'deskStarters', 'discoveryCollections'].includes(key)) return;
   // On/off segmented controls are radios with "true"/"false" values.
   if (typeof appearance.defaults[key] === 'boolean' && typeof value === 'string') value = value === 'true';
   // The mode used to be a per-device value (Gabinete); the account preference replaces it.
@@ -613,7 +613,7 @@ function initialize() {
     );
   document.querySelector('#reset-personalization')?.addEventListener('click', () => {
     // Reading and focus only: the atmosphere, the desk and the experience mode stay.
-    const kept = ['experience', 'atmosphere', 'atmosphereAccent', 'atmospherePalette', 'atmosphereWallpaper', 'atmosphereMotion', 'lumeOutfit', 'notebookCover', 'decoration', 'deskStarters'];
+    const kept = ['experience', 'atmosphere', 'atmosphereAccent', 'atmospherePalette', 'atmosphereWallpaper', 'atmosphereMotion', 'lumeOutfit', 'notebookCover', 'decoration', 'deskStarters', 'discoveryCollections'];
     saveUi({ ...appearance.defaults, ...Object.fromEntries(kept.map((key) => [key, uiPreferences[key]])) });
     showToast('Preferências de leitura restauradas.');
   });

@@ -117,6 +117,10 @@ async function main() {
     const created = data.discoveryState.requests.find((r) => r.kind === 'save' && r.version === 0);
     assert.deepEqual(created.body, { materialId: 'l-foto', sourceRevisionId: 'rev-l-foto', question: 'Por que a fotossíntese guarda energia?', questionOrigin: 'student' });
     assert.equal(await page.locator('[data-step-button="explore"]').getAttribute('aria-current'), 'step');
+    // 3.6: the card this question becomes is a pencil sketch, and says what turns it into ink.
+    const sketch = page.locator('[data-investigation-card] .specimen-card');
+    assert.equal(await sketch.getAttribute('data-stage'), 'sketch');
+    assert.match(await sketch.locator('.specimen-why').textContent(), /passa a tinta quando você guardar um trecho conferido da aula como evidência e explicar com as suas palavras/);
     record('Pergunta (API simulada): a pergunta escrita pela pessoa começa a investigação na revisão confirmada mostrada');
 
     // 2. Explore: filter the passages, mark explored.
@@ -176,6 +180,7 @@ async function main() {
     await complete.click();
     await page.locator('[data-investigation-done]:not([hidden])').waitFor();
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.investigationDone !== undefined), true, 'focus moves to the result');
+    assert.equal(await page.locator('[data-investigation-card] .specimen-card').getAttribute('data-traits'), 'inked stamped', 'inked, and stamped by the reflection');
     const stamps = await page.locator('[data-done-stamps] [data-art-slot][data-art-id]').evaluateAll((nodes) => nodes.map((n) => n.dataset.artId).sort());
     assert.deepEqual(stamps, ['stamp.first-evidence', 'stamp.first-investigation', 'stamp.first-reflection', 'stamp.own-explanation']);
     await settle(page);
@@ -186,8 +191,8 @@ async function main() {
 
     // ---------- Arquivo de Descobertas -----------------------------------------------------
     await page.goto(base + '/descobertas.html');
-    await page.locator('.discovery-page-card').nth(1).waitFor();
-    assert.deepEqual((await page.locator('.discovery-page-card h3').allTextContents()).sort(), ['De onde vinha a energia das fábricas?', 'Por que a fotossíntese guarda energia?']);
+    await page.locator('.archive-cards .specimen-card').nth(1).waitFor();
+    assert.deepEqual((await page.locator('.archive-cards .specimen-title').allTextContents()).sort(), ['De onde vinha a energia das fábricas?', 'Por que a fotossíntese guarda energia?']);
     await settle(page);
     await axeCheck(page, 'main', 'Arquivo de Descobertas');
     await page.goto(base + '/' + discoveryHref.replace('./', ''));
@@ -218,20 +223,33 @@ async function main() {
 
     // ---------- Gabinete -------------------------------------------------------------------
     await page.goto(base + '/gabinete.html');
-    await page.locator('[data-drawer="stamp"] .cabinet-item[data-state="unlocked"]').first().waitFor();
+    const stampDrawer = page.locator('[data-drawer="stamp"]');
+    await stampDrawer.waitFor();
+    assert.match(await stampDrawer.textContent(), /5 de 6/);
+    await stampDrawer.click();
+    await page.locator('#curio-tray .cabinet-item[data-state="unlocked"]').first().waitFor();
     const evidenceStamp = page.locator('.cabinet-item[data-collectible="stamp.first-evidence"]');
-    assert.match(await evidenceStamp.textContent(), /Você guardou o primeiro trecho conferido/);
-    assert.match(await evidenceStamp.locator('.cabinet-origin').textContent(), /Fotossíntese e respiração celular/);
     assert(await evidenceStamp.locator('time').getAttribute('datetime'));
-    assert.match(await page.locator('[data-drawer="stamp"] summary').textContent(), /5 de 6/);
+    await evidenceStamp.click();
+    const dialog = page.locator('[data-specimen-dialog]');
+    await dialog.locator('[data-specimen-title]', { hasText: 'Primeira evidência' }).waitFor();
+    assert.match(await dialog.textContent(), /Você guardou o primeiro trecho conferido/);
+    assert.match(await dialog.locator('[data-specimen-facts]').textContent(), /Fotossíntese e respiração celular/);
+    await page.keyboard.press('Escape');
+    await dialog.waitFor({ state: 'hidden' });
+    await page.locator('[data-drawer="object"]').click();
     assert.equal(await page.locator('.cabinet-item[data-collectible="object.desk-lamp"]').getAttribute('data-state'), 'locked');
     assert.doesNotMatch(await page.locator('main').textContent(), /domina|dominou|mestre/i, 'never claims mastery');
-    // Place the magnifying glass on the desk.
-    await page.getByLabel('Lupa').selectOption({ label: 'Janela' });
-    await page.getByRole('button', { name: 'Salvar a mesa' }).click();
-    await page.locator('[data-cabinet-status]', { hasText: 'Mesa salva.' }).waitFor();
+    // Place the magnifying glass on the desk from its museum label.
+    await page.locator('.cabinet-item[data-collectible="object.magnifying-glass"]').click();
+    await dialog.getByLabel('Lugar na mesa').selectOption({ label: 'Janela' });
+    await dialog.getByRole('button', { name: 'Colocar na mesa' }).click();
+    await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa: Janela.' }).waitFor();
     assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'window', objectId: 'object.magnifying-glass' }]);
-    assert.equal(await page.locator('.desk-slot[data-slot="window"] [data-art-slot][data-art-id="object.magnifying-glass"]').count(), 1);
+    await dialog.getByRole('button', { name: 'Guardar no gabinete' }).waitFor();
+    await settle(page);
+    await axeCheck(page, '[data-specimen-dialog]', 'Gabinete: etiqueta do objeto');
+    await page.keyboard.press('Escape');
     await settle(page);
     await axeCheck(page, 'main', 'Gabinete');
     await shot(page, 'gabinete');
@@ -241,9 +259,9 @@ async function main() {
     await page.getByLabel('Estudo silencioso').check();
     assert.equal(await page.evaluate(() => document.documentElement.dataset.experienceMode), 'quiet');
     await page.goto(base + '/descobertas.html');
-    await page.locator('.discovery-page-card').first().waitFor();
+    await page.locator('.archive-cards .specimen-card').first().waitFor();
     assert.equal(await page.locator('.stamp-row').first().isVisible(), false, 'quiet mode hides stamps');
-    assert.equal(await page.locator('.discovery-page-card').count(), 2, 'and keeps every record');
+    assert.equal(await page.locator('[data-archive-panel="subjects"] .specimen-card').count(), 2, 'and keeps every record');
     record('Gabinete (API simulada): gavetas com data e aula de origem, itens ainda não encontrados com o que os faz aparecer, objeto colocado na mesa; modos aventura e silencioso mudam só o que aparece');
 
     // ---------- 390 px: axe and no horizontal scroll on the three pages ---------------------

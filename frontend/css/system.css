@@ -16,6 +16,8 @@
  * "Escrivaninha lavanda") holds the reference values from the vision.
  */
 @layer legacy, system, pages, a11y;
+/* 3.6: skeuomorphic materials (paper, covers, tape, drawers) and the emblem picker. */
+@import url('materials.css') layer(system);
 
 /* ---- Fonts (SIL OFL, local; licences beside the files in /assets/fonts) ------------------- */
 @font-face {
@@ -726,6 +728,73 @@
   .icon-button svg {
     width: 1.2rem;
     height: 1.2rem;
+  }
+  /* 3.6: a focus block running or paused, as a small link to Focar (utils/focus-indicator.js).
+   * The only trace of the timer outside Focar. */
+  .site-header .focus-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 2.25rem;
+    margin-inline-end: var(--space-1);
+    padding: 0 var(--space-3) 0 var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--brand-ink) 28%, transparent);
+    border-radius: var(--radius-control);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font: 600 var(--step-ui) / 1 var(--font-ui);
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .site-header .focus-indicator[hidden] {
+    display: none;
+  }
+  .site-header .focus-indicator:hover {
+    background: color-mix(in srgb, var(--brand-ink) 16%, transparent);
+  }
+  .site-header .focus-indicator:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  .focus-indicator-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .focus-indicator-mode {
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+  .site-header .focus-indicator[data-state='paused'] {
+    border-color: var(--line-strong);
+    background: transparent;
+    color: var(--ink-muted);
+  }
+  .focus-indicator[data-state='paused'] .focus-indicator-dot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html:not([data-reduced-motion='true']):not([data-low-stimulation='true']) .focus-indicator[data-state='running'] .focus-indicator-dot {
+      animation: focus-indicator-breathe 2.4s ease-in-out infinite;
+    }
+  }
+  @keyframes focus-indicator-breathe {
+    50% {
+      opacity: 0.35;
+    }
+  }
+  @media (max-width: 700px) {
+    .focus-indicator-mode {
+      display: none;
+    }
+  }
+  @media print {
+    .site-header .focus-indicator {
+      display: none;
+    }
   }
   .site-header .focus-quick-toggle > span {
     position: absolute;
@@ -1625,8 +1694,21 @@
   }
 
   /* Descobertas and Gabinete in the sidebar (shell.js adds them when the feature is on). */
-  html:not([data-nav-discoveries='true']) [data-nav-feature='discoveries'] {
+  html:not([data-nav-discoveries='true']) [data-nav-feature='discoveries'],
+  html:not([data-nav-journal='true']) [data-nav-feature='journal'],
+  html:not([data-nav-space='true']) [data-nav-feature='space'] {
     display: none !important;
+  }
+  /* "Seu espaço": the caption above the student's creative places. */
+  body.app-page .side-navigation nav .nav-group-label {
+    margin: var(--space-4, 1rem) 0 var(--space-1, .25rem);
+    padding: 0 .75rem;
+    font: 600 .75rem/1.3 var(--font-ui, 'Instrument Sans', sans-serif);
+    letter-spacing: .02em;
+    color: var(--ink-muted);
+  }
+  [data-sidebar-collapsed='true'] body.app-page .side-navigation nav .nav-group-label {
+    display: none;
   }
   body.app-page .side-navigation nav a .nav-art-icon {
     flex: 0 0 1.15rem;
@@ -1656,6 +1738,44 @@
   @media (forced-colors: active) {
     body.app-page .side-navigation nav a .nav-art-icon {
       background-color: CanvasText;
+    }
+  }
+
+  /* ==== Functional icons (3.6): Phosphor duotone via /assets/icons/sprite.svg ============== */
+  /* frontend/js/utils/icons.js. Size comes from the width/height attributes or the context;
+     the glyph is the text colour, the duotone layer a soft tint of the brand (lavender). */
+  .ui-icon {
+    flex: none;
+    fill: currentColor;
+    stroke: none;
+    vertical-align: -0.18em;
+    overflow: visible;
+    --icon-tint: var(--lavender);
+    --icon-tint-opacity: 0.32;
+  }
+  body.app-page .side-navigation nav a:is(.active, [aria-current='page']) .ui-icon {
+    --icon-tint-opacity: 0.45;
+  }
+  body.app-page .side-navigation nav a.nav-sub .nav-icon {
+    flex-basis: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+  .delete-button .ui-icon,
+  .danger-action .ui-icon {
+    --icon-tint: var(--rose);
+  }
+  .player-icon .player-skip-amount {
+    margin-inline-start: -0.2rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1;
+    align-self: flex-end;
+  }
+  @media (forced-colors: active) {
+    .ui-icon {
+      fill: currentColor;
+      --icon-tint-opacity: 0;
     }
   }
 

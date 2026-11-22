@@ -26,6 +26,7 @@ const describe = (items) =>
               'study-history': 'histórico de estudo',
               milestones: 'marcos de estudo',
               'catalog-icons': 'ícones de pastas',
+              'notebook-looks': 'capas e papéis dos cadernos',
               'focus-history': 'blocos de foco',
               'question-reports': 'questões marcadas',
             }[item.key] || 'dados do perfil',

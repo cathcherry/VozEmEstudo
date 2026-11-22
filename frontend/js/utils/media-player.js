@@ -1,13 +1,11 @@
-const icons = {
-  play: '<path d="m9 5 11 7-11 7z"/>',
-  pause: '<path d="M8 5v14M16 5v14"/>',
-  rewind:
-    '<path d="M6 7H2V3M2 7a10 10 0 1 1-1 8"/><text x="8" y="15" stroke="none" fill="currentColor" font-size="8">10</text>',
-  forward:
-    '<path d="M18 7h4V3M22 7a10 10 0 1 0 1 8"/><text x="8" y="15" stroke="none" fill="currentColor" font-size="8">10</text>',
-};
+// Shared icon sprite (names from frontend/js/utils/icons.js). Written out here because the player
+// tests evaluate this file as a plain script, without imports. The skip buttons add a small "10".
 const svg = (name) =>
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
+  `<svg class="ui-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="${name}"><use href="/assets/icons/sprite.svg#i-${name}"/></svg>${
+    name === 'rewind' || name === 'forward'
+      ? '<small class="player-skip-amount" aria-hidden="true">10</small>'
+      : ''
+  }`;
 export function timeLabel(seconds = 0, precision = false) {
   const value = precision
     ? Math.round(Math.max(0, Number(seconds) || 0) * 100) / 100
@@ -36,7 +34,10 @@ export class MediaPlayer {
     container.classList.add('media-player');
     container.tabIndex = 0;
     container.setAttribute('role', 'group');
-    container.setAttribute('aria-label', 'Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.');
+    container.setAttribute(
+      'aria-label',
+      'Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.',
+    );
     container.innerHTML = `<div class="player-heading"><span class="player-cover" aria-hidden="true">♫</span><div><strong data-player-title>Gravação da aula</strong><span data-player-type>Áudio</span></div><span class="player-format" data-player-format></span></div>
       <div class="video-preview" hidden><video playsinline preload="metadata"></video></div><audio preload="metadata"></audio>
       <div class="waveform-shell"><canvas aria-hidden="true"></canvas><div class="waveform-selection" hidden></div><input type="range" class="player-seek" min="0" max="0" step="0.01" value="0" aria-label="Posição da reprodução"><span class="waveform-note">Linha do tempo</span></div>
@@ -51,15 +52,34 @@ export class MediaPlayer {
     for (const media of [this.audio, this.video]) {
       media.addEventListener('loadedmetadata', () => {
         if (media !== this.media || !Number.isFinite(media.duration)) return;
-        this.setDuration(this.timelineDuration ? Math.min(this.timelineDuration, media.duration - this.timelineStart) : media.duration, !this.duration);
-        if (this.pendingPosition !== null) { this.seekTo(this.pendingPosition, false); this.pendingPosition = null; }
-        if (this.resumeOnLoad) { this.resumeOnLoad = false; void this.play(); }
+        this.setDuration(
+          this.timelineDuration
+            ? Math.min(this.timelineDuration, media.duration - this.timelineStart)
+            : media.duration,
+          !this.duration,
+        );
+        if (this.pendingPosition !== null) {
+          this.seekTo(this.pendingPosition, false);
+          this.pendingPosition = null;
+        }
+        if (this.resumeOnLoad) {
+          this.resumeOnLoad = false;
+          void this.play();
+        }
       });
-      media.addEventListener('timeupdate', () => { if (media === this.media) this.updateTime(); });
-      media.addEventListener('play', () => this.updatePlay()); media.addEventListener('pause', () => this.updatePlay()); media.addEventListener('ended', () => this.updatePlay());
+      media.addEventListener('timeupdate', () => {
+        if (media === this.media) this.updateTime();
+      });
+      media.addEventListener('play', () => this.updatePlay());
+      media.addEventListener('pause', () => this.updatePlay());
+      media.addEventListener('ended', () => this.updatePlay());
       media.addEventListener('error', () => {
         if (media !== this.media || !this.source) return;
-        this.message(this.trim ? 'A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.' : 'Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.');
+        this.message(
+          this.trim
+            ? 'A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.'
+            : 'Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.',
+        );
         this.onError();
       });
     }
@@ -76,12 +96,21 @@ export class MediaPlayer {
     speed.append(new Option('2,5×', '2.5'), new Option('3×', '3'));
     speed.addEventListener('change', (e) => this.setPlaybackRate(Number(e.target.value)));
     container.addEventListener('keydown', (event) => {
-      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey ||
-          event.target.closest('input,textarea,select,button,a,[contenteditable]')) return;
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.target.closest('input,textarea,select,button,a,[contenteditable]')
+      )
+        return;
       if ([' ', 'k', 'K'].includes(event.key)) {
-        event.preventDefault(); if (this.media.paused) void this.play(); else this.media.pause();
+        event.preventDefault();
+        if (this.media.paused) void this.play();
+        else this.media.pause();
       } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-        event.preventDefault(); this.jump(event.key === 'ArrowLeft' ? -10 : 10);
+        event.preventDefault();
+        this.jump(event.key === 'ArrowLeft' ? -10 : 10);
       }
     });
     container.querySelector('.player-volume input').addEventListener('input', (e) => {
@@ -159,15 +188,36 @@ export class MediaPlayer {
       this.observer.observe(container);
     }
   }
-  setSource({ src, title = 'Gravação da aula', video = false, format = '', duration = 0, peaks = [], timelineStart = 0, timelineDuration = 0, preservePosition = false }) {
+  setSource({
+    src,
+    title = 'Gravação da aula',
+    video = false,
+    format = '',
+    duration = 0,
+    peaks = [],
+    timelineStart = 0,
+    timelineDuration = 0,
+    preservePosition = false,
+  }) {
     if (this.source !== src) {
       this.pendingPosition = preservePosition ? this.currentTime : 0;
       this.resumeOnLoad = preservePosition && !this.media.paused;
-      this.media.pause(); this.audio.removeAttribute('src'); this.video.removeAttribute('src');
-      this.timelineStart = Math.max(0, timelineStart); this.timelineDuration = Math.max(0, timelineDuration);
-      this.source = src; this.media = video ? this.video : this.audio; this.media.src = src;
-      this.media.playbackRate = Number(this.root.querySelector('.player-speed select').value); this.media.volume = Number(this.root.querySelector('.player-volume input').value);
-      this.root.querySelector('.video-preview').hidden = !video; this.duration = 0; this.start = 0; this.end = 0; this.previewSelection = false; this.peaks = [];
+      this.media.pause();
+      this.audio.removeAttribute('src');
+      this.video.removeAttribute('src');
+      this.timelineStart = Math.max(0, timelineStart);
+      this.timelineDuration = Math.max(0, timelineDuration);
+      this.source = src;
+      this.media = video ? this.video : this.audio;
+      this.media.src = src;
+      this.media.playbackRate = Number(this.root.querySelector('.player-speed select').value);
+      this.media.volume = Number(this.root.querySelector('.player-volume input').value);
+      this.root.querySelector('.video-preview').hidden = !video;
+      this.duration = 0;
+      this.start = 0;
+      this.end = 0;
+      this.previewSelection = false;
+      this.peaks = [];
       this.message('');
     }
     this.root.querySelector('[data-player-title]').textContent = title;
@@ -236,33 +286,60 @@ export class MediaPlayer {
     this.onRangeChange(this.getRange());
     this.draw();
   }
-  getRange() { return { start: this.start, end: this.end }; }
-  async play() { try {
-    if (this.timelineDuration && this.currentTime >= this.duration - .05) this.seekTo(0, false);
-    await this.media.play(); this.message('');
-  } catch { this.message(this.trim ? 'Não foi possível reproduzir a prévia neste navegador. O recorte continua disponível.' : 'Não foi possível reproduzir. Tente renovar o acesso à mídia.'); } }
-  get currentTime() { return Math.max(0, (this.media.currentTime || 0) - this.timelineStart); }
+  getRange() {
+    return { start: this.start, end: this.end };
+  }
+  async play() {
+    try {
+      if (this.timelineDuration && this.currentTime >= this.duration - 0.05) this.seekTo(0, false);
+      await this.media.play();
+      this.message('');
+    } catch {
+      this.message(
+        this.trim
+          ? 'Não foi possível reproduzir a prévia neste navegador. O recorte continua disponível.'
+          : 'Não foi possível reproduzir. Tente renovar o acesso à mídia.',
+      );
+    }
+  }
+  get currentTime() {
+    return Math.max(0, (this.media.currentTime || 0) - this.timelineStart);
+  }
   setPlaybackRate(value) {
     const speed = this.root.querySelector('.player-speed select');
     const safe = [...speed.options].some((option) => Number(option.value) === value) ? value : 1;
-    speed.value = String(safe); this.media.playbackRate = safe;
+    speed.value = String(safe);
+    this.media.playbackRate = safe;
   }
-  jump(delta) { this.seekTo(this.currentTime + delta, false); }
+  jump(delta) {
+    this.seekTo(this.currentTime + delta, false);
+  }
   seekTo(seconds, play = true) {
     if (!Number.isFinite(Number(seconds))) return;
     this.previewSelection = false;
     const position = Math.max(0, Math.min(this.duration || Infinity, Number(seconds)));
     if (this.media.readyState < 1) this.pendingPosition = position;
     else this.media.currentTime = this.timelineStart + position;
-    this.updateTime(); if (play) void this.play();
+    this.updateTime();
+    if (play) void this.play();
   }
   updateTime() {
-    if (this.previewSelection && this.currentTime >= this.end) { this.media.pause(); this.previewSelection = false; this.media.currentTime = this.timelineStart + this.end; }
-    if (this.timelineDuration && this.currentTime >= this.duration && !this.media.paused) {
-      this.media.pause(); this.media.currentTime = this.timelineStart + this.duration;
+    if (this.previewSelection && this.currentTime >= this.end) {
+      this.media.pause();
+      this.previewSelection = false;
+      this.media.currentTime = this.timelineStart + this.end;
     }
-    this.seek.value = String(this.currentTime); this.seek.setAttribute('aria-valuetext', `${timeLabel(this.currentTime)} de ${timeLabel(this.duration)}`);
-    this.root.querySelector('[data-current-time]').textContent = timeLabel(this.currentTime); this.draw();
+    if (this.timelineDuration && this.currentTime >= this.duration && !this.media.paused) {
+      this.media.pause();
+      this.media.currentTime = this.timelineStart + this.duration;
+    }
+    this.seek.value = String(this.currentTime);
+    this.seek.setAttribute(
+      'aria-valuetext',
+      `${timeLabel(this.currentTime)} de ${timeLabel(this.duration)}`,
+    );
+    this.root.querySelector('[data-current-time]').textContent = timeLabel(this.currentTime);
+    this.draw();
   }
   updatePlay() {
     const playing = !this.media.paused;
@@ -310,4 +387,3 @@ export class MediaPlayer {
     }
   }
 }
-

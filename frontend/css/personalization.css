@@ -631,192 +631,8 @@ body[data-profile-editing] .account-page .profile-block-grid > .is-hidden-block,
   margin-top: 20px;
 }
 
-/* ---- Study utility shell: side panel, bottom sheet and floating capsule (Focar 3.0) -------- */
-.utility-trigger {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-inline-end: 6px;
-  padding: 0;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  color: var(--text);
-  background: var(--surface);
-  cursor: pointer;
-}
-.utility-trigger[aria-expanded='true'] { border-color: var(--accent-strong); color: var(--accent-strong); }
-.utility-trigger-dot {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-strong);
-  box-shadow: 0 0 0 2px var(--surface);
-  opacity: 0;
-}
-.utility-trigger.is-active .utility-trigger-dot { opacity: 1; }
-.utility-trigger[data-state='paused'] .utility-trigger-dot { background: var(--muted); }
-
-.utility-panel[hidden], .focus-capsule[hidden] { display: none !important; }
-.utility-panel {
-  position: fixed;
-  z-index: 60;
-  top: calc(var(--topbar-height, 64px) + 12px);
-  right: 16px;
-  display: flex;
-  max-height: calc(100vh - var(--topbar-height, 64px) - 28px);
-  flex-direction: column;
-  width: 320px;
-  overflow: auto;
-  border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
-  border-radius: 22px;
-  color: var(--text);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
-  backdrop-filter: blur(18px) saturate(1.3);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 18px 50px rgb(30 24 60 / 18%);
-}
-/* Wide screens: the content narrows beside the panel instead of being covered. */
-body.utility-open { padding-right: 344px; }
-.utility-panel[data-sheet='true'] {
-  top: auto;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  width: auto;
-  max-height: min(78vh, 560px);
-  border-radius: 22px 22px 0 0;
-  padding-bottom: env(safe-area-inset-bottom);
-}
-.utility-panel-head {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 14px 10px 18px;
-  background: inherit;
-}
-.utility-panel-head h2 { flex: 1; margin: 0; font-size: 1.05rem; }
-.utility-panel-head h2:focus { outline: none; }
-.utility-link { margin-inline-end: 4px; font-size: .88rem; font-weight: 600; }
-.utility-icon {
-  display: inline-grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  border: 1px solid var(--border-light);
-  border-radius: 50%;
-  color: var(--text);
-  background: var(--surface-alt);
-  cursor: pointer;
-}
-.utility-icon:disabled { opacity: .5; cursor: default; }
-.utility-panel-body { display: grid; gap: 14px; justify-items: center; padding: 4px 18px 20px; }
-.utility-modes {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--surface-alt);
-}
-.utility-mode {
-  min-height: 34px;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  color: var(--muted);
-  background: transparent;
-  font: inherit;
-  font-size: .82rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.utility-mode[aria-checked='true'] { color: var(--accent-contrast, #fff); background: var(--accent-strong); }
-.utility-mode:disabled:not([aria-checked='true']) { opacity: .5; cursor: default; }
-.utility-face { position: relative; display: grid; place-items: center; width: 200px; aspect-ratio: 1; }
-.utility-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(closest-side, var(--surface) 84%, transparent 85% 100%),
-    conic-gradient(var(--accent-strong) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 14%, var(--surface-alt)) 0);
-}
-[data-mode='short'] .utility-ring, [data-mode='long'] .utility-ring {
-  background:
-    radial-gradient(closest-side, var(--surface) 84%, transparent 85% 100%),
-    conic-gradient(color-mix(in srgb, var(--accent-strong) 55%, #4aa38a) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 14%, var(--surface-alt)) 0);
-}
-.utility-time {
-  position: relative;
-  font-family: var(--ue-serif, Georgia, serif);
-  font-size: 2.6rem;
-  line-height: 1;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-.utility-caption { position: absolute; bottom: 52px; margin: 0; color: var(--muted); font-size: .78rem; text-align: center; }
-.utility-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.utility-primary { min-width: 9rem; }
-.utility-stop[hidden] { display: none; }
-.utility-cycles, .utility-status { margin: 0; color: var(--muted); font-size: .84rem; text-align: center; }
-.utility-status:empty { display: none; }
-
-/* Capsule: a small floating pill; never over the content's main actions (bottom right). */
-.focus-capsule {
-  position: fixed;
-  z-index: 55;
-  right: 18px;
-  bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 6px 6px 12px;
-  border: 1px solid color-mix(in srgb, var(--border-light) 80%, transparent);
-  border-radius: 999px;
-  color: var(--text);
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  backdrop-filter: blur(16px) saturate(1.3);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 55%) inset, 0 10px 30px rgb(30 24 60 / 18%);
-}
-.focus-capsule-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background:
-    radial-gradient(closest-side, var(--surface) 62%, transparent 64% 100%),
-    conic-gradient(var(--accent-strong) calc(var(--focus-progress, 0) * 360deg), color-mix(in srgb, var(--accent-strong) 16%, var(--surface-alt)) 0);
-}
-.focus-capsule-time { font-family: var(--ue-serif, Georgia, serif); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
-.focus-capsule-mode { color: var(--muted); font-size: .78rem; font-weight: 600; }
-.focus-capsule .utility-icon { width: 32px; height: 32px; }
-.focus-capsule-toggle { color: var(--accent-contrast, #fff) !important; background: var(--accent-strong) !important; border-color: transparent !important; }
-.focus-capsule[data-state='paused'] .focus-capsule-time { opacity: .7; }
-@media (max-width: 520px) {
-  .focus-capsule { right: 12px; bottom: 12px; }
-  .focus-capsule-mode { display: none; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  html:not([data-reduced-motion='true']) .focus-capsule:not([hidden]) { animation: capsule-in .22s ease-out; }
-  html:not([data-reduced-motion='true']) .utility-panel:not([hidden]) { animation: capsule-in .18s ease-out; }
-}
-@keyframes capsule-in { from { opacity: 0; transform: translateY(8px); } }
-@media (forced-colors: active) {
-  .utility-ring, .focus-capsule-dot { background: Canvas; border: 2px solid Highlight; }
-}
-[data-screen-reader-mode='true'] .focus-capsule { position: static; margin: 12px; }
-@media print { .utility-panel, .focus-capsule, .utility-trigger { display: none !important; } }
-body.utility-open .material-header { flex-wrap: wrap; }
-body.utility-open .material-header-actions { flex-wrap: wrap; }
+/* Focar 3.0's side panel and capsule were retired in 3.6: the top-bar indicator (system.css,
+   utils/focus-indicator.js) links to Focar while a block runs. */
 
 /* ==== Personalização 3.0: themes from the visual references ================================
    Matcha (cozy café), Mesa digital (soft desktop / window glass) and Planner (paper & pastel).
@@ -974,7 +790,6 @@ html[data-surfaces='glass']:not([data-high-contrast='true']):not([data-low-stimu
 .studio-pages > summary { min-height: 44px; padding: 10px 0; font-weight: 600; cursor: pointer; }
 .studio-page-list { display: grid; gap: 8px; }
 .dash-card-head .focus-shortcut { margin-inline-start: auto; margin-inline-end: 12px; font-variant-numeric: tabular-nums; }
-.utility-lesson { margin: -4px 0 0; max-width: 26ch; overflow: hidden; color: var(--muted); font-size: .82rem; text-align: center; text-overflow: ellipsis; white-space: nowrap; } .utility-lesson:empty { display: none; }
 /* Own image as wallpaper, under a veil of the theme's background for readability. */
 html[data-wallpaper='image'] body {
   background-image:
@@ -996,8 +811,6 @@ html[data-heading-font='modern'] body.app-page :is(h1, h2, h3, h4) { font-family
 html[data-heading-font='rounded'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Trebuchet MS', 'Arial Rounded MT Bold', system-ui, sans-serif; letter-spacing: -.01em; }
 html[data-heading-font='friendly'] body.app-page :is(h1, h2, h3, h4) { font-family: Lexend, system-ui, sans-serif; font-weight: 650; letter-spacing: -.02em; }
 html[data-heading-font='typewriter'] body.app-page :is(h1, h2, h3, h4) { font-family: 'Courier New', ui-monospace, monospace; font-weight: 700; letter-spacing: 0; }
-/* Utility panel tools: Foco | Som, and the ambient sound tool. */
-.utility-panel-body[hidden] { display: none; }
 
 /* ==== Stickers beside page titles (decorative, original art in utils/stickers.js) ========== */
 .page-stickers { display: inline-flex; gap: .1em; margin-inline-start: .3em; vertical-align: -.12em; pointer-events: none; }

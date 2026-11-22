@@ -18,6 +18,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'notebooks',
   'multi_lesson',
   'discoveries',
+  'journal',
 ]);
 
 /** Deployment flags expose no credentials and never grant resource access. */

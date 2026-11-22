@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+<!-- voz-art:generated | id: sticker.bee | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><filter id="die" x="-12%" y="-12%" width="124%" height="128%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="3.4" result="grown"/>
+    <feFlood flood-color="#FFFFFF"/><feComposite in2="grown" operator="in" result="border"/>
+    <feGaussianBlur in="grown" stdDeviation="1.2" result="blur"/><feOffset in="blur" dx="0.6" dy="1.8" result="lift"/>
+    <feFlood flood-color="#2E2A3B" flood-opacity="0.22"/><feComposite in2="lift" operator="in" result="shadow"/>
+    <feMerge><feMergeNode in="shadow"/><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+<g filter="url(#die)">
+    <ellipse cx="38" cy="30" rx="12" ry="16" transform="rotate(-25 38 30)" fill="#FFFFFF" fill-opacity="0.9" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <ellipse cx="56" cy="28" rx="11" ry="15" transform="rotate(20 56 28)" fill="#EAF1F7" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <ellipse cx="46" cy="56" rx="26" ry="18" fill="#E2B14A" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M38 39.4 Q34 56 38 72.6 M52 38.4 Q48 56 52 73.6" stroke="#2E2A3B" stroke-opacity="0.85" stroke-width="5"/>
+    <circle cx="72" cy="50" r="2.4" fill="#2E2A3B"/><path d="M20 56 L12 58" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M68 60 Q72 62 74 59" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  </g>
+</svg>

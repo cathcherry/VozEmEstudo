@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 72" width="200" height="72" fill="none">
+<!-- voz-art:generated | id: label.bookplate | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<path d="M22 8 H178 A10 10 0 0 0 188 18 V54 A10 10 0 0 0 178 64 H22 A10 10 0 0 0 12 54 V18 A10 10 0 0 0 22 8 Z" transform="translate(1.5 2.5)" fill="#2E2A3B" fill-rule="evenodd" opacity="0.1"/><path d="M22 8 H178 A10 10 0 0 0 188 18 V54 A10 10 0 0 0 178 64 H22 A10 10 0 0 0 12 54 V18 A10 10 0 0 0 22 8 Z" fill="#F7F5FB" stroke="#6F60A6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/>
+    <path d="M26 14 H174 A8 8 0 0 0 182 22 V50 A8 8 0 0 0 174 58 H26 A8 8 0 0 0 18 50 V22 A8 8 0 0 0 26 14 Z" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+    <path d="M92 14 Q100 19 108 14" stroke="#8E7CC3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><path d="M92 58 Q100 53 108 58" stroke="#8E7CC3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/>
+</svg>

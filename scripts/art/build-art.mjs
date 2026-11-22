@@ -13,6 +13,8 @@ import { coverFiles } from './covers.mjs';
 import { wallpaperFiles } from './wallpapers.mjs';
 import { emptyFiles } from './empty.mjs';
 import { iconFiles } from './icons.mjs';
+import { emblemFiles } from './emblems.mjs';
+import { scrapbookFiles } from './scrapbook.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const target = path.join(root, 'frontend/assets/art');
@@ -26,6 +28,8 @@ const groups = [
   wallpaperFiles,
   emptyFiles,
   iconFiles,
+  emblemFiles,
+  scrapbookFiles,
 ];
 const files = Object.assign({}, ...groups.map((make) => make()));
 

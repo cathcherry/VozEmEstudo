@@ -120,6 +120,9 @@ async function main() {
     await link.click();
     await page.waitForURL(/material\.html\?id=l-foto&busca=.+&trecho=0#transcricao/);
     await page.goBack();
+    // goBack can resolve before the URL changes back on a slow machine: wait for it, so the
+    // "coming back" step below reopens the integrated material and not the lesson.
+    await page.waitForURL(/\/integrado\.html\?/);
     record('Página do material integrado (API simulada): resumo, questões e flashcards com citações; cada citação abre a aula no trecho exato (#transcricao, busca e trecho); itens descartados são informados');
 
     // ---------- 3.4: questions → an answerable list; cards → a personal set --------------------

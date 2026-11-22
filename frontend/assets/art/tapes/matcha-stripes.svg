@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44" width="160" height="44" fill="none">
+<!-- voz-art:generated | id: tape.matcha-stripes | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="strip"><path d="M8.75 8 L151.98 8 L151.72 11.5 L149.29 15 L151.13 18.5 L150.29 22 L151.7 25.5 L151.99 29 L149.35 32.5 L149.7 36 L8.74 36 L9.73 32.5 L10.58 29 L10.27 25.5 L8.19 22 L10.66 18.5 L9.23 15 L8.41 11.5 L8.75 8 Z"/></clipPath><pattern id="t" y="8" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="10" fill="#B5CDA4"/></pattern></defs>
+<g opacity="0.86">
+    <path d="M8.75 8 L151.98 8 L151.72 11.5 L149.29 15 L151.13 18.5 L150.29 22 L151.7 25.5 L151.99 29 L149.35 32.5 L149.7 36 L8.74 36 L9.73 32.5 L10.58 29 L10.27 25.5 L8.19 22 L10.66 18.5 L9.23 15 L8.41 11.5 L8.75 8 Z" fill="#E3EDDA"/>
+    <g clip-path="url(#strip)"><rect x="0" y="0" width="160" height="44" fill="url(#t)"/>
+      <path d="M0 10.5 H160" stroke="#FFFFFF" stroke-width="2" opacity="0.45"/>
+      <path d="M0 34.5 H160" stroke="#2E2A3B" stroke-width="1.4" opacity="0.07"/></g>
+  </g>
+</svg>

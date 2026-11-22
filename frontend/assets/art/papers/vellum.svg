@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" width="200" height="260" fill="none">
+<!-- voz-art:generated | id: paper.vellum | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="sheet"><path d="M8 8 H192 V252 H8 Z"/></clipPath></defs>
+<path d="M8 8 H192 V252 H8 Z" transform="translate(1.5 3)" fill="#2E2A3B" fill-rule="evenodd" opacity="0.08"/>
+  <path d="M8 8 H192 V252 H8 Z" fill="#EAF1F7" fill-opacity="0.62"/>
+  <g clip-path="url(#sheet)"><path d="M14 18 Q60 10 120 26" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.6"/><path d="M150 236 Q170 220 184 200" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.5"/></g>
+  <path d="M8 8 H192 V252 H8 Z" stroke="#5B5470" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.28"/>
+</svg>

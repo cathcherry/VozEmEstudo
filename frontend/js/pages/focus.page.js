@@ -1,12 +1,12 @@
-// Focar: the account's focus session in full (ring, modes, durations, week) and recent blocks.
-// The same session runs in the side panel and the capsule on the other pages.
+// Focar: the active study session, in full (ring, modes, durations) with this week beside it. The
+// account has one focus session; Focar is the only page that runs it (3.6). Other pages show a
+// small indicator in the top bar while a block runs; history and analysis live in Planejar.
 import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { getFocusSession } from '../utils/focus-host.js';
-import { initStudyStats } from './study-stats.js';
 
 await initAuthenticatedShell();
 const flags = await getFeatureFlags().catch(() => ({}));
@@ -22,34 +22,12 @@ if (!flags.study_tracking) {
   );
 } else {
   await initStudyTrackingPanel({});
-  void initStudyStats({ container: document.querySelector('[data-study-stats]') });
-  const session = await getFocusSession();
-  const section = document.querySelector('[data-focus-history]');
-  const list = document.querySelector('[data-focus-history-list]');
-  const LABEL = {
-    pomodoro: 'Foco',
-    short: 'Pausa curta',
-    long: 'Pausa longa',
-    reading: 'Estudo livre',
-  };
-  const locale = () => globalThis.VOZ_LOCALE || 'pt-BR';
-  let shown = '';
-  session.subscribe((state) => {
-    const key = state.history.map((item) => item.endedAt).join();
-    if (key === shown) return;
-    shown = key;
-    section.hidden = !state.history.length;
-    list.replaceChildren(
-      ...state.history.slice(0, 12).map((item) => {
-        const row = document.createElement('li');
-        row.dataset.mode = item.mode;
-        const name = document.createElement('strong');
-        name.textContent = LABEL[item.mode] || item.mode;
-        const detail = document.createElement('span');
-        detail.textContent = `${item.materialTitle ? `${item.materialTitle} · ` : ''}${Math.round(item.seconds / 60)} min · ${new Date(item.endedAt).toLocaleString(locale(), { weekday: 'short', hour: '2-digit', minute: '2-digit' })}`;
-        row.append(name, detail);
-        return row;
-      }),
-    );
-  });
+  // "Iniciar foco" elsewhere (Início, Planejar) opens Focar and starts a focus block here.
+  const params = new URLSearchParams(location.search);
+  if (params.get('iniciar') === 'foco') {
+    history.replaceState(null, '', location.pathname + location.hash);
+    const session = await getFocusSession();
+    if (session.state().status === 'idle') void session.start({ mode: 'pomodoro' }).catch(() => {});
+    document.querySelector('.focus-primary')?.focus();
+  }
 }

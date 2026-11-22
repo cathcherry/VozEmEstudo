@@ -1,4 +1,5 @@
 // The "Reportar problema" control used on the answering page and in the lesson's question lists.
+import { icon as uiIcon } from './icons.js';
 import {
   REPORT_REASONS,
   reasonLabel,
@@ -109,8 +110,10 @@ export function reportControl({ questionId, materialId = null, batchId = null, s
     const parts = [];
     if (report) {
       const text = make('span', null, 'question-report-flag');
-      text.append(make('span', '⚑', 'question-report-icon'), ` Você marcou: ${reasonLabel(report.reason)}`);
-      text.firstChild.setAttribute('aria-hidden', 'true');
+      const flag = make('span', '', 'question-report-icon');
+      flag.setAttribute('aria-hidden', 'true');
+      flag.append(uiIcon('flag', { size: 16 }));
+      text.append(flag, ` Você marcou: ${reasonLabel(report.reason)}`);
       if (report.note) text.title = report.note;
       const edit = make('button', 'Editar', 'text-action');
       edit.type = 'button';

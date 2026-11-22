@@ -7,7 +7,11 @@ import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
 import { applyExperienceMode, artSlot, describeCollectible, formatDay, passageHref } from '../utils/collectibles.js';
 import * as api from '../api/discovery.api.js';
-import { getUiPreferences } from '../utils/preferences.js';
+import { getUiPreferences, setUiPreference } from '../utils/preferences.js';
+import { discoveryCard } from '../utils/discovery-card-ui.js';
+import { connectionPairs, groupBySubject, milestonesOf } from '../utils/discovery-card.js';
+import { collectionItems, createCollection, normalizeCollections, removeCollection, setMembership } from '../utils/discovery-collections.js';
+import { emblemFor } from '../utils/folder-icons.js';
 import { resolveAtmosphere, availableCovers } from '../utils/atmospheres.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -58,70 +62,247 @@ function showUnlocks(list = []) {
   box.hidden = false;
 }
 
-// ---- The notebook (list) --------------------------------------------------------------------
-/** The day written in the page's margin, as in a dated notebook (decorative: the meta has it). */
-function marginDate(iso) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return null;
-  const locale = globalThis.VOZ_LOCALE || 'pt-BR';
-  return el(
-    'span',
-    { className: 'discovery-page-day', 'aria-hidden': 'true' },
-    el('strong', { text: String(date.getDate()) }),
-    el('small', { text: date.toLocaleDateString(locale, { month: 'short' }).replace('.', '') }),
+// ---- The archive (list): cards grouped by subject, threads, collections, milestones ---------
+let rows = [];
+let collections = [];
+
+const subjectEmblem = (subject) => {
+  const id = emblemFor(subject) || 'emblem.geral';
+  return el('span', { className: 'archive-emblem', 'data-art-slot': 'emblem', 'data-art-id': id, 'data-art-size': '36', 'aria-hidden': 'true' });
+};
+const cardFor = (row) =>
+  discoveryCard(row, {
+    href: `./descobertas.html?id=${encodeURIComponent(row.id)}`,
+    headingLevel: 4,
+    extra: [row.stamps?.length ? el('ul', { className: 'stamp-row', 'data-game-ui': true, 'aria-label': 'Selos desta descoberta' }, ...stampList(row.stamps)) : null],
+  });
+
+function renderSubjects() {
+  const groups = groupBySubject(rows, globalThis.VOZ_LOCALE || 'pt-BR');
+  $('[data-archive-panel="subjects"]').replaceChildren(
+    ...groups.map((group, index) =>
+      el(
+        'section',
+        { className: 'archive-group', 'aria-labelledby': `archive-group-${index}` },
+        el(
+          'header',
+          { className: 'archive-group-head' },
+          subjectEmblem(group.label),
+          el('h3', { id: `archive-group-${index}` }, group.label ? own('span', group.label) : el('span', { text: 'Sem disciplina' })),
+          el('span', { className: 'archive-group-count', text: plural(group.items.length, 'cartão', 'cartões') }),
+        ),
+        el('ul', { className: 'archive-cards' }, ...group.items.map((row) => el('li', {}, cardFor(row)))),
+      ),
+    ),
   );
 }
 
-async function showHome() {
-  $('[data-discoveries-home]').hidden = false;
-  const list = $('[data-discoveries-list]');
-  let items;
-  try {
-    items = await api.listDiscoveries();
-  } catch (failure) {
-    setStatus(failure.message || 'Não foi possível abrir o Arquivo de Descobertas.', 'error');
-    return;
-  }
-  if (!items.length) {
-    list.replaceWith(
-      emptyState('Nenhuma descoberta ainda', 'Abra uma aula confirmada e escolha “Investigar uma pergunta”. O que você descobrir fica guardado aqui.', {
-        href: './historico.html',
-        action: 'Abrir a Biblioteca',
-        mascot: 'curious',
-        artId: 'empty.discoveries',
+function threadSvg() {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 120 24');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('focusable', 'false');
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', 'M2 12 C 22 2, 38 22, 60 12 S 98 2, 118 12');
+  svg.append(path);
+  return svg;
+}
+
+function renderThreads() {
+  const panel = $('[data-archive-panel="threads"]');
+  const pairs = connectionPairs(rows);
+  const legacy = rows.some((row) => !Array.isArray(row.connections) && row.connectionCount > 0);
+  if (!pairs.length) {
+    panel.replaceChildren(
+      el('p', {
+        className: 'archive-empty-note',
+        text: legacy
+          ? 'Abra uma descoberta para ver com quais outras ela está ligada.'
+          : 'Ainda não há ligações. Na página de uma descoberta, use “Ligar a outra descoberta” para unir duas ideias, inclusive de disciplinas diferentes.',
       }),
     );
     return;
   }
-  list.replaceChildren(
-    ...items.map((item) =>
-      el(
-        'li',
-        { className: 'discovery-page-card' },
-        marginDate(item.createdAt),
-        el('h3', {}, el('a', { href: `./descobertas.html?id=${encodeURIComponent(item.id)}`, translate: 'no', text: item.title })),
+  const mini = (row) =>
+    el(
+      'div',
+      { className: 'archive-pair-card' },
+      row.subject ? own('span', row.subject, 'specimen-subject') : null,
+      el('a', { href: `./descobertas.html?id=${encodeURIComponent(row.id)}`, translate: 'no', text: row.title }),
+    );
+  panel.replaceChildren(
+    el('p', { className: 'tool-hint', text: 'Cada fio liga duas descobertas que você uniu. Os fios vermelhos atravessam disciplinas.' }),
+    el(
+      'ul',
+      { className: 'archive-pairs' },
+      ...pairs.map((pair) =>
         el(
-          'p',
-          { className: 'discovery-meta' },
-          own('span', item.lessonTitle),
-          item.subject ? document.createTextNode(' · ') : null,
-          item.subject ? own('span', item.subject) : null,
-          document.createTextNode(' · '),
-          el('time', { datetime: item.createdAt, text: formatDay(item.createdAt) }),
+          'li',
+          { className: 'archive-pair', 'data-across': String(pair.acrossSubjects) },
+          mini(pair.a),
+          el('span', { className: 'archive-thread', 'aria-hidden': 'true' }, threadSvg()),
+          mini(pair.b),
+          el(
+            'p',
+            { className: 'archive-pair-note' },
+            el('span', { text: pair.acrossSubjects ? 'Entre disciplinas' : 'Na mesma disciplina' }),
+            pair.createdAt ? el('time', { datetime: pair.createdAt, text: formatDay(pair.createdAt) }) : null,
+          ),
         ),
-        el(
-          'p',
-          { className: 'discovery-counts' },
-          el('span', { text: plural(item.evidenceCount, 'evidência', 'evidências') }),
-          document.createTextNode(' · '),
-          el('span', { text: plural(item.connectionCount, 'conexão', 'conexões') }),
-          document.createTextNode(' · '),
-          el('span', { text: plural(item.revisitCount, 'revisita', 'revisitas') }),
-        ),
-        item.stamps.length ? el('ul', { className: 'stamp-row', 'data-game-ui': true, 'aria-label': 'Selos desta descoberta' }, ...stampList(item.stamps)) : null,
       ),
     ),
   );
+}
+
+function saveCollections(next, message) {
+  collections = next;
+  setUiPreference('discoveryCollections', next);
+  renderCollections();
+  if (message) setStatus(message);
+}
+function renderCollections() {
+  const host = $('[data-collections]');
+  // Keep open what the person opened (choosing cards re-renders the list).
+  const wasOpen = new Set([...host.querySelectorAll('[data-collection]:has(> details[open])')].map((n) => n.dataset.collection));
+  if (!collections.length) {
+    host.replaceChildren(el('p', { className: 'archive-empty-note', text: 'Nenhuma coleção ainda. Dê um nome a um tema e escolha os cartões que entram nele.' }));
+    return;
+  }
+  host.replaceChildren(
+    ...collections.map((collection, index) => {
+      const items = collectionItems(collection, rows);
+      const remove = el('button', { type: 'button', className: 'text-action', 'data-remove-collection': collection.id, text: 'Excluir a coleção' });
+      remove.addEventListener('click', () => {
+        if (!confirm(`Excluir a coleção “${collection.name}”? As descobertas continuam no Arquivo.`)) return;
+        saveCollections(removeCollection(collections, collection.id), 'Coleção excluída. As descobertas continuam no Arquivo.');
+        $('#archive-collection-name')?.focus();
+      });
+      const choices = el(
+        'fieldset',
+        { className: 'archive-collection-choices' },
+        el('legend', { className: 'sr-only', text: 'Cartões desta coleção' }),
+        ...rows.map((row, n) => {
+          const id = `collection-${index}-${n}`;
+          const box = el('input', { type: 'checkbox', id, checked: collection.ids.includes(row.id) || null });
+          box.addEventListener('change', () => {
+            saveCollections(setMembership(collections, collection.id, row.id, box.checked));
+            document.getElementById(id)?.focus();
+          });
+          return el('div', { className: 'archive-choice' }, box, el('label', { for: id, translate: 'no', text: row.title }));
+        }),
+      );
+      return el(
+        'section',
+        { className: 'archive-collection', 'data-collection': collection.id, 'aria-labelledby': `archive-collection-${index}` },
+        el('span', { className: 'washi', 'data-tape': 'matcha-stripes', style: '--tilt:-2deg', 'aria-hidden': 'true' }),
+        el(
+          'header',
+          { className: 'archive-collection-head' },
+          el('h3', { id: `archive-collection-${index}` }, own('span', collection.name)),
+          el('span', { className: 'archive-group-count', text: plural(items.length, 'cartão', 'cartões') }),
+          remove,
+        ),
+        items.length
+          ? el('ul', { className: 'archive-cards' }, ...items.map((row) => el('li', {}, cardFor(row))))
+          : el('p', { className: 'archive-empty-note', text: 'Coleção vazia. Escolha abaixo os cartões que entram nela.' }),
+        el('details', { className: 'archive-collection-edit', open: !items.length || wasOpen.has(collection.id) || null }, el('summary', { text: 'Escolher os cartões' }), choices),
+      );
+    }),
+  );
+}
+
+function renderMilestones(unlocks) {
+  const list = milestonesOf(unlocks);
+  $('[data-archive-milestones]').hidden = !list.length;
+  $('[data-milestones-list]').replaceChildren(
+    ...list.map((m) =>
+      el(
+        'li',
+        { className: 'archive-milestone', 'data-milestone': m.id },
+        el('span', { className: 'archive-milestone-art', 'data-game-ui': true }, artSlot(document, 'stamp', m.id)),
+        el('strong', { text: m.label }),
+        el('time', { datetime: m.occurredAt, text: formatDay(m.occurredAt) }),
+        m.lessonTitle ? own('span', m.lessonTitle, 'archive-milestone-lesson') : null,
+        m.currentDiscoveryId ? el('a', { href: `./descobertas.html?id=${encodeURIComponent(m.currentDiscoveryId)}`, text: 'Abrir a descoberta' }) : null,
+      ),
+    ),
+  );
+}
+
+const TAB_KEY = 'voz-archive-view';
+function selectTab(name, { focus = false } = {}) {
+  for (const tab of document.querySelectorAll('[data-archive-tab]')) {
+    const on = tab.dataset.archiveTab === name;
+    tab.setAttribute('aria-selected', String(on));
+    tab.tabIndex = on ? 0 : -1;
+    if (on && focus) tab.focus();
+  }
+  for (const panel of document.querySelectorAll('[data-archive-panel]')) panel.hidden = panel.dataset.archivePanel !== name;
+  try {
+    localStorage.setItem(TAB_KEY, name);
+  } catch {
+    /* private window: the view is not remembered */
+  }
+}
+function wireTabs() {
+  const tabs = [...document.querySelectorAll('[data-archive-tab]')];
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => selectTab(tab.dataset.archiveTab));
+    tab.addEventListener('keydown', (event) => {
+      const index = tabs.indexOf(tab);
+      const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      selectTab(tabs[(next + tabs.length) % tabs.length].dataset.archiveTab, { focus: true });
+    });
+  }
+  let saved = 'subjects';
+  try {
+    saved = localStorage.getItem(TAB_KEY) || 'subjects';
+  } catch {
+    /* ignore */
+  }
+  selectTab(tabs.some((t) => t.dataset.archiveTab === saved) ? saved : 'subjects');
+}
+
+async function showHome(collectionPromise) {
+  $('[data-discoveries-home]').hidden = false;
+  try {
+    rows = await api.listDiscoveries();
+  } catch (failure) {
+    setStatus(failure.message || 'Não foi possível abrir o Arquivo de Descobertas.', 'error');
+    return;
+  }
+  void collectionPromise.then((c) => renderMilestones(c?.unlocks || []));
+  if (!rows.length) {
+    $('[data-archive-panel="subjects"]').replaceChildren(
+      emptyState(
+        'Nenhuma descoberta ainda',
+        'Abra uma aula confirmada e escolha “Investigar uma pergunta”. O que você descobrir fica guardado aqui, numa ficha que muda com o que você acrescenta a ela.',
+        { href: './historico.html', action: 'Abrir a Biblioteca', mascot: 'curious', artId: 'empty.discoveries' },
+      ),
+    );
+    return;
+  }
+  collections = normalizeCollections(getUiPreferences().discoveryCollections);
+  $('[data-archive-toolbar]').hidden = false;
+  renderSubjects();
+  renderThreads();
+  renderCollections();
+  wireTabs();
+  $('[data-new-collection]').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const field = event.currentTarget.elements.name;
+    const result = createCollection(collections, field.value);
+    if (result.error) {
+      setStatus(result.error, 'error');
+      field.focus();
+      return;
+    }
+    field.value = '';
+    saveCollections(result.collections, `Coleção criada: ${result.created.name}. Escolha os cartões que entram nela.`);
+  });
 }
 
 // ---- One page ------------------------------------------------------------------------------
@@ -141,6 +322,7 @@ function renderDetail(view) {
     el('span', { text: `versão ${d.version}` }),
   );
   $('[data-discovery-stamps]').replaceChildren(...stampList(view.stamps.map((s) => s.id)));
+  $('[data-discovery-card]').replaceChildren(discoveryCard(view, { headingLevel: 4, open: true, dates: true, lesson: '', subject: d.subject || '' }));
   $('[data-discovery-question]').replaceChildren(el('span', { text: 'Pergunta: ' }), own('span', view.investigation.question));
   $('[data-discovery-explanation]').textContent = d.explanation;
   const form = $('[data-discovery-edit-form]');
@@ -234,14 +416,13 @@ async function act(task, success) {
   }
 }
 
-async function showDetail(id) {
+async function showDetail(id, collectionPromise) {
   let view;
   try {
     view = await api.getDiscovery(id);
   } catch (failure) {
     setStatus(failure.message || 'Descoberta não encontrada.', 'error');
-    $('[data-discoveries-home]').hidden = false;
-    await showHome();
+    await showHome(collectionPromise);
     return;
   }
   $('[data-discovery-detail]').hidden = false;
@@ -291,8 +472,9 @@ if (!flags.discoveries) {
     cover.dataset.artId = look.cover;
   };
   paint([]);
-  void api.getCollection().then((c) => paint(c.unlocks || [])).catch(() => {});
+  const collectionPromise = api.getCollection().catch(() => null);
+  void collectionPromise.then((c) => c && paint(c.unlocks || []));
   const id = new URLSearchParams(location.search).get('id');
-  if (id) await showDetail(id);
-  else await showHome();
+  if (id) await showDetail(id, collectionPromise);
+  else await showHome(collectionPromise);
 }

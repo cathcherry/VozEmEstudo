@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 24" width="320" height="24" fill="none">
+<!-- voz-art:generated | id: divider.stitch | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<path d="M10 9 H310" stroke="#D98A9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88" stroke-dasharray="7 5"/>
+    <path d="M10 15 H310" stroke="#D98A9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55" stroke-dasharray="7 5" stroke-dashoffset="6"/>
+</svg>

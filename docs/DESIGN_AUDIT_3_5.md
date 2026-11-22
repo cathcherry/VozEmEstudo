@@ -288,5 +288,31 @@ só com a flag e com o trecho na investigação, axe. i18n: `scripts/i18n/refine
 - O CSS legado ainda é grande: o próximo passo é remover regras que casam mas são sobrescritas,
   arquivo por arquivo, com capturas por regra.
 - A seção "Sua mesa" do Gabinete ainda é um formulário de seleção (a mesa de verdade se arruma no
-  Início).
+  Início); desde o 3.6 ela segue as mesmas regras da mesa (um objeto por lugar, troca).
 - Player fixo ao rolar a aula.
+
+## 8. 3.6 — correções
+
+Quatro defeitos de comportamento e de composição apontados depois do 3.5, mais o que apareceu no
+caminho. Capturas `before/3-6-*` (tiradas de `feat/3.6-scrapbook`) → `after/3-6-*`, a 1440 e 390 px,
+com `node frontend/tests/design-audit-capture.cjs <before|after> '^3-6-'`. Ícones e o seletor de
+ícone de disciplina ficaram de fora de propósito (outra frente de trabalho).
+
+| Problema (causa) | Correção | Capturas |
+| --- | --- | --- |
+| **Biblioteca › Selecionar** abria em vez de selecionar: só cliques no link ou no `<h3>` da aula eram interceptados; o resto da linha não fazia nada, clicar numa pasta a abria (o `summary` navegava), Enter num link o ativava e links e menus continuavam na ordem do Tab. | Cada aula e cada pasta é **um item selecionável** (a pasta vale pelas suas aulas; caixa indeterminada quando parcial). Um único ouvinte em captura transforma qualquer clique ou toque num item em marcar/desmarcar e cancela o abrir; a caixa é a única parada do Tab (Espaço e Enter alternam); **Shift** estende a partir do último item (`utils/library-selection.js`); Esc ou "Concluir seleção" redesenham a tela com links, menus e arrastar de volta. A caixa nunca fica dentro de um `<summary>` (controle dentro de controle). A barra de seleção vira uma folha no rodapé do celular (era uma pílula espremida). | `3-6-biblioteca-selecao-*`, `3-6-biblioteca-unidade-selecao-*` |
+| **Interior da disciplina** era uma lista de linhas sem identidade. | Uma **faixa na cor da disciplina** com a aba de pasta, o nome em Fraunces, aulas e unidades e o progresso ("2 de 4 estudadas"); **unidades como subpastas** (ícones na grade, linhas no celular e na lista); aulas soltas embaixo. Os estados vazios com a Lume continuam. | `3-6-biblioteca-disciplina-*`, `3-6-biblioteca-disciplina-vazia-*` |
+| **Revisar** empilhava filtros, aparência, dois blocos de criação, mesclar/importar e duas seções dobráveis em volta do cartão, dentro de um painel com borda (cartão dentro de cartão), sem dizer o que havia para hoje. | **"Para hoje"** sob o título (cartões a revisar, listas a terminar; cada item abre sua aba), **contagens nas abas** (anotações em tom mais quieto) e, sem `#seção`, a página abre na aba com trabalho. Em Flashcards, uma **barra** com o nome e o tamanho da fila e três teclas: **Filtros** (aula, conjunto, aparência) e **Novo cartão** (gerar, criar) em popovers, e **Gerenciar**, uma segunda vista com mesclar/importar, organizar e conjuntos em linhas pautadas. O cartão é a única coisa elevada. Questões e Anotações viram listas pautadas. `review-layout.js` só arruma o que os painéis constroem (ids e handlers intactos). | `3-6-revisar-*`, `3-6-revisar-questoes-*`, `3-6-revisar-anotacoes-*` |
+| **Planejar × Focar**: uma só sessão de foco (`focus-session.js`) tinha quatro jogos de controles — Focar, Planejar › Tempo de estudo (o mesmo painel com o cronômetro), o painel lateral/folha do topo e a cápsula flutuante (`utility-shell.js`) — e ainda um iniciar/pausar no Início. | **Um motor, um lugar**: só Focar roda a sessão (e diz a qual aula o bloco conta). Nas outras páginas, `focus-indicator.js` mostra um **indicador discreto no topo** enquanto um bloco corre ou está pausado (tempo, tipo, estado) e leva a Focar; avisa o fim de um bloco; continua ligando o próximo bloco à aula aberta e fazendo os sons seguirem o foco. Início e Planejar têm "Iniciar foco" como **link** para `focar.html?iniciar=foco`. Planejar › Tempo de estudo é **histórico e análise**: a semana (com os ajustes), "Seu ritmo" e "Blocos recentes" (que saíram de Focar). Dados e histórico intactos. | `3-6-focar-*`, `3-6-planejar-tempo-*`, `3-6-foco-em-andamento-*` |
+| **Arrumar a mesa**: a gaveta listava todos os objetos (os da mesa só com o lugar escrito), então um objeto único colocado continuava "disponível"; o "Sua mesa" do Gabinete ignorava os objetos iniciais e deixava duas escolhas no mesmo lugar; um desbloqueio repetido virava dois objetos. | **Um objeto, um lugar**: a gaveta lista só o que não está na mesa (vazia, ela diz); na mesa, o objeto escolhido sobe e ganha contorno, o carregado fica esmaecido no lugar, os lugares livres e a gaveta acendem como destino; mover para um lugar ocupado troca, guardar devolve; **Desfazer** (e Ctrl+Z) volta os últimos movimentos da visita, na tela e nos dois armazenamentos. O Gabinete usa a mesma mesa (iniciais + layout do servidor): cada lugar diz quem está nele e escolher um ocupado troca. Funciona com descobertas (`PUT /api/collection/layout`) e sem (`deskStarters`). | `3-6-escrivaninha-arrumando-*`, `3-6-gabinete-mesa-*` |
+| Outros: "Concluir" da gaveta quebrava em duas linhas; a barra de seleção da Biblioteca virava um círculo a 390 px. | Tecla sem quebra; folha no rodapé. | idem |
+
+**Testes.** `frontend/tests/ux-fixes-check.cjs` (em `npm run test:browser`): seleção por clique,
+toque, Espaço, Enter e Shift sem abrir nada, Esc/Concluir devolvendo o abrir, a faixa e as
+subpastas; Revisar (para hoje, contagens, cartão sem caixa, popovers, Gerenciar) a 1440 e 390; a
+mesa com e sem descobertas e o Gabinete. `focus-check.cjs` foi reescrito para o motor único
+(indicador, nenhum cronômetro fora de Focar, links "Iniciar foco", histórico em Planejar).
+Unitários: `library-selection.test.mjs` (alternar, pasta, Shift) e `atmospheres.test.mjs` (gaveta
+sem objetos colocados, troca, guardar, desbloqueio repetido, escolhas do Gabinete). Testes antigos
+acompanharam o novo lugar dos controles (Gerenciar, Filtros, Novo cartão; gaveta sem os objetos da
+mesa). i18n: `scripts/i18n/ux-fixes-3-6.json`.

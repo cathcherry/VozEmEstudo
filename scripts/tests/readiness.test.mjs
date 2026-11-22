@@ -100,6 +100,17 @@ test('discoveries: investigations, evidence, discoveries, unlocks and desk are p
   assert.match(readinessFlagErrors({ discoveries: true }).join(' '), /FEATURE_DISCOVERIES exige FEATURE_ANNOTATIONS/);
 });
 
+test('journal: journals and journal pages are probed only with the flag on; no flag dependency', async () => {
+  const { db } = fixture({ missing: 'journal_pages' });
+  const off = createReadinessChecks(db, {}, 'audios', 'test-version');
+  assert(!off.some((check) => check.label.includes('journal')), 'not probed with the flag off');
+  const flags = { journal: true };
+  const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
+  assert(results.some((r) => r.ok && r.label.includes('journal: journals ')));
+  assert(results.some((r) => !r.ok && r.label.includes('journal_pages') && r.label.includes('20261124100000_journals.sql')));
+  assert.deepEqual(readinessFlagErrors(flags), []);
+});
+
 test('classroom contributions: an optional probe that reports but never blocks', async () => {
   assert.equal(optionalSchema.classroom_contributions.flag, 'classrooms');
   const { db } = fixture({ missing: 'classroom_contributions' });

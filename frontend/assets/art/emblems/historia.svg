@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+<!-- voz-art:generated | id: emblem.historia | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<rect x="5" y="6.5" width="54" height="54" rx="13" fill="#2E2A3B" opacity="0.1"/>
+  <rect x="4" y="4" width="56" height="55" rx="13" fill="#FAEDCB" stroke="#9C7656" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"/>
+  <rect x="7.5" y="7.5" width="49" height="48" rx="10" stroke="#9C7656" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.22"/>
+  <path d="M10 7.2 Q32 5.4 54 7.2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>
+  <path d="M16 54 H48 V50 H16 Z" fill="#C9A27E" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M19 50 H45 V46.5 H19 Z" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M22.5 46.5 V21 H41.5 V46.5" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M37 22 V46 H41.5 V22 Z" fill="#E2C6A8" opacity="0.8"/>
+    <path d="M27.5 24 V44 M32 24 V44 M36.5 24 V44" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    <path d="M17 15 H47 V20 H17 Z" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <circle cx="19.5" cy="21" r="3.2" fill="#E2C6A8" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/><circle cx="44.5" cy="21" r="3.2" fill="#E2C6A8" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M15 15 L32 9 L49 15 Z" fill="#C9A27E" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>

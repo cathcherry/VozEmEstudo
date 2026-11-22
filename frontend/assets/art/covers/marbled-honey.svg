@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" width="240" height="320" fill="none">
+<!-- voz-art:generated | id: cover.marbled-honey | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="cover-clip"><path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z"/></clipPath></defs>
+<rect x="22" y="10" width="214" height="308" rx="9" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M230 22 V306 M233 26 V302" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" fill="#FAEDCB"/>
+  <g clip-path="url(#cover-clip)">
+    <path d="M0 10 C30 34 60 -10 110 16 S190 40 250 4" stroke="#F1D38C" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 24 C40 44 80 4 130 30 S210 46 250 20" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 50 C30 74 60 30 110 56 S190 80 250 44" stroke="#EDBDC7" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 64 C40 84 80 44 130 70 S210 86 250 60" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 90 C30 114 60 70 110 96 S190 120 250 84" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 104 C40 124 80 84 130 110 S210 126 250 100" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 130 C30 154 60 110 110 136 S190 160 250 124" stroke="#E2B14A" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 144 C40 164 80 124 130 150 S210 166 250 140" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 170 C30 194 60 150 110 176 S190 200 250 164" stroke="#F1D38C" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 184 C40 204 80 164 130 190 S210 206 250 180" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 210 C30 234 60 190 110 216 S190 240 250 204" stroke="#EDBDC7" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 224 C40 244 80 204 130 230 S210 246 250 220" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 250 C30 274 60 230 110 256 S190 280 250 244" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 264 C40 284 80 244 130 270 S210 286 250 260" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M0 290 C30 314 60 270 110 296 S190 320 250 284" stroke="#E2B14A" stroke-width="6" stroke-linecap="round" opacity="0.75"/>
+    <path d="M0 304 C40 324 80 284 130 310 S210 326 250 300" stroke="#B9862A" stroke-width="1" opacity="0.45"/>
+    <path d="M232 200 V314 H120 Q200 290 232 200 Z" fill="#2E2A3B" opacity="0.06"/>
+  </g>
+  <path d="M8 16 A10 10 0 0 1 18 6 H40 V314 H18 A10 10 0 0 1 8 304 Z" fill="#B9862A" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M33 14 V306" stroke="#F7F5FB" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7" stroke-dasharray="4 4"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="78" y="62" width="112" height="50" rx="7" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="84" y="68" width="100" height="38" rx="4" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.45"/>
+  <rect x="200" y="6" width="10" height="308" fill="#6F60A6" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M203 6 V314" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+</svg>

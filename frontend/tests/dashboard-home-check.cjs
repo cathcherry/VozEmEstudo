@@ -154,18 +154,22 @@ async function main() {
     await axeCheck(page, 'main', 'Planejar › calendário');
     await shot(page, 'planejar-calendario-1440');
     await page.locator('#tab-tempo').click();
-    await page.locator('#tempo .study-timer-controls').waitFor();
+    // 3.6: Planejar shows the week and its analysis; the timer runs on Focar.
+    await page.locator('#tempo .week-card').waitFor();
     assert(
       !(await page.locator('#tempo .study-settings').isVisible()),
       'goal settings folded until requested',
     );
-    await page.locator('#tempo .study-timer-controls button', { hasText: 'Iniciar' }).click();
-    await page.waitForTimeout(1500);
-    assert.equal(data.sessions, 1);
-    await page.locator('#tempo .study-timer-controls button', { hasText: 'Pausar' }).click();
+    assert.equal(await page.locator('#tempo .study-timer-controls').count(), 0, 'no timer in Planejar');
     await settle(page);
     await axeCheck(page, 'main', 'Planejar › tempo');
     await shot(page, 'planejar-tempo-1440');
+    await page.locator('#tempo [data-focus-link]', { hasText: 'Iniciar foco' }).click();
+    await page.waitForURL('**/focar.html');
+    await page.locator('.study-timer-controls button', { hasText: 'Pausar' }).waitFor();
+    await page.waitForTimeout(1500);
+    assert.equal(data.sessions, 1);
+    await page.locator('.study-timer-controls button', { hasText: 'Pausar' }).click();
     record(
       'Jornada de planejamento: Início › Adicionar tarefa abre o formulário certo; abas com setas e #endereço; agendar horário; cronômetro',
     );
@@ -243,9 +247,9 @@ async function main() {
       ['is-done', 'is-done', 'is-current', 'is-todo'],
     );
     assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
-    // The timer is no longer a block in the lesson: it lives in the utility panel and capsule.
+    // The timer is not a block in the lesson: it runs on Focar (a top-bar indicator shows it).
     assert.equal(await page.locator('.lesson-tools').count(), 0);
-    assert.equal(await page.locator('[data-utility-trigger]').count(), 1);
+    assert.equal(await page.locator('[data-focus-indicator]').count(), 1);
     await settle(page);
     await axeCheck(page, 'main', 'Aula › etapas');
     await shot(page, 'aula-etapas-1440');

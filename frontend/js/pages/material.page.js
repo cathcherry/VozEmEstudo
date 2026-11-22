@@ -33,6 +33,7 @@ import { renderMarkdown } from '../utils/markdown.js';
 import { lessonProgress, renderLessonSteps, lessonMode } from '../utils/lesson-steps.js';
 import { listFlashcardSets } from '../api/flashcard.api.js';
 import { listQuizSessions } from '../api/quiz-session.api.js';
+import { iconMarkup } from '../utils/icons.js';
 
 await initAuthenticatedShell();
 const $ = (selector) => document.querySelector(selector);
@@ -79,8 +80,7 @@ player.root
 const fullscreenButton = document.createElement('button');
 fullscreenButton.type = 'button';
 fullscreenButton.className = 'player-icon player-fullscreen';
-fullscreenButton.innerHTML =
-  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+fullscreenButton.innerHTML = iconMarkup('fullscreen');
 player.root.querySelector('.player-controls').append(fullscreenButton);
 function syncFullscreen() {
   const active = document.fullscreenElement === player.root;
@@ -154,7 +154,7 @@ let playbackIdentity = '',
   playbackRequest = 0;
 let materialToolsInitialized = false,
   notesEnabled = false;
-// The focus timer for this lesson lives in the utility panel (utils/utility-shell.js).
+// The focus timer runs on Focar; this page links the next block to the lesson (utils/focus-indicator.js).
 const messages = {
   summary: $('[data-summary-message]'),
   questions: $('[data-more-questions-message]'),

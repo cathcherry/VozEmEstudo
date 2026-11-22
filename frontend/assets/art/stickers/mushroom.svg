@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+<!-- voz-art:generated | id: sticker.mushroom | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><filter id="die" x="-12%" y="-12%" width="124%" height="128%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="3.4" result="grown"/>
+    <feFlood flood-color="#FFFFFF"/><feComposite in2="grown" operator="in" result="border"/>
+    <feGaussianBlur in="grown" stdDeviation="1.2" result="blur"/><feOffset in="blur" dx="0.6" dy="1.8" result="lift"/>
+    <feFlood flood-color="#2E2A3B" flood-opacity="0.22"/><feComposite in2="lift" operator="in" result="shadow"/>
+    <feMerge><feMergeNode in="shadow"/><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+<g filter="url(#die)">
+    <path d="M38 50 Q36 70 34 80 H62 Q60 70 58 50 Z" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M54 54 Q56 70 58 78" stroke="#E2C6A8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="1"/>
+    <path d="M12 52 C12 28 30 14 48 14 C66 14 84 28 84 52 Q48 60 12 52 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <circle cx="32" cy="34" r="5" fill="#FFFFFF"/><circle cx="52" cy="24" r="4" fill="#FFFFFF"/><circle cx="66" cy="38" r="5.6" fill="#FFFFFF"/><circle cx="44" cy="44" r="3" fill="#FFFFFF"/>
+    <path d="M24 82 Q48 76 74 82" stroke="#5E7F4E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  </g>
+</svg>

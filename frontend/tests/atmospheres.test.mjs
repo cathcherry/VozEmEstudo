@@ -33,6 +33,8 @@ import {
   placeObject,
   removeObject,
   splitDesk,
+  drawerObjects,
+  slotChoices,
 } from '../js/utils/desk.js';
 import { DESK_SLOTS } from '../js/utils/collectibles.js';
 
@@ -258,4 +260,29 @@ test('desk: placing, swapping, storing and splitting into the two stores', () =>
   });
   assert.equal(describeDesk({}), 'A mesa está vazia.');
   assert.equal(describeDesk({ 'desk-right': 'object.teacup' }), 'Na sua mesa: Xícara de chá (mesa, à direita).');
+});
+
+test('desk (3.6): an object is in one place — the drawer lists only what is not on the desk', () => {
+  const available = availableObjects({
+    discoveries: true,
+    unlocks: [
+      { id: 'object.globe', kind: 'object' },
+      { id: 'object.globe', kind: 'object' }, // listed twice: still one globe
+    ],
+  });
+  assert.equal(available.filter((id) => id === 'object.globe').length, 1);
+  let desk = { 'desk-left': 'object.teacup' };
+  assert.deepEqual(drawerObjects(desk, available), ['object.inkwell', 'object.cactus', 'object.hourglass', 'object.globe']);
+  desk = placeObject(desk, 'object.globe', 'window');
+  assert(!drawerObjects(desk, available).includes('object.globe'), 'placed: out of the drawer');
+  desk = placeObject(desk, 'object.globe', 'desk-left'); // moving onto the teacup swaps them
+  assert.deepEqual(desk, { 'desk-left': 'object.globe', window: 'object.teacup' });
+  assert.equal(Object.values(desk).filter((id) => id === 'object.globe').length, 1, 'never in two places');
+  desk = removeObject(desk, 'object.globe');
+  assert(drawerObjects(desk, available).includes('object.globe'), 'stored: back in the drawer');
+  // The Gabinete's choices say who is in each place (choosing it swaps).
+  const choices = slotChoices({ window: 'object.teacup', 'desk-left': 'object.globe' }, 'object.globe');
+  assert.deepEqual(choices.find((c) => c.slot === 'window'), { slot: 'window', label: 'Janela', occupant: 'object.teacup', current: false });
+  assert.equal(choices.find((c) => c.slot === 'desk-left').current, true);
+  assert.equal(choices.find((c) => c.slot === 'desk-left').occupant, null);
 });

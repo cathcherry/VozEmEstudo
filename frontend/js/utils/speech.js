@@ -1,3 +1,4 @@
+import { icon as uiIcon } from './icons.js';
 /**
  * Text-to-speech with the browser's built-in voices (Web Speech API). Runs locally or through
  * the operating system's voice service: no app server, no AI provider and no tokens.
@@ -125,16 +126,12 @@ export function createSpeaker({
 }
 
 const LABELS = { idle: 'Ouvir', speaking: 'Pausar leitura', paused: 'Continuar leitura' };
-const ICONS = {
-  idle: '<path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
-  speaking: '<path d="M8 5v14M16 5v14"/>',
-  paused: '<path d="M7 5l12 7-12 7V5Z"/>',
-  stop: '<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
-};
+// Shared icon set (frontend/js/utils/icons.js).
+const ICONS = { idle: 'speak', speaking: 'pause', paused: 'play', stop: 'stop' };
 const icon = (doc, name) => {
   const span = doc.createElement('span');
   span.setAttribute('aria-hidden', 'true');
-  span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+  span.append(uiIcon(ICONS[name], { document: doc }));
   return span;
 };
 /**

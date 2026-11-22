@@ -252,3 +252,126 @@
     font-size: 2.44rem;
   }
 }
+
+/* ---- 3.6: scrapbook set, materials and the interface icon sprite ---- */
+:root {
+  /* The few system tokens materials.css reads (this page does not load system.css). */
+  --paper: #f7f5fb;
+  --paper-raised: #ffffff;
+  --paper-sunken: #efebf6;
+  --ink: #2e2a3b;
+  --ink-muted: #625c72;
+  --line: rgb(46 42 59 / 0.11);
+  --line-strong: rgb(46 42 59 / 0.2);
+  --brand-ink: #5a4896;
+  --lavender: #8e7cc3;
+  --rose: #d98a9b;
+  --recessed: inset 0 1px 2px rgb(46 42 59 / 0.08);
+  --focus-ring: 0 0 0 2px #fff, 0 0 0 4px #5a4896;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui: 'Instrument Sans', 'Inter', system-ui, sans-serif;
+  --step--1: 0.8125rem;
+  --step-ui: 0.9375rem;
+}
+.review-grid-compact {
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+}
+.review-mat-pair {
+  display: grid;
+  gap: 16px;
+}
+.review-materials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 28px;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid var(--review-line);
+  background: #efe7da;
+  color: #2e2a3b;
+}
+.review-materials[data-tone='dark'] {
+  --paper-raised: #24212f;
+  --paper: #1b1924;
+  --paper-sunken: #2d2939;
+  --ink: #efebf7;
+  --ink-muted: #bdb5cf;
+  --line: rgb(239 235 247 / 0.12);
+  --brand-ink: #cbbff3;
+  background: #1b1924;
+  color: #efebf7;
+}
+.review-mat-col {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  min-width: 0;
+}
+.review-mat-note {
+  padding: 34px 18px 16px 58px;
+}
+.review-mat-note p {
+  margin: 0;
+}
+.review-mat-note > .washi {
+  position: absolute;
+  top: -10px;
+  left: 38%;
+}
+.review-materials .polaroid {
+  justify-self: center;
+  width: 170px;
+}
+.review-materials .polaroid > span {
+  background: linear-gradient(160deg, #d3e2ee, #b5cda4);
+}
+.review-mat-covers {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  font-size: 0.68rem;
+}
+.review-mat-drawers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #9c7656;
+}
+.review-mat-labels {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.review-ui-icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 8px;
+}
+.review-ui-icon {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 14px 8px 10px;
+  border: 1px solid var(--review-line);
+  border-radius: 12px;
+  background: var(--review-raised);
+  color: var(--review-ink);
+  font-size: 0.78rem;
+  text-align: center;
+}
+.review-ui-icon .ui-icon {
+  fill: currentColor;
+  --icon-tint: var(--lavender);
+  --icon-tint-opacity: 0.35;
+}
+.review-ui-icon figcaption {
+  display: grid;
+  color: var(--review-muted);
+}
+.review-ui-icon code {
+  color: var(--review-ink);
+}

@@ -302,6 +302,8 @@ async function main() {
       { id: 'set-1', name: 'Biologia 1', card_count: 3, due_count: 1, status: 'active' },
     ];
     await page.goto(base + '/revisar.html#flashcards');
+    // 3.6: managing sets is the "Gerenciar" view of Flashcards.
+    await page.getByRole('button', { name: 'Gerenciar' }).click();
     const setsPanel = page.locator('details', { hasText: 'Conjuntos de flashcards' }).last();
     await setsPanel.locator('summary').click();
     const rename = setsPanel.getByRole('button', { name: 'Renomear' });
@@ -334,6 +336,7 @@ async function main() {
 
     // ---------- New flashcard: a dialog opened from a tile, not a folded section ------------
     await page.goto(base + '/revisar.html#flashcards');
+    await page.locator('.review-create > summary', { hasText: 'Novo cartão' }).click();
     const manual = page.getByRole('button', { name: /Criar cartão manualmente/ });
     await manual.click();
     const cardDialog = page.getByRole('dialog', { name: 'Criar cartão' });
@@ -372,8 +375,9 @@ async function main() {
       await page.reload(); // same URL: goto alone only changes the hash
       const panel = page.locator('details.flashcard-sets');
       await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
-      // Merge and import sit next to "Novos cartões", visible without opening the sets section.
-      const deckTools = page.locator('.flashcard-create-column .deck-tools');
+      // Merge and import lead the "Gerenciar" view, visible without opening the sets section.
+      await page.getByRole('button', { name: 'Gerenciar' }).click();
+      const deckTools = page.locator('.review-manage .deck-tools');
       await deckTools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
       const mergeDialog = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
       await mergeDialog.waitFor();
@@ -523,6 +527,8 @@ async function main() {
     page.on('request', (r) => {
       if (/\/api\/flashcards/.test(r.url()) && r.method() !== 'GET') writes.push(r.url());
     });
+    // 3.6: the card's look is chosen in the toolbar's "Filtros" popover.
+    await page.locator('.review-filter > summary').click();
     for (const template of ['notebook', 'sticky', 'window', 'polaroid']) {
       await page.locator('[data-card-template-picker]').selectOption(template);
       assert.equal(await review.getAttribute('data-card-template'), template);
@@ -628,6 +634,8 @@ async function main() {
       const notebook = notesPage.locator('[data-lesson-notebook]');
       await notebook.getByRole('heading', { name: 'Caderno da aula' }).waitFor();
       await notebook.getByText('Privado: só você vê este caderno.').waitFor();
+      // 3.6: the notebook starts as a closed cover; opening it shows the page.
+      await notebook.getByRole('button', { name: 'Abrir o caderno' }).click();
       const rangeCard = notesPage.locator('[data-annotations-panel] .annotation-card', { hasText: 'O oxigênio' }).first();
       await rangeCard.getByText('Abrange 2 trechos da transcrição').waitFor();
       // First save fails (unknown outcome): "Não salvo — tentar de novo", same request on retry.

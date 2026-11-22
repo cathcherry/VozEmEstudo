@@ -505,3 +505,37 @@ Direção criativa: `docs/EXPERIENCE_VISION_3_5.md`. A metáfora é a escrivanin
 | Recursos | ligados pelo `backend/.env` de quem roda o app (`ATIVAR_RECURSOS_3_4.cmd`). A flag `discoveries` fica desligada |
 | Site público | **bloqueado**: sem acesso a nenhuma plataforma de hospedagem. Configuração do Railway pronta em `deploy/` |
 | Staging | 3.3/3.4 + descobertas aplicadas e validadas com dados sintéticos; login e Storage validados sem chave privilegiada |
+
+## Voz em Estudo 3.6 — skeuomorfismo e scrapbook (branch `feat/3.6-scrapbook`)
+
+A análise honesta das lacunas está em `docs/SCRAPBOOK_EXPERIENCE.md` §1. Quase tudo de "colecionar, descobrir e decorar" estava atrás de uma flag desligada e de uma migration não aplicada. O scrapbook nunca tinha sido construído.
+
+**Produção (22/11/2026).** A migration `20261123090000_discoveries.sql` foi aplicada em `audioestudo`, para que Descobertas, Gabinete e Investigar possam ser abertos de verdade:
+
+- **Backup:** schema privado `backup_pre_discoveries_20261122` com 52 tabelas e 785 linhas, conferido por hash, idênticas ao original. Ponto de recuperação: **2026-11-22 07:16:41 UTC**.
+- **Aplicação:** pelo auxiliar temporário, que conferia o SHA-256 contra o arquivo da `main` (`ff2af06`).
+- **Postflight:** igual ao do staging — 10 tabelas com RLS, 0 acessos do navegador, 25 funções só do servidor, desbloqueios imutáveis.
+- **Integridade:** as 52 tabelas pré-existentes estão idênticas (785 → 785); 4 contas e 32 objetos do Storage intactos.
+- **Pendente:** remover o auxiliar temporário (`release_tmp` e extensão `http`). O comando de remoção pediu uma confirmação que ficou sem resposta. Ele não é acessível pelo navegador nem pela API.
+- **Flag:** `ATIVAR_RECURSOS_3_4.cmd` agora liga `FEATURE_DISCOVERIES=true`.
+- **Arquivo de descobertas:** `20261124090000_discovery_archive.sql` só troca a função de leitura e foi aplicada na produção pelo mesmo auxiliar.
+
+**Diário de estudo em produção (22/11/2026).**
+- **Staging primeiro:** aplicada no staging, com postflight verde. Smoke test em transação desfeita:
+  - criar diário e página com decoração;
+  - outra conta não lista, não abre e não grava;
+  - selo não desbloqueado é recusado (`JOURNAL_DECORATION_LOCKED`).
+- **Backup:** schema `backup_pre_journals_20261122`, com 62 tabelas e 785 linhas. As 62 tabelas conferem por hash. Ponto de recuperação: **2026-11-22 10:30:06 UTC**.
+- **Aplicação:** pelo auxiliar com SHA-256 `07de78ac…`, a partir do commit `4e46c43`.
+- **Postflight:** 2 tabelas com RLS, invisíveis para `anon` e `authenticated`; 11 funções, nenhuma executável pelo navegador; tabelas vazias.
+- **Integridade:** 62/62 tabelas idênticas ao backup.
+- **Flag:** `ATIVAR_RECURSOS_3_4.cmd` liga `FEATURE_JOURNAL=true`.
+- **Auxiliar temporário:** a remoção pediu confirmação de novo, e a confirmação ficou sem resposta. Ainda está pendente.
+
+**Integrado até aqui:**
+- correções de UX: seleção na Biblioteca, faixa da disciplina, Revisar, um só motor de foco, Arrumar a mesa;
+- ativos:
+  - ícones Phosphor (MIT), em peso duotone;
+  - 24 emblemas de disciplina e o novo seletor de emblema;
+  - 79 peças de scrapbook: papéis, fitas washi, adesivos, molduras, divisores, etiquetas e capas;
+  - primitivos de material em `materials.css`.

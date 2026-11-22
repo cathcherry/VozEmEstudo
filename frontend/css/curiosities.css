@@ -1,0 +1,1500 @@
+/* Voz em Estudo 3.6, Milestone E — the cabinet of curiosities, the archive of discovery cards and
+ * the evolving card (docs/SCRAPBOOK_EXPERIENCE.md §2). Builds on materials.css (wood, brass,
+ * paper, washi). Light from the top left; decoration is aria-hidden; nothing moves on its own:
+ * the only motion answers a person (a drawer sliding out), and it stops with reduced motion. */
+@layer pages {
+  .cabinet-page,
+  .discoveries-page,
+  .investigation-page {
+    --thread: #b5485d;
+    --thread-soft: color-mix(in srgb, #b5485d 55%, transparent);
+    --postmark: color-mix(in srgb, #3f6b37 78%, transparent);
+    --graphite: #6f6a80;
+    --walnut: color-mix(in srgb, var(--mat-wood-deep) 82%, #2b1d14);
+    --walnut-back: color-mix(in srgb, var(--mat-wood-deep) 58%, #20150e);
+  }
+  :root:is([data-theme='night'], [data-theme='custom']) :is(.cabinet-page, .discoveries-page, .investigation-page) {
+    --thread: #e58a9c;
+    --postmark: color-mix(in srgb, #9fcb8e 80%, transparent);
+    --graphite: #b9b4c6;
+  }
+
+  /* ==== The evolving card ===================================================================== */
+  .specimen-card {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    min-height: 100%;
+    padding: 1.6rem var(--space-4) var(--space-4) 1.6rem;
+    border: 1px solid var(--mat-edge);
+    border-radius: 3px;
+    background-color: var(--mat-sheet);
+    /* Index card: a coloured head rule and faint blue lines. */
+    background-image:
+      linear-gradient(var(--mat-margin), var(--mat-margin)),
+      repeating-linear-gradient(transparent 0 calc(1.5rem - 1px), color-mix(in srgb, var(--mat-rule) 55%, transparent) calc(1.5rem - 1px) 1.5rem);
+    background-size: 100% 1.5px, 100% 1.5rem;
+    background-position: 0 1.1rem, 0 1.1rem;
+    background-repeat: no-repeat, repeat-y;
+    box-shadow: var(--mat-lift-1);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+  .specimen-card > * {
+    margin: 0;
+  }
+  .specimen-subject {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .specimen-title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 560;
+    line-height: 1.25;
+  }
+  .specimen-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .specimen-title a:hover,
+  .specimen-title a:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .specimen-question,
+  .specimen-meta {
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    line-height: 1.45;
+  }
+  .specimen-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-3);
+  }
+  .specimen-state {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .specimen-state::before {
+    content: '';
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .specimen-card[data-stage='stamped'] .specimen-state::before {
+    background: var(--postmark);
+  }
+  .specimen-card[data-stage='bound'] .specimen-state::before {
+    background: var(--thread);
+  }
+  .specimen-card[data-stage='pressed'] .specimen-state::before {
+    background: var(--rose);
+  }
+  .specimen-why {
+    margin-top: var(--space-1);
+    font-size: var(--step-ui);
+  }
+  .specimen-why > summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--brand-ink);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .specimen-why-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .specimen-why-list > li {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: var(--space-2);
+    align-items: start;
+  }
+  .specimen-why-mark {
+    display: grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.1rem;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 50%;
+    color: var(--matcha-ink);
+  }
+  .specimen-why-list > li[data-reached='true'] .specimen-why-mark {
+    border-color: currentColor;
+    background: color-mix(in srgb, var(--matcha) 16%, transparent);
+  }
+  .specimen-why-text {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .specimen-why-text time,
+  .specimen-why-hint {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  .specimen-why-list > li[data-reached='false'] strong {
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  /* Sketch: pencil on plain paper, the outline drawn by hand. */
+  .specimen-card[data-stage='sketch'] {
+    border: 1.5px dashed color-mix(in srgb, var(--graphite) 60%, transparent);
+    background-image: none;
+    box-shadow: none;
+  }
+  .specimen-card[data-stage='sketch'] :is(.specimen-title, .specimen-state) {
+    color: var(--graphite);
+    font-weight: 420;
+  }
+  .specimen-card[data-stage='sketch'] .specimen-state::before {
+    background: none;
+    border: 1.5px solid var(--graphite);
+  }
+  /* Stamped: a postmark in green ink with its cancellation lines. */
+  .specimen-postmark {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.8rem;
+    z-index: -1;
+    width: 3.6rem;
+    height: 3.6rem;
+    border: 2px solid var(--postmark);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 3px var(--mat-sheet), inset 0 0 0 4.5px var(--postmark);
+    rotate: -14deg;
+    opacity: 0.85;
+  }
+  .specimen-postmark > i {
+    position: absolute;
+    right: 70%;
+    width: 3.2rem;
+    height: 0.45rem;
+    border-top: 1.5px solid var(--postmark);
+    border-radius: 50%;
+  }
+  .specimen-postmark > i:nth-child(1) {
+    top: 1rem;
+  }
+  .specimen-postmark > i:nth-child(2) {
+    top: 1.55rem;
+  }
+  .specimen-postmark > i:nth-child(3) {
+    top: 2.1rem;
+  }
+  .specimen-card:has(.specimen-postmark) > :is(.specimen-subject, .specimen-title) {
+    padding-right: 3.4rem;
+  }
+  /* Bound: a red thread stitched down the left edge, knotted at the top. */
+  .specimen-thread {
+    position: absolute;
+    top: -0.35rem;
+    bottom: 0.4rem;
+    left: 0.6rem;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--thread) 0 7px, transparent 7px 12px);
+  }
+  .specimen-thread::before {
+    content: '';
+    position: absolute;
+    top: -0.15rem;
+    left: -0.3rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50% 50% 50% 0;
+    background: var(--thread);
+    rotate: -45deg;
+  }
+  /* Pressed: a flower taped to the lower corner. */
+  .specimen-flower {
+    position: absolute;
+    right: 0.35rem;
+    bottom: 0.35rem;
+    z-index: -1;
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+  .specimen-flower > [data-art-slot] img {
+    width: 100%;
+    height: auto;
+    rotate: 12deg;
+    opacity: 0.92;
+  }
+  .specimen-flower > .washi {
+    position: absolute;
+    top: 0.85rem;
+    left: -0.4rem;
+    z-index: 1;
+  }
+  .specimen-card:has(.specimen-flower) {
+    padding-bottom: var(--space-6);
+  }
+  .specimen-card.is-compact {
+    padding-bottom: var(--space-4);
+  }
+  .specimen-card .stamp-row {
+    margin-top: var(--space-2);
+  }
+
+  /* ==== The cabinet ============================================================================ */
+  body.app-page .cabinet-page .cabinet-stage:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 19rem);
+    gap: var(--space-6);
+    align-items: start;
+    margin-top: var(--space-5);
+  }
+  .curio-cabinet {
+    position: relative;
+    max-width: 54rem;
+    padding: var(--space-4) var(--space-4) 0;
+    border: 1px solid color-mix(in srgb, var(--walnut) 80%, #000);
+    border-radius: 10px 10px 4px 4px;
+    background-color: var(--walnut);
+    background-image:
+      repeating-linear-gradient(90deg, transparent 0 23px, color-mix(in srgb, #000 10%, transparent) 23px 24px, transparent 24px 61px, color-mix(in srgb, var(--mat-wood-light) 16%, transparent) 61px 63px),
+      linear-gradient(180deg, color-mix(in srgb, #fff 10%, transparent), transparent 30%);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, #fff 18%, transparent),
+      0 2px 2px rgb(var(--mat-shadow) / 0.2),
+      0 24px 40px -26px rgb(var(--mat-shadow) / 0.55);
+  }
+  /* Cornice: a moulding a little wider than the body. */
+  .curio-cabinet::before {
+    content: '';
+    position: absolute;
+    top: -0.9rem;
+    left: -0.6rem;
+    right: -0.6rem;
+    height: 1rem;
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(180deg, var(--mat-wood-light), var(--mat-wood) 45%, var(--mat-wood-deep));
+    box-shadow: 0 2px 0 color-mix(in srgb, #000 22%, transparent);
+  }
+  .curio-crest {
+    display: flex;
+    justify-content: center;
+    margin: -0.25rem 0 var(--space-3);
+  }
+  .curio-crest .embossed-label {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  /* The interior: a dark back wall with two shelves. It lights up as it fills. */
+  .curio-shelves {
+    position: relative;
+    display: grid;
+    gap: 0;
+    padding: var(--space-3) var(--space-3) 0;
+    border-radius: 4px;
+    background-color: var(--walnut-back);
+    background-image: repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), color-mix(in srgb, #000 22%, transparent) calc(25% - 1px) 25%);
+    box-shadow: inset 0 10px 18px -8px rgb(0 0 0 / 0.55), inset 0 0 0 1px rgb(0 0 0 / 0.3);
+    overflow: hidden;
+  }
+  .curio-cabinet:not([data-fill='empty']) .curio-shelves {
+    background-image:
+      radial-gradient(ellipse 60% 70% at 50% 0%, color-mix(in srgb, var(--mat-brass-light) 34%, transparent), transparent 70%),
+      repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), color-mix(in srgb, #000 22%, transparent) calc(25% - 1px) 25%);
+  }
+  .curio-shelf {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0 var(--space-2);
+  }
+  .curio-shelf-caption {
+    order: 2;
+    margin: 0 0 var(--space-3);
+    color: #f1e4cc;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step--1);
+    text-align: center;
+  }
+  .curio-shelf-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--space-2) var(--space-4);
+    min-height: 6rem;
+    margin: 0;
+    padding: var(--space-2) var(--space-2) 0;
+    list-style: none;
+    /* The shelf board under the objects. */
+    border-bottom: 0.7rem solid var(--mat-wood);
+    border-image: linear-gradient(180deg, var(--mat-wood-light), var(--mat-wood) 40%, var(--mat-wood-deep)) 1;
+    box-shadow: 0 10px 12px -8px rgb(0 0 0 / 0.6);
+  }
+  .curio-shelf-item {
+    display: grid;
+    justify-items: center;
+    gap: 0.15rem;
+  }
+  .curio-shelf-item [data-art-slot] img {
+    display: block;
+    height: auto;
+    filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.45));
+  }
+  .curio-shelf-name {
+    max-width: 6.5rem;
+    color: #f1e4cc;
+    font-size: var(--step--1);
+    text-align: center;
+  }
+  /* Not found yet: a pale outline of its shape on the back wall. */
+  .curio-shelf-item[data-found='false'] [data-art-slot] img {
+    filter: brightness(0) invert(1);
+    opacity: 0.12;
+  }
+  .curio-shelf[data-curio-shelf='memories'] .curio-shelf-row {
+    min-height: 4.5rem;
+    gap: var(--space-2);
+  }
+  .curio-shelf-item[data-kind='stamp'][data-found='true']:nth-child(odd) img {
+    rotate: -6deg;
+  }
+  .curio-shelf-item[data-kind='stamp'][data-found='true']:nth-child(even) img {
+    rotate: 5deg;
+  }
+
+  /* Drawers: the brass-pulled fronts of materials.css in a frame; the tray of the open drawer
+     spans the whole row right after it (grid-auto-flow: dense keeps the neighbour in place). */
+  .curio-drawers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    gap: var(--space-3);
+    padding: var(--space-4) 0 var(--space-4);
+  }
+  .curio-drawer.drawer {
+    min-height: 7rem;
+    padding: var(--space-4) var(--space-3) var(--space-3);
+    overflow: visible;
+  }
+  .curio-drawer .label-holder {
+    min-width: 9rem;
+  }
+  .curio-drawer-name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-0);
+    font-weight: 600;
+  }
+  .curio-drawer-count {
+    color: #2e2a3b;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  :root:is([data-theme='night'], [data-theme='custom']) .curio-drawer-count {
+    color: #f6efe2;
+  }
+  /* A drawer that holds something shows a card peeking out of its top gap. */
+  .curio-peek {
+    position: absolute;
+    top: -0.55rem;
+    left: 16%;
+    width: 2.6rem;
+    height: 0.9rem;
+    border: 1px solid var(--mat-edge);
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+    background: var(--mat-sheet);
+    rotate: -4deg;
+    opacity: 0;
+  }
+  .curio-drawer[data-fill='some'] .curio-peek,
+  .curio-drawer[data-fill='full'] .curio-peek {
+    opacity: 1;
+  }
+  .curio-drawer[data-fill='full'] .curio-peek {
+    box-shadow: 1.9rem 0.1rem 0 -1px var(--mat-cream), 1.9rem 0.1rem 0 0 var(--mat-edge);
+  }
+  .curio-drawer[data-drawer='stamp'] .curio-peek {
+    background: color-mix(in srgb, var(--rose) 30%, var(--mat-sheet));
+  }
+  .curio-drawer[data-drawer='specimen'] .curio-peek {
+    background-image: linear-gradient(var(--mat-margin), var(--mat-margin));
+    background-size: 100% 1.5px;
+    background-position: 0 0.35rem;
+    background-repeat: no-repeat;
+  }
+  .curio-drawer[aria-expanded='true'] {
+    box-shadow:
+      inset 0 4px 10px rgb(0 0 0 / 0.35),
+      inset 0 1px 0 color-mix(in srgb, #fff 20%, transparent),
+      0 1px 0 color-mix(in srgb, var(--mat-wood-deep) 60%, transparent);
+  }
+  .curio-drawer:focus-visible {
+    box-shadow: var(--focus-ring);
+  }
+
+  /* The open drawer: a wooden box pulled toward you, lined with linen, cut into compartments. */
+  .curio-tray {
+    grid-column: 1 / -1;
+    padding: var(--space-4);
+    border: 1px solid color-mix(in srgb, var(--mat-wood-deep) 80%, #000);
+    border-top-width: 0.6rem;
+    border-radius: 2px 2px 8px 8px;
+    border-top-color: var(--mat-wood-deep);
+    background: var(--mat-wood);
+    box-shadow:
+      0 16px 26px -16px rgb(0 0 0 / 0.65),
+      inset 0 -3px 0 color-mix(in srgb, var(--mat-wood-deep) 50%, transparent);
+  }
+  .curio-tray[data-opening] {
+    animation: curio-slide 340ms var(--ease) both;
+  }
+  @keyframes curio-slide {
+    from {
+      transform: translateY(-0.9rem);
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      transform: none;
+      clip-path: inset(0 0 -2rem 0);
+    }
+  }
+  .curio-tray-head {
+    display: grid;
+    gap: var(--space-1);
+    margin-bottom: var(--space-3);
+    color: #2e2a3b;
+  }
+  .curio-tray-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+  .curio-tray-head p,
+  .curio-tray-foot {
+    margin: 0;
+    font-size: var(--step-ui);
+  }
+  :root:is([data-theme='night'], [data-theme='custom']) :is(.curio-tray-head, .curio-tray-foot) {
+    color: #f6efe2;
+  }
+  .curio-tray-foot {
+    margin-top: var(--space-3);
+  }
+  .curio-tray-foot a {
+    color: inherit;
+  }
+  .curio-compartments {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+    gap: 6px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    border-radius: 3px;
+    background: var(--mat-wood-deep);
+  }
+  .curio-compartment {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: var(--space-1);
+    width: 100%;
+    height: 100%;
+    min-height: 10rem;
+    padding: var(--space-3) var(--space-2);
+    border: 0;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--mat-linen) 86%, var(--mat-wood));
+    box-shadow: inset 0 6px 10px -6px rgb(0 0 0 / 0.45), inset 0 0 0 1px rgb(0 0 0 / 0.08);
+    color: var(--ink);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+  }
+  .curio-compartment:hover {
+    background: color-mix(in srgb, var(--mat-linen) 70%, var(--mat-brass-light));
+  }
+  .curio-compartment:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  .curio-art img {
+    display: block;
+    height: auto;
+    filter: drop-shadow(0 2px 2px rgb(var(--mat-shadow) / 0.3));
+  }
+  .curio-compartment[data-collectible^='stamp.'] .curio-art img {
+    rotate: -5deg;
+  }
+  .curio-name {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .curio-compartment .cabinet-origin,
+  .curio-compartment .cabinet-hint,
+  .curio-subject,
+  .curio-stage {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    line-height: 1.35;
+  }
+  .curio-compartment .cabinet-progress {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--lavender-ink);
+  }
+  /* Locked: a faint outline with the hint of what reveals it. */
+  .cabinet-item[data-state='locked'] [data-art-slot] {
+    filter: grayscale(1);
+    opacity: 0.32;
+  }
+  .cabinet-item[data-state='locked'] {
+    background: color-mix(in srgb, var(--mat-linen) 70%, var(--mat-wood));
+  }
+  .cabinet-item[data-state='locked'] .curio-name {
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+  /* A discovery in the specimen drawer: a tiny index card with its marks. */
+  .curio-specimen-card {
+    position: relative;
+    display: block;
+    width: 4.5rem;
+    height: 3.2rem;
+    margin-bottom: var(--space-1);
+    border: 1px solid var(--mat-edge);
+    border-radius: 2px;
+    background-color: var(--mat-sheet);
+    background-image:
+      linear-gradient(var(--mat-margin), var(--mat-margin)),
+      repeating-linear-gradient(transparent 0 7px, var(--mat-rule) 7px 8px);
+    background-size: 100% 1px, 100% 8px;
+    background-position: 0 8px, 0 9px;
+    background-repeat: no-repeat, repeat-y;
+    box-shadow: var(--mat-lift-1);
+    rotate: -3deg;
+  }
+  .curio-specimen-card > i {
+    position: absolute;
+    display: none;
+  }
+  .curio-specimen[data-traits~='stamped'] .curio-specimen-card > i:nth-child(1) {
+    display: block;
+    top: 3px;
+    right: 4px;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1.5px solid var(--postmark);
+    border-radius: 50%;
+  }
+  .curio-specimen[data-traits~='bound'] .curio-specimen-card > i:nth-child(2) {
+    display: block;
+    top: -3px;
+    bottom: 4px;
+    left: 5px;
+    width: 1.5px;
+    background: repeating-linear-gradient(to bottom, var(--thread) 0 4px, transparent 4px 7px);
+  }
+  .curio-specimen[data-traits~='pressed'] .curio-specimen-card > i:nth-child(3) {
+    display: block;
+    right: 5px;
+    bottom: 4px;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50% 0;
+    background: var(--rose);
+    rotate: 30deg;
+  }
+  .curio-empty-slot {
+    display: grid;
+    place-items: center;
+    min-height: 10rem;
+    padding: var(--space-3);
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--mat-linen) 78%, var(--mat-wood));
+    box-shadow: inset 0 6px 10px -6px rgb(0 0 0 / 0.45);
+    color: var(--ink-muted);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--step--1);
+    text-align: center;
+  }
+  .curio-empty-slot > span {
+    padding: var(--space-3);
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 3px;
+  }
+  .curio-feet {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 var(--space-5);
+    margin-bottom: -1.1rem;
+  }
+  .curio-feet > i {
+    width: 2.2rem;
+    height: 1.1rem;
+    border-radius: 0 0 40% 40%;
+    background: linear-gradient(180deg, var(--walnut), color-mix(in srgb, var(--walnut) 70%, #000));
+  }
+
+  /* Beside the cabinet: the guide, the desk and the mode. */
+  .cabinet-aside {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+  .cabinet-guide.index-card {
+    padding-top: 2.4rem;
+  }
+  .cabinet-guide > .washi {
+    position: absolute;
+    top: -0.6rem;
+    left: 50%;
+    translate: -50% 0;
+  }
+  .cabinet-guide h2,
+  .cabinet-desk-note h2 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 560;
+    line-height: 1.5rem;
+  }
+  .cabinet-guide-steps {
+    margin: 0 0 var(--space-4);
+    padding-left: 1.3rem;
+    line-height: 1.5rem;
+  }
+  .cabinet-guide-steps li + li {
+    margin-top: 0;
+  }
+  .cabinet-desk-note p {
+    margin: 0 0 var(--space-2);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .cabinet-page .cabinet-aside .experience-mode {
+    margin: 0;
+  }
+
+  /* The museum label (inspect). */
+  .specimen-dialog {
+    width: min(46rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ink);
+    overflow: visible;
+  }
+  .specimen-dialog::backdrop {
+    background: rgb(28 22 18 / 0.55);
+  }
+  .specimen-sheet {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+    gap: var(--space-5);
+    max-height: calc(100dvh - 2rem);
+    padding: var(--space-5);
+    border-radius: 6px;
+    background: var(--mat-sheet);
+    box-shadow: var(--mat-lift-2);
+    overflow: auto;
+  }
+  .specimen-art {
+    display: grid;
+    place-items: center;
+    min-height: 13rem;
+    padding: var(--space-4);
+    border-radius: 4px;
+    /* A linen mat in a thin wooden frame. */
+    background: color-mix(in srgb, var(--mat-linen) 70%, var(--lavender));
+    box-shadow: inset 0 0 0 6px var(--mat-wood), inset 0 0 0 7px var(--mat-wood-deep), inset 0 10px 18px -8px rgb(0 0 0 / 0.35);
+  }
+  .specimen-sheet[data-kind='specimen'] .specimen-art {
+    place-items: stretch;
+    background: color-mix(in srgb, var(--mat-kraft) 60%, var(--mat-sheet));
+  }
+  .specimen-art img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 4px 4px rgb(var(--mat-shadow) / 0.3));
+  }
+  .specimen-sheet[data-state='locked'] .specimen-art img {
+    filter: grayscale(1);
+    opacity: 0.3;
+  }
+  .specimen-label {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-4);
+    border: 1px solid var(--line-strong);
+    outline: 1px solid var(--line);
+    outline-offset: -5px;
+  }
+  .specimen-label > * {
+    margin: 0;
+  }
+  .specimen-kind {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .specimen-label h2 {
+    padding-right: 4.5rem;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-style: italic;
+    font-size: var(--step-2);
+    font-weight: 520;
+    line-height: 1.2;
+  }
+  .specimen-label h2:focus {
+    outline: none;
+  }
+  .specimen-label h2:focus-visible {
+    box-shadow: var(--focus-ring);
+  }
+  .specimen-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+    font-size: var(--step-ui);
+  }
+  .specimen-facts:empty {
+    display: none;
+  }
+  .specimen-facts dt {
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .specimen-facts dd {
+    margin: 0;
+  }
+  .specimen-facts a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .specimen-actions {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .specimen-actions:empty {
+    display: none;
+  }
+  .specimen-actions > .button-link {
+    justify-self: start;
+  }
+  .specimen-desk {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+  }
+  .specimen-desk label {
+    font-weight: 600;
+  }
+  .specimen-desk-now {
+    margin: 0;
+    color: var(--ink-muted);
+  }
+  .specimen-desk-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .specimen-close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 1;
+    min-height: 44px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-pill);
+    background: var(--paper-raised);
+    color: var(--ink);
+    font: inherit;
+    cursor: pointer;
+  }
+  .specimen-close:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+
+  /* ==== The archive ============================================================================ */
+  body.app-page .discoveries-page .archive-milestones {
+    margin: var(--space-5) 0 0;
+    padding: var(--space-4) var(--space-5);
+    border-radius: 4px;
+    background-color: var(--mat-kraft);
+    background-image: var(--mat-noise);
+    background-blend-mode: multiply;
+    box-shadow: var(--mat-lift-1);
+    color: #2e2a3b;
+  }
+  :root:is([data-theme='night'], [data-theme='custom']) body.app-page .discoveries-page .archive-milestones {
+    color: #f6efe2;
+  }
+  body.app-page .discoveries-page .archive-milestones h3 {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 560;
+  }
+  .archive-milestone-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .archive-milestone {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--space-3);
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border-radius: 3px;
+    background: var(--mat-sheet);
+    color: var(--ink);
+    box-shadow: var(--mat-lift-1);
+    font-size: var(--step--1);
+  }
+  .archive-milestone > :not(.archive-milestone-art) {
+    grid-column: 2;
+  }
+  .archive-milestone-art {
+    grid-row: 1 / span 4;
+  }
+  .archive-milestone-art img {
+    display: block;
+    width: 2.75rem;
+    height: auto;
+    rotate: -6deg;
+  }
+  .archive-milestone strong {
+    font-size: var(--step-ui);
+  }
+  .archive-milestone :is(time, .archive-milestone-lesson) {
+    color: var(--ink-muted);
+  }
+  .archive-milestone a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  body.app-page .discoveries-page .archive-toolbar {
+    margin-top: var(--space-6);
+  }
+  .archive-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  .archive-panel {
+    padding: var(--space-5);
+    border: 1px solid var(--mat-edge);
+    border-radius: 0 4px 4px 4px;
+    background-color: var(--mat-sheet);
+    box-shadow: var(--mat-lift-1);
+  }
+  .archive-panel:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  .discoveries-home > .archive-panel:first-of-type:not([hidden]),
+  [data-archive-toolbar][hidden] + .archive-panel {
+    border-radius: 4px;
+  }
+  .archive-group + .archive-group,
+  .archive-collection + .archive-collection {
+    margin-top: var(--space-6);
+  }
+  .archive-group-head,
+  .archive-collection-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .archive-group-head h3,
+  .archive-collection-head h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 560;
+  }
+  .archive-emblem img {
+    display: block;
+    width: 2.25rem;
+    height: auto;
+  }
+  .archive-group-count {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  .archive-collection-head .text-action {
+    margin-left: auto;
+  }
+  .archive-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.5rem), 1fr));
+    gap: var(--space-5) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .archive-empty-note {
+    margin: 0;
+    color: var(--ink-muted);
+    font-family: var(--font-display);
+    font-style: italic;
+  }
+  .archive-pairs {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .archive-pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(4rem, 8rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 0 var(--space-2);
+  }
+  .archive-pair-card {
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--mat-edge);
+    border-radius: 3px;
+    background: var(--mat-sheet);
+    box-shadow: var(--mat-lift-1);
+  }
+  .archive-pair-card a {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-weight: 560;
+    color: var(--ink);
+  }
+  .archive-thread svg {
+    display: block;
+    width: 100%;
+    height: 1.5rem;
+    overflow: visible;
+  }
+  .archive-thread path {
+    fill: none;
+    stroke: var(--graphite);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    vector-effect: non-scaling-stroke;
+  }
+  .archive-pair[data-across='true'] .archive-thread path {
+    stroke: var(--thread);
+  }
+  .archive-pair-note {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+    margin: var(--space-1) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  .archive-pair[data-across='true'] .archive-pair-note > span:first-child {
+    color: var(--rose-ink);
+    font-weight: 600;
+  }
+  .archive-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  body.app-page .discoveries-page .archive-inline input {
+    flex: 1 1 14rem;
+    width: auto;
+  }
+  .archive-new-collection {
+    margin-bottom: var(--space-5);
+  }
+  .archive-new-collection .investigation-field {
+    margin-top: 0;
+  }
+  .archive-collection {
+    position: relative;
+    padding: var(--space-5) var(--space-4) var(--space-4);
+    border: 1px solid var(--mat-edge);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--mat-kraft) 22%, var(--mat-sheet));
+  }
+  .archive-collection > .washi {
+    position: absolute;
+    top: -0.55rem;
+    left: var(--space-5);
+  }
+  .archive-collection-edit {
+    margin-top: var(--space-4);
+  }
+  .archive-collection-edit > summary {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--brand-ink);
+  }
+  .archive-collection-choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .archive-choice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+  }
+  .archive-choice input {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+  }
+  .archive-legend {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border: 1px dashed var(--line-strong);
+    border-radius: 4px;
+  }
+  .archive-legend h3 {
+    margin: 0 0 var(--space-1);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 560;
+  }
+  .archive-legend > p {
+    margin: 0 0 var(--space-3);
+    color: var(--ink-muted);
+  }
+  .archive-legend-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-3) var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .archive-legend-list li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    column-gap: var(--space-3);
+    font-size: var(--step--1);
+  }
+  .archive-legend-list li > :not(.legend-swatch) {
+    grid-column: 2;
+  }
+  .archive-legend-list strong {
+    font-size: var(--step-ui);
+  }
+  .archive-legend-list li > span:last-child {
+    color: var(--ink-muted);
+  }
+  .legend-swatch {
+    position: relative;
+    grid-row: 1 / span 2;
+    width: 2.5rem;
+    height: 1.9rem;
+    border: 1px solid var(--mat-edge);
+    border-radius: 2px;
+    background-color: var(--mat-sheet);
+    background-image: linear-gradient(var(--mat-margin), var(--mat-margin));
+    background-size: 100% 1px;
+    background-position: 0 6px;
+    background-repeat: no-repeat;
+    box-shadow: var(--mat-lift-1);
+  }
+  [data-trait='sketch'] > .legend-swatch {
+    border: 1.5px dashed var(--graphite);
+    background-image: none;
+    box-shadow: none;
+  }
+  [data-trait='stamped'] > .legend-swatch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1.5px solid var(--postmark);
+    border-radius: 50%;
+  }
+  [data-trait='bound'] > .legend-swatch::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    bottom: 3px;
+    left: 4px;
+    width: 1.5px;
+    background: repeating-linear-gradient(to bottom, var(--thread) 0 4px, transparent 4px 7px);
+  }
+  [data-trait='pressed'] > .legend-swatch::after {
+    content: '';
+    position: absolute;
+    right: 4px;
+    bottom: 3px;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50% 0;
+    background: var(--rose);
+    rotate: 30deg;
+  }
+  /* The discovery page's own card. */
+  body.app-page .discoveries-page .discovery-card-block .specimen-card {
+    max-width: 34rem;
+  }
+  body.app-page .discoveries-page .discovery-card-block .specimen-title {
+    font-size: var(--step-1);
+  }
+
+  /* ==== Investigation polish: paper sheet, index-card steps, taped evidence ==================== */
+  .investigation-side {
+    position: sticky;
+    top: calc(var(--topbar-height) + var(--space-4));
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+  .investigation-side .investigation-rail {
+    position: static;
+  }
+  .investigation-card h2 {
+    margin: 0 0 var(--space-2);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 650;
+  }
+  .investigation-card .specimen-card {
+    padding: 1.5rem var(--space-3) var(--space-3) 1.4rem;
+  }
+  .investigation-card .specimen-title {
+    font-size: var(--step-0);
+  }
+  body.app-page .investigation-page .investigation-sheet.paper {
+    border-color: var(--mat-edge);
+    border-radius: 4px;
+    background-color: var(--mat-sheet);
+    box-shadow: var(--mat-lift-2);
+  }
+  body.app-page .investigation-page .investigation-step > h2 {
+    padding-bottom: var(--space-2);
+    border-bottom: 1.5px solid var(--mat-margin);
+  }
+  body.app-page .investigation-page .investigation-question-text {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--mat-edge);
+    border-radius: 3px;
+    background-color: var(--mat-sheet);
+    background-image: repeating-linear-gradient(transparent 0 calc(1.75rem - 1px), var(--mat-rule) calc(1.75rem - 1px) 1.75rem);
+    line-height: 1.75rem;
+    box-shadow: var(--mat-lift-1);
+  }
+  body.app-page .investigation-page .evidence-list {
+    gap: var(--space-5);
+    padding-left: 0;
+    list-style: none;
+  }
+  body.app-page .investigation-page .evidence-item {
+    position: relative;
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    border: 1px solid var(--mat-edge);
+    border-radius: 3px;
+    background: var(--mat-sheet);
+    box-shadow: var(--mat-lift-1);
+  }
+  /* Each quote is clipped onto the page with a strip of washi tape. */
+  body.app-page .investigation-page .evidence-item::before {
+    content: '';
+    position: absolute;
+    top: -0.55rem;
+    left: 50%;
+    width: 4.5rem;
+    height: 1.1rem;
+    translate: -50% 0;
+    rotate: -3deg;
+    background: color-mix(in srgb, var(--honey) 55%, transparent);
+    -webkit-mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent 0);
+    mask: linear-gradient(90deg, transparent 0 2px, #000 2px calc(100% - 2px), transparent 0);
+  }
+  body.app-page .investigation-page .evidence-item:nth-child(even)::before {
+    rotate: 4deg;
+    background: color-mix(in srgb, var(--lavender) 42%, transparent);
+  }
+  body.app-page .investigation-page .evidence-empty {
+    padding: var(--space-4);
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 3px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+  body.app-page .investigation-page .investigation-selection {
+    border: 1px dashed var(--line-strong);
+    background: color-mix(in srgb, var(--mat-kraft) 18%, var(--mat-sheet));
+  }
+
+  /* ==== Small screens ========================================================================== */
+  @media (max-width: 1100px) {
+    body.app-page .cabinet-page .cabinet-stage:not([hidden]) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 760px) {
+    .curio-cabinet {
+      padding: var(--space-3) var(--space-3) 0;
+    }
+    .curio-cabinet::before {
+      left: -0.35rem;
+      right: -0.35rem;
+    }
+    .curio-drawers {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .curio-drawer.drawer {
+      min-height: 6rem;
+    }
+    .curio-shelf-row {
+      gap: var(--space-2) var(--space-3);
+    }
+    .curio-shelf-item[data-found='false'] {
+      display: none;
+    }
+    .curio-compartments {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .curio-tray {
+      padding: var(--space-3);
+    }
+    .specimen-sheet {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+      padding: var(--space-4);
+    }
+    .specimen-art {
+      min-height: 10rem;
+    }
+    .specimen-facts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0 var(--space-2);
+    }
+    .specimen-facts dd + dt {
+      margin-top: var(--space-2);
+    }
+    .archive-panel {
+      padding: var(--space-4);
+    }
+    .archive-pair {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: stretch;
+    }
+    .archive-thread {
+      justify-self: center;
+      width: 1.5rem;
+      height: 2.5rem;
+    }
+    .archive-thread svg {
+      width: 2.5rem;
+      height: 1.5rem;
+      rotate: 90deg;
+      translate: -0.5rem 0.5rem;
+    }
+    .investigation-side {
+      position: static;
+    }
+  }
+
+  /* ==== Motion, contrast, forced colours ======================================================= */
+  @media (prefers-reduced-motion: reduce) {
+    .curio-tray[data-opening] {
+      animation: none;
+    }
+  }
+  :root:is([data-reduced-motion='true'], [data-low-stimulation='true'], [data-motion='off']) .curio-tray[data-opening] {
+    animation: none;
+  }
+  :root:is([data-high-contrast='true'], [data-theme='contrast-light'], [data-theme='contrast-dark'])
+    :is(.specimen-card, .curio-cabinet, .curio-shelves, .curio-tray, .curio-compartment, .archive-panel, .archive-milestones, .specimen-sheet) {
+    background-image: none;
+    box-shadow: none;
+    border: 1px solid var(--line-strong);
+  }
+  @media (forced-colors: active) {
+    :is(.specimen-card, .curio-cabinet, .curio-shelves, .curio-tray, .curio-compartment, .archive-panel, .archive-milestone, .archive-pair-card, .specimen-sheet, .specimen-label) {
+      background: Canvas;
+      color: CanvasText;
+      border: 1px solid CanvasText;
+      box-shadow: none;
+      forced-color-adjust: none;
+    }
+    .curio-shelf-caption,
+    .curio-shelf-name {
+      color: CanvasText;
+    }
+    .specimen-postmark,
+    .specimen-thread,
+    .specimen-flower,
+    .curio-peek,
+    .curio-feet,
+    .curio-cabinet::before {
+      display: none;
+    }
+    .curio-compartment:focus-visible,
+    .specimen-close:focus-visible {
+      outline: 3px solid Highlight;
+    }
+  }
+}
+
+/* Stamps on a card: a small row of ink stamps (names for screen readers only). */
+@layer pages {
+  body.app-page .specimen-card .stamp-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  body.app-page .specimen-card .stamp {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  body.app-page .specimen-card .stamp :is(img, .collectible-art) {
+    width: 2rem;
+    height: 2rem;
+  }
+  body.app-page .specimen-card .stamp > span:not([data-art-slot]) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .cabinet-guide.index-card {
+    background-image: linear-gradient(var(--mat-margin), var(--mat-margin));
+    background-size: 100% 1.5px;
+    background-position: 0 1.6rem;
+    line-height: 1.5;
+  }
+  .cabinet-guide-steps li + li {
+    margin-top: var(--space-2);
+  }
+}
+@layer pages {
+  .specimen-sheet {
+    padding-top: 3.75rem;
+    align-items: start;
+  }
+  .specimen-art {
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+  }
+  .specimen-sheet[data-kind='specimen'] .specimen-art {
+    aspect-ratio: auto;
+  }
+  .specimen-close {
+    top: var(--space-3);
+  }
+  .specimen-label h2 {
+    padding-right: 0;
+  }
+}
+@layer pages {
+  /* Phones: milestones as a compact two-column sheet of stamps (label and date). */
+  @media (max-width: 760px) {
+    body.app-page .discoveries-page .archive-milestones {
+      padding: var(--space-3) var(--space-4);
+    }
+    .archive-milestone-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+    .archive-milestone {
+      grid-template-columns: minmax(0, 1fr);
+      padding: var(--space-2);
+    }
+    .archive-milestone > :not(.archive-milestone-art) {
+      grid-column: 1;
+    }
+    .archive-milestone-art {
+      grid-row: auto;
+    }
+    .archive-milestone-art img {
+      width: 2rem;
+    }
+    .archive-milestone :is(.archive-milestone-lesson, a) {
+      display: none;
+    }
+  }
+}
+@layer pages {
+  @media (max-width: 760px) {
+    .specimen-art {
+      aspect-ratio: auto;
+      min-height: 11rem;
+    }
+    .specimen-art img {
+      max-height: 9rem;
+      width: auto;
+    }
+  }
+}

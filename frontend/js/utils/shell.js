@@ -3,7 +3,7 @@ import { getAvatar } from './avatars.js';
 import { setStudyUser } from './study-store.js';
 import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
-import { initUtilityShell } from './utility-shell.js';
+import { initFocusIndicator } from './focus-indicator.js';
 import { initSoundscape } from './soundscape-ui.js';
 import { initWallpaperImage } from './wallpaper-image.js';
 import { initPageStickers } from './page-stickers.js';
@@ -13,6 +13,7 @@ import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
+import { icon as uiIcon } from './icons.js';
 // The art system (Lume, stamps, objects, covers): fills every [data-art-slot] on signed-in pages.
 import '../art/art.js';
 
@@ -26,6 +27,8 @@ export async function revealStudyNavigation() {
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
     root.dataset.navClassrooms = String(Boolean(flags.classrooms));
     root.dataset.navDiscoveries = String(Boolean(flags.discoveries));
+    root.dataset.navJournal = String(Boolean(flags.journal));
+    root.dataset.navSpace = String(Boolean(flags.discoveries || flags.journal));
   } catch { /* Navigation keeps the always-available pages. */ }
 }
 
@@ -39,23 +42,22 @@ function ensureArtStyles() {
 }
 
 /**
- * Descobertas (the notebook) and, inside it, the Gabinete: added to the sidebar of every page and
- * shown only when the discoveries feature is on (CSS reads data-nav-discoveries). They stay in
+ * "Seu espaço": the student's own creative places, grouped under one caption in the sidebar of
+ * every page — the study journal (Diário), the discovery archive (Descobertas) and, inside it, the
+ * cabinet of curiosities (Gabinete). Each link shows only when its feature is on (CSS reads
+ * data-nav-journal / data-nav-discoveries; the caption reads data-nav-space). They stay in
  * "Estudo silencioso": the mode hides decoration and game flourishes, never a function.
  */
 export function mountDiscoveryNavigation(doc = document) {
   const nav = doc.querySelector('.side-navigation .primary-navigation');
-  if (!nav || nav.querySelector('[data-nav-feature="discoveries"]')) return;
+  if (!nav || nav.querySelector('[data-nav-feature="space"]')) return;
   const page = location.pathname.split('/').pop();
-  const item = (href, label, icon, current, sub = false) => {
+  const item = (href, label, icon, feature, current, sub = false) => {
     const link = doc.createElement('a');
     link.href = href;
-    link.dataset.navFeature = 'discoveries';
+    link.dataset.navFeature = feature;
     if (sub) link.className = 'nav-sub';
-    const mark = doc.createElement('span');
-    mark.className = 'nav-art-icon';
-    mark.setAttribute('aria-hidden', 'true');
-    mark.style.setProperty('--art-icon', `url("/assets/art/icons/${icon}.svg")`);
+    const mark = uiIcon(icon, { className: 'nav-icon', document: doc });
     const text = doc.createElement('span');
     text.textContent = label;
     link.append(mark, text);
@@ -67,9 +69,15 @@ export function mountDiscoveryNavigation(doc = document) {
     }
     return link;
   };
+  const caption = doc.createElement('p');
+  caption.className = 'nav-group-label';
+  caption.dataset.navFeature = 'space';
+  caption.textContent = 'Seu espaço';
   nav.append(
-    item('./descobertas.html', 'Descobertas', 'notebook', ['descobertas.html', 'investigar.html'].includes(page)),
-    item('./gabinete.html', 'Gabinete', 'cabinet', page === 'gabinete.html', true),
+    caption,
+    item('./diario.html', 'Diário', 'journal', 'journal', page === 'diario.html'),
+    item('./descobertas.html', 'Descobertas', 'discoveries', 'discoveries', ['descobertas.html', 'investigar.html'].includes(page)),
+    item('./gabinete.html', 'Gabinete', 'cabinet', 'discoveries', page === 'gabinete.html', true),
   );
 }
 
@@ -110,11 +118,12 @@ export async function initAuthenticatedShell() {
   void initQuestionReports(session.user.id);
   // Sons ambientes (3.5): top-bar mixer for every signed-in page; never plays before a click.
   try { initSoundscape({ userId: session.user.id }); } catch { /* optional tool */ }
-  // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
+  // Focar: one focus session for the account. It is run on the Focar page; the other pages show a
+  // small indicator in the top bar while a block is running or paused (3.6).
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);
     const lessonId = document.body.dataset.page === 'material' ? new URLSearchParams(location.search).get('id') : null;
-    void initUtilityShell({ userId: session.user.id, materialId: lessonId }).catch(() => { /* optional tool */ });
+    void initFocusIndicator({ materialId: lessonId }).catch(() => { /* optional tool */ });
   }
   await preferenceSync;
   document.querySelectorAll('[data-logout]').forEach((el) => {

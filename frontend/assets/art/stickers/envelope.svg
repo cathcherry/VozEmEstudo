@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" fill="none">
+<!-- voz-art:generated | id: sticker.envelope | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><filter id="die" x="-12%" y="-12%" width="124%" height="128%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="3.4" result="grown"/>
+    <feFlood flood-color="#FFFFFF"/><feComposite in2="grown" operator="in" result="border"/>
+    <feGaussianBlur in="grown" stdDeviation="1.2" result="blur"/><feOffset in="blur" dx="0.6" dy="1.8" result="lift"/>
+    <feFlood flood-color="#2E2A3B" flood-opacity="0.22"/><feComposite in2="lift" operator="in" result="shadow"/>
+    <feMerge><feMergeNode in="shadow"/><feMergeNode in="border"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter></defs>
+<g filter="url(#die)">
+    <rect x="12" y="24" width="72" height="50" rx="4" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M12 72 L40 48 M84 72 L56 48" stroke="#5B5470" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+    <path d="M14 26 L48 52 L82 26" fill="#ECE8F7" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M48 58 C40 52 38 48 40 45 C42 42 46 43 48 46 C50 43 54 42 56 45 C58 48 56 52 48 58 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  </g>
+</svg>

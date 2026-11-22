@@ -177,11 +177,11 @@ async function main() {
       data.seedUnlocks = [{ id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString(), lessonTitle: 'Revolução Industrial' }];
       const { context, page } = await openApp(browser, base, { ...flags, discoveries: true }, data, { width, height: width < 700 ? 844 : 1000 });
       await page.goto(base + '/descobertas.html');
-      await page.locator('.discovery-page-card .discovery-page-day').first().waitFor();
+      await page.locator('.archive-cards .specimen-card').first().waitFor();
       await noHorizontalScroll(page, `Descobertas ${width}`);
       await axeCheck(page, 'main', `Descobertas ${width}`);
-      await page.goto(base + '/gabinete.html');
-      await page.locator('.cabinet-drawer > summary').first().waitFor();
+      await page.goto(base + '/gabinete.html?gaveta=object');
+      await page.locator('[data-drawer="object"]').first().waitFor();
       assert.equal(await page.locator('.cabinet-item[data-state="locked"]').first().evaluate((n) => getComputedStyle(n.querySelector('[data-art-slot]')).filter), 'grayscale(1)', 'locked items are outlines');
       await noHorizontalScroll(page, `Gabinete ${width}`);
       await axeCheck(page, 'main', `Gabinete ${width}`);

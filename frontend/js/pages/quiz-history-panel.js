@@ -10,6 +10,9 @@ const make = (tag, text, className) => {
   return node;
 };
 
+// Revisar's "para hoje" line counts the lists still open.
+const signal = (detail) => document.dispatchEvent(new CustomEvent('voz:quiz-history', { detail }));
+
 export async function initQuizHistoryPanel({ materials = [] }) {
   const panel = document.querySelector('[data-quiz-history-panel]');
   const list = panel.querySelector('[data-quiz-history-list]');
@@ -23,6 +26,7 @@ export async function initQuizHistoryPanel({ materials = [] }) {
     status.textContent = error.message || 'Não foi possível carregar suas tentativas.';
     return;
   }
+  signal({ open: sessions.filter((s) => s.status !== 'completed').length, total: sessions.length });
   if (!sessions.length) {
     list.append(
       ninoNote(
