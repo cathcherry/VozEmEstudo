@@ -238,5 +238,5 @@ where status = 'pending' and created_at < now() - interval '3 days' group by 1;
 
 Recomendações de configuração que não dependem de migration:
 
-- ligar a proteção contra senhas vazadas no Auth: o advisor do staging aponta que está desligada;
+- proteção contra senhas vazadas do Auth: **não disponível** (é do plano Pro do Supabase). O aviso do advisor fica aceito, porque o app já confere a senha no *Have I Been Pwned* (k-anonimato) no navegador, no cadastro e na redefinição de senha;
 - revisar os advisors de desempenho depois de uma semana de uso. Algumas chaves estrangeiras novas não têm índice, o que só pesa em exclusões em cascata.
