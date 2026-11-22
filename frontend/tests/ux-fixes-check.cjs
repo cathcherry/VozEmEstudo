@@ -251,20 +251,21 @@ async function desk(browser, base) {
       }
       await context.close();
     }
-    // The Gabinete's "Sua mesa" follows the same desk (starters included) and swaps.
+    // The Gabinete's "Colocar na mesa" (museum label of an object) follows the same desk
+    // (starters included) and swaps.
     const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
-    await page.goto(base + '/gabinete.html');
-    await page.locator('[data-desk-section]:not([hidden])').waitFor();
-    assert.equal(await page.locator('.desk-slot[data-slot="desk-right"] .desk-slot-object').textContent(), 'Xícara de chá', 'starters are shown');
-    const globe = page.getByLabel('Globo');
-    assert.equal(await globe.inputValue(), 'desk-center');
-    await globe.selectOption({ label: 'Mesa, à direita (troca com xícara de chá)' });
-    assert.equal(await page.locator('.desk-slot[data-slot="desk-center"] .desk-slot-object').textContent(), 'Xícara de chá', 'swapped');
-    await page.getByRole('button', { name: 'Salvar a mesa' }).click();
-    await page.locator('[data-cabinet-status]', { hasText: 'Mesa salva.' }).waitFor();
+    await page.goto(base + '/gabinete.html?gaveta=object');
+    await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
+    const label = page.locator('[data-specimen-dialog]');
+    await label.locator('.specimen-desk-now', { hasText: 'Na mesa: Mesa, ao centro.' }).waitFor();
+    const place = label.getByLabel('Lugar na mesa');
+    assert.equal(await place.inputValue(), 'desk-center');
+    await place.selectOption({ label: 'Mesa, à direita (troca com xícara de chá)' });
+    await label.getByRole('button', { name: 'Mudar de lugar' }).click();
+    await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa: Mesa, à direita.' }).waitFor();
     assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'desk-right', objectId: 'object.globe' }]);
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.teacup');
-    await axeCheck(page, 'main', 'Gabinete, Sua mesa');
+    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.teacup', 'the teacup took the globe’s place');
+    await axeCheck(page, '[data-specimen-dialog]', 'Gabinete, Colocar na mesa');
     await context.close();
   }
   record('Arrumar a mesa: objeto colocado sai da gaveta; mover troca de lugar; guardar devolve; Desfazer e Ctrl+Z; arrastar mostra destinos; com descobertas (layout no servidor) e sem (preferências); Gabinete usa a mesma mesa');
