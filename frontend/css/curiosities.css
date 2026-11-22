@@ -918,6 +918,9 @@
     color: var(--ink-muted);
   }
   .archive-milestone a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
     text-decoration: underline;
     text-underline-offset: 2px;
   }
