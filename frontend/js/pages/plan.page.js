@@ -1,4 +1,5 @@
-// Planejar: goals and tasks, the study calendar and study time, each in its own tab.
+// Planejar: goals and tasks, the study calendar, and study time (history and analysis; the timer
+// itself runs on Focar), each in its own tab.
 import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
@@ -9,6 +10,7 @@ import { initPlanningPanel } from './planning-panel.js';
 import { initCalendarPanel } from './calendar-panel.js';
 import { initStudyTrackingPanel } from './study-tracking-panel.js';
 import { initStudyStats } from './study-stats.js';
+import { initFocusHistory } from './focus-history.js';
 import { openUnitPlanDialog } from './unit-plan.js';
 import { toast } from '../utils/toast.js';
 
@@ -87,9 +89,14 @@ if (!sections.length) {
     );
   if (flags.study_tracking)
     loads.push(
-      initStudyTrackingPanel({ materials }).then(() =>
-        initStudyStats({ container: document.querySelector('[data-study-stats]'), materials }),
-      ),
+      // History and analysis only: the timer runs on Focar ("Iniciar foco" opens it).
+      initStudyTrackingPanel({ materials, timer: false }).then(() => {
+        void initFocusHistory({
+          section: document.querySelector('[data-focus-history]'),
+          list: document.querySelector('[data-focus-history-list]'),
+        });
+        return initStudyStats({ container: document.querySelector('[data-study-stats]'), materials });
+      }),
     );
   const results = await Promise.allSettled(loads);
   // Tools load in the same order as their tabs (`sections`).
