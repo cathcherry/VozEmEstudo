@@ -1,11 +1,11 @@
-<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Gabinete</title>
+<!DOCTYPE html><html lang="pt-BR" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#fffbf6"><title>Voz em Estudo | Gabinete de curiosidades</title>
 <script src="/js/utils/theme-init.js"></script><link rel="icon" type="image/png" sizes="any" href="/assets/brand/favicon.png?v=3"><link rel="apple-touch-icon" href="/assets/brand/favicon-app.png?v=3"><link rel="stylesheet" href="/css/system.css"><link rel="stylesheet" href="/css/style.css"><script type="module" src="/js/utils/preferences.js"></script><script type="module" src="/js/pages/cabinet.page.js"></script><link rel="stylesheet" href="/css/marque.css"><link rel="stylesheet" href="/css/product.css"><link rel="stylesheet" href="/css/library.css"><link rel="stylesheet" href="/css/flashcards.css" />
   
 <link rel="stylesheet" href="/css/study-tracking.css" />
 <link rel="stylesheet" href="/css/learning-tools.css" />
 <link rel="stylesheet" href="/css/tool-pages.css" />
 <link rel="stylesheet" href="/css/personalization.css" />
-<link rel="stylesheet" href="/css/art.css" /><link rel="stylesheet" href="/css/discoveries.css" />
+<link rel="stylesheet" href="/css/art.css" /><link rel="stylesheet" href="/css/discoveries.css" /><link rel="stylesheet" href="/css/curiosities.css" />
 </head><body class="app-page" data-page="cabinet">
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
 <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span> <span class="brand-em">em</span> <span class="brand-main">Estudo</span></span></a>
@@ -17,9 +17,37 @@
 <button class="focus-quick-toggle" type="button" data-focus-toggle aria-pressed="false"><svg class="ui-icon nav-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="focus-mode"><use href="/assets/icons/sprite.svg#i-focus-mode"/></svg><span data-focus-toggle-label>Modo foco</span></button>
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
 <main class="article-content tool-page cabinet-page" id="conteudo-principal" tabindex="-1">
-<header class="article-heading tool-heading"><div><h1>Gabinete</h1></div><a class="secondary-action button-link" href="./descobertas.html">Arquivo de Descobertas</a></header>
-<p class="tool-intro">Gavetas com o que as suas investigações deixaram: selos, objetos de mesa e capas. Cada item lembra o que você fez, quando e em que aula. Nada expira e nada se perde com pausas.</p>
+<header class="article-heading tool-heading"><div><h1>Gabinete de curiosidades</h1></div><a class="secondary-action button-link" href="./descobertas.html">Arquivo de Descobertas</a></header>
+<p class="tool-intro">Cada objeto aqui é uma lembrança de algo que você fez numa investigação: quando foi e em que aula. Abra uma gaveta e inspecione o que já está nela. Nada expira e nada se perde com pausas.</p>
 <p class="cabinet-status" data-cabinet-status role="status" aria-live="polite"></p>
+<div class="cabinet-stage" data-cabinet-stage hidden>
+<div class="curio-cabinet" data-curio-cabinet data-fill="empty">
+<div class="curio-crest" aria-hidden="true"><span class="embossed-label" data-tint="ink">Gabinete de curiosidades</span></div>
+<section class="curio-shelves" aria-labelledby="curio-shelves-title">
+<h2 class="sr-only" id="curio-shelves-title">Prateleiras</h2>
+<div class="curio-shelf" data-curio-shelf="objects"><p class="curio-shelf-caption" data-shelf-caption="objects"></p><ul class="curio-shelf-row" data-shelf-row="objects" aria-label="Objetos à vista"></ul></div>
+<div class="curio-shelf" data-curio-shelf="memories"><p class="curio-shelf-caption" data-shelf-caption="memories"></p><ul class="curio-shelf-row" data-shelf-row="memories" aria-label="Selos e capas à vista"></ul></div>
+</section>
+<div class="curio-drawers" data-curio-drawers role="group" aria-label="Gavetas. Use as setas para ir de uma gaveta a outra e Enter para abrir."></div>
+<div class="curio-feet" aria-hidden="true"><i></i><i></i></div>
+</div>
+<aside class="cabinet-aside" aria-label="Sobre o gabinete">
+<section class="cabinet-guide index-card" data-cabinet-guide aria-labelledby="cabinet-guide-title" hidden>
+<span class="washi" data-tape="kraft" style="--tilt:-3deg" aria-hidden="true"></span>
+<h2 id="cabinet-guide-title">Como encher o gabinete</h2>
+<ol class="cabinet-guide-steps">
+<li>Abra uma aula da Biblioteca com a transcrição confirmada.</li>
+<li>Escolha “Investigar uma pergunta” e escreva o que você quer entender.</li>
+<li>Guarde um trecho da aula como evidência: o primeiro selo cai na gaveta Selos.</li>
+<li>Explique com as suas palavras e registre a descoberta: ela vira um espécime.</li>
+</ol>
+<a class="primary-action button-link" href="./historico.html">Escolher uma aula</a>
+</section>
+<section class="cabinet-desk-note" aria-labelledby="cabinet-desk-title">
+<h2 id="cabinet-desk-title">A mesa</h2>
+<p>Objetos de mesa que você encontrou podem ir para a escrivaninha do Início. Inspecione um objeto e escolha “Colocar na mesa”, ou arrume tudo de uma vez no Início.</p>
+<a class="text-action" href="./painel.html">Arrumar a mesa no Início</a>
+</section>
 <fieldset class="experience-mode" data-experience-mode-control>
 <legend>Modo de experiência</legend>
 <p class="tool-hint">Muda só o que aparece; os seus registros continuam iguais. Vale para a sua conta, em todos os aparelhos.</p>
@@ -29,16 +57,21 @@
 <label><input class="segment-input" type="radio" name="experience-mode" value="adventure"><span>Estudo aventura</span></label>
 </div>
 </fieldset>
-<div class="cabinet-drawers" data-cabinet-drawers></div>
-<section class="desk-section" data-desk-section aria-labelledby="desk-title" hidden>
-<h2 id="desk-title">Sua mesa</h2>
-<p class="tool-hint">Coloque na mesa os objetos que você encontrou. Um objeto por lugar: escolher um lugar ocupado troca os dois de lugar.</p>
-<ul class="desk-preview" data-desk-preview aria-label="Lugares da mesa"></ul>
-<form class="desk-form" data-desk-form>
-<div class="desk-choices" data-desk-choices></div>
-<div class="form-actions"><button type="submit" class="primary-action">Salvar a mesa</button></div>
-</form>
-</section>
+</aside>
+</div>
+<dialog class="specimen-dialog" data-specimen-dialog aria-labelledby="specimen-title">
+<div class="specimen-sheet" data-specimen-sheet>
+<button type="button" class="specimen-close" data-specimen-close aria-label="Fechar">Fechar</button>
+<div class="specimen-art" data-specimen-art></div>
+<div class="specimen-label">
+<p class="specimen-kind" data-specimen-kind></p>
+<h2 id="specimen-title" data-specimen-title></h2>
+<p class="specimen-description" data-specimen-description></p>
+<dl class="specimen-facts" data-specimen-facts></dl>
+<div class="specimen-actions" data-specimen-actions></div>
+</div>
+</div>
+</dialog>
 <div class="tool-unavailable" data-tool-unavailable hidden></div>
 </main>
 <footer class="site-footer"><span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a></footer></body></html>
