@@ -97,7 +97,70 @@ const shots = [
   ['m8-descobertas', '/descobertas.html', KEY, { discoveries: true, data: withDiscoveries }],
   ['m8-descobertas-vazio', '/descobertas.html', KEY, { discoveries: 'none' }],
   ['m8-gabinete', '/gabinete.html', KEY, { discoveries: true }],
+  // 3.6 (UX fixes): selection in the Biblioteca, discipline interiors, Revisar, Planejar vs
+  // Focar, arranging the desk. `before` was taken from feat/3.6-scrapbook with this same list.
+  ['3-6-biblioteca-selecao', '/historico.html', KEY, { data: richLibrary, act: selectFolder }],
+  ['3-6-biblioteca-disciplina', '/historico.html?folder=sub-bio', KEY, { data: richLibrary }],
+  ['3-6-biblioteca-unidade-selecao', '/historico.html?folder=sub-bio&unit=unit-energia', KEY, { data: richLibrary, act: selectLesson }],
+  ['3-6-biblioteca-disciplina-vazia', '/historico.html?folder=sub-geo', KEY, { data: (d) => ((d.catalog = { ...CATALOG_WITH_EMPTY }), d) }],
+  ['3-6-revisar', '/revisar.html#flashcards', KEY],
+  ['3-6-revisar-questoes', '/revisar.html#questoes', KEY],
+  ['3-6-revisar-anotacoes', '/revisar.html#anotacoes', KEY],
+  ['3-6-planejar-tempo', '/planejar.html#tempo', KEY],
+  ['3-6-focar', '/focar.html', KEY],
+  ['3-6-foco-em-andamento', '/focar.html', KEY, { full: false, act: runFocusThenLibrary }],
+  ['3-6-escrivaninha-arrumando', '/painel.html', KEY, { full: false, discoveries: true, act: arrangeDesk }],
+  ['3-6-gabinete-mesa', '/gabinete.html', KEY, { discoveries: true, act: (p) => p.locator('[data-desk-section]').scrollIntoViewIfNeeded() }],
 ];
+
+const CATALOG_WITH_EMPTY = {
+  subjects: [
+    { id: 'sub-bio', name: 'Biologia', color_token: null, sort_order: 0 },
+    { id: 'sub-geo', name: 'Geografia', color_token: null, sort_order: 1 },
+  ],
+  units: [],
+};
+function richLibrary(d) {
+  const ago = (days) => new Date(Date.now() - days * 86400000).toISOString();
+  const lesson = (id, title, unit, days, ms) => ({ id, title, subject: 'Biologia', subject_id: 'sub-bio', unit_id: unit, status: 'PRONTO', created_at: ago(days), audio_files: [{ duration_ms: ms, extension: 'mp3' }] });
+  d.extraMaterials = [
+    lesson('l-ciclo', 'Ciclo de Krebs', 'unit-energia', 2, 1640000),
+    lesson('l-ferm', 'Fermentação láctica e alcoólica', 'unit-energia', 4, 1210000),
+    lesson('l-memb', 'Membrana plasmática', 'unit-celula', 6, 1985000),
+    lesson('l-orga', 'Organelas e suas funções', 'unit-celula', 8, 2260000),
+    lesson('l-vir', 'Vírus: estrutura e replicação', null, 10, 1510000),
+  ];
+  return d;
+}
+async function selectFolder(page) {
+  await page.getByRole('button', { name: 'Selecionar' }).click();
+  await page.locator('.library-subject-folder > summary', { hasText: 'Biologia' }).click();
+  await page.waitForTimeout(300);
+}
+async function selectLesson(page) {
+  await page.getByRole('button', { name: 'Selecionar' }).click();
+  // Click the titles: before 3.6 this opened the lesson instead of selecting it.
+  for (const title of ['Ciclo de Krebs', 'Fermentação láctica e alcoólica']) {
+    await page.getByRole('link', { name: title, exact: true }).click({ timeout: 2000 }).catch(() => {});
+    await page.waitForTimeout(500);
+  }
+  await page.waitForLoadState('networkidle');
+}
+async function runFocusThenLibrary(page) {
+  await page.locator('.focus-primary', { hasText: 'Iniciar foco' }).click();
+  await page.waitForTimeout(1500);
+  await page.goto(page.url().replace(/focar\.html.*/, 'historico.html'));
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(800);
+}
+async function arrangeDesk(page) {
+  await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
+  await page.locator('[data-desk-object="object.globe"]').click();
+  await page.locator('[data-desk-slot="desk-center"] .desk-slot-target').click();
+  await page.waitForTimeout(500);
+  await page.locator('[data-desk-slot="desk-right"] .desk-slot-target').click();
+  await page.waitForTimeout(300);
+}
 
 async function placeLamp(page) {
   await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
