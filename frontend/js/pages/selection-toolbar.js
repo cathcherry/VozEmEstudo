@@ -1,3 +1,4 @@
+import { icon as uiIcon } from '../utils/icons.js';
 // Floating toolbar over a text selection in the lesson transcript (3.5, Milestone 8).
 //
 // It appears next to the selection (above it, or below when there is no room or when the
@@ -13,26 +14,14 @@
 const GAP = 10;
 const EDGE = 8;
 
-const ICONS = {
-  highlight: ['m9 11-5 5v3h3l5-5', 'm14 6 4 4-6 6-4-4z', 'm14 6 2-2 4 4-2 2', 'M4 21h16'],
-  note: ['M5 4h10l4 4v12H5z', 'M15 4v4h4', 'M8 13h8M8 17h5'],
-  investigate: ['M16 10.5a5.5 5.5 0 1 1-11 0a5.5 5.5 0 1 1 11 0', 'm15 15 5 5', 'M10.5 8v5M8 10.5h5'],
-};
+// Shared icon sprite (frontend/js/utils/icons.js, Phosphor duotone).
+const ICONS = { highlight: 'highlight', note: 'note', investigate: 'investigation' };
 
 function svgIcon(name) {
-  const NS = 'http://www.w3.org/2000/svg';
   const span = document.createElement('span');
   span.className = 'selection-toolbar-icon';
   span.setAttribute('aria-hidden', 'true');
-  const svg = document.createElementNS(NS, 'svg');
-  for (const [key, value] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '1.7', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }))
-    svg.setAttribute(key, value);
-  for (const d of ICONS[name] || []) {
-    const path = document.createElementNS(NS, 'path');
-    path.setAttribute('d', d);
-    svg.append(path);
-  }
-  span.append(svg);
+  span.append(uiIcon(ICONS[name] || 'note', { size: 18 }));
   return span;
 }
 

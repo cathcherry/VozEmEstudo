@@ -3,7 +3,7 @@ import { getAvatar } from './avatars.js';
 import { setStudyUser } from './study-store.js';
 import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
-import { initUtilityShell } from './utility-shell.js';
+import { initFocusIndicator } from './focus-indicator.js';
 import { initSoundscape } from './soundscape-ui.js';
 import { initWallpaperImage } from './wallpaper-image.js';
 import { initPageStickers } from './page-stickers.js';
@@ -108,11 +108,12 @@ export async function initAuthenticatedShell() {
   void initQuestionReports(session.user.id);
   // Sons ambientes (3.5): top-bar mixer for every signed-in page; never plays before a click.
   try { initSoundscape({ userId: session.user.id }); } catch { /* optional tool */ }
-  // Focar 3.0: one focus session for the account, shown on every page (capsule and side panel).
+  // Focar: one focus session for the account. It is run on the Focar page; the other pages show a
+  // small indicator in the top bar while a block is running or paused (3.6).
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);
     const lessonId = document.body.dataset.page === 'material' ? new URLSearchParams(location.search).get('id') : null;
-    void initUtilityShell({ userId: session.user.id, materialId: lessonId }).catch(() => { /* optional tool */ });
+    void initFocusIndicator({ materialId: lessonId }).catch(() => { /* optional tool */ });
   }
   await preferenceSync;
   document.querySelectorAll('[data-logout]').forEach((el) => {

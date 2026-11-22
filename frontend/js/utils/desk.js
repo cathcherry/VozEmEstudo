@@ -82,7 +82,30 @@ export function availableObjects({ unlocks = [], discoveries = false } = {}) {
   const found = discoveries
     ? unlocks.filter((u) => u?.kind === 'object' && typeof u.id === 'string' && u.id.startsWith('object.')).map((u) => u.id)
     : [];
-  return [...STARTER_OBJECTS, ...found.filter((id) => !isStarter(id))];
+  // A collectible unlocked twice (or listed twice by the server) is still one object.
+  return [...new Set([...STARTER_OBJECTS, ...found.filter((id) => !isStarter(id))])];
+}
+
+/** What is in the drawer: the objects the student may place that are not on the desk. */
+export function drawerObjects(desk, available) {
+  const placed = new Set(Object.values(desk || {}));
+  return available.filter((id) => !placed.has(id));
+}
+
+/**
+ * Slot choices for one object in a form (the Gabinete's "Sua mesa"): every place, saying who is
+ * there now. Choosing a taken place moves that object (see placeObject).
+ */
+export function slotChoices(desk, id) {
+  return DESK_SLOT_ORDER.map((slot) => {
+    const occupant = desk[slot] || null;
+    return {
+      slot,
+      label: DESK_SLOT_LABELS[slot],
+      occupant: occupant && occupant !== id ? occupant : null,
+      current: occupant === id,
+    };
+  });
 }
 
 /**

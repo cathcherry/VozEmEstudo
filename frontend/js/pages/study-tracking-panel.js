@@ -3,8 +3,9 @@ import { getFocusSession } from '../utils/focus-host.js';
 import { getStudyOverview,saveStudySettings,tickStudySession } from '../api/study.api.js';
 import { toast } from '../utils/toast.js';
 
-// Focus timer and weekly study time. The timer is a view of the account's single focus session
-// (utils/focus-session.js), the same one shown by the side panel and the capsule on every page.
+// Focus timer and weekly study time. The timer is the account's single focus session
+// (utils/focus-session.js); since 3.6 it is shown and run only on Focar (`timer: true`). Planejar
+// uses the week alone (`timer: false`) and links to Focar; other pages show a top-bar indicator.
 // One card starts and pauses it with a single button;
 // the week card shows minutes per day against the goal. Goal, time zone and synchronization live
 // in a settings dialog so they never compete with studying. Short feedback goes to toasts.
@@ -21,7 +22,7 @@ const NINO_REST='/assets/brand/avatars/rest.png?v=nino-20261118';
 const SVG='http://www.w3.org/2000/svg';
 const locale=()=>globalThis.VOZ_LOCALE||'pt-BR';
 
-export async function initStudyTrackingPanel({materials=[],materialId=null}={}) {
+export async function initStudyTrackingPanel({materials=[],materialId=null,timer:withTimer=true}={}) {
   const panel=document.querySelector('[data-study-tracking-panel]');
   if(!panel||!isStudySyncEnabled()) return;
   panel.hidden=false;panel.replaceChildren();panel.classList.add('focus-panel');
@@ -53,7 +54,9 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const stopButton=make('button','Encerrar bloco','text-action focus-stop');stopButton.type='button';stopButton.hidden=true;
   controls.append(primary,stopButton);
   const hint=make('p','O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.','focus-hint');hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
-  focus.append(heading,modes,dial,cycles,controls,hint);
+  // The lesson the next block counts for (opened before coming to Focar).
+  const lessonLine=make('p',null,'focus-lesson');lessonLine.hidden=true;
+  focus.append(heading,modes,dial,lessonLine,cycles,controls,hint);
 
   // ---------- Week card -------------------------------------------------------------------
   const week=make('section',null,'week-card');week.setAttribute('aria-labelledby','week-heading');
@@ -124,7 +127,17 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
     if(event.detail.conflicts&&!dialog.open&&typeof dialog.showModal==='function')dialog.showModal();};
   window.addEventListener('study-sync-status',showSync);showSync({detail:studySync().state()});
 
-  const layout=make('div',null,'focus-layout');layout.append(focus,week);
+  let focusLink=null;
+  const layout=make('div',null,'focus-layout');
+  if(withTimer)layout.append(focus,week);
+  else{
+    // Planejar: the week and its analysis; the timer itself is on Focar.
+    layout.classList.add('is-week-only');
+    const open=make('a','Iniciar foco','secondary-action week-focus-link');open.href='./focar.html?iniciar=foco';open.dataset.focusLink='';
+    focusLink=open;
+    weekHead.insertBefore(open,gear);
+    layout.append(week);
+  }
   panel.append(layout,dialog);
 
   // ---------- Clock: a view of the shared focus session -------------------------------------
@@ -134,6 +147,9 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const fillDurations=()=>{const current=session.state().settings;for(const name of Object.keys(durations))durations[name].value=String(current[name]);autoStart.checked=current.autoStart;sound.checked=current.sound;notify.checked=Boolean(current.notify);};
   fillDurations();
   function render(state){
+    if(focusLink){const active=state.status!=='idle';focusLink.textContent=active?'Abrir Focar':'Iniciar foco';focusLink.href=active?'./focar.html':'./focar.html?iniciar=foco';}
+    lessonLine.hidden=!(state.materialTitle&&(state.mode==='pomodoro'||state.mode==='reading'));
+    lessonLine.textContent=lessonLine.hidden?'':`Aula: ${state.materialTitle}`;
     for(const [value,button] of modeButtons){const on=value===state.mode;button.setAttribute('aria-checked',String(on));button.tabIndex=on?0:-1;button.disabled=state.status==='running'||state.busy;}
     timer.textContent=clockLabel(state.remaining??state.elapsed);
     const progress=state.planned===null?((state.elapsed%3600)/3600):(1-(state.remaining??0)/(state.planned||1));
@@ -175,7 +191,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
     else void session.start({materialId:materialId??undefined}).catch(notice);
   });
   stopButton.addEventListener('click',()=>void session.stop().catch(notice));
-  document.addEventListener('voz:focus-notice',(event)=>{
+  if(withTimer)document.addEventListener('voz:focus-notice',(event)=>{
     const kind=event.detail?.kind;
     if(kind==='pomodoro_done')say('Foco concluído! Hora de uma pausa.','success');
     else if(kind==='short_done'||kind==='long_done')say('Pausa concluída. Pronto para outro foco?','info');

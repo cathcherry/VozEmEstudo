@@ -356,7 +356,8 @@ async function setup(context, base, flags, data, options = {}) {
       });
     if (p === '/api/materials' && method === 'GET') return json([...materials, ...(data.extraMaterials || [])]);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
-      const m = materials.find((item) => item.id === p.split('/')[3]);
+      const m = [...materials, ...(data.extraMaterials || [])].find((item) => item.id === p.split('/')[3]);
+      if (!m) return route.fulfill({ status: 404, json: { error: { message: 'Aula não encontrada.' } } });
       const detail = lessonDetail(m, data.lessonStage?.[m.id] || 'summary');
       // `data.longLesson = n`: a very long transcript (n segments of ~25 words, 5 s each).
       if (data.longLesson) {

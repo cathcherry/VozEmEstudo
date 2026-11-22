@@ -2,7 +2,18 @@
 // the student did, when, in which lesson). The server owns every unlock; this page only shows
 // them and lets the student place unlocked desk objects (object id + slot). Art is resolved by id
 // through data-art-slot / data-art-id; nothing renders when an asset is missing.
-import { setUiPreference } from '../utils/preferences.js';
+import { getUiPreferences, setUiPreference } from '../utils/preferences.js';
+import {
+  DESK_SLOT_ORDER,
+  availableObjects,
+  mergeDesk,
+  objectName,
+  placeObject,
+  removeObject,
+  slotChoices,
+  slotOf,
+  splitDesk,
+} from '../utils/desk.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { emptyState } from '../utils/material-ui.js';
@@ -120,53 +131,73 @@ function renderDrawers() {
     );
 }
 
+// "Sua mesa" follows the same rules as Arrumar a mesa on Início (utils/desk.js): one desk made of
+// the starter objects (appearance preferences) and the collectibles (server layout); an object is
+// in one place; choosing a taken place moves the object that was there (a swap, or back to the
+// drawer). Each choice says who is in each place now.
+let workingDesk = {};
+let available = [];
+function loadDesk() {
+  available = availableObjects({ unlocks: collection.unlocks, discoveries: true });
+  workingDesk = mergeDesk({ starters: getUiPreferences().deskStarters, items: collection.layout.items, available });
+}
 function renderDesk() {
   const objects = collection.unlocks.filter((u) => u.kind === 'object');
   $('[data-desk-section]').hidden = !objects.length;
   if (!objects.length) return;
-  const placed = new Map(collection.layout.items.map((item) => [item.objectId, item.slot]));
-  const bySlot = new Map(collection.layout.items.map((item) => [item.slot, item.objectId]));
+  const slots = collection.slots.filter((slot) => DESK_SLOT_ORDER.includes(slot));
   $('[data-desk-preview]').replaceChildren(
-    ...collection.slots.map((slot) => {
-      const objectId = bySlot.get(slot);
+    ...slots.map((slot) => {
+      const objectId = workingDesk[slot];
       return el(
         'li',
         { className: 'desk-slot', 'data-slot': slot, 'data-filled': String(Boolean(objectId)) },
         el('span', { className: 'desk-slot-art', 'data-art-slot': `desk.${slot}`, 'data-art-id': objectId || '', 'aria-hidden': 'true' }),
         el('span', { className: 'desk-slot-name', text: DESK_SLOTS[slot] || slot }),
-        el('span', { className: 'desk-slot-object', text: objectId ? describeCollectible(objectId).name : 'vazio' }),
+        el('span', { className: 'desk-slot-object', text: objectId ? objectName(objectId) : 'vazio' }),
       );
     }),
   );
+  const focused = document.activeElement?.id;
   $('[data-desk-choices]').replaceChildren(
-    ...objects.map((object, index) => {
+    ...[...new Set(objects.map((object) => object.id))].map((objectId, index) => {
       const id = `desk-choice-${index}`;
-      const select = el('select', { id, name: object.id, 'data-object': object.id });
+      const select = el('select', { id, name: objectId, 'data-object': objectId });
       select.append(el('option', { value: '', text: 'Guardado no gabinete' }));
-      for (const slot of collection.slots) select.append(el('option', { value: slot, text: DESK_SLOTS[slot] || slot }));
-      select.value = placed.get(object.id) || '';
-      return el('div', { className: 'desk-choice' }, el('label', { for: id, text: describeCollectible(object.id).name }), select);
+      for (const choice of slotChoices(workingDesk, objectId).filter((c) => slots.includes(c.slot)))
+        select.append(
+          el('option', {
+            value: choice.slot,
+            text: choice.occupant ? `${DESK_SLOTS[choice.slot] || choice.label} (troca com ${objectName(choice.occupant).toLocaleLowerCase('pt-BR')})` : DESK_SLOTS[choice.slot] || choice.label,
+          }),
+        );
+      select.value = slotOf(workingDesk, objectId) || '';
+      select.addEventListener('change', () => {
+        workingDesk = select.value ? placeObject(workingDesk, objectId, select.value) : removeObject(workingDesk, objectId);
+        renderDesk();
+      });
+      return el('div', { className: 'desk-choice' }, el('label', { for: id, text: describeCollectible(objectId).name }), select);
     }),
   );
+  if (focused) document.getElementById(focused)?.focus();
 }
 
 async function saveDesk(event) {
   event.preventDefault();
-  const items = [...event.currentTarget.querySelectorAll('select[data-object]')]
-    .filter((select) => select.value)
-    .map((select) => ({ slot: select.value, objectId: select.dataset.object }));
-  if (new Set(items.map((item) => item.slot)).size !== items.length) {
-    setStatus('Cada lugar da mesa recebe um objeto só. Escolha lugares diferentes.', 'error');
-    return;
-  }
+  const { starters, items } = splitDesk(workingDesk);
   try {
     collection = await api.saveDeskLayout({ version: collection.layout.version, requestId: uuid(), items });
+    // A starter object moved aside by a collectible is saved with the appearance preferences.
+    const before = splitDesk(mergeDesk({ starters: getUiPreferences().deskStarters, available })).starters;
+    if (JSON.stringify(before) !== JSON.stringify(starters)) setUiPreference('deskStarters', starters);
+    loadDesk();
     renderDesk();
     setStatus('Mesa salva.');
   } catch (failure) {
     setStatus(failure.message || 'Não foi possível salvar a mesa.', 'error');
     if (failure.code === 'DISCOVERY_VERSION_CONFLICT') {
       collection = await api.getCollection();
+      loadDesk();
       renderDesk();
     }
   }
@@ -198,6 +229,7 @@ if (!flags.discoveries) {
   try {
     collection = await api.getCollection();
     renderDrawers();
+    loadDesk();
     renderDesk();
   } catch (failure) {
     setStatus(failure.message || 'Não foi possível abrir o Gabinete.', 'error');

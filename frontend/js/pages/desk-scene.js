@@ -20,6 +20,7 @@ import {
   removeObject,
   slotOf,
   splitDesk,
+  drawerObjects,
 } from '../utils/desk.js';
 import { describeCollectible } from '../utils/collectibles.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
@@ -53,6 +54,8 @@ const state = {
   available: [],
   picked: null,
   editing: false,
+  // Earlier desks, newest last: "Desfazer" goes back one move (this visit only).
+  undo: [],
   saving: Promise.resolve(),
   context: { lessonInProgress: false, reviewedToday: false },
 };
@@ -102,6 +105,7 @@ function renderSlots() {
       holder ? holder.replaceWith(next) : host.prepend(next);
     }
     host.dataset.filled = String(Boolean(id));
+    host.dataset.picked = String(Boolean(id) && state.picked === id);
     const target = host.querySelector('.desk-slot-target');
     if (target) {
       const label = `${DESK_SLOT_LABELS[slot]}: ${id ? objectName(id) : 'vazio'}`;
@@ -117,9 +121,10 @@ function renderTray() {
   const list = tray.querySelector('[data-desk-objects]');
   // The list is rebuilt: keep keyboard focus on the same object.
   const focused = document.activeElement?.closest?.('[data-desk-object]')?.dataset.deskObject;
+  // The drawer holds what is not on the desk: an object is in one place at a time.
+  const inDrawer = drawerObjects(state.desk, state.available);
   list.replaceChildren(
-    ...state.available.map((id) => {
-      const slot = slotOf(state.desk, id);
+    ...inDrawer.map((id) => {
       const button = el(
         'button',
         { type: 'button', className: 'desk-tray-object', 'aria-pressed': String(state.picked === id) },
@@ -128,14 +133,18 @@ function renderTray() {
           'span',
           { className: 'desk-tray-copy' },
           el('strong', { text: objectName(id) }),
-          el('small', { text: slot ? DESK_SLOT_LABELS[slot] : 'Na gaveta' }),
+          el('small', { text: 'Na gaveta' }),
         ),
       );
       button.dataset.deskObject = id;
       return el('li', {}, button);
     }),
   );
+  if (!inDrawer.length)
+    list.append(el('li', { className: 'desk-tray-empty', text: 'A gaveta está vazia: tudo está na mesa. Arraste um objeto para cá para guardá-lo.' }));
   if (focused) list.querySelector(`[data-desk-object="${CSS.escape(focused)}"]`)?.focus();
+  const undoButton = tray.querySelector('[data-desk-undo]');
+  undoButton.disabled = !state.undo.length;
   const storeButton = tray.querySelector('[data-desk-store]');
   storeButton.hidden = !(state.picked && slotOf(state.desk, state.picked));
   if (!storeButton.hidden) storeButton.textContent = `Guardar ${objectName(state.picked).toLocaleLowerCase('pt-BR')} na gaveta`;
@@ -181,8 +190,14 @@ async function persist(previous) {
   }
 }
 
-function commit(next, message, placedSlot) {
+function commit(next, message, placedSlot, { remember = true } = {}) {
   const previous = state.desk;
+  if (JSON.stringify(previous) === JSON.stringify(next)) {
+    state.picked = null;
+    render();
+    return;
+  }
+  if (remember) state.undo = [...state.undo, previous].slice(-10);
   state.desk = next;
   state.picked = null;
   render();
@@ -215,6 +230,14 @@ function store(id = state.picked) {
   tray.querySelector(`[data-desk-object="${CSS.escape(id)}"]`)?.focus();
 }
 
+function undo() {
+  const previous = state.undo.at(-1);
+  if (!previous) return;
+  state.undo = state.undo.slice(0, -1);
+  commit(previous, 'Desfeito: a mesa voltou como estava. Mesa salva.', null, { remember: false });
+  tray.querySelector('[data-desk-undo]')?.focus();
+}
+
 function onSlotActivate(slot) {
   const occupant = state.desk[slot];
   if (state.picked) dropOn(slot);
@@ -225,6 +248,7 @@ function onSlotActivate(slot) {
 function setEditing(on) {
   state.editing = on;
   state.picked = null;
+  if (!on) state.undo = [];
   scene.dataset.editing = String(on);
   tray.hidden = !on;
   stage.setAttribute('aria-hidden', String(!on));
@@ -254,7 +278,7 @@ function wireDrag() {
     if (event.button !== 0) return;
     const id = source(event);
     if (!id) return;
-    drag = { id, x: event.clientX, y: event.clientY, ghost: null, origin: event.target.closest('button') };
+    drag = { id, x: event.clientX, y: event.clientY, ghost: null, origin: event.target.closest('button'), from: slotOf(state.desk, id) };
   });
   window.addEventListener('pointermove', (event) => {
     if (!drag) return;
@@ -263,12 +287,18 @@ function wireDrag() {
       drag.ghost = objectImage(drag.id, 'desk-drag-ghost');
       document.body.append(drag.ghost);
       scene.dataset.dragging = 'true';
+      // The object leaves its place while it is carried; the drawer accepts it back.
+      if (drag.from) {
+        stage.querySelector(`[data-desk-slot="${drag.from}"]`).dataset.lifting = 'true';
+        tray.dataset.dropzone = 'true';
+      }
       drag.origin?.setPointerCapture?.(event.pointerId);
     }
     drag.ghost.style.translate = `${event.clientX - 28}px ${event.clientY - 40}px`;
     const over = document.elementFromPoint(event.clientX, event.clientY)?.closest('.desk-slot-target');
     for (const node of stage.querySelectorAll('.desk-slot-target[data-over]')) if (node !== over) delete node.dataset.over;
     if (over) over.dataset.over = 'true';
+    if (drag.from) tray.dataset.over = String(Boolean(document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-desk-tray]')));
   });
   window.addEventListener('pointerup', (event) => {
     if (!drag) return;
@@ -277,6 +307,9 @@ function wireDrag() {
     if (!current.ghost) return; // a tap: the click handler picks
     current.ghost.remove();
     delete scene.dataset.dragging;
+    delete tray.dataset.dropzone;
+    delete tray.dataset.over;
+    for (const node of stage.querySelectorAll('[data-lifting]')) delete node.dataset.lifting;
     for (const node of stage.querySelectorAll('.desk-slot-target[data-over]')) delete node.dataset.over;
     const hit = document.elementFromPoint(event.clientX, event.clientY);
     const target = hit?.closest('.desk-slot-target');
@@ -292,6 +325,7 @@ function wire() {
   scene.querySelector('[data-desk-arrange]').addEventListener('click', () => setEditing(!state.editing));
   tray.querySelector('[data-desk-done]').addEventListener('click', () => setEditing(false));
   tray.querySelector('[data-desk-store]').addEventListener('click', () => store());
+  tray.querySelector('[data-desk-undo]').addEventListener('click', () => undo());
   scene.addEventListener('click', (event) => {
     if (scene.dataset.justDragged) return;
     const object = event.target.closest('[data-desk-object]');
@@ -300,6 +334,11 @@ function wire() {
     if (target) onSlotActivate(target.closest('[data-desk-slot]').dataset.deskSlot);
   });
   scene.addEventListener('keydown', (event) => {
+    if (state.editing && (event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === 'z') {
+      event.preventDefault();
+      undo();
+      return;
+    }
     if (event.key !== 'Escape' || !state.editing) return;
     event.preventDefault();
     if (state.picked) {
@@ -307,7 +346,11 @@ function wire() {
       state.picked = null;
       render();
       announce('Escolha cancelada.');
-      tray.querySelector(`[data-desk-object="${CSS.escape(id)}"]`)?.focus();
+      const from = slotOf(state.desk, id);
+      (from
+        ? stage.querySelector(`[data-desk-slot="${from}"] .desk-slot-target`)
+        : tray.querySelector(`[data-desk-object="${CSS.escape(id)}"]`)
+      )?.focus();
     } else setEditing(false);
   });
   wireDrag();

@@ -154,7 +154,7 @@ let playbackIdentity = '',
   playbackRequest = 0;
 let materialToolsInitialized = false,
   notesEnabled = false;
-// The focus timer for this lesson lives in the utility panel (utils/utility-shell.js).
+// The focus timer runs on Focar; this page links the next block to the lesson (utils/focus-indicator.js).
 const messages = {
   summary: $('[data-summary-message]'),
   questions: $('[data-more-questions-message]'),
