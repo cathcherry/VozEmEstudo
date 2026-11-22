@@ -476,3 +476,32 @@ Direção criativa: `docs/EXPERIENCE_VISION_3_5.md`. A metáfora é a escrivanin
 - tentativa de alterar um desbloqueio → `COLLECTION_IMMUTABLE`.
 
 **Sem ferramenta de geração de imagens nesta sessão.** Toda a arte foi desenhada como SVG original, e o manifesto permite trocar qualquer peça por desenho à mão.
+
+### Merge da 3.5 e refinamento (M8)
+
+- **PR #15 mergeado na `main`**: commit `fdecab0`. A CI da `main` passou (Quality, run 419). O merge inclui o sistema visual, a arte, a personalização, as descobertas (atrás de flag) e o som.
+- **M8, refinamento** (PR seguinte):
+  - escrivaninha com madeira, luz da luminária e Lume maior;
+  - Planejar, Focar e Turmas redesenhados;
+  - barra flutuante na seleção de texto da transcrição: Destacar, Anotar, Investigar;
+  - Descobertas como caderno pautado e Gabinete como gavetas;
+  - 39,7 KB de CSS legado morto removidos (−11,3%), com verificação pixel a pixel.
+
+  `npm run check` (405 testes) e `npm run test:browser` passam.
+- **Ainda em aberto:**
+  - "Sua mesa" no Gabinete ainda é um formulário;
+  - os diálogos e as abas Envios e Membros de Turmas não foram redesenhados;
+  - o papel de parede "Escrivaninha lavanda" visto pela janela;
+  - a regra de calendário que ordena eventos antes de tarefas;
+  - o prefixo da pergunta preenchida na investigação ainda não foi traduzido;
+  - regras legadas ainda ativas, mas sobrescritas;
+  - o player que fica preso ao rolar a aula.
+
+### Estado final deste ciclo
+
+| Área | Situação |
+| --- | --- |
+| Produção (`audioestudo`) | as 8 migrations da 3.3/3.4 estão aplicadas, com backup verificado. A migration de descobertas **não** foi aplicada (é experimental) |
+| Recursos | ligados pelo `backend/.env` de quem roda o app (`ATIVAR_RECURSOS_3_4.cmd`). A flag `discoveries` fica desligada |
+| Site público | **bloqueado**: sem acesso a nenhuma plataforma de hospedagem. Configuração do Railway pronta em `deploy/` |
+| Staging | 3.3/3.4 + descobertas aplicadas e validadas com dados sintéticos; login e Storage validados sem chave privilegiada |

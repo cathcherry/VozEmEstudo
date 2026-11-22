@@ -219,6 +219,7 @@ export default {
   "Anotações e destaques desta aula": "Notas y resaltados de esta clase",
   "Anotações indisponíveis.": "Notas no disponibles.",
   "Anotações pessoais": "Notas personales",
+  "Anotar": "Anotar",
   "Anterior": "Anterior",
   "Ao aprovar, todos os membros da turma passam a ver o conteúdo, com o nome do aluno.": "Al aprobar, todos los miembros de la clase ven el contenido, con el nombre del alumno.",
   "Ao finalizar a lista": "Al terminar la lista",
@@ -1223,6 +1224,7 @@ export default {
   "Investigação começada. Agora explore os trechos da aula.": "Investigación iniciada. Ahora explora los fragmentos de la clase.",
   "Investigações desta aula": "Investigaciones de esta clase",
   "Investigações e o Gabinete em destaque, com o caminho até os próximos itens.": "Investigaciones y el Gabinete destacados, con el camino hasta los próximos objetos.",
+  "Investigar": "Investigar",
   "Investigar uma pergunta": "Investigar una pregunta",
   "Investigue uma pergunta de uma aula: a primeira evidência que você guardar já deixa um selo aqui.": "Investiga una pregunta de una clase: la primera evidencia que guardes ya deja un sello aquí.",
   "Ir ao destaque": "Ir al resaltado",
@@ -3862,6 +3864,10 @@ export default {
   [
    "{0} de {1}",
    "{0} de {1}"
+  ],
+  [
+   "{0} membro",
+   "{0} miembro"
   ],
   [
    "Nível {0}",

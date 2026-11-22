@@ -96,7 +96,7 @@ export async function initCalendarPanel({panel,materials=[]}){
     if(selectedDay){const all=make('button','Mostrar mês todo');all.type='button';all.className='text-action';all.addEventListener('click',()=>{selectedDay='';render();});head.append(all);}
     agenda.replaceChildren(head);
     const visible=selectedDay?items.filter((item)=>itemOnDay(item,selectedDay)):items;
-    if(!visible.length)agenda.append(ninoNote(selectedDay?'Nada marcado neste dia. Que tal reservar um horário curto?':'Nenhum horário ou prazo neste mês ainda.','rest',{className:'calendar-empty',action:{label:'Agendar estudo',onClick:(button)=>{reset();startDraft();openCompose(button);}}}));
+    if(!visible.length)agenda.append(ninoNote(selectedDay?'Nada marcado neste dia. Que tal reservar um horário curto?':'Nenhum horário ou prazo neste mês ainda.','rest',{className:'calendar-empty',artId:'empty.planner',action:{label:'Agendar estudo',onClick:(button)=>{reset();startDraft();openCompose(button);}}}));
     const list=make('ul');list.className='calendar-entries';
     for(const item of visible){
       const card=make('li');card.className='calendar-entry'+(item.kind==='task'?' is-task':'');

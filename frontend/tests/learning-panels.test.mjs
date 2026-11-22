@@ -11,7 +11,7 @@ const code=(name)=>readFileSync(new URL(`../js/pages/${name}.js`,import.meta.url
 async function until(predicate){for(let n=0;n<30;n++){if(predicate())return;await new Promise((resolve)=>setImmediate(resolve));}assert(predicate());}
 test('annotations capture a saved selection with its revision and preserve text while saving',async()=>{
   const dom=new JSDOM('<section id="panel" hidden></section><div id="segments"><article class="transcription-segment" data-segment-position="0"><textarea>Energia conservada</textarea></article></div>');let received;
-  const dependencies={listAnnotations:async()=>({notes:[],total:0}),saveAnnotation:async(body)=>{received=body;return {version:1};},selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation,pendingMutation};
+  const dependencies={listAnnotations:async()=>({notes:[],total:0}),saveAnnotation:async(body)=>{received=body;return {version:1};},selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation,pendingMutation,isFeatureEnabled:async()=>false,createSelectionToolbar:()=>({})};
   const factory=new Function('document','Option','crypto','confirm',...Object.keys(dependencies),`${code('annotations-panel')};return initAnnotationsPanel;`);
   try{const doc=dom.window.document,context=()=>({review:{sourceRevisionId:'source-a'},transcription:{current_revision:1,transcription_segments:[{position:0,current_text:'Energia conservada'}]}});
     await factory(doc,dom.window.Option,webcrypto,()=>true,...Object.values(dependencies))({panel:doc.querySelector('#panel'),materialId:'material-a',context,segments:doc.querySelector('#segments')});

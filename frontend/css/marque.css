@@ -41,7 +41,5 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .storage-choice input[type='checkbox']::before { content: ''; width: 11px; height: 11px; transform: scale(0); background: var(--button-text); clip-path: polygon(18% 50%,0 67%,40% 100%,100% 16%,82% 0,40% 64%); transition: transform 120ms ease; }
 .storage-choice input[type='checkbox']:checked { background: var(--button-background); border-color: var(--button-background); }
 .storage-choice input[type='checkbox']:checked::before { transform: scale(1); }
-.course-card, .feature-card { border: 1px solid var(--border-light); border-radius: 18px; overflow: hidden; transition: transform var(--kit-motion), box-shadow var(--kit-motion); }
-.course-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -22px color-mix(in srgb,var(--accent) 35%,transparent); }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
 }

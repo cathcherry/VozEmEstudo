@@ -469,6 +469,14 @@ async function main() {
     for (const button of $$('.evidence-whole')) button.hidden = true;
     setStatus('Esta investigação usa uma revisão anterior da transcrição. As evidências continuam guardadas; para citar a revisão nova, comece outra investigação.');
   }
+  // From the lesson's selection toolbar ("Investigar"): the selected passage seeds the question,
+  // which the student can rewrite before starting.
+  const passage = String(params.get('trecho') || '').replace(/\s+/g, ' ').trim();
+  const input = $('[data-question-input]');
+  if (!state.view && passage && !input.value) {
+    input.value = `O que quer dizer “${[...passage].slice(0, 240).join('')}”?`;
+    input.dataset.origin = 'student';
+  }
   const wanted = { evidencias: 'evidence', explicar: 'explain', aplicar: 'apply', refletir: 'reflect' }[params.get('etapa')];
   selectStep(wanted || (state.view ? (state.view.evidence.length ? 'explain' : 'evidence') : 'question'));
 }

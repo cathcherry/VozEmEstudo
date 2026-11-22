@@ -59,6 +59,19 @@ function showUnlocks(list = []) {
 }
 
 // ---- The notebook (list) --------------------------------------------------------------------
+/** The day written in the page's margin, as in a dated notebook (decorative: the meta has it). */
+function marginDate(iso) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  const locale = globalThis.VOZ_LOCALE || 'pt-BR';
+  return el(
+    'span',
+    { className: 'discovery-page-day', 'aria-hidden': 'true' },
+    el('strong', { text: String(date.getDate()) }),
+    el('small', { text: date.toLocaleDateString(locale, { month: 'short' }).replace('.', '') }),
+  );
+}
+
 async function showHome() {
   $('[data-discoveries-home]').hidden = false;
   const list = $('[data-discoveries-list]');
@@ -75,6 +88,7 @@ async function showHome() {
         href: './historico.html',
         action: 'Abrir a Biblioteca',
         mascot: 'curious',
+        artId: 'empty.discoveries',
       }),
     );
     return;
@@ -84,6 +98,7 @@ async function showHome() {
       el(
         'li',
         { className: 'discovery-page-card' },
+        marginDate(item.createdAt),
         el('h3', {}, el('a', { href: `./descobertas.html?id=${encodeURIComponent(item.id)}`, translate: 'no', text: item.title })),
         el(
           'p',

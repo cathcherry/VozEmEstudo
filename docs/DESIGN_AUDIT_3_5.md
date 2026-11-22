@@ -208,16 +208,85 @@ com a gaveta aberta) e na Aparência (Simples e Estúdio, 1440 e 390); sem rolag
 Capturas: `node frontend/tests/design-audit-capture.cjs after '^(escrivaninha|estudio|biblioteca-pastas)'`
 (fuso `America/Sao_Paulo`, para a Lume não aparecer sempre dormindo no relógio UTC do contêiner).
 
-## 6. O que fica para depois
+## 6. Marco 8 — refinamento
 
-- Planejar (calendário), Focar e Turmas ainda usam composições antigas por dentro; receberam a
-  moldura e os componentes, não um redesenho de geometria próprio.
+A crítica depois do Marco 5: a cena do Início era pequena e chapada (uma faixa bege pesada, a Lume
+e a janela minúsculas, a prateleira vazia); Planejar, Focar e Turmas tinham só a moldura; a seleção
+na transcrição tinha um balão simples; Descobertas e Gabinete eram listas de cartões; o CSS legado
+seguia grande. Capturas: `before/m8-*` (tiradas de `feat/3.5-experience` com a mesma lista) →
+`after/m8-*`, a 1440 e 390 px, com
+`node frontend/tests/design-audit-capture.cjs after '^m8-'`.
+
+| Antes | Depois | Capturas |
+| --- | --- | --- |
+| A mesa era uma faixa bege lisa; a folha "Continuar estudando" deveria repousar sobre ela, mas um seletor `+` pulava a seção de resultados da busca e a folha ficava solta. | **Uma sala com direção de arte**: tampo de madeira com veios finos (ruído fractal esticado, em `--desk-top`, então cada atmosfera tem a sua madeira), escuro junto à parede e claro na frente; borda frontal com fio de luz e sombra projetada na página. A folha volta a repousar sobre a borda (`~` no lugar de `+`). | `m8-escrivaninha-1440/390` |
+| Lume ~5,75 rem; janela 47 % × 6,75 rem; prateleira com um cacto. | Lume 1,5× (8,75 rem; 6,75 rem no celular), na frente do peitoril; janela 54 % × 8,5 rem com reflexo de vidro e o papel de parede enquadrado; prateleira com fio de madeira e livros (o quarto livro com "Bastante"); objetos numa escala só (mesa 5,1 rem, prateleira 3,7 rem), menores entre 701 e 1180 px. No celular a cena **não ficou mais alta** (297 px, a mesma altura de antes); no desktop, 16 rem em vez de 13. | `m8-escrivaninha-biblioteca-chuvosa-*` |
+| — | **Luz da luminária**: com o objeto na mesa, uma poça de luz mel no tampo e na parede (`:has()`, sem JS); no tema noturno em `screen`. | `m8-escrivaninha-luminaria-*`, `m8-escrivaninha-luminaria-noite-*`, `m8-escrivaninha-jardim-noturno-*` |
+| O movimento reduzido não parava a deriva da janela (a regra perdia em especificidade). | Movimento reduzido para a janela, a gaveta, o objeto que cai e o selo. | teste |
+| **Planejar**: quatro botões e dois filtros em linhas soltas; objetivo = cartão com botões de borda; subobjetivo = cartão dentro do cartão; tarefas com "Editar tarefa" em caixa. | Uma faixa de ações (uma primária) e os filtros logo acima da lista, à direita. Cada objetivo é **um** painel: título em Fraunces, ações como botões de texto na mesma linha, linha de progresso matcha. Subobjetivo é um grupo com fio à esquerda, não um cartão. Tarefas são linhas pautadas (prazo vencido em rosa, concluída riscada). Calendário: mês em Fraunces; a agenda virou **uma lista pautada** (horário com fio lavanda, prazo com fio mel), não cartões. Vazio com `empty.planner`. | `m8-planejar-*`, `m8-planejar-calendario-*`, `m8-planejar-vazio-*` |
+| **Focar**: dois cartões de alturas diferentes; "Seu ritmo" com quatro caixinhas e outro cartão para o gráfico. | A sessão é o painel da página (anel, modos como controle segmentado do sistema, a única primária); a semana fica **escrita na margem** (sem caixa competindo em altura). "Seu ritmo" é um painel: quatro números numa linha pautada, gráfico, tabela, aulas e o ano no rodapé. | `m8-focar-*` |
+| **Turmas**: botões soltos acima de "Minhas turmas"; turmas como cartões brancos ("1 aulas"); na turma, o título da página "Turmas" maior que o nome da turma; aulas e materiais como cartões empilhados. | Ações na linha do título. Cada turma é uma **capa com lombada colorida** (tons das pastas da Biblioteca), nome em Fraunces, descrição, papel no canto, contagens com plural certo. Na turma, "Turmas" vira o h1 só para leitores de tela e o nome da turma é o título; listas são painéis de linhas; em telas largas os materiais de apoio ficam numa coluna ao lado das aulas. Vazio com `empty.classrooms`. | `m8-turmas-*`, `m8-turma-*`, `m8-turmas-vazia-*` |
+| Balão de seleção "Destacar / Comentar", sempre acima, sem teclado. | **Barra de ferramentas da seleção** (`selection-toolbar.js`): tinta sobre o papel, ícone e palavra, seta para o trecho. Destacar, **Anotar** e **Investigar** (com `discoveries` e aula confirmada; abre `investigar.html?aula=…&trecho=…` e a pergunta começa com o trecho). Fica acima do trecho, ou abaixo quando não cabe ou a seleção veio do toque (onde o menu do sistema fica em cima), e nunca o cobre. **Shift+F10** ou a tecla de menu abre e foca a primeira ação; setas, Home/End; Esc fecha e devolve o foco. Alternativa para quem não conhece o atalho: o botão "Ações do trecho selecionado" logo antes do texto (aparece ao receber foco, como um link de pular). | `m8-selecao-*` |
+| **Descobertas**: cartões com borda lavanda. | Um **caderno pautado**: uma página com linha de margem rosa e costura na lombada; cada descoberta escrita sobre as pautas, com o dia na margem e os selos carimbados em tinta (levemente girados). Vazio com `empty.discoveries`. | `m8-descobertas-*`, `m8-descobertas-vazio-*` |
+| **Gabinete**: painéis com cartões dentro; itens bloqueados coloridos; rádios visíveis no modo de experiência. | Um **gabinete de curiosidades**: cada tipo é uma gaveta com frente de madeira, plaqueta de nome e puxador de latão; os itens ficam em compartimentos de uma bandeja; o que falta encontrar é um contorno apagado no compartimento. Modo de experiência no controle segmentado do sistema. | `m8-gabinete-*` |
+
+### Poda do CSS legado
+
+Regras dentro de `@layer legacy` cujo seletor **não pode casar com nada**: alguma classe ou id
+que não aparece em nenhum HTML ou JS do front-end (com cuidado com nomes montados em JS, como
+`is-${estado}` ou `'tone-' + cor`: o prefixo vivo mantém a regra). Seletores com `:is/:where/:has`
+foram mantidos; classes dentro de `:not()` não contam. Em listas de seletores, só os mortos saíram.
+Conferência: 68 capturas de página inteira (34 telas × 390/1440, com movimento reduzido) antes e
+depois, comparadas pixel a pixel — só diferenças de antisserrilhado de 1 px, as mesmas que duas
+capturas seguidas do código antigo já mostram; `npm run check` e `npm run test:browser` passam.
+
+| Arquivo | Antes (bytes) | Depois | Diferença |
+| --- | --- | --- | --- |
+| `product.css` | 34.857 | 13.607 | −21.250 |
+| `style.css` | 59.289 | 52.219 | −7.070 |
+| `library.css` | 34.011 | 30.570 | −3.441 |
+| `personalization.css` | 37.923 | 36.427 | −1.496 |
+| `workflow.css` | 6.585 | 5.203 | −1.382 |
+| `academic.css` | 7.316 | 6.060 | −1.256 |
+| `profile-redesign.css` | 23.237 | 22.193 | −1.044 |
+| `tool-pages.css` | 32.681 | 31.899 | −782 |
+| `quiz-v2.css` | 3.153 | 2.641 | −512 |
+| `landing.css` | 20.627 | 20.278 | −349 |
+| `marque.css` | 4.075 | 3.762 | −313 |
+| `settings-redesign.css` | 13.906 | 13.594 | −312 |
+| `learning-tools.css` | 7.376 | 7.154 | −222 |
+| `study-authoring.css` | 9.255 | 9.120 | −135 |
+| `material-refinement.css` (parte legada) | 45.379 | 45.266 | −113 |
+| `history-redesign.css` | 10.544 | 10.496 | −48 |
+| **16 arquivos** | **350.214** | **310.489** | **−39.725 (−11,3 %)** |
+
+O que **não** foi feito, por ser arriscado sem um teste visual por regra: apagar regras legadas
+que ainda casam com elementos mas são sobrescritas pela camada `pages` (a maior parte do que
+sobra em `style.css`, `library.css`, `tool-pages.css` e `material-refinement.css`).
+
+### Testes
+
+`frontend/tests/refinement-check.cjs` (em `npm run test:browser`): a cena (veios, sombra, Lume ≥
+1,4× um objeto, janela generosa, folha sobre a borda, cena do celular ≤ 300 px, luz da luminária,
+nenhuma animação com movimento reduzido, axe a 1440 e 390); Planejar (tarefas e calendário), Focar,
+Turmas e uma turma sem rolagem horizontal a 390 px e axe a 390 e 1440; estados vazios com a arte
+certa; Descobertas e Gabinete (390/1440, axe); a barra da seleção pelo teclado (Shift+F10, setas,
+Home/End, Esc, o botão alternativo, Destacar salva), sem cobrir a seleção a 1440 e 390, Investigar
+só com a flag e com o trecho na investigação, axe. i18n: `scripts/i18n/refinement-3-5.json`.
+
+## 7. O que fica para depois
+
+- ~~Planejar (calendário), Focar e Turmas ainda usam composições antigas por dentro~~ — feito no
+  Marco 8. Ainda antigos por dentro: os diálogos de Turmas (publicar, convidar, enviar) e as abas
+  Envios/Membros, que só herdaram as listas pautadas.
 - ~~A Aparência ainda tem caixas de seleção~~ — feito no Marco 5 (rádios "true"/"false" convertidos
   para booleano em `preferences.js`).
 - A escrivaninha poderia mostrar o papel de parede também atrás da página (hoje só na janela, por
-  decisão: nunca sob texto de leitura). Objetos de mesa ainda não têm variações por atmosfera.
-- O CSS legado continua grande: as regras antigas sobrescritas por `pages` podem ser apagadas
-  arquivo por arquivo (próximos candidatos: `product.css`, `marque.css`, o início de
-  `library.css` e as partes de `material-refinement.css` já cobertas).
-- Barras de ferramentas flutuantes para a seleção de texto na transcrição e um player fixo ao
-  rolar a aula.
+  decisão: nunca sob texto de leitura). Objetos de mesa ainda não têm variações por atmosfera, e o
+  papel de parede "Escrivaninha lavanda" é um interior (luz e luminária), não uma paisagem: na
+  janela ele lê como luz; um desenho de paisagem próprio para a janela ficaria melhor.
+- O CSS legado ainda é grande: o próximo passo é remover regras que casam mas são sobrescritas,
+  arquivo por arquivo, com capturas por regra.
+- A seção "Sua mesa" do Gabinete ainda é um formulário de seleção (a mesa de verdade se arruma no
+  Início).
+- Player fixo ao rolar a aula.

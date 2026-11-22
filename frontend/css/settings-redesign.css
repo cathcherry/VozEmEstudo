@@ -59,7 +59,6 @@
   transition: opacity .16s ease, transform .16s ease;
 }
 .appearance-plus:hover::after, .appearance-plus:focus-visible::after { opacity: 1; transform: translateY(0); }
-.appearance-plus--saved { width: 72px; height: 72px; border-radius: 50%; }
 
 .settings-dialog {
   width: min(760px, calc(100vw - 28px));
@@ -93,10 +92,10 @@
 .personalization-group { min-width: 0; padding: 16px; border: 1px solid var(--border-light, var(--border)); border-radius: 14px; background: var(--surface-alt); }
 .personalization-group > h3, .personalization-heading h3 { margin: 0 0 12px; font-size: 1.02rem; }
 .personalization-heading { margin-bottom: 8px; }
-.personalization-group .check-row, .personalization-group .setting-select-row { padding-block: 11px; }
-.personalization-group .check-row small, .personalization-group .setting-select-row small { display: none; }
-.personalization-group .check-row:focus-within small, .personalization-group .check-row:hover small,
-.personalization-group .setting-select-row:focus-within small, .personalization-group .setting-select-row:hover small { display: block; }
+.personalization-group .setting-select-row { padding-block: 11px; }
+.personalization-group .setting-select-row small { display: none; }
+.personalization-group .setting-select-row:focus-within small,
+.personalization-group .setting-select-row:hover small { display: block; }
 .personalization-actions { margin-top: 14px; }
 
 @media (max-width: 700px) {
@@ -125,8 +124,8 @@
 .palette-swatches i:first-child { margin-left:0; }
 .setting-item { position:relative; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border-light,var(--border)); }
 .setting-item:last-child { border-bottom:0; }
-.setting-item > .check-row, .setting-item > .setting-select-row { flex:1; min-width:0; margin:0; }
-.setting-item .check-row small, .setting-item .setting-select-row small { display:none !important; }
+.setting-item > .setting-select-row { flex:1; min-width:0; margin:0; }
+.setting-item .setting-select-row small { display:none !important; }
 .setting-help { position:relative; flex:0 0 auto; }
 .setting-help > summary { display:grid; place-items:center; width:25px; height:25px; border:1px solid var(--border); border-radius:50%; color:var(--muted); background:var(--surface); font:600 .82rem/1 Arial,sans-serif; cursor:pointer; list-style:none; }
 .setting-help > summary::-webkit-details-marker { display:none; }

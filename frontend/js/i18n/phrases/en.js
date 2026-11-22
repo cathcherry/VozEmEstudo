@@ -219,6 +219,7 @@ export default {
   "Anotações e destaques desta aula": "Notes and highlights for this lesson",
   "Anotações indisponíveis.": "Notes unavailable.",
   "Anotações pessoais": "Personal notes",
+  "Anotar": "Add note",
   "Anterior": "Previous",
   "Ao aprovar, todos os membros da turma passam a ver o conteúdo, com o nome do aluno.": "Once approved, every class member sees the content, with the student's name.",
   "Ao finalizar a lista": "When the list is finished",
@@ -1223,6 +1224,7 @@ export default {
   "Investigação começada. Agora explore os trechos da aula.": "Investigation started. Now explore the lesson's passages.",
   "Investigações desta aula": "Investigations of this lesson",
   "Investigações e o Gabinete em destaque, com o caminho até os próximos itens.": "Investigations and the Cabinet up front, with the way to the next items.",
+  "Investigar": "Investigate",
   "Investigar uma pergunta": "Investigate a question",
   "Investigue uma pergunta de uma aula: a primeira evidência que você guardar já deixa um selo aqui.": "Investigate a question from a lesson: the first piece of evidence you keep already leaves a stamp here.",
   "Ir ao destaque": "Go to highlight",
@@ -3862,6 +3864,10 @@ export default {
   [
    "{0} de {1}",
    "{0} of {1}"
+  ],
+  [
+   "{0} membro",
+   "{0} member"
   ],
   [
    "Nível {0}",
