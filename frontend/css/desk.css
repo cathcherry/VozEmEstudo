@@ -843,3 +843,83 @@
   rotate: -6deg;
   filter: drop-shadow(0 10px 10px rgb(46 42 59 / 0.25));
 }
+
+/* ==== 3.6: arranging, with clear hands ========================================================
+ * An object is in one place: the drawer lists only what is not on the desk. The object being
+ * moved is lifted (picked) or faded at its place (carried); free places and the drawer light up
+ * as drop targets while dragging; a placed object can be hovered and grabbed. */
+@layer pages {
+  body[data-page='dashboard'] .desk-scene[data-editing='true'] .desk-slot-object {
+    transition:
+      translate 160ms var(--ease),
+      opacity 160ms var(--ease),
+      filter 160ms var(--ease);
+  }
+  body[data-page='dashboard'] .desk-scene[data-editing='true'] .desk-slot[data-filled='true']:hover .desk-slot-object,
+  body[data-page='dashboard'] .desk-slot[data-picked='true'] .desk-slot-object {
+    translate: 0 -5%;
+    filter: drop-shadow(0 8px 6px rgb(46 42 59 / 0.22));
+  }
+  body[data-page='dashboard'] .desk-slot[data-picked='true'] .desk-slot-target {
+    border: 2px solid var(--brand-ink);
+    background: color-mix(in srgb, var(--brand-wash) 60%, transparent);
+  }
+  body[data-page='dashboard'] .desk-slot[data-lifting='true'] .desk-slot-object {
+    opacity: 0.3;
+  }
+  body[data-page='dashboard'] .desk-scene[data-dragging='true'] .desk-slot[data-filled='false'] .desk-slot-target,
+  body[data-page='dashboard'] .desk-scene[data-picking='true'] .desk-slot[data-filled='false'] .desk-slot-target {
+    border-width: 2px;
+    border-color: var(--brand-ink);
+    background: color-mix(in srgb, var(--brand-wash) 75%, transparent);
+  }
+  body[data-page='dashboard'] .desk-slot-target[data-over] {
+    border-style: solid;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-ink) 22%, transparent);
+  }
+  body[data-page='dashboard'] .desk-tray[data-dropzone='true'] {
+    outline: 2px dashed color-mix(in srgb, var(--brand-ink) 55%, transparent);
+    outline-offset: -8px;
+  }
+  body[data-page='dashboard'] .desk-tray[data-over='true'] {
+    background: color-mix(in srgb, var(--brand-wash) 70%, var(--paper-raised));
+  }
+  body[data-page='dashboard'] .desk-tray-object:hover {
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body[data-page='dashboard'] .desk-tray-object:active {
+    cursor: grabbing;
+  }
+  body[data-page='dashboard'] .desk-tray-empty {
+    grid-column: 1 / -1;
+    padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-control);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body[data-page='dashboard'] .desk-tray-foot {
+    justify-content: flex-start;
+  }
+  /* "Concluir" never wraps inside its key; the hint keeps a reading measure. */
+  body[data-page='dashboard'] .desk-tray-head > button {
+    flex: none;
+    white-space: nowrap;
+  }
+  body[data-page='dashboard'] .desk-tray-hint {
+    max-width: 62ch;
+  }
+  body[data-page='dashboard'] [data-desk-undo]:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) body[data-page='dashboard'] .desk-scene .desk-slot-object {
+    transition: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body[data-page='dashboard'] .desk-scene .desk-slot-object {
+      transition: none;
+    }
+  }
+}

@@ -52,7 +52,8 @@ async function main() {
     // Keyboard: open the drawer, choose the hourglass, then the window sill.
     await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
     await page.locator('[data-desk-tray]:not([hidden])').waitFor();
-    assert.equal(await page.locator('.desk-tray-object').count(), 4, 'four starter objects');
+    // 3.6: the drawer holds only what is not on the desk (teacup, inkwell and cactus are on it).
+    assert.equal(await page.locator('.desk-tray-object').count(), 1, 'one starter object left in the drawer');
     assert.equal(await page.locator('[data-desk-object="object.globe"]').count(), 0, 'no collectible without the feature');
     await page.locator('[data-desk-object="object.hourglass"]').focus();
     await page.keyboard.press('Enter');
@@ -62,11 +63,14 @@ async function main() {
     await page.keyboard.press('Enter');
     await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
     assert.equal((await prefs(page)).deskStarters.window, 'object.hourglass');
-    // Escape cancels a choice, then closes the drawer.
-    await page.locator('[data-desk-object="object.teacup"]').focus();
+    await page.locator('.desk-tray-empty').waitFor();
+    // Escape cancels a choice (an object on the desk, chosen at its place), then closes the drawer.
+    const teacup = page.locator('[data-desk-slot="desk-right"] .desk-slot-target');
+    await teacup.focus();
     await page.keyboard.press('Enter');
+    assert.equal(await teacup.getAttribute('aria-pressed'), 'true');
     await page.keyboard.press('Escape');
-    assert.equal(await page.locator('[data-desk-object="object.teacup"]').getAttribute('aria-pressed'), 'false');
+    assert.equal(await teacup.getAttribute('aria-pressed'), 'false');
     await axeCheck(page, 'body', 'Início, arrumando a mesa');
     await shot(page, 'mesa-arrumando-1440', false);
     await page.keyboard.press('Escape');
@@ -202,9 +206,11 @@ async function main() {
     await shot(page, 'inicio-390');
     // Arranging works on a phone too.
     await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-    await page.locator('[data-desk-object="object.cactus"]').click();
+    // The cactus is on the shelf: tap it there, then tap the free place in the middle.
+    await page.locator('[data-desk-slot="shelf-left"] .desk-slot-target').click();
     await page.getByRole('button', { name: 'Colocar cacto em mesa, ao centro' }).click();
     await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.cactus"]').waitFor();
+    assert.equal(await page.locator('[data-desk-slot="shelf-left"] [data-object-id="object.cactus"]').count(), 0, 'moved, not copied');
     await noHorizontalScroll(page, 'Início 390, arrumando');
     for (const view of ['simple', 'studio']) {
       await page.goto(base + '/aparencia.html');
