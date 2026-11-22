@@ -295,9 +295,18 @@
   .journal-decor {
     z-index: 2;
   }
-  .sheet-text {
+  /* The text layer makes no stacking context of its own: its writing sits above decorations
+     (z 3), while collage photos sit below them (z 1), so washi tape can hold a photo. */
+  .sheet-text > :not(.collage-photos) {
     position: relative;
     z-index: 3;
+  }
+  .collage-photo {
+    position: relative;
+    z-index: 1;
+  }
+  .sheet-text {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
