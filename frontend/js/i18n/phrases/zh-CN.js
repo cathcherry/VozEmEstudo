@@ -62,6 +62,7 @@ export default {
   "A escrivaninha, a Lume e os selos no caderno.": "书桌、Lume 和笔记本里的印章。",
   "A explicação precisa de pelo menos 20 caracteres.": "解释至少需要 20 个字符。",
   "a fazer": "待完成",
+  "A gaveta está vazia: tudo está na mesa. Arraste um objeto para cá para guardá-lo.": "抽屉是空的：所有物品都在桌上。把物品拖到这里即可收起。",
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "我们懂得那种想再听一遍讲得太快的讲解、串联课堂想法、检验是否掌握内容的感受。所以我们打造了一个汇集录音、转写、摘要和题目的地方，陪伴你课后的学习。",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "录音、分段转写、摘要和题目都关联在资料库中。这样你可以查看讲解并练习，同时不会脱离原始课程。",
   "A imagem deve ter no máximo 8 MB.": "图片不能超过 8 MB。",
@@ -293,6 +294,7 @@ export default {
   "Arraste": "拖动",
   "Arraste para redimensionar · clique duplo para restaurar": "拖动以调整大小 · 双击恢复",
   "Arraste um objeto até um lugar da mesa. Pelo teclado: escolha o objeto e depois o lugar.": "把物品拖到书桌上的位置。使用键盘：先选择物品，再选择位置。",
+  "Arraste um objeto da gaveta até um lugar da mesa; na mesa, arraste para trocar de lugar ou de volta para a gaveta. Pelo teclado ou toque: escolha o objeto e depois o lugar.": "把抽屉里的物品拖到桌上的某个位置；在桌上拖动可交换位置或放回抽屉。使用键盘或触控：先选物品，再选位置。",
   "Arraste uma gravação": "拖入录音",
   "Arredondada": "圆润",
   "Arredondado": "圆润",
@@ -508,6 +510,7 @@ export default {
   "Cole um link do YouTube ou do Spotify.": "请粘贴 YouTube 或 Spotify 链接。",
   "Cole um link válido do YouTube ou Spotify.": "请粘贴有效的 YouTube 或 Spotify 链接。",
   "Coleção de aulas": "课程合集",
+  "Coloque na mesa os objetos que você encontrou. Um objeto por lugar: escolher um lugar ocupado troca os dois de lugar.": "把你找到的物品放到书桌上。每个位置放一个物品：选择已被占用的位置会交换两者。",
   "Coloque na mesa os objetos que você encontrou. Um objeto por lugar.": "把你找到的物件放在书桌上。每个位置放一件。",
   "Com as próprias palavras": "用自己的话",
   "Com erro": "出错",
@@ -745,6 +748,7 @@ export default {
   "Desenvolvedora · Autora do TCC": "开发者 · 毕业设计作者",
   "Desfazer": "撤销",
   "Desfazer a marcação desta questão": "撤销此题的标记",
+  "Desfeito: a mesa voltou como estava. Mesa salva.": "已撤销：书桌恢复原样。书桌已保存。",
   "Desligada": "关闭",
   "Desligadas": "关闭",
   "Desligado": "关闭",
@@ -940,6 +944,7 @@ export default {
   "Esta é uma cópia de leitura da versão escolhida pelo responsável. Ela não acompanha alterações futuras do material.": "这是所有者所选版本的只读副本，不会随资料后续的更改而更新。",
   "Esta investigação já virou uma descoberta. Você ainda pode reunir evidências e ligar materiais; o texto se edita no Arquivo de Descobertas.": "这个探究已成为一个发现。你仍可以收集证据和关联材料；文本请在发现档案中编辑。",
   "Esta investigação usa uma revisão anterior da transcrição. As evidências continuam guardadas; para citar a revisão nova, comece outra investigação.": "这个探究使用的是转录的早期修订版。证据仍然保存；要引用新修订版，请开始新的探究。",
+  "Esta pasta está vazia.": "此文件夹为空。",
   "Esta pasta está vazia. Pesquise uma aula abaixo ou arraste uma para cá.": "此文件夹为空。请在下方搜索课程，或将课程拖到这里。",
   "Esta seção não pôde ser carregada agora.": "此部分暂时无法加载。",
   "Esta senha já apareceu em vazamentos de dados de outros sites e pode ser adivinhada. Escolha outra senha.": "此密码曾出现在其他网站的数据泄露中，容易被猜到。请换一个密码。",
@@ -1120,6 +1125,8 @@ export default {
   "Gerar resumo": "生成摘要",
   "Gere um lote na página da aula para iniciar a revisão.": "在课程页面生成一批题目即可开始复习。",
   "Gere um lote para começar uma tentativa.": "生成一批题目即可开始作答。",
+  "Gerenciar": "管理",
+  "Gerenciar cartões e conjuntos": "管理卡片和卡组",
   "Globo": "地球仪",
   "Google": "Google",
   "Grade": "网格",
@@ -1470,6 +1477,7 @@ export default {
   "Na sua conta": "在你的账户中",
   "Nada é compartilhado. O aluno pode ajustar e enviar de novo.": "不会分享任何内容。学生可以修改后重新提交。",
   "Nada marcado neste dia. Que tal reservar um horário curto?": "这一天没有安排。要不要预留一小段时间？",
+  "Nada pendente para hoje. Crie cartões ou pratique questões quando quiser.": "今天没有待办。随时可以创建卡片或练习题目。",
   "Não está mais compartilhado": "已不再分享",
   "Não está mais compartilhado.": "已不再分享。",
   "Não está na aula": "课程中没有讲到",
@@ -1625,6 +1633,7 @@ export default {
   "Nenhuma tarefa concluída aqui.": "这里没有已完成的任务。",
   "Nenhuma turma ainda": "还没有班级",
   "Neon": "霓虹",
+  "Nesta pasta": "此文件夹中",
   "Neste conjunto": "在此卡组中",
   "Neste navegador": "在此浏览器中",
   "Neve lá fora, lã vermelha e lareira.": "窗外飘雪、红色毛线和壁炉。",
@@ -1672,6 +1681,7 @@ export default {
   "Nova turma": "新建班级",
   "Nova unidade": "新建单元",
   "Nova versão salva.": "新版本已保存。",
+  "Novo cartão": "新卡片",
   "Novo conjunto": "新建卡组",
   "Novo horário": "新建学习时段",
   "Novo lote": "新一批",
@@ -1848,6 +1858,7 @@ export default {
   "Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.": "对每个问题，保留其中一个答案，或把所有答案合并到一张卡片。若不选择，答案会被合并：不会丢失任何内容。",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "如需修改课程文本，请使用“编辑转写”。",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "要创建新列表，请在资料库中打开课程并使用“题目”标签页。",
+  "Para hoje": "今天",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "至少需要两个有卡片的卡组才能合并。",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões. Crie um conjunto na aba Flashcards de uma aula ou importe cartões de um arquivo.": "合并至少需要两个有卡片的卡组。请在某节课的“闪卡”标签中创建卡组，或从文件导入卡片。",
   "para mudar o tema e": "更改主题，使用",
@@ -1913,6 +1924,7 @@ export default {
   "Pesquisar texto e destaques": "搜索文本和标记",
   "Pinheiro": "松树",
   "Planejar": "计划",
+  "Planejar › Tempo de estudo": "计划 › 学习时间",
   "Planejar uma unidade": "规划一个单元",
   "Planner": "手账",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "媒体播放器。空格键播放或暂停；方向键前进或后退十秒。",
@@ -2305,6 +2317,7 @@ export default {
   "Serifa": "衬线",
   "Serviços externos": "外部服务",
   "Sessão de foco": "专注时段",
+  "Sessão de foco e semana": "专注时段与本周",
   "Sessão em andamento. Sair da aba pausa a contagem.": "会话进行中。离开此标签页将暂停计时。",
   "Sessão inválida. Entre novamente.": "会话无效，请重新登录。",
   "Sessão não encontrada.": "未找到会话。",
@@ -2316,6 +2329,7 @@ export default {
   "Seu perfil": "你的个人资料",
   "Seu próximo capítulo começa aqui.": "你的下一章从这里开始。",
   "Seu ritmo": "你的节奏",
+  "Seu ritmo e os blocos recentes ficam em": "你的节奏和最近的时段位于",
   "Seu uso da gravação": "你对录音的使用",
   "Seus dados": "你的数据",
   "Seus sons ambientes estavam tocando. Quer continuar?": "你的环境音之前正在播放。要继续吗？",
@@ -2484,6 +2498,7 @@ export default {
   "Tópicos": "要点",
   "Toque em \"Tocar\" para começar o som.": "点按“播放”开始声音。",
   "Toque em tocar para começar o som.": "请点击播放以开始声音。",
+  "Toque nas aulas ou pastas para selecionar": "点按课程或文件夹进行选择",
   "Toque nas aulas para selecionar": "点按课程进行选择",
   "Tornar aluno(a)": "设为学生",
   "Tornar monitor(a)": "设为助教",
@@ -2528,6 +2543,7 @@ export default {
   "Um cantinho para a sua curiosidade": "属于你好奇心的小角落",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "一键同时调整多项偏好，之后可在“阅读与专注”中逐项微调。模式不会缩小文字，也不会关闭你已开启的无障碍选项。",
   "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "将用所选卡组的卡片创建一个只属于你的新卡组。原卡组（你自己的和同学共享的）永远不会被修改，复习记录也不会被复制：新卡组从零开始。",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece no alto da tela enquanto corre.": "整个账户共用一个计时器：打开课程、资料库或复习时它会继续，运行时显示在屏幕顶部。",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "整个账户共用一个计时器：打开课程、资料库或复习时它都会继续，并显示在屏幕角落的小胶囊中。",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "某个引用的高亮不属于此课或修订版已改变。请重新加载笔记本。",
   "Um dos conjuntos não está mais disponível (foi excluído ou deixou de ser compartilhado). Atualize a prévia.": "其中一个卡组已不可用（已被删除或不再共享）。请刷新预览。",
@@ -2664,6 +2680,7 @@ export default {
   "Voltar": "返回",
   "Voltar 10 segundos": "后退 10 秒",
   "Voltar à Biblioteca": "返回资料库",
+  "Voltar à revisão": "返回复习",
   "Voltar ao início": "返回首页",
   "Voltar ao login": "返回登录",
   "Voltar ao material": "返回资料",
@@ -2878,6 +2895,14 @@ export default {
    "最近 12 个月：学习 {0} 天，共 {1}。"
   ],
   [
+   "Pausa curta em andamento: {0} restantes. Abrir Focar",
+   "短休息进行中：剩余 {0}。打开专注"
+  ],
+  [
+   "Pausa longa em andamento: {0} restantes. Abrir Focar",
+   "长休息进行中：剩余 {0}。打开专注"
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0}请再次选择相同评分以重试。"
   ],
@@ -2966,6 +2991,14 @@ export default {
    "已跳过 {0} 条笔记：未知笔记类型。"
   ],
   [
+   "Pausa curta pausado: {0} restantes. Abrir Focar",
+   "短休息已暂停：剩余 {0}。打开专注"
+  ],
+  [
+   "Pausa longa pausado: {0} restantes. Abrir Focar",
+   "长休息已暂停：剩余 {0}。打开专注"
+  ],
+  [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
    "{0} {1}{2}。它们将加入面板中的复习。"
   ],
@@ -3002,6 +3035,10 @@ export default {
    "{0} 张重复的卡片未加入。"
   ],
   [
+   "Foco em andamento: {0} restantes. Abrir Focar",
+   "专注进行中：剩余 {0}。打开专注"
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "今天专注 {0} 次 · 距长休息 {1}/{2}"
   ],
@@ -3020,6 +3057,10 @@ export default {
   [
    "{0}: escolha um lugar na mesa. Esc cancela.",
    "{0}：请选择书桌上的位置。按 Esc 取消。"
+  ],
+  [
+   "Estudo livre em andamento: {0}. Abrir Focar",
+   "自由学习进行中：{0}。打开专注"
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
@@ -3062,6 +3103,10 @@ export default {
    "已创建合并卡组，共 {0} 张卡片。"
   ],
   [
+   "Foco pausado: {0} restantes. Abrir Focar",
+   "专注已暂停：剩余 {0}。打开专注"
+  ],
+  [
    "{0} não {1}: {2} para “Sem disciplina”.",
    "{0}不会{1}：{2}移至“无科目”。"
   ],
@@ -3090,6 +3135,10 @@ export default {
    "{0} 张重复卡片未加入。"
   ],
   [
+   "Estudo livre pausado: {0}. Abrir Focar",
+   "自由学习已暂停：{0}。打开专注"
+  ],
+  [
    "{0} de {1} acertos ({2}%). {3} erros.",
    "答对 {0} / {1} 题（{2}%）。错 {3} 题。"
   ],
@@ -3110,6 +3159,10 @@ export default {
    "{0}：你收集了新证据。"
   ],
   [
+   "{0} listas de questões para terminar",
+   "{0} 份题目待完成"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "已完成 {0} / {1} 个任务 · {2}"
   ],
@@ -3128,6 +3181,10 @@ export default {
   [
    "{0} guardado na gaveta. Mesa salva.",
    "{0} 已放回抽屉。书桌已保存。"
+  ],
+  [
+   "{0} lista de questões para terminar",
+   "{0} 份题目待完成"
   ],
   [
    "Remover a disciplina “{0}”?\\n\\n{1}",
@@ -3264,6 +3321,10 @@ export default {
   [
    "{0} imagens serão importadas",
    "将导入 {0} 张图片"
+  ],
+  [
+   "Selecionar a pasta {0} ({1})",
+   "选择文件夹 {0}（{1}）"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -3538,6 +3599,10 @@ export default {
    "{0} 没有创建任何内容。"
   ],
   [
+   "{0} de {1} estudadas",
+   "已学 {0}/{1}"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · {1}到期"
   ],
@@ -3556,6 +3621,14 @@ export default {
   [
    "Concluído: item {0}",
    "已完成：第 {0} 项"
+  ],
+  [
+   "{0} de {1} estudada",
+   "已学 {0}/{1}"
+  ],
+  [
+   "{0} (troca com {1})",
+   "{0}（与{1}交换）"
   ],
   [
    "Ações da lista {0}",
@@ -3610,6 +3683,10 @@ export default {
    "跟随氛围（{0}）"
   ],
   [
+   "Estudo livre · {0}",
+   "自由学习 · {0}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · 题目 {1}"
   ],
@@ -3652,6 +3729,14 @@ export default {
   [
    "registrada em {0}",
    "记录于 {0}"
+  ],
+  [
+   "Pausa curta · {0}",
+   "短休息 · {0}"
+  ],
+  [
+   "Pausa longa · {0}",
+   "长休息 · {0}"
   ],
   [
    "Questão {0}. {1}",
@@ -3786,6 +3871,10 @@ export default {
    "正在播放：{0}。"
   ],
   [
+   "Filtros ({0})",
+   "筛选（{0}）"
+  ],
+  [
    "{0} questões",
    "{0} 道题"
   ],
@@ -3800,6 +3889,10 @@ export default {
   [
    "{0} conexões",
    "{0} 个联系"
+  ],
+  [
+   "{0} unidades",
+   "{0} 个单元"
   ],
   [
    "revisão {0}",
@@ -3842,6 +3935,10 @@ export default {
    "提交：{0}。"
   ],
   [
+   "{0} unidade",
+   "{0} 个单元"
+  ],
+  [
    "Versão {0}",
    "版本 {0}"
   ],
@@ -3868,6 +3965,10 @@ export default {
   [
    "{0} membro",
    "{0} 名成员"
+  ],
+  [
+   "Foco · {0}",
+   "专注 · {0}"
   ],
   [
    "Nível {0}",

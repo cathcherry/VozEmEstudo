@@ -62,6 +62,7 @@ export default {
   "A escrivaninha, a Lume e os selos no caderno.": "The desk, Lume and the stamps in the notebook.",
   "A explicação precisa de pelo menos 20 caracteres.": "The explanation needs at least 20 characters.",
   "a fazer": "to do",
+  "A gaveta está vazia: tudo está na mesa. Arraste um objeto para cá para guardá-lo.": "The drawer is empty: everything is on the desk. Drag an object here to put it away.",
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "We know what it's like to want to hear that quick explanation again, connect the ideas from the lesson and test whether the content stuck. That's why we created a place that brings together recordings, transcripts, summaries and questions to support your study after class.",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "The recording, the transcript in excerpts, the summary and the questions are linked in the Library. That way you can check the explanation and practice without losing sight of the original lesson.",
   "A imagem deve ter no máximo 8 MB.": "The image must be 8 MB or less.",
@@ -293,6 +294,7 @@ export default {
   "Arraste": "Drag",
   "Arraste para redimensionar · clique duplo para restaurar": "Drag to resize · double-click to restore",
   "Arraste um objeto até um lugar da mesa. Pelo teclado: escolha o objeto e depois o lugar.": "Drag an object to a place on the desk. With the keyboard: choose the object, then the place.",
+  "Arraste um objeto da gaveta até um lugar da mesa; na mesa, arraste para trocar de lugar ou de volta para a gaveta. Pelo teclado ou toque: escolha o objeto e depois o lugar.": "Drag an object from the drawer to a place on the desk; on the desk, drag to swap places or back into the drawer. With the keyboard or touch: choose the object, then the place.",
   "Arraste uma gravação": "Drag a recording",
   "Arredondada": "Rounded",
   "Arredondado": "Rounded",
@@ -508,6 +510,7 @@ export default {
   "Cole um link do YouTube ou do Spotify.": "Paste a YouTube or Spotify link.",
   "Cole um link válido do YouTube ou Spotify.": "Paste a valid YouTube or Spotify link.",
   "Coleção de aulas": "Lesson collection",
+  "Coloque na mesa os objetos que você encontrou. Um objeto por lugar: escolher um lugar ocupado troca os dois de lugar.": "Place the objects you found on the desk. One object per place: choosing a taken place swaps the two.",
   "Coloque na mesa os objetos que você encontrou. Um objeto por lugar.": "Place the objects you found on the desk. One object per spot.",
   "Com as próprias palavras": "In your own words",
   "Com erro": "With errors",
@@ -745,6 +748,7 @@ export default {
   "Desenvolvedora · Autora do TCC": "Developer · Final project author",
   "Desfazer": "Undo",
   "Desfazer a marcação desta questão": "Undo this question's mark",
+  "Desfeito: a mesa voltou como estava. Mesa salva.": "Undone: the desk is back as it was. Desk saved.",
   "Desligada": "Off",
   "Desligadas": "Off",
   "Desligado": "Off",
@@ -940,6 +944,7 @@ export default {
   "Esta é uma cópia de leitura da versão escolhida pelo responsável. Ela não acompanha alterações futuras do material.": "This is a read-only copy of the version chosen by its owner. It doesn't follow future changes to the material.",
   "Esta investigação já virou uma descoberta. Você ainda pode reunir evidências e ligar materiais; o texto se edita no Arquivo de Descobertas.": "This investigation is already a discovery. You can still gather evidence and link material; the text is edited in the Discovery Archive.",
   "Esta investigação usa uma revisão anterior da transcrição. As evidências continuam guardadas; para citar a revisão nova, comece outra investigação.": "This investigation uses an earlier revision of the transcript. Its evidence stays saved; to quote the new revision, start another investigation.",
+  "Esta pasta está vazia.": "This folder is empty.",
   "Esta pasta está vazia. Pesquise uma aula abaixo ou arraste uma para cá.": "This folder is empty. Search for a lesson below or drag one here.",
   "Esta seção não pôde ser carregada agora.": "This section couldn't be loaded right now.",
   "Esta senha já apareceu em vazamentos de dados de outros sites e pode ser adivinhada. Escolha outra senha.": "This password has appeared in data leaks from other sites and could be guessed. Choose another password.",
@@ -1120,6 +1125,8 @@ export default {
   "Gerar resumo": "Generate summary",
   "Gere um lote na página da aula para iniciar a revisão.": "Generate a batch on the lesson page to start reviewing.",
   "Gere um lote para começar uma tentativa.": "Generate a batch to start an attempt.",
+  "Gerenciar": "Manage",
+  "Gerenciar cartões e conjuntos": "Manage cards and sets",
   "Globo": "Globe",
   "Google": "Google",
   "Grade": "Grid",
@@ -1470,6 +1477,7 @@ export default {
   "Na sua conta": "In your account",
   "Nada é compartilhado. O aluno pode ajustar e enviar de novo.": "Nothing is shared. The student can adjust it and send it again.",
   "Nada marcado neste dia. Que tal reservar um horário curto?": "Nothing planned this day. How about booking a short slot?",
+  "Nada pendente para hoje. Crie cartões ou pratique questões quando quiser.": "Nothing waiting today. Create cards or practise questions whenever you like.",
   "Não está mais compartilhado": "No longer shared",
   "Não está mais compartilhado.": "No longer shared.",
   "Não está na aula": "Not in the lesson",
@@ -1625,6 +1633,7 @@ export default {
   "Nenhuma tarefa concluída aqui.": "No completed tasks here.",
   "Nenhuma turma ainda": "No classes yet",
   "Neon": "Neon",
+  "Nesta pasta": "In this folder",
   "Neste conjunto": "In this set",
   "Neste navegador": "In this browser",
   "Neve lá fora, lã vermelha e lareira.": "Snow outside, red wool and a fireplace.",
@@ -1672,6 +1681,7 @@ export default {
   "Nova turma": "New class",
   "Nova unidade": "New unit",
   "Nova versão salva.": "New version saved.",
+  "Novo cartão": "New card",
   "Novo conjunto": "New set",
   "Novo horário": "New session",
   "Novo lote": "New batch",
@@ -1848,6 +1858,7 @@ export default {
   "Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.": "For each question, keep one of the answers or combine them all in one card. Without a choice, the answers are combined: nothing is lost.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "To fix the lesson text, use “Edit transcript”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "To create a new list, open a lesson in the Library and use the Questions tab.",
+  "Para hoje": "For today",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "To merge, you need at least two sets with cards.",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões. Crie um conjunto na aba Flashcards de uma aula ou importe cartões de um arquivo.": "To merge, you need at least two sets with cards. Create a set in a lesson's Flashcards tab or import cards from a file.",
   "para mudar o tema e": "to change the theme and",
@@ -1913,6 +1924,7 @@ export default {
   "Pesquisar texto e destaques": "Search text and highlights",
   "Pinheiro": "Pine",
   "Planejar": "Plan",
+  "Planejar › Tempo de estudo": "Plan › Study time",
   "Planejar uma unidade": "Plan a unit",
   "Planner": "Planner",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Media player. Space plays or pauses; arrow keys skip ten seconds forward or back.",
@@ -2305,6 +2317,7 @@ export default {
   "Serifa": "Serif",
   "Serviços externos": "External services",
   "Sessão de foco": "Focus session",
+  "Sessão de foco e semana": "Focus session and week",
   "Sessão em andamento. Sair da aba pausa a contagem.": "Session in progress. Leaving the tab pauses the count.",
   "Sessão inválida. Entre novamente.": "Invalid session. Sign in again.",
   "Sessão não encontrada.": "Session not found.",
@@ -2316,6 +2329,7 @@ export default {
   "Seu perfil": "Your profile",
   "Seu próximo capítulo começa aqui.": "Your next chapter starts here.",
   "Seu ritmo": "Your pace",
+  "Seu ritmo e os blocos recentes ficam em": "Your pace and recent blocks are in",
   "Seu uso da gravação": "Your use of the recording",
   "Seus dados": "Your data",
   "Seus sons ambientes estavam tocando. Quer continuar?": "Your ambient sounds were playing. Continue?",
@@ -2484,6 +2498,7 @@ export default {
   "Tópicos": "Bullet points",
   "Toque em \"Tocar\" para começar o som.": "Press \"Play\" to start the sound.",
   "Toque em tocar para começar o som.": "Press play to start the sound.",
+  "Toque nas aulas ou pastas para selecionar": "Tap lessons or folders to select them",
   "Toque nas aulas para selecionar": "Tap lessons to select them",
   "Tornar aluno(a)": "Make student",
   "Tornar monitor(a)": "Make assistant",
@@ -2528,6 +2543,7 @@ export default {
   "Um cantinho para a sua curiosidade": "A little corner for your curiosity",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "One click adjusts several preferences at once. Then fine-tune each one in Reading and focus. Modes never make text smaller or turn off accessibility options you turned on.",
   "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "A new set, yours only, is created with the cards of the chosen sets. The originals (yours and those shared by classmates) are never changed, and review history is not copied: the new set starts from scratch.",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece no alto da tela enquanto corre.": "One timer for your whole account: it keeps going when you open a lesson, the Library or Review, and shows at the top of the screen while it runs.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "One timer for your whole account: it keeps going when you open a lesson, the Library or Review, and shows in a small capsule in the corner of the screen.",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "A cited highlight does not belong to this lesson or changed revision. Reload the notebook.",
   "Um dos conjuntos não está mais disponível (foi excluído ou deixou de ser compartilhado). Atualize a prévia.": "One of the sets is no longer available (it was deleted or is no longer shared). Refresh the preview.",
@@ -2664,6 +2680,7 @@ export default {
   "Voltar": "Back",
   "Voltar 10 segundos": "Back 10 seconds",
   "Voltar à Biblioteca": "Back to Library",
+  "Voltar à revisão": "Back to review",
   "Voltar ao início": "Back to Home",
   "Voltar ao login": "Back to sign in",
   "Voltar ao material": "Back to material",
@@ -2878,6 +2895,14 @@ export default {
    "Last 12 months: {0} days studied, {1} in total."
   ],
   [
+   "Pausa curta em andamento: {0} restantes. Abrir Focar",
+   "Short break running: {0} left. Open Focus"
+  ],
+  [
+   "Pausa longa em andamento: {0} restantes. Abrir Focar",
+   "Long break running: {0} left. Open Focus"
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0} Repeat the same rating to try again."
   ],
@@ -2966,6 +2991,14 @@ export default {
    "{0} notes skipped: unknown note type."
   ],
   [
+   "Pausa curta pausado: {0} restantes. Abrir Focar",
+   "Short break paused: {0} left. Open Focus"
+  ],
+  [
+   "Pausa longa pausado: {0} restantes. Abrir Focar",
+   "Long break paused: {0} left. Open Focus"
+  ],
+  [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
    "{0} {1}{2}. They'll join the review on the Dashboard."
   ],
@@ -3002,6 +3035,10 @@ export default {
    "{0} repeated cards were left out."
   ],
   [
+   "Foco em andamento: {0} restantes. Abrir Focar",
+   "Focus running: {0} left. Open Focus"
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} focus block today · {1} of {2} until the long break"
   ],
@@ -3020,6 +3057,10 @@ export default {
   [
    "{0}: escolha um lugar na mesa. Esc cancela.",
    "{0}: choose a place on the desk. Esc cancels."
+  ],
+  [
+   "Estudo livre em andamento: {0}. Abrir Focar",
+   "Free study running: {0}. Open Focus"
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
@@ -3062,6 +3103,10 @@ export default {
    "Merged set created with {0} card."
   ],
   [
+   "Foco pausado: {0} restantes. Abrir Focar",
+   "Focus paused: {0} left. Open Focus"
+  ],
+  [
    "{0} não {1}: {2} para “Sem disciplina”.",
    "{0} won't {1}: {2} to “No subject”."
   ],
@@ -3090,6 +3135,10 @@ export default {
    "{0} repeated cards were left out."
   ],
   [
+   "Estudo livre pausado: {0}. Abrir Focar",
+   "Free study paused: {0}. Open Focus"
+  ],
+  [
    "{0} de {1} acertos ({2}%). {3} erros.",
    "{0} of {1} correct ({2}%). {3} mistakes."
   ],
@@ -3110,6 +3159,10 @@ export default {
    "{0}: you gathered new evidence."
   ],
   [
+   "{0} listas de questões para terminar",
+   "{0} question lists to finish"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "{0} of {1} tasks done · {2}"
   ],
@@ -3128,6 +3181,10 @@ export default {
   [
    "{0} guardado na gaveta. Mesa salva.",
    "{0} put away in the drawer. Desk saved."
+  ],
+  [
+   "{0} lista de questões para terminar",
+   "{0} question list to finish"
   ],
   [
    "Remover a disciplina “{0}”?\\n\\n{1}",
@@ -3264,6 +3321,10 @@ export default {
   [
    "{0} imagens serão importadas",
    "{0} images will be imported"
+  ],
+  [
+   "Selecionar a pasta {0} ({1})",
+   "Select the folder {0} ({1})"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -3538,6 +3599,10 @@ export default {
    "{0} Nothing was created."
   ],
   [
+   "{0} de {1} estudadas",
+   "{0} of {1} studied"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · expires {1}"
   ],
@@ -3556,6 +3621,14 @@ export default {
   [
    "Concluído: item {0}",
    "Done: item {0}"
+  ],
+  [
+   "{0} de {1} estudada",
+   "{0} of {1} studied"
+  ],
+  [
+   "{0} (troca com {1})",
+   "{0} (swaps with {1})"
   ],
   [
    "Ações da lista {0}",
@@ -3610,6 +3683,10 @@ export default {
    "From the atmosphere ({0})"
   ],
   [
+   "Estudo livre · {0}",
+   "Free study · {0}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · question {1}"
   ],
@@ -3652,6 +3729,14 @@ export default {
   [
    "registrada em {0}",
    "recorded on {0}"
+  ],
+  [
+   "Pausa curta · {0}",
+   "Short break · {0}"
+  ],
+  [
+   "Pausa longa · {0}",
+   "Long break · {0}"
   ],
   [
    "Questão {0}. {1}",
@@ -3786,6 +3871,10 @@ export default {
    "Playing: {0}."
   ],
   [
+   "Filtros ({0})",
+   "Filters ({0})"
+  ],
+  [
    "{0} questões",
    "{0} questions"
   ],
@@ -3800,6 +3889,10 @@ export default {
   [
    "{0} conexões",
    "{0} connections"
+  ],
+  [
+   "{0} unidades",
+   "{0} units"
   ],
   [
    "revisão {0}",
@@ -3842,6 +3935,10 @@ export default {
    "Submission: {0}."
   ],
   [
+   "{0} unidade",
+   "{0} unit"
+  ],
+  [
    "Versão {0}",
    "Version {0}"
   ],
@@ -3868,6 +3965,10 @@ export default {
   [
    "{0} membro",
    "{0} member"
+  ],
+  [
+   "Foco · {0}",
+   "Focus · {0}"
   ],
   [
    "Nível {0}",

@@ -62,6 +62,7 @@ export default {
   "A escrivaninha, a Lume e os selos no caderno.": "El escritorio, Lume y los sellos en el cuaderno.",
   "A explicação precisa de pelo menos 20 caracteres.": "La explicación necesita al menos 20 caracteres.",
   "a fazer": "pendiente",
+  "A gaveta está vazia: tudo está na mesa. Arraste um objeto para cá para guardá-lo.": "El cajón está vacío: todo está en el escritorio. Arrastra un objeto aquí para guardarlo.",
   "A gente sabe como é querer ouvir de novo aquela explicação que passou rápido, juntar as ideias da aula e testar se o conteúdo ficou. Por isso, criamos um lugar que reúne gravações, transcrições, resumos e questões para acompanhar o estudo depois da aula.": "Sabemos lo que es querer escuchar de nuevo esa explicación que pasó rápido, unir las ideas de la clase y comprobar si el contenido quedó. Por eso creamos un lugar que reúne grabaciones, transcripciones, resúmenes y preguntas para acompañar el estudio después de clase.",
   "A gravação, a transcrição por trechos, o resumo e as questões ficam vinculados na Biblioteca. Assim, você consulta a explicação e pratica sem perder de vista a aula de origem.": "La grabación, la transcripción por fragmentos, el resumen y las preguntas quedan vinculados en la Biblioteca. Así consultas la explicación y practicas sin perder de vista la clase de origen.",
   "A imagem deve ter no máximo 8 MB.": "La imagen debe tener como máximo 8 MB.",
@@ -293,6 +294,7 @@ export default {
   "Arraste": "Arrastra",
   "Arraste para redimensionar · clique duplo para restaurar": "Arrastra para redimensionar · doble clic para restaurar",
   "Arraste um objeto até um lugar da mesa. Pelo teclado: escolha o objeto e depois o lugar.": "Arrastra un objeto hasta un lugar del escritorio. Con el teclado: elige el objeto y después el lugar.",
+  "Arraste um objeto da gaveta até um lugar da mesa; na mesa, arraste para trocar de lugar ou de volta para a gaveta. Pelo teclado ou toque: escolha o objeto e depois o lugar.": "Arrastra un objeto del cajón a un lugar del escritorio; en el escritorio, arrastra para cambiar de lugar o devolverlo al cajón. Con el teclado o al tocar: elige el objeto y después el lugar.",
   "Arraste uma gravação": "Arrastra una grabación",
   "Arredondada": "Redondeada",
   "Arredondado": "Redondeado",
@@ -508,6 +510,7 @@ export default {
   "Cole um link do YouTube ou do Spotify.": "Pega un enlace de YouTube o Spotify.",
   "Cole um link válido do YouTube ou Spotify.": "Pega un enlace válido de YouTube o Spotify.",
   "Coleção de aulas": "Colección de clases",
+  "Coloque na mesa os objetos que você encontrou. Um objeto por lugar: escolher um lugar ocupado troca os dois de lugar.": "Coloca en el escritorio los objetos que encontraste. Un objeto por lugar: elegir un lugar ocupado intercambia los dos.",
   "Coloque na mesa os objetos que você encontrou. Um objeto por lugar.": "Coloca en el escritorio los objetos que encontraste. Un objeto por lugar.",
   "Com as próprias palavras": "Con tus propias palabras",
   "Com erro": "Con error",
@@ -745,6 +748,7 @@ export default {
   "Desenvolvedora · Autora do TCC": "Desarrolladora · Autora del trabajo de fin de curso",
   "Desfazer": "Deshacer",
   "Desfazer a marcação desta questão": "Deshacer la marca de esta pregunta",
+  "Desfeito: a mesa voltou como estava. Mesa salva.": "Deshecho: el escritorio volvió a como estaba. Escritorio guardado.",
   "Desligada": "Desactivada",
   "Desligadas": "Desactivados",
   "Desligado": "Desactivado",
@@ -940,6 +944,7 @@ export default {
   "Esta é uma cópia de leitura da versão escolhida pelo responsável. Ela não acompanha alterações futuras do material.": "Esta es una copia de lectura de la versión elegida por el responsable. No refleja cambios futuros del material.",
   "Esta investigação já virou uma descoberta. Você ainda pode reunir evidências e ligar materiais; o texto se edita no Arquivo de Descobertas.": "Esta investigación ya es un descubrimiento. Todavía puedes reunir evidencias y vincular materiales; el texto se edita en el Archivo de Descubrimientos.",
   "Esta investigação usa uma revisão anterior da transcrição. As evidências continuam guardadas; para citar a revisão nova, comece outra investigação.": "Esta investigación usa una revisión anterior de la transcripción. Las evidencias siguen guardadas; para citar la revisión nueva, empieza otra investigación.",
+  "Esta pasta está vazia.": "Esta carpeta está vacía.",
   "Esta pasta está vazia. Pesquise uma aula abaixo ou arraste uma para cá.": "Esta carpeta está vacía. Busca una clase abajo o arrastra una aquí.",
   "Esta seção não pôde ser carregada agora.": "No se pudo cargar esta sección ahora.",
   "Esta senha já apareceu em vazamentos de dados de outros sites e pode ser adivinhada. Escolha outra senha.": "Esta contraseña ya apareció en filtraciones de datos de otros sitios y podría adivinarse. Elige otra contraseña.",
@@ -1120,6 +1125,8 @@ export default {
   "Gerar resumo": "Generar resumen",
   "Gere um lote na página da aula para iniciar a revisão.": "Genera un lote en la página de la clase para empezar el repaso.",
   "Gere um lote para começar uma tentativa.": "Genera un lote para empezar un intento.",
+  "Gerenciar": "Gestionar",
+  "Gerenciar cartões e conjuntos": "Gestionar tarjetas y conjuntos",
   "Globo": "Globo terráqueo",
   "Google": "Google",
   "Grade": "Cuadrícula",
@@ -1470,6 +1477,7 @@ export default {
   "Na sua conta": "En tu cuenta",
   "Nada é compartilhado. O aluno pode ajustar e enviar de novo.": "No se comparte nada. El alumno puede ajustarlo y enviarlo de nuevo.",
   "Nada marcado neste dia. Que tal reservar um horário curto?": "Nada marcado este día. ¿Qué tal reservar un horario corto?",
+  "Nada pendente para hoje. Crie cartões ou pratique questões quando quiser.": "Nada pendiente para hoy. Crea tarjetas o practica preguntas cuando quieras.",
   "Não está mais compartilhado": "Ya no está compartido",
   "Não está mais compartilhado.": "Ya no está compartido.",
   "Não está na aula": "No está en la clase",
@@ -1625,6 +1633,7 @@ export default {
   "Nenhuma tarefa concluída aqui.": "No hay tareas completadas aquí.",
   "Nenhuma turma ainda": "Aún no hay clases",
   "Neon": "Neón",
+  "Nesta pasta": "En esta carpeta",
   "Neste conjunto": "En este conjunto",
   "Neste navegador": "En este navegador",
   "Neve lá fora, lã vermelha e lareira.": "Nieve afuera, lana roja y chimenea.",
@@ -1672,6 +1681,7 @@ export default {
   "Nova turma": "Nueva clase",
   "Nova unidade": "Nueva unidad",
   "Nova versão salva.": "Nueva versión guardada.",
+  "Novo cartão": "Nueva tarjeta",
   "Novo conjunto": "Nuevo conjunto",
   "Novo horário": "Nuevo horario",
   "Novo lote": "Nuevo lote",
@@ -1848,6 +1858,7 @@ export default {
   "Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.": "Para cada pregunta, conserva una de las respuestas o júntalas todas en una tarjeta. Sin elección, las respuestas se juntan: no se pierde nada.",
   "Para corrigir o texto da aula, use “Editar transcrição”.": "Para corregir el texto de la clase, usa “Editar transcripción”.",
   "Para criar uma lista nova, abra uma aula na Biblioteca e use a aba Questões.": "Para crear una lista nueva, abre una clase en la Biblioteca y usa la pestaña Preguntas.",
+  "Para hoje": "Para hoy",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões.": "Para combinar, necesitas al menos dos conjuntos con tarjetas.",
   "Para mesclar, é preciso ter pelo menos dois conjuntos com cartões. Crie um conjunto na aba Flashcards de uma aula ou importe cartões de um arquivo.": "Para fusionar, necesitas al menos dos conjuntos con tarjetas. Crea un conjunto en la pestaña Flashcards de una clase o importa tarjetas desde un archivo.",
   "para mudar o tema e": "para cambiar el tema y",
@@ -1913,6 +1924,7 @@ export default {
   "Pesquisar texto e destaques": "Buscar texto y resaltados",
   "Pinheiro": "Pino",
   "Planejar": "Planificar",
+  "Planejar › Tempo de estudo": "Planificar › Tiempo de estudio",
   "Planejar uma unidade": "Planificar una unidad",
   "Planner": "Agenda",
   "Player de mídia. Espaço reproduz ou pausa; setas avançam ou voltam dez segundos.": "Reproductor. Espacio reproduce o pausa; las flechas avanzan o retroceden diez segundos.",
@@ -2305,6 +2317,7 @@ export default {
   "Serifa": "Serifa",
   "Serviços externos": "Servicios externos",
   "Sessão de foco": "Sesión de enfoque",
+  "Sessão de foco e semana": "Sesión de enfoque y semana",
   "Sessão em andamento. Sair da aba pausa a contagem.": "Sesión en curso. Salir de la pestaña pausa el conteo.",
   "Sessão inválida. Entre novamente.": "Sesión no válida. Inicia sesión de nuevo.",
   "Sessão não encontrada.": "Sesión no encontrada.",
@@ -2316,6 +2329,7 @@ export default {
   "Seu perfil": "Tu perfil",
   "Seu próximo capítulo começa aqui.": "Tu próximo capítulo empieza aquí.",
   "Seu ritmo": "Tu ritmo",
+  "Seu ritmo e os blocos recentes ficam em": "Tu ritmo y los bloques recientes están en",
   "Seu uso da gravação": "Tu uso de la grabación",
   "Seus dados": "Tus datos",
   "Seus sons ambientes estavam tocando. Quer continuar?": "Tus sonidos ambientales estaban sonando. ¿Quieres continuar?",
@@ -2484,6 +2498,7 @@ export default {
   "Tópicos": "Puntos clave",
   "Toque em \"Tocar\" para começar o som.": "Toca \"Reproducir\" para iniciar el sonido.",
   "Toque em tocar para começar o som.": "Pulsa reproducir para empezar el sonido.",
+  "Toque nas aulas ou pastas para selecionar": "Toca clases o carpetas para seleccionarlas",
   "Toque nas aulas para selecionar": "Toca las clases para seleccionarlas",
   "Tornar aluno(a)": "Hacer alumno(a)",
   "Tornar monitor(a)": "Hacer asistente",
@@ -2528,6 +2543,7 @@ export default {
   "Um cantinho para a sua curiosidade": "Un rincón para tu curiosidad",
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "Un clic ajusta varias preferencias a la vez. Después, ajusta cada una en Lectura y enfoque. Los modos nunca reducen el texto ni desactivan opciones de accesibilidad que hayas activado.",
   "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "Se crea un conjunto nuevo, solo tuyo, con las tarjetas de los conjuntos elegidos. Los originales (los tuyos y los compartidos por compañeros) nunca se modifican, y el historial de repaso no se copia: el conjunto nuevo empieza desde cero.",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece no alto da tela enquanto corre.": "Un cronómetro para toda la cuenta: sigue cuando abres una clase, la Biblioteca o Repasar, y aparece arriba de la pantalla mientras corre.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "Un temporizador para toda la cuenta: sigue cuando abres una clase, la Biblioteca o Repasar, y aparece en una cápsula discreta en la esquina de la pantalla.",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "Un destacado citado no pertenece a esta clase o cambió de revisión. Recarga el cuaderno.",
   "Um dos conjuntos não está mais disponível (foi excluído ou deixou de ser compartilhado). Atualize a prévia.": "Uno de los conjuntos ya no está disponible (se eliminó o dejó de compartirse). Actualiza la vista previa.",
@@ -2664,6 +2680,7 @@ export default {
   "Voltar": "Volver",
   "Voltar 10 segundos": "Retroceder 10 segundos",
   "Voltar à Biblioteca": "Volver a la Biblioteca",
+  "Voltar à revisão": "Volver al repaso",
   "Voltar ao início": "Volver al inicio",
   "Voltar ao login": "Volver al inicio de sesión",
   "Voltar ao material": "Volver al material",
@@ -2878,6 +2895,14 @@ export default {
    "Últimos 12 meses: {0} días con estudio, {1} en total."
   ],
   [
+   "Pausa curta em andamento: {0} restantes. Abrir Focar",
+   "Pausa corta en curso: quedan {0}. Abrir Enfocar"
+  ],
+  [
+   "Pausa longa em andamento: {0} restantes. Abrir Focar",
+   "Pausa larga en curso: quedan {0}. Abrir Enfocar"
+  ],
+  [
    "{0} Repita a mesma avaliação para tentar novamente.",
    "{0} Repite la misma valoración para intentarlo de nuevo."
   ],
@@ -2966,6 +2991,14 @@ export default {
    "{0} notas omitidas: tipo de nota desconocido."
   ],
   [
+   "Pausa curta pausado: {0} restantes. Abrir Focar",
+   "Pausa corta en pausa: quedan {0}. Abrir Enfocar"
+  ],
+  [
+   "Pausa longa pausado: {0} restantes. Abrir Focar",
+   "Pausa larga en pausa: quedan {0}. Abrir Enfocar"
+  ],
+  [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
    "{0} {1}{2}. Entrarán en el repaso del Panel."
   ],
@@ -3002,6 +3035,10 @@ export default {
    "{0} tarjetas repetidas quedaron fuera."
   ],
   [
+   "Foco em andamento: {0} restantes. Abrir Focar",
+   "Enfoque en curso: quedan {0}. Abrir Enfocar"
+  ],
+  [
    "{0} foco hoje · {1} de {2} até a pausa longa",
    "{0} enfoque hoy · {1} de {2} hasta la pausa larga"
   ],
@@ -3020,6 +3057,10 @@ export default {
   [
    "{0}: escolha um lugar na mesa. Esc cancela.",
    "{0}: elige un lugar del escritorio. Esc cancela."
+  ],
+  [
+   "Estudo livre em andamento: {0}. Abrir Focar",
+   "Estudio libre en curso: {0}. Abrir Enfocar"
   ],
   [
    "Informe uma quantidade inteira de 1 a {0}.",
@@ -3062,6 +3103,10 @@ export default {
    "Conjunto combinado creado con {0} tarjeta."
   ],
   [
+   "Foco pausado: {0} restantes. Abrir Focar",
+   "Enfoque en pausa: quedan {0}. Abrir Enfocar"
+  ],
+  [
    "{0} não {1}: {2} para “Sem disciplina”.",
    "{0} no {1}: {2} a “Sin asignatura”."
   ],
@@ -3090,6 +3135,10 @@ export default {
    "{0} tarjetas repetidas quedaron fuera."
   ],
   [
+   "Estudo livre pausado: {0}. Abrir Focar",
+   "Estudio libre en pausa: {0}. Abrir Enfocar"
+  ],
+  [
    "{0} de {1} acertos ({2}%). {3} erros.",
    "{0} de {1} aciertos ({2}%). {3} errores."
   ],
@@ -3110,6 +3159,10 @@ export default {
    "{0}: reuniste una nueva evidencia."
   ],
   [
+   "{0} listas de questões para terminar",
+   "{0} listas de preguntas por terminar"
+  ],
+  [
    "{0} de {1} tarefas concluídas · {2}",
    "{0} de {1} tareas hechas · {2}"
   ],
@@ -3128,6 +3181,10 @@ export default {
   [
    "{0} guardado na gaveta. Mesa salva.",
    "{0} guardado en el cajón. Escritorio guardado."
+  ],
+  [
+   "{0} lista de questões para terminar",
+   "{0} lista de preguntas por terminar"
   ],
   [
    "Remover a disciplina “{0}”?\\n\\n{1}",
@@ -3264,6 +3321,10 @@ export default {
   [
    "{0} imagens serão importadas",
    "Se importarán {0} imágenes"
+  ],
+  [
+   "Selecionar a pasta {0} ({1})",
+   "Seleccionar la carpeta {0} ({1})"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -3538,6 +3599,10 @@ export default {
    "{0} No se creó nada."
   ],
   [
+   "{0} de {1} estudadas",
+   "{0} de {1} estudiadas"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · caduca el {1}"
   ],
@@ -3556,6 +3621,14 @@ export default {
   [
    "Concluído: item {0}",
    "Hecho: elemento {0}"
+  ],
+  [
+   "{0} de {1} estudada",
+   "{0} de {1} estudiada"
+  ],
+  [
+   "{0} (troca com {1})",
+   "{0} (cambia con {1})"
   ],
   [
    "Ações da lista {0}",
@@ -3610,6 +3683,10 @@ export default {
    "De la atmósfera ({0})"
   ],
   [
+   "Estudo livre · {0}",
+   "Estudio libre · {0}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · pregunta {1}"
   ],
@@ -3652,6 +3729,14 @@ export default {
   [
    "registrada em {0}",
    "registrada el {0}"
+  ],
+  [
+   "Pausa curta · {0}",
+   "Pausa corta · {0}"
+  ],
+  [
+   "Pausa longa · {0}",
+   "Pausa larga · {0}"
   ],
   [
    "Questão {0}. {1}",
@@ -3786,6 +3871,10 @@ export default {
    "Sonando: {0}."
   ],
   [
+   "Filtros ({0})",
+   "Filtros ({0})"
+  ],
+  [
    "{0} questões",
    "{0} preguntas"
   ],
@@ -3800,6 +3889,10 @@ export default {
   [
    "{0} conexões",
    "{0} conexiones"
+  ],
+  [
+   "{0} unidades",
+   "{0} unidades"
   ],
   [
    "revisão {0}",
@@ -3842,6 +3935,10 @@ export default {
    "Envío: {0}."
   ],
   [
+   "{0} unidade",
+   "{0} unidad"
+  ],
+  [
    "Versão {0}",
    "Versión {0}"
   ],
@@ -3868,6 +3965,10 @@ export default {
   [
    "{0} membro",
    "{0} miembro"
+  ],
+  [
+   "Foco · {0}",
+   "Enfoque · {0}"
   ],
   [
    "Nível {0}",
