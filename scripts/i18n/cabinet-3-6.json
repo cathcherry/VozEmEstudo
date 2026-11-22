@@ -1,0 +1,652 @@
+{
+ "Gabinete de curiosidades": {
+  "en": "Cabinet of curiosities",
+  "es": "Gabinete de curiosidades",
+  "zh-CN": "珍奇柜"
+ },
+ "Cada objeto aqui é uma lembrança de algo que você fez numa investigação: quando foi e em que aula. Abra uma gaveta e inspecione o que já está nela. Nada expira e nada se perde com pausas.": {
+  "en": "Each object here is a memory of something you did in an investigation: when it was and in which lesson. Open a drawer and inspect what is already inside. Nothing expires and nothing is lost when you take a break.",
+  "es": "Cada objeto aquí es un recuerdo de algo que hiciste en una investigación: cuándo fue y en qué clase. Abre un cajón e inspecciona lo que ya contiene. Nada caduca y nada se pierde con las pausas.",
+  "zh-CN": "这里的每件物品都是你在一次探究中所做之事的纪念：何时、在哪节课。打开抽屉，查看里面已有的东西。没有任何东西会过期，暂停也不会让你失去什么。"
+ },
+ "Prateleiras": {
+  "en": "Shelves",
+  "es": "Estantes",
+  "zh-CN": "搁架"
+ },
+ "Objetos à vista": {
+  "en": "Objects on display",
+  "es": "Objetos a la vista",
+  "zh-CN": "陈列的物品"
+ },
+ "Selos e capas à vista": {
+  "en": "Stamps and covers on display",
+  "es": "Sellos y portadas a la vista",
+  "zh-CN": "陈列的印章和封面"
+ },
+ "Gavetas. Use as setas para ir de uma gaveta a outra e Enter para abrir.": {
+  "en": "Drawers. Use the arrow keys to move between drawers and Enter to open one.",
+  "es": "Cajones. Usa las flechas para ir de un cajón a otro y Enter para abrir.",
+  "zh-CN": "抽屉。用方向键在抽屉之间移动，按 Enter 打开。"
+ },
+ "Sobre o gabinete": {
+  "en": "About the cabinet",
+  "es": "Sobre el gabinete",
+  "zh-CN": "关于珍奇柜"
+ },
+ "Como encher o gabinete": {
+  "en": "How to fill the cabinet",
+  "es": "Cómo llenar el gabinete",
+  "zh-CN": "如何充实珍奇柜"
+ },
+ "Abra uma aula da Biblioteca com a transcrição confirmada.": {
+  "en": "Open a lesson in the Library whose transcript you confirmed.",
+  "es": "Abre una clase de la Biblioteca con la transcripción confirmada.",
+  "zh-CN": "在资料库中打开一节已确认转写的课程。"
+ },
+ "Escolha “Investigar uma pergunta” e escreva o que você quer entender.": {
+  "en": "Choose “Investigate a question” and write what you want to understand.",
+  "es": "Elige «Investigar una pregunta» y escribe lo que quieres entender.",
+  "zh-CN": "选择“探究一个问题”，写下你想弄懂的内容。"
+ },
+ "Guarde um trecho da aula como evidência: o primeiro selo cai na gaveta Selos.": {
+  "en": "Keep a passage of the lesson as evidence: the first stamp drops into the Stamps drawer.",
+  "es": "Guarda un fragmento de la clase como evidencia: el primer sello cae en el cajón Sellos.",
+  "zh-CN": "把课程中的一段保存为证据：第一枚印章会落入“印章”抽屉。"
+ },
+ "Explique com as suas palavras e registre a descoberta: ela vira um espécime.": {
+  "en": "Explain it in your own words and record the discovery: it becomes a specimen.",
+  "es": "Explícalo con tus palabras y registra el descubrimiento: se convierte en un espécimen.",
+  "zh-CN": "用自己的话解释并记录这个发现：它会成为一件标本。"
+ },
+ "A mesa": {
+  "en": "The desk",
+  "es": "El escritorio",
+  "zh-CN": "书桌"
+ },
+ "Objetos de mesa que você encontrou podem ir para a escrivaninha do Início. Inspecione um objeto e escolha “Colocar na mesa”, ou arrume tudo de uma vez no Início.": {
+  "en": "Desk objects you found can go on the desk on Home. Inspect an object and choose “Put on the desk”, or arrange everything at once on Home.",
+  "es": "Los objetos de escritorio que encontraste pueden ir al escritorio de Inicio. Inspecciona un objeto y elige «Poner en el escritorio», o arréglalo todo de una vez en Inicio.",
+  "zh-CN": "你找到的书桌物品可以放到首页的书桌上。查看一件物品并选择“放到书桌上”，或在首页一次性整理。"
+ },
+ "Arrumar a mesa no Início": {
+  "en": "Arrange the desk on Home",
+  "es": "Arreglar el escritorio en Inicio",
+  "zh-CN": "在首页整理书桌"
+ },
+ "Espécimes": {
+  "en": "Specimens",
+  "es": "Especímenes",
+  "zh-CN": "标本"
+ },
+ "Selos de primeiras vezes: a primeira evidência, a primeira explicação, a primeira ponte entre disciplinas.": {
+  "en": "Stamps for first times: the first evidence, the first explanation, the first bridge between subjects.",
+  "es": "Sellos de primeras veces: la primera evidencia, la primera explicación, el primer puente entre asignaturas.",
+  "zh-CN": "“第一次”的印章：第一条证据、第一次解释、第一次跨学科连接。"
+ },
+ "Objetos que aparecem com investigações repetidas. Podem ir para a mesa do Início.": {
+  "en": "Objects that appear with repeated investigations. They can go on the desk on Home.",
+  "es": "Objetos que aparecen con investigaciones repetidas. Pueden ir al escritorio de Inicio.",
+  "zh-CN": "多次探究后出现的物品，可以放到首页的书桌上。"
+ },
+ "Capas para o caderno de descobertas.": {
+  "en": "Covers for the discovery notebook.",
+  "es": "Portadas para el cuaderno de descubrimientos.",
+  "zh-CN": "发现笔记本的封面。"
+ },
+ "As suas descobertas, como fichas que mudam com o que você acrescenta a elas.": {
+  "en": "Your discoveries, as cards that change with what you add to them.",
+  "es": "Tus descubrimientos, como fichas que cambian con lo que les añades.",
+  "zh-CN": "你的发现，以卡片形式呈现，会随你的补充而变化。"
+ },
+ "Selo": {
+  "en": "Stamp",
+  "es": "Sello",
+  "zh-CN": "印章"
+ },
+ "Objeto de mesa": {
+  "en": "Desk object",
+  "es": "Objeto de escritorio",
+  "zh-CN": "书桌物品"
+ },
+ "Capa": {
+  "en": "Cover",
+  "es": "Portada",
+  "zh-CN": "封面"
+ },
+ "Espécime": {
+  "en": "Specimen",
+  "es": "Espécimen",
+  "zh-CN": "标本"
+ },
+ "Selo ainda não encontrado": {
+  "en": "Stamp not found yet",
+  "es": "Sello aún no encontrado",
+  "zh-CN": "尚未找到的印章"
+ },
+ "Objeto de mesa ainda não encontrado": {
+  "en": "Desk object not found yet",
+  "es": "Objeto de escritorio aún no encontrado",
+  "zh-CN": "尚未找到的书桌物品"
+ },
+ "Capa ainda não encontrada": {
+  "en": "Cover not found yet",
+  "es": "Portada aún no encontrada",
+  "zh-CN": "尚未找到的封面"
+ },
+ "1 descoberta": {
+  "en": "1 discovery",
+  "es": "1 descubrimiento",
+  "zh-CN": "1 个发现"
+ },
+ "{0} descobertas": {
+  "en": "{0} discoveries",
+  "es": "{0} descubrimientos",
+  "zh-CN": "{0} 个发现"
+ },
+ "nenhuma ainda": {
+  "en": "none yet",
+  "es": "ninguno aún",
+  "zh-CN": "还没有"
+ },
+ "Os objetos que você encontrou ficam à vista.": {
+  "en": "The objects you found are on display.",
+  "es": "Los objetos que encontraste quedan a la vista.",
+  "zh-CN": "你找到的物品都陈列在这里。"
+ },
+ "Esta prateleira espera o primeiro objeto: ele aparece depois de três investigações registradas.": {
+  "en": "This shelf is waiting for its first object: it appears after three recorded investigations.",
+  "es": "Esta estantería espera su primer objeto: aparece después de tres investigaciones registradas.",
+  "zh-CN": "这层搁架在等待第一件物品：记录三次探究后它就会出现。"
+ },
+ "Selos e capas presos na parede do gabinete.": {
+  "en": "Stamps and covers pinned to the back of the cabinet.",
+  "es": "Sellos y portadas sujetos a la pared del gabinete.",
+  "zh-CN": "钉在柜壁上的印章和封面。"
+ },
+ "Os selos aparecem aqui conforme você investiga.": {
+  "en": "Stamps appear here as you investigate.",
+  "es": "Los sellos aparecen aquí a medida que investigas.",
+  "zh-CN": "随着你的探究，印章会出现在这里。"
+ },
+ "Inspecionar": {
+  "en": "Inspect",
+  "es": "Inspeccionar",
+  "zh-CN": "查看"
+ },
+ "Ainda não encontrado. Ver como encontrar": {
+  "en": "Not found yet. See how to find it",
+  "es": "Aún no encontrado. Ver cómo encontrarlo",
+  "zh-CN": "尚未找到。查看如何找到"
+ },
+ "A sua primeira descoberta fica neste compartimento.": {
+  "en": "Your first discovery goes in this compartment.",
+  "es": "Tu primer descubrimiento va en este compartimento.",
+  "zh-CN": "你的第一个发现会放在这个格子里。"
+ },
+ "Ver todas no Arquivo de Descobertas": {
+  "en": "See them all in the Discovery Archive",
+  "es": "Ver todos en el Archivo de Descubrimientos",
+  "zh-CN": "在发现档案中查看全部"
+ },
+ "Abrir o Arquivo de Descobertas": {
+  "en": "Open the Discovery Archive",
+  "es": "Abrir el Archivo de Descubrimientos",
+  "zh-CN": "打开发现档案"
+ },
+ "Compartimentos: {0}": {
+  "en": "Compartments: {0}",
+  "es": "Compartimentos: {0}",
+  "zh-CN": "格子：{0}"
+ },
+ "Quando": {
+  "en": "When",
+  "es": "Cuándo",
+  "zh-CN": "时间"
+ },
+ "Descoberta": {
+  "en": "Discovery",
+  "es": "Descubrimiento",
+  "zh-CN": "发现"
+ },
+ "Como apareceu": {
+  "en": "How it appeared",
+  "es": "Cómo apareció",
+  "zh-CN": "如何出现"
+ },
+ "Até agora": {
+  "en": "So far",
+  "es": "Hasta ahora",
+  "zh-CN": "目前"
+ },
+ "Registrada em": {
+  "en": "Recorded on",
+  "es": "Registrado el",
+  "zh-CN": "记录于"
+ },
+ "Por que o cartão está assim": {
+  "en": "Why the card looks like this",
+  "es": "Por qué la ficha está así",
+  "zh-CN": "卡片为何是这样"
+ },
+ "Escolher a capa em Aparência": {
+  "en": "Choose the cover in Appearance",
+  "es": "Elegir la portada en Apariencia",
+  "zh-CN": "在外观中选择封面"
+ },
+ "Escolher uma aula para investigar": {
+  "en": "Choose a lesson to investigate",
+  "es": "Elegir una clase para investigar",
+  "zh-CN": "选择一节课来探究"
+ },
+ "Este cartão muda com o que você acrescenta à descoberta.": {
+  "en": "This card changes with what you add to the discovery.",
+  "es": "Esta ficha cambia con lo que añades al descubrimiento.",
+  "zh-CN": "这张卡片会随你对发现的补充而变化。"
+ },
+ "Na mesa: {0}.": {
+  "en": "On the desk: {0}.",
+  "es": "En el escritorio: {0}.",
+  "zh-CN": "在书桌上：{0}。"
+ },
+ "Guardado no gabinete.": {
+  "en": "Kept in the cabinet.",
+  "es": "Guardado en el gabinete.",
+  "zh-CN": "收在珍奇柜里。"
+ },
+ "Lugar na mesa": {
+  "en": "Place on the desk",
+  "es": "Lugar en el escritorio",
+  "zh-CN": "书桌上的位置"
+ },
+ "Mudar de lugar": {
+  "en": "Move it",
+  "es": "Cambiar de lugar",
+  "zh-CN": "换个位置"
+ },
+ "Colocar na mesa": {
+  "en": "Put on the desk",
+  "es": "Poner en el escritorio",
+  "zh-CN": "放到书桌上"
+ },
+ "Guardar no gabinete": {
+  "en": "Keep in the cabinet",
+  "es": "Guardar en el gabinete",
+  "zh-CN": "收回珍奇柜"
+ },
+ "Colocado na mesa: {0}.": {
+  "en": "Put on the desk: {0}.",
+  "es": "Puesto en el escritorio: {0}.",
+  "zh-CN": "已放到书桌上：{0}。"
+ },
+ "Esboço a lápis": {
+  "en": "Pencil sketch",
+  "es": "Boceto a lápiz",
+  "zh-CN": "铅笔草稿"
+ },
+ "Passado a tinta": {
+  "en": "Inked",
+  "es": "Pasado a tinta",
+  "zh-CN": "已上墨"
+ },
+ "Carimbado": {
+  "en": "Stamped",
+  "es": "Sellado",
+  "zh-CN": "已盖章"
+ },
+ "Costurado com linha": {
+  "en": "Sewn with thread",
+  "es": "Cosido con hilo",
+  "zh-CN": "已用线缝合"
+ },
+ "Flor prensada": {
+  "en": "Pressed flower",
+  "es": "Flor prensada",
+  "zh-CN": "压花"
+ },
+ "Passado a tinta e carimbado": {
+  "en": "Inked and stamped",
+  "es": "Pasado a tinta y sellado",
+  "zh-CN": "已上墨、已盖章"
+ },
+ "Passado a tinta e costurado com linha": {
+  "en": "Inked and sewn with thread",
+  "es": "Pasado a tinta y cosido con hilo",
+  "zh-CN": "已上墨、已用线缝合"
+ },
+ "Passado a tinta, carimbado e costurado com linha": {
+  "en": "Inked, stamped and sewn with thread",
+  "es": "Pasado a tinta, sellado y cosido con hilo",
+  "zh-CN": "已上墨、已盖章、已用线缝合"
+ },
+ "Passado a tinta e flor prensada": {
+  "en": "Inked and pressed flower",
+  "es": "Pasado a tinta y flor prensada",
+  "zh-CN": "已上墨、压花"
+ },
+ "Passado a tinta, carimbado e flor prensada": {
+  "en": "Inked, stamped and pressed flower",
+  "es": "Pasado a tinta, sellado y flor prensada",
+  "zh-CN": "已上墨、已盖章、压花"
+ },
+ "Passado a tinta, costurado com linha e flor prensada": {
+  "en": "Inked, sewn with thread and pressed flower",
+  "es": "Pasado a tinta, cosido con hilo y flor prensada",
+  "zh-CN": "已上墨、已用线缝合、压花"
+ },
+ "Passado a tinta, carimbado, costurado com linha e flor prensada": {
+  "en": "Inked, stamped, sewn with thread and pressed flower",
+  "es": "Pasado a tinta, sellado, cosido con hilo y flor prensada",
+  "zh-CN": "已上墨、已盖章、已用线缝合、压花"
+ },
+ "A pergunta já está no cartão, a lápis.": {
+  "en": "The question is already on the card, in pencil.",
+  "es": "La pregunta ya está en la ficha, a lápiz.",
+  "zh-CN": "问题已经用铅笔写在卡片上了。"
+ },
+ "O cartão ainda está em branco.": {
+  "en": "The card is still blank.",
+  "es": "La ficha aún está en blanco.",
+  "zh-CN": "卡片还是空白的。"
+ },
+ "Ele passa a tinta quando você guardar um trecho conferido da aula como evidência e explicar com as suas palavras.": {
+  "en": "It turns to ink when you keep a checked passage of the lesson as evidence and explain it in your own words.",
+  "es": "Pasa a tinta cuando guardes un fragmento comprobado de la clase como evidencia y lo expliques con tus palabras.",
+  "zh-CN": "当你把一段核对过的课程内容保存为证据并用自己的话解释后，它就会上墨。"
+ },
+ "Ele passa a tinta quando você guardar um trecho conferido da aula como evidência.": {
+  "en": "It turns to ink when you keep a checked passage of the lesson as evidence.",
+  "es": "Pasa a tinta cuando guardes un fragmento comprobado de la clase como evidencia.",
+  "zh-CN": "当你把一段核对过的课程内容保存为证据后，它就会上墨。"
+ },
+ "Ele passa a tinta quando você explicar com as suas palavras.": {
+  "en": "It turns to ink when you explain it in your own words.",
+  "es": "Pasa a tinta cuando lo expliques con tus palabras.",
+  "zh-CN": "当你用自己的话解释后，它就会上墨。"
+ },
+ "Você explicou com as suas palavras e guardou 1 evidência conferida da aula.": {
+  "en": "You explained it in your own words and kept 1 checked piece of evidence from the lesson.",
+  "es": "Lo explicaste con tus palabras y guardaste 1 evidencia comprobada de la clase.",
+  "zh-CN": "你用自己的话做了解释，并保存了 1 条核对过的课程证据。"
+ },
+ "Você explicou com as suas palavras e guardou {0} evidências conferidas da aula.": {
+  "en": "You explained it in your own words and kept {0} checked pieces of evidence from the lesson.",
+  "es": "Lo explicaste con tus palabras y guardaste {0} evidencias comprobadas de la clase.",
+  "zh-CN": "你用自己的话做了解释，并保存了 {0} 条核对过的课程证据。"
+ },
+ "Você escreveu 1 reflexão sobre o que investigou.": {
+  "en": "You wrote 1 reflection on what you investigated.",
+  "es": "Escribiste 1 reflexión sobre lo que investigaste.",
+  "zh-CN": "你就所探究的内容写了 1 条反思。"
+ },
+ "Você escreveu {0} reflexões sobre o que investigou.": {
+  "en": "You wrote {0} reflections on what you investigated.",
+  "es": "Escribiste {0} reflexiones sobre lo que investigaste.",
+  "zh-CN": "你就所探究的内容写了 {0} 条反思。"
+ },
+ "Você a ligou a 1 outra descoberta.": {
+  "en": "You linked it to 1 other discovery.",
+  "es": "La uniste a 1 otro descubrimiento.",
+  "zh-CN": "你把它与另外 1 个发现连在一起。"
+ },
+ "Você a ligou a {0} outras descobertas.": {
+  "en": "You linked it to {0} other discoveries.",
+  "es": "La uniste a {0} otros descubrimientos.",
+  "zh-CN": "你把它与另外 {0} 个发现连在一起。"
+ },
+ "A outra é de uma disciplina diferente.": {
+  "en": "The other one is from a different subject.",
+  "es": "El otro es de una asignatura diferente.",
+  "zh-CN": "另一个来自不同学科。"
+ },
+ "Todas são de outras disciplinas.": {
+  "en": "All of them are from other subjects.",
+  "es": "Todos son de otras asignaturas.",
+  "zh-CN": "它们都来自其他学科。"
+ },
+ "Uma delas é de outra disciplina.": {
+  "en": "One of them is from another subject.",
+  "es": "Uno de ellos es de otra asignatura.",
+  "zh-CN": "其中一个来自其他学科。"
+ },
+ "{0} delas são de outras disciplinas.": {
+  "en": "{0} of them are from other subjects.",
+  "es": "{0} de ellos son de otras asignaturas.",
+  "zh-CN": "其中 {0} 个来自其他学科。"
+ },
+ "Você voltou a ela num outro dia e acrescentou algo.": {
+  "en": "You came back to it on another day and added something.",
+  "es": "Volviste a él otro día y añadiste algo.",
+  "zh-CN": "你在另一天回到它并补充了内容。"
+ },
+ "Você voltou a ela em {0} dias diferentes e acrescentou algo.": {
+  "en": "You came back to it on {0} different days and added something.",
+  "es": "Volviste a él en {0} días distintos y añadiste algo.",
+  "zh-CN": "你在 {0} 个不同的日子回到它并补充了内容。"
+ },
+ "Recebe o carimbo quando você escreve uma reflexão sobre ela.": {
+  "en": "It gets the stamp when you write a reflection on it.",
+  "es": "Recibe el sello cuando escribes una reflexión sobre él.",
+  "zh-CN": "当你为它写下一条反思时，它会盖上印章。"
+ },
+ "Ganha a linha quando você a liga a outra descoberta.": {
+  "en": "It gets the thread when you link it to another discovery.",
+  "es": "Recibe el hilo cuando lo unes a otro descubrimiento.",
+  "zh-CN": "当你把它与另一个发现连起来时，它会缝上线。"
+ },
+ "Ganha a flor prensada quando você volta, pelo menos um dia depois, e muda algo nela.": {
+  "en": "It gets the pressed flower when you come back, at least a day later, and change something in it.",
+  "es": "Recibe la flor prensada cuando vuelves, al menos un día después, y cambias algo.",
+  "zh-CN": "当你至少一天后回来并修改了其中内容时，它会得到一朵压花。"
+ },
+ "Estado do cartão:": {
+  "en": "Card state:",
+  "es": "Estado de la ficha:",
+  "zh-CN": "卡片状态："
+ },
+ "Como este cartão vai mudar": {
+  "en": "How this card will change",
+  "es": "Cómo cambiará esta ficha",
+  "zh-CN": "这张卡片会如何变化"
+ },
+ "Por que este cartão está assim": {
+  "en": "Why this card looks like this",
+  "es": "Por qué esta ficha está así",
+  "zh-CN": "这张卡片为何是这样"
+ },
+ "Este cartão": {
+  "en": "This card",
+  "es": "Esta ficha",
+  "zh-CN": "这张卡片"
+ },
+ "O cartão desta pergunta": {
+  "en": "This question’s card",
+  "es": "La ficha de esta pregunta",
+  "zh-CN": "这个问题的卡片"
+ },
+ "Fichário": {
+  "en": "Card file",
+  "es": "Fichero",
+  "zh-CN": "卡片盒"
+ },
+ "Marcos do seu caminho": {
+  "en": "Milestones along your way",
+  "es": "Hitos de tu camino",
+  "zh-CN": "你一路上的里程碑"
+ },
+ "Organizar as descobertas": {
+  "en": "Organize the discoveries",
+  "es": "Organizar los descubrimientos",
+  "zh-CN": "整理发现"
+ },
+ "Por disciplina": {
+  "en": "By subject",
+  "es": "Por asignatura",
+  "zh-CN": "按学科"
+ },
+ "Ligações": {
+  "en": "Connections",
+  "es": "Conexiones",
+  "zh-CN": "连接"
+ },
+ "Coleções": {
+  "en": "Collections",
+  "es": "Colecciones",
+  "zh-CN": "收藏集"
+ },
+ "Nova coleção": {
+  "en": "New collection",
+  "es": "Nueva colección",
+  "zh-CN": "新收藏集"
+ },
+ "Por exemplo: Energia na natureza": {
+  "en": "For example: Energy in nature",
+  "es": "Por ejemplo: Energía en la naturaleza",
+  "zh-CN": "例如：自然界中的能量"
+ },
+ "Criar a coleção": {
+  "en": "Create the collection",
+  "es": "Crear la colección",
+  "zh-CN": "创建收藏集"
+ },
+ "Coleções só organizam: um cartão pode estar em várias, e excluir uma coleção não apaga nenhuma descoberta.": {
+  "en": "Collections only organize: a card can be in several, and deleting a collection never deletes a discovery.",
+  "es": "Las colecciones solo organizan: una ficha puede estar en varias, y eliminar una colección no borra ningún descubrimiento.",
+  "zh-CN": "收藏集只用于整理：一张卡片可以属于多个收藏集，删除收藏集不会删除任何发现。"
+ },
+ "Como um cartão muda": {
+  "en": "How a card changes",
+  "es": "Cómo cambia una ficha",
+  "zh-CN": "卡片如何变化"
+ },
+ "Cada cartão muda com o que você faz na descoberta. Nada some com o tempo e nenhuma etapa é obrigatória.": {
+  "en": "Each card changes with what you do in the discovery. Nothing fades with time and no step is required.",
+  "es": "Cada ficha cambia con lo que haces en el descubrimiento. Nada desaparece con el tiempo y ningún paso es obligatorio.",
+  "zh-CN": "每张卡片都会随你在发现中的行动而变化。不会随时间消失，也没有必做的步骤。"
+ },
+ "A pergunta, enquanto a investigação está aberta.": {
+  "en": "The question, while the investigation is open.",
+  "es": "La pregunta, mientras la investigación está abierta.",
+  "zh-CN": "探究进行中时的问题。"
+ },
+ "Você explicou com as suas palavras, com uma evidência conferida da aula.": {
+  "en": "You explained it in your own words, with checked evidence from the lesson.",
+  "es": "Lo explicaste con tus palabras, con una evidencia comprobada de la clase.",
+  "zh-CN": "你用自己的话做了解释，并有一条核对过的课程证据。"
+ },
+ "Você escreveu uma reflexão sobre a descoberta.": {
+  "en": "You wrote a reflection on the discovery.",
+  "es": "Escribiste una reflexión sobre el descubrimiento.",
+  "zh-CN": "你为这个发现写了一条反思。"
+ },
+ "Você a ligou a outra descoberta.": {
+  "en": "You linked it to another discovery.",
+  "es": "Lo uniste a otro descubrimiento.",
+  "zh-CN": "你把它与另一个发现连了起来。"
+ },
+ "Abra uma descoberta para ver com quais outras ela está ligada.": {
+  "en": "Open a discovery to see which others it is linked to.",
+  "es": "Abre un descubrimiento para ver con cuáles otros está unido.",
+  "zh-CN": "打开一个发现，查看它与哪些发现相连。"
+ },
+ "Ainda não há ligações. Na página de uma descoberta, use “Ligar a outra descoberta” para unir duas ideias, inclusive de disciplinas diferentes.": {
+  "en": "No connections yet. On a discovery’s page, use “Link to another discovery” to join two ideas, even from different subjects.",
+  "es": "Aún no hay conexiones. En la página de un descubrimiento, usa «Unir a otro descubrimiento» para juntar dos ideas, incluso de asignaturas distintas.",
+  "zh-CN": "还没有连接。在发现页面中使用“连接到另一个发现”来把两个想法连起来，即使它们来自不同学科。"
+ },
+ "Cada fio liga duas descobertas que você uniu. Os fios vermelhos atravessam disciplinas.": {
+  "en": "Each thread joins two discoveries you linked. Red threads cross subjects.",
+  "es": "Cada hilo une dos descubrimientos que conectaste. Los hilos rojos cruzan asignaturas.",
+  "zh-CN": "每根线连接你连起来的两个发现。红线跨越学科。"
+ },
+ "Entre disciplinas": {
+  "en": "Across subjects",
+  "es": "Entre asignaturas",
+  "zh-CN": "跨学科"
+ },
+ "Na mesma disciplina": {
+  "en": "Within the same subject",
+  "es": "En la misma asignatura",
+  "zh-CN": "同一学科内"
+ },
+ "Excluir a coleção": {
+  "en": "Delete the collection",
+  "es": "Eliminar la colección",
+  "zh-CN": "删除收藏集"
+ },
+ "Coleção excluída. As descobertas continuam no Arquivo.": {
+  "en": "Collection deleted. The discoveries stay in the Archive.",
+  "es": "Colección eliminada. Los descubrimientos siguen en el Archivo.",
+  "zh-CN": "收藏集已删除。发现仍保留在档案中。"
+ },
+ "Cartões desta coleção": {
+  "en": "Cards in this collection",
+  "es": "Fichas de esta colección",
+  "zh-CN": "此收藏集中的卡片"
+ },
+ "Nenhuma coleção ainda. Dê um nome a um tema e escolha os cartões que entram nele.": {
+  "en": "No collections yet. Name a theme and choose the cards that go in it.",
+  "es": "Aún no hay colecciones. Ponle nombre a un tema y elige las fichas que entran en él.",
+  "zh-CN": "还没有收藏集。给一个主题命名，并选择放入其中的卡片。"
+ },
+ "Coleção vazia. Escolha abaixo os cartões que entram nela.": {
+  "en": "Empty collection. Choose below the cards that go in it.",
+  "es": "Colección vacía. Elige abajo las fichas que entran en ella.",
+  "zh-CN": "收藏集为空。请在下方选择放入的卡片。"
+ },
+ "Escolher os cartões": {
+  "en": "Choose the cards",
+  "es": "Elegir las fichas",
+  "zh-CN": "选择卡片"
+ },
+ "Dê um nome à coleção.": {
+  "en": "Give the collection a name.",
+  "es": "Ponle un nombre a la colección.",
+  "zh-CN": "请为收藏集命名。"
+ },
+ "Você chegou ao limite de 24 coleções.": {
+  "en": "You reached the limit of 24 collections.",
+  "es": "Llegaste al límite de 24 colecciones.",
+  "zh-CN": "你已达到 24 个收藏集的上限。"
+ },
+ "Já existe uma coleção com esse nome.": {
+  "en": "There is already a collection with that name.",
+  "es": "Ya existe una colección con ese nombre.",
+  "zh-CN": "已有同名的收藏集。"
+ },
+ "Coleção criada: {0}. Escolha os cartões que entram nela.": {
+  "en": "Collection created: {0}. Choose the cards that go in it.",
+  "es": "Colección creada: {0}. Elige las fichas que entran en ella.",
+  "zh-CN": "已创建收藏集：{0}。请选择放入其中的卡片。"
+ },
+ "Primeira evidência conferida": {
+  "en": "First checked evidence",
+  "es": "Primera evidencia comprobada",
+  "zh-CN": "第一条核对过的证据"
+ },
+ "Primeira explicação com as suas palavras": {
+  "en": "First explanation in your own words",
+  "es": "Primera explicación con tus palabras",
+  "zh-CN": "第一次用自己的话解释"
+ },
+ "Primeira descoberta registrada": {
+  "en": "First recorded discovery",
+  "es": "Primer descubrimiento registrado",
+  "zh-CN": "第一个记录的发现"
+ },
+ "Primeira ponte entre disciplinas": {
+  "en": "First bridge between subjects",
+  "es": "Primer puente entre asignaturas",
+  "zh-CN": "第一次跨学科连接"
+ },
+ "Primeira revisita": {
+  "en": "First revisit",
+  "es": "Primera revisita",
+  "zh-CN": "第一次回访"
+ },
+ "Abra uma aula confirmada e escolha “Investigar uma pergunta”. O que você descobrir fica guardado aqui, numa ficha que muda com o que você acrescenta a ela.": {
+  "en": "Open a confirmed lesson and choose “Investigate a question”. What you discover is kept here, on a card that changes with what you add to it.",
+  "es": "Abre una clase confirmada y elige «Investigar una pregunta». Lo que descubras se guarda aquí, en una ficha que cambia con lo que le añades.",
+  "zh-CN": "打开一节已确认的课程并选择“探究一个问题”。你的发现会保存在这里，卡片会随你的补充而变化。"
+ }
+}

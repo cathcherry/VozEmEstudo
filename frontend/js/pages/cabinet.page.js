@@ -322,7 +322,7 @@ function inspectCollectible(id) {
   sheet.dataset.kind = item.kind;
   sheet.dataset.state = unlock ? 'unlocked' : 'locked';
   $('[data-specimen-art]').replaceChildren(el('span', { 'data-art-slot': item.kind, 'data-art-id': id, 'data-art-size': item.kind === 'cover' ? '150' : '168', 'aria-hidden': 'true' }));
-  $('[data-specimen-kind]').textContent = unlock ? KIND_NAME[item.kind] : `${KIND_NAME[item.kind]} ainda não encontrado`;
+  $('[data-specimen-kind]').textContent = unlock ? KIND_NAME[item.kind] : `${KIND_NAME[item.kind]} ainda não ${item.kind === 'cover' ? 'encontrada' : 'encontrado'}`;
   const title = $('[data-specimen-title]');
   title.textContent = info.name;
   title.tabIndex = -1;
