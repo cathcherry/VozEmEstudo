@@ -232,7 +232,7 @@ O texto de cada migration foi lido do GitHub no commit `cbec226`. O MD5 de cada 
   - `rls_enabled_no_policy` (INFO) nas tabelas novas: é intencional. Essas tabelas só são acessadas pelo servidor (`service_role`) e não têm grants para o navegador.
   - `authenticated_security_definer_function_executable` em `storage_owns_material`: é anterior à 3.3 (`20261120090000`) e intencional, porque as políticas do Storage precisam dela.
   - `function_search_path_mutable` em `qa.apply_git_migration`: é o auxiliar que usei só no staging (detalhes abaixo).
-  - Proteção contra senhas vazadas desligada: é uma configuração do Auth, não de migration.
+  - Proteção contra senhas vazadas desligada: aviso aceito: a proteção do Auth exige o plano Pro do Supabase, e o app já confere a senha no *Have I Been Pwned* (k-anonimato) no navegador, no cadastro e na redefinição de senha.
   - Nenhum achado de segurança nos objetos novos.
 - **Desempenho:** só INFO.
   - Índices nunca usados: esperado num banco recém-criado.
@@ -446,7 +446,7 @@ Produção: **nada aplicado, nenhuma flag ligada**. Aguarda autorização explí
 | **Integridade** | as 36 tabelas pré-existentes, comparadas pelas colunas que já existiam, estão **idênticas** ao backup (785 → 785 linhas). Contas (4) e objetos do Storage (32) intactos |
 | Fumaça em produção | criar turma, convite, entrada, convite cheio (`CLASSROOM_INVITE_FULL`), pessoa de fora (`CLASSROOM_NOT_FOUND`), modelo visual v1, baralho com modelo, multiaula sem vazamento. Tudo dentro de uma transação **desfeita** no fim (contas sintéticas `@example.test`); conferido depois: nada restou |
 | Limpeza | auxiliar `release_tmp` e a extensão `http` removidos |
-| Advisors | nenhum achado novo de segurança. Continua o aviso de proteção contra senhas vazadas desligada (só pelo painel do Auth) |
+| Advisors | nenhum achado novo de segurança. Continua o aviso de proteção contra senhas vazadas desligada (aviso aceito: a proteção do Auth exige o plano Pro do Supabase, e o app já confere a senha no *Have I Been Pwned* (k-anonimato) no navegador, no cadastro e na redefinição de senha) |
 
 **Recursos.** O app roda localmente (`INICIAR.cmd` lê `backend/.env`): **não existe hospedagem pública** (`docs/HOSPEDAGEM.md`). Para ligar todos os recursos da 3.4 nesse `.env`, use `ATIVAR_RECURSOS_3_4.cmd` (ou `node scripts/release/enable-3-4-features.mjs`). Ele faz uma cópia antes, só mexe nas chaves das flags e da Groq e respeita as dependências entre flags (teste em `scripts/tests/enable-features.test.mjs`).
 
