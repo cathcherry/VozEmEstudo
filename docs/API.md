@@ -373,3 +373,27 @@ naquela requisição (vazio num reenvio).
 | `POST /api/discoveries/:id/connections` | `{id, otherId, note?}` | descoberta |
 | `GET /api/collection` | — | `{catalog, slots, unlocks:[{id, kind, event, sourceId, investigationId, discoveryId, currentDiscoveryId, materialId, lessonTitle, subject, occurredAt, unlockedAt}], layout:{items, version}, counts}` |
 | `PUT /api/collection/layout` | `{version, requestId, items:[{slot, objectId}]}` | coleção (`409 COLLECTION_NOT_UNLOCKED`, `400 COLLECTION_LAYOUT_INVALID`) |
+
+## Diário de estudo 🔒 — 3.6 (flag `journal`)
+
+Migration `20261124090000_journals.sql` (somente staging; ver `docs/migrations/JOURNALS.md`).
+Tudo privado à conta, `Cache-Control: no-store`. Sem a migration: `503 JOURNAL_SCHEMA_REQUIRED`.
+Versão otimista por diário e por página (`409 JOURNAL_VERSION_CONFLICT`); repetir o mesmo
+`requestId` com o mesmo corpo devolve o estado salvo (`replayed: true`).
+
+| Rota | Corpo | Resposta |
+| --- | --- | --- |
+| `GET /api/journals` | — | `{journals:[{id, title, cover, paper, version, pageCount, createdAt, updatedAt}]}` |
+| `GET /api/journals/link-options` | — | `{lessons:[{kind, id, title, subject}], discoveries:[…]}` (só títulos, nunca transcrição) |
+| `GET /api/journals/:id` | — | `{journal, pages:[{id, position, template, paper, title, content, decorations, links, version}], linkTargets:[{kind, id, title, subject}]}` |
+| `PUT /api/journals/:id` | `{version:0, requestId, body:{title, cover, paper?}}` ou `{version, requestId, body:{title?, cover?, paper?, deleted?}}` | `{journal, replayed}` (até 24 diários) |
+| `PUT /api/journals/:id/pages/:pageId` | `{version:0, requestId, body:{template, title?, paper?, content?, decorations?, links?}}` ou `{version, requestId, body:{template (com content), title?, paper?, content?, decorations?, links?, position?, deleted?}}` | `{page, journal, replayed}` |
+
+`template`: `ruled` (`{body, quote?}`), `free` (`{body}`), `concept` (`{term, definition, example, quote?}`),
+`collage` (`{photos:[{caption, art: sticker.*|null, frame: frame.*}] ≤ 3, note}`), `timeline`
+(`{items:[{when, what}] ≤ 8}`). `decorations` ≤ 24: `{id, art, x, y, rotation, scale}` com `art` em
+`^(sticker|tape|stamp|frame|divider|label)\.[a-z0-9-]+$`, x/y 0–100 (% da página), rotação ±180,
+escala 0,4–2,5; selos só desbloqueados (`409 JOURNAL_DECORATION_LOCKED`). `links` ≤ 6:
+`{kind:'lesson'|'discovery', id}` da própria conta (`409 JOURNAL_LINK_INVALID`). Uma `quote` com
+texto precisa de `source` entre os `links` (`409 JOURNAL_QUOTE_SOURCE_REQUIRED`). Texto simples:
+marcação HTML → `400 JOURNAL_INVALID`.
