@@ -93,6 +93,34 @@ const icon = (name, alt) => ({
   animation: [],
 });
 
+// ---- 3.6: scrapbook set and discipline emblems -------------------------------------------------
+/** Discipline emblem: a stationery motif on a tinted label plate (the tint is the `family`). */
+const emblem = (name, title, alt, family) => ({
+  src: `emblems/${name}.svg`,
+  width: 64,
+  height: 64,
+  title,
+  alt,
+  family,
+  license: ORIGINAL,
+  animation: [],
+});
+const piece = (folder, width, height) => (name, title, alt) => ({
+  src: `${folder}/${name}.svg`,
+  width,
+  height,
+  title,
+  alt,
+  license: ORIGINAL,
+  animation: [],
+});
+const paper = piece('papers', 200, 260);
+const tape = piece('tapes', 160, 44);
+const sticker = piece('stickers', 96, 96);
+const frame = piece('frames', 200, 240);
+const divider = piece('dividers', 320, 24);
+const label = piece('labels', 200, 72);
+
 export const ART = Object.freeze({
   'character.lume.idle': lume('idle', 'Lume, a mariposa bibliotecária, segura a lanterna e sorri'),
   'character.lume.reading': lume('reading', 'Lume lê um livro aberto, com a lanterna ao lado'),
@@ -207,7 +235,11 @@ export const ART = Object.freeze({
     'Cacto redondo florido num vaso rosa',
   ),
   'object.hourglass': object('hourglass', 'Ampulheta', 'Ampulheta de madeira com areia cor de mel'),
-  'object.magnifying-glass': object('magnifying-glass', 'Lupa', 'Lupa de aro dourado e cabo de madeira'),
+  'object.magnifying-glass': object(
+    'magnifying-glass',
+    'Lupa',
+    'Lupa de aro dourado e cabo de madeira',
+  ),
   'object.specimen-box': object(
     'specimen-box',
     'Caixa de espécimes',
@@ -228,6 +260,36 @@ export const ART = Object.freeze({
     'Caderno rosa com raminhos de flores',
   ),
   'cover.night-stars': cover('night-stars', 'Noite estrelada', 'Caderno escuro com estrelas e lua'),
+  'cover.cloth-lavender': cover(
+    'cloth-lavender',
+    'Tecido lavanda',
+    'Caderno com capa de tecido lavanda e estrela gravada',
+  ),
+  'cover.leather-matcha': cover(
+    'leather-matcha',
+    'Couro matcha',
+    'Caderno de couro verde com costura dourada',
+  ),
+  'cover.marbled-honey': cover(
+    'marbled-honey',
+    'Marmorizado mel',
+    'Caderno com papel marmorizado em mel e rosa',
+  ),
+  'cover.botanical-press': cover(
+    'botanical-press',
+    'Herbário',
+    'Caderno claro com uma samambaia e flores prensadas',
+  ),
+  'cover.constellation': cover(
+    'constellation',
+    'Constelação',
+    'Caderno azul-noite com uma constelação desenhada',
+  ),
+  'cover.field-notes': cover(
+    'field-notes',
+    'Caderneta de campo',
+    'Caderneta de papel kraft com linhas para anotar',
+  ),
 
   'wallpaper.rainy-library': wallpaper(
     'rainy-library',
@@ -291,6 +353,157 @@ export const ART = Object.freeze({
   'icon.bookmark': icon('bookmark', 'Marcador'),
   'icon.connection': icon('connection', 'Ligação'),
   'icon.question': icon('question', 'Pergunta'),
+
+  // ---- 3.6: discipline emblems (Biblioteca folders) ----
+  'emblem.biologia': emblem('biologia', 'Biologia', 'Dupla hélice de DNA', 'matcha'),
+  'emblem.quimica': emblem(
+    'quimica',
+    'Química',
+    'Frasco de laboratório com líquido e bolhas',
+    'lavender',
+  ),
+  'emblem.fisica': emblem('fisica', 'Física', 'Átomo com três órbitas', 'mist'),
+  'emblem.matematica': emblem('matematica', 'Matemática', 'Esquadro com régua e compasso', 'honey'),
+  'emblem.historia': emblem('historia', 'História', 'Coluna clássica', 'wood'),
+  'emblem.geografia': emblem('geografia', 'Geografia', 'Globo terrestre no suporte', 'matcha'),
+  'emblem.literatura': emblem(
+    'literatura',
+    'Português e literatura',
+    'Livro aberto com fita marcadora',
+    'rose',
+  ),
+  'emblem.linguas': emblem('linguas', 'Línguas', 'Dois balões de conversa', 'lavender'),
+  'emblem.artes': emblem('artes', 'Artes', 'Paleta de pintura com pincel', 'rose'),
+  'emblem.musica': emblem('musica', 'Música', 'Duas colcheias unidas', 'lavender'),
+  'emblem.filosofia': emblem('filosofia', 'Filosofia', 'Coruja de olhos atentos', 'mist'),
+  'emblem.sociologia': emblem('sociologia', 'Sociologia', 'Três pessoas lado a lado', 'honey'),
+  'emblem.direito': emblem('direito', 'Direito', 'Balança da justiça', 'wood'),
+  'emblem.saude': emblem('saude', 'Medicina e saúde', 'Coração com linha de pulso', 'rose'),
+  'emblem.economia': emblem('economia', 'Economia', 'Gráfico de barras e moeda', 'honey'),
+  'emblem.computacao': emblem(
+    'computacao',
+    'Computação',
+    'Computador clássico com tela acesa',
+    'mist',
+  ),
+  'emblem.engenharia': emblem('engenharia', 'Engenharia', 'Duas engrenagens encaixadas', 'wood'),
+  'emblem.psicologia': emblem(
+    'psicologia',
+    'Psicologia',
+    'Perfil de cabeça com uma flor dentro',
+    'lavender',
+  ),
+  'emblem.educacao-fisica': emblem(
+    'educacao-fisica',
+    'Educação física',
+    'Bola com costuras e linhas de movimento',
+    'matcha',
+  ),
+  'emblem.astronomia': emblem(
+    'astronomia',
+    'Astronomia',
+    'Planeta com anéis e estrelas',
+    'lavender',
+  ),
+  'emblem.botanica': emblem('botanica', 'Botânica', 'Broto num vaso de barro', 'matcha'),
+  'emblem.idiomas': emblem('idiomas', 'Idiomas', 'Envelope de correio aéreo com selo', 'mist'),
+  'emblem.geral': emblem('geral', 'Geral', 'Caderno espiral com etiqueta', 'lavender'),
+  'emblem.pesquisa': emblem('pesquisa', 'Pesquisa', 'Lupa sobre uma folha de anotações', 'honey'),
+
+  'paper.ruled': paper('ruled', 'Pautado', 'Folha pautada com margem rosa'),
+  'paper.grid': paper('grid', 'Quadriculado', 'Folha quadriculada azul-névoa'),
+  'paper.dot': paper('dot', 'Pontilhado', 'Folha com grade de pontos lavanda'),
+  'paper.kraft': paper('kraft', 'Kraft', 'Papel kraft com fibras e borda irregular'),
+  'paper.linen': paper('linen', 'Linho', 'Papel linho com trama fina'),
+  'paper.vellum': paper('vellum', 'Vegetal', 'Papel vegetal translúcido'),
+  'paper.aged-cream': paper(
+    'aged-cream',
+    'Creme envelhecido',
+    'Papel creme envelhecido, com manchas leves e borda irregular',
+  ),
+
+  'tape.lavender-dots': tape(
+    'lavender-dots',
+    'Bolinhas lavanda',
+    'Fita washi lavanda com bolinhas brancas',
+  ),
+  'tape.matcha-stripes': tape(
+    'matcha-stripes',
+    'Listras matcha',
+    'Fita washi verde com listras diagonais',
+  ),
+  'tape.honey-gingham': tape('honey-gingham', 'Xadrez mel', 'Fita washi amarela xadrez'),
+  'tape.rose-floral': tape('rose-floral', 'Florzinhas rosa', 'Fita washi rosa com florzinhas'),
+  'tape.mist-grid': tape('mist-grid', 'Grade névoa', 'Fita washi azul-névoa quadriculada'),
+  'tape.kraft': tape('kraft', 'Kraft', 'Fita de papel kraft lisa'),
+  'tape.stars': tape('stars', 'Estrelinhas', 'Fita washi azul-noite com estrelinhas douradas'),
+  'tape.check': tape('check', 'Xadrez lavanda e matcha', 'Fita washi xadrez em lavanda e verde'),
+
+  'sticker.pressed-flower': sticker(
+    'pressed-flower',
+    'Flor prensada',
+    'Flor prensada de pétalas rosadas',
+  ),
+  'sticker.leaf': sticker('leaf', 'Folha', 'Folha verde com nervuras'),
+  'sticker.moth': sticker('moth', 'Mariposa', 'Mariposa lavanda de asas abertas'),
+  'sticker.teacup': sticker('teacup', 'Xícara', 'Xícara de chá com vapor'),
+  'sticker.pencil': sticker('pencil', 'Lápis', 'Lápis amarelo apontado'),
+  'sticker.paperclip': sticker('paperclip', 'Clipe', 'Clipe de papel lavanda'),
+  'sticker.star': sticker('star', 'Estrela', 'Estrela dourada'),
+  'sticker.moon': sticker('moon', 'Lua', 'Lua crescente com estrelinha'),
+  'sticker.bookmark': sticker('bookmark', 'Marcador', 'Marcador de página com borla'),
+  'sticker.mushroom': sticker('mushroom', 'Cogumelo', 'Cogumelo de chapéu rosado com pintas'),
+  'sticker.fern': sticker('fern', 'Samambaia', 'Ramo de samambaia'),
+  'sticker.snail': sticker('snail', 'Caracol', 'Caracol de concha espiral'),
+  'sticker.lamp': sticker('lamp', 'Luminária', 'Luminária de mesa acesa'),
+  'sticker.envelope': sticker('envelope', 'Envelope', 'Envelope fechado com coração'),
+  'sticker.wax-seal': sticker('wax-seal', 'Selo de cera', 'Selo de cera lavanda com uma estrela'),
+  'sticker.ribbon-bow': sticker('ribbon-bow', 'Laço de fita', 'Laço de fita rosa'),
+  'sticker.bee': sticker('bee', 'Abelha', 'Abelha listrada com asas claras'),
+  'sticker.clover': sticker('clover', 'Trevo', 'Trevo de quatro folhas'),
+  'sticker.cloud': sticker('cloud', 'Nuvem', 'Nuvem macia'),
+  'sticker.book-heart': sticker(
+    'book-heart',
+    'Coração de livros',
+    'Pilha de livros com um coração em cima',
+  ),
+
+  'frame.polaroid': frame(
+    'polaroid',
+    'Polaroide',
+    'Moldura de foto instantânea com margem larga embaixo',
+  ),
+  'frame.deckle': frame('deckle', 'Borda deckle', 'Foto antiga com borda recortada em zigue-zague'),
+  'frame.tape-corners': frame(
+    'tape-corners',
+    'Cantoneiras',
+    'Quatro cantoneiras de papel kraft para prender uma foto',
+  ),
+  'frame.scalloped': frame('scalloped', 'Recorte ondulado', 'Moldura creme de borda ondulada'),
+  'frame.stamp-border': frame(
+    'stamp-border',
+    'Borda de selo',
+    'Moldura branca com picote de selo postal',
+  ),
+
+  'divider.wave': divider('wave', 'Onda à mão', 'Linha ondulada desenhada à mão'),
+  'divider.sprig': divider('sprig', 'Raminho', 'Linha fina com um raminho de folhas no centro'),
+  'divider.stitch': divider('stitch', 'Costura', 'Dupla costura tracejada rosa'),
+  'divider.diamond': divider('diamond', 'Losango', 'Fio duplo com um losango dourado'),
+  'divider.moon-dots': divider('moon-dots', 'Pontos e lua', 'Linha pontilhada com uma pequena lua'),
+
+  'label.brass-holder': label(
+    'brass-holder',
+    'Porta-etiqueta de latão',
+    'Porta-etiqueta de latão com um cartão em branco',
+  ),
+  'label.bookplate': label(
+    'bookplate',
+    'Ex-libris',
+    'Placa de ex-libris creme com fio duplo e cantos recortados',
+  ),
+  'label.ticket': label('ticket', 'Bilhete', 'Bilhete rosa com picote e recortes laterais'),
+  'label.tag': label('tag', 'Etiqueta kraft', 'Etiqueta de papel kraft com ilhós e barbante'),
 });
 
 /** Lume's states, in display order. The art system always refers to a state, never to a file. */
@@ -321,6 +534,16 @@ export const ART_KINDS = Object.freeze({
   wallpaper: { folder: 'wallpapers/', pattern: /^wallpaper\.[a-z]+(?:-[a-z]+)*$/ },
   empty: { folder: 'empty/', pattern: /^empty\.[a-z]+(?:-[a-z]+)*$/ },
   icon: { folder: 'icons/', pattern: /^icon\.[a-z]+(?:-[a-z]+)*$/ },
+  emblem: { folder: 'emblems/', pattern: /^emblem\.[a-z]+(?:-[a-z]+)*$/ },
+  paper: { folder: 'papers/', pattern: /^paper\.[a-z]+(?:-[a-z]+)*$/ },
+  tape: { folder: 'tapes/', pattern: /^tape\.[a-z]+(?:-[a-z]+)*$/ },
+  sticker: { folder: 'stickers/', pattern: /^sticker\.[a-z]+(?:-[a-z]+)*$/ },
+  frame: { folder: 'frames/', pattern: /^frame\.[a-z]+(?:-[a-z]+)*$/ },
+  divider: { folder: 'dividers/', pattern: /^divider\.[a-z]+(?:-[a-z]+)*$/ },
+  label: { folder: 'labels/', pattern: /^label\.[a-z]+(?:-[a-z]+)*$/ },
 });
+
+/** Discipline emblems in picker order (the id is what Biblioteca stores for a folder). */
+export const EMBLEM_IDS = Object.freeze(Object.keys(ART).filter((id) => id.startsWith('emblem.')));
 
 export const kindOf = (id) => String(id).split('.')[0];

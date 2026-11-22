@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44" width="160" height="44" fill="none">
+<!-- voz-art:generated | id: tape.check | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="strip"><path d="M11.24 8 L151.08 8 L151.17 11.5 L148.87 15 L151.35 18.5 L151.37 22 L148.99 25.5 L151.78 29 L149.89 32.5 L149.52 36 L9.74 36 L8.32 32.5 L9.62 29 L10.89 25.5 L9.05 22 L8.98 18.5 L10.76 15 L10.43 11.5 L11.24 8 Z"/></clipPath><pattern id="t" y="8" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="7" height="14" fill="#CFC5EC" opacity="0.75"/><rect width="14" height="7" fill="#B5CDA4" opacity="0.6"/></pattern></defs>
+<g opacity="0.86">
+    <path d="M11.24 8 L151.08 8 L151.17 11.5 L148.87 15 L151.35 18.5 L151.37 22 L148.99 25.5 L151.78 29 L149.89 32.5 L149.52 36 L9.74 36 L8.32 32.5 L9.62 29 L10.89 25.5 L9.05 22 L8.98 18.5 L10.76 15 L10.43 11.5 L11.24 8 Z" fill="#F7F5FB"/>
+    <g clip-path="url(#strip)"><rect x="0" y="0" width="160" height="44" fill="url(#t)"/>
+      <path d="M0 10.5 H160" stroke="#FFFFFF" stroke-width="2" opacity="0.45"/>
+      <path d="M0 34.5 H160" stroke="#2E2A3B" stroke-width="1.4" opacity="0.07"/></g>
+  </g>
+</svg>

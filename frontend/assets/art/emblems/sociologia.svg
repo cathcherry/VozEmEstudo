@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+<!-- voz-art:generated | id: emblem.sociologia | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<rect x="5" y="6.5" width="54" height="54" rx="13" fill="#2E2A3B" opacity="0.1"/>
+  <rect x="4" y="4" width="56" height="55" rx="13" fill="#FAEDCB" stroke="#B9862A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"/>
+  <rect x="7.5" y="7.5" width="49" height="48" rx="10" stroke="#B9862A" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.22"/>
+  <path d="M10 7.2 Q32 5.4 54 7.2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>
+  <path d="M8 50 C8 41 12.5 37 18 37 C23.5 37 28 41 28 50 M36 50 C36 41 40.5 37 46 37 C51.5 37 56 41 56 50" fill="#F1D38C" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <circle cx="18" cy="29" r="5.4" fill="#F1D38C" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/><circle cx="46" cy="29" r="5.4" fill="#F1D38C" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M20 52 C20 40 25.4 34.6 32 34.6 C38.6 34.6 44 40 44 52 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <circle cx="32" cy="24" r="6.6" fill="#FFFFFF" stroke="#2E2A3B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>

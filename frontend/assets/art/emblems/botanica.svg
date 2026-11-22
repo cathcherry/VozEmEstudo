@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+<!-- voz-art:generated | id: emblem.botanica | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<rect x="5" y="6.5" width="54" height="54" rx="13" fill="#2E2A3B" opacity="0.1"/>
+  <rect x="4" y="4" width="56" height="55" rx="13" fill="#E3EDDA" stroke="#5E7F4E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.55"/>
+  <rect x="7.5" y="7.5" width="49" height="48" rx="10" stroke="#5E7F4E" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.22"/>
+  <path d="M10 7.2 Q32 5.4 54 7.2" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.9"/>
+  <path d="M32 38 V25" stroke="#5E7F4E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M32 30 C24 30 19.5 25 19.5 17 C27 17 32 21.4 32 30 Z" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M32 26 C38.6 26 45.5 22 45.5 12.5 C38 12.5 32 17 32 26 Z" fill="#B5CDA4" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M23 28 L29 26 M41 16 L35.4 21" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M22.5 42 H41.5 L39 54 H25 Z" fill="#D98A9B" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M36 43 L34.6 53" stroke="#B86A7C" stroke-width="3" opacity="0.4"/>
+    <rect x="19.5" y="37" width="25" height="6" rx="1.6" fill="#EDBDC7" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>

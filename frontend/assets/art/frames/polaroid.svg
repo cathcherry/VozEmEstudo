@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240" fill="none">
+<!-- voz-art:generated | id: frame.polaroid | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<path d="M14 10 H186 V228 H14 Z M26 22 H174 V170 H26 Z" transform="translate(2 4)" fill="#2E2A3B" fill-rule="evenodd" opacity="0.12"/>
+    <path d="M14 10 H186 V228 H14 Z M26 22 H174 V170 H26 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+    <path d="M14 10 H186 V228 H14 Z" stroke="#5B5470" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/><path d="M26 22 H174 V170 H26 Z" stroke="#5B5470" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.45"/>
+    <path d="M26 170 H174" stroke="#2E2A3B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.08"/>
+    <path d="M40 204 Q100 198 160 204" stroke="#AE9FDB" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.5" stroke-dasharray="1 5"/>
+</svg>

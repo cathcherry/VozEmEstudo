@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 24" width="320" height="24" fill="none">
+<!-- voz-art:generated | id: divider.sprig | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<path d="M10 12 H134 M186 12 H310" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+    <path d="M142 14 Q160 8 178 14" stroke="#5E7F4E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M150 12 q-4 -8 2 -10 q3 5 -2 10 Z M160 10 q2 -8 8 -8 q-1 6 -8 8 Z M168 12 q6 -4 10 0 q-5 3 -10 0 Z M156 12 q-2 6 -8 7 q1 -5 8 -7 Z" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+</svg>

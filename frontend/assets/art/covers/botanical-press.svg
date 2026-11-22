@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" width="240" height="320" fill="none">
+<!-- voz-art:generated | id: cover.botanical-press | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="cover-clip"><path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z"/></clipPath></defs>
+<rect x="22" y="10" width="214" height="308" rx="9" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M230 22 V306 M233 26 V302" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" fill="#F7F5FB"/>
+  <g clip-path="url(#cover-clip)">
+    <path d="M150 296 Q140 230 160 150" stroke="#5E7F4E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M158 160 q-22 -4 -30 -16 q16 -2 30 16 Z M158 160 q20 2 30 -12 q-16 -4 -30 12 Z" fill="#B5CDA4" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><path d="M154 184 q-24.200000000000003 -4.4 -33 -17.6 q17.6 -2.2 33 17.6 Z M154 184 q22 2.2 33 -13.200000000000001 q-17.6 -4.4 -33 13.200000000000001 Z" fill="#B5CDA4" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><path d="M150 208 q-26.4 -4.8 -36 -19.2 q19.2 -2.4 36 19.2 Z M150 208 q24 2.4 36 -14.399999999999999 q-19.2 -4.8 -36 14.399999999999999 Z" fill="#B5CDA4" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><path d="M147 232 q-27.5 -5 -37.5 -20 q20 -2.5 37.5 20 Z M147 232 q25 2.5 37.5 -15 q-20 -5 -37.5 15 Z" fill="#B5CDA4" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/><path d="M146 256 q-26.4 -4.8 -36 -19.2 q19.2 -2.4 36 19.2 Z M146 256 q24 2.4 36 -14.399999999999999 q-19.2 -4.8 -36 14.399999999999999 Z" fill="#B5CDA4" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8"/>
+    <g stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"><circle cx="92" cy="232" r="9" fill="#EDBDC7"/><circle cx="92" cy="232" r="3.4" fill="#E2B14A"/><circle cx="104" cy="262" r="6" fill="#CFC5EC"/></g>
+    <path d="M92 241 Q96 270 100 296 M104 268 Q102 284 100 296" stroke="#5E7F4E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M70 150 l14 -6 l4 8 l-14 6 Z M178 280 l12 4 l-3 9 l-12 -4 Z" fill="#D3E2EE" opacity="0.8"/>
+    <path d="M232 200 V314 H120 Q200 290 232 200 Z" fill="#2E2A3B" opacity="0.06"/>
+  </g>
+  <path d="M8 16 A10 10 0 0 1 18 6 H40 V314 H18 A10 10 0 0 1 8 304 Z" fill="#7FA36B" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M33 14 V306" stroke="#F7F5FB" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7" stroke-dasharray="4 4"/>
+  <path d="M18 6 H222 A10 10 0 0 1 232 16 V304 A10 10 0 0 1 222 314 H18 Z" stroke="#2E2A3B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="78" y="62" width="112" height="50" rx="7" fill="#F7F5FB" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <rect x="84" y="68" width="100" height="38" rx="4" stroke="#8E7CC3" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.45"/>
+  <rect x="200" y="6" width="10" height="308" fill="#D98A9B" stroke="#2E2A3B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+  <path d="M203 6 V314" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.35"/>
+</svg>

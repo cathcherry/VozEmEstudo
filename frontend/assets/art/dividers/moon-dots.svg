@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 24" width="320" height="24" fill="none">
+<!-- voz-art:generated | id: divider.moon-dots | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<path d="M12 12 H140 M180 12 H308" stroke="#AE9FDB" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.8" stroke-dasharray="0.1 8"/>
+    <path d="M163 4 A8 8 0 1 0 168 18 A6.4 6.4 0 1 1 163 4 Z" fill="#F1D38C" stroke="#2E2A3B" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.88"/>
+    <path d="M150 7 l1 2.4 l2.4 1 l-2.4 1 l-1 2.4 l-1 -2.4 l-2.4 -1 l2.4 -1 Z" fill="#8E7CC3"/>
+</svg>

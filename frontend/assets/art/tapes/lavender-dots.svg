@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 44" width="160" height="44" fill="none">
+<!-- voz-art:generated | id: tape.lavender-dots | original art, Voz em Estudo (same terms as the project). Made with scripts/art/build-art.mjs; a replaced file without this marker is never overwritten. -->
+<defs><clipPath id="strip"><path d="M9.1 8 L151.83 8 L149.26 11.5 L149.21 15 L150.19 18.5 L149.31 22 L148.93 25.5 L148.72 29 L150.12 32.5 L149.19 36 L10.81 36 L10.58 32.5 L10.91 29 L8.11 25.5 L8.32 22 L10.97 18.5 L10.07 15 L8.73 11.5 L9.1 8 Z"/></clipPath><pattern id="t" y="8" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.8" fill="#FFFFFF"/><circle cx="9" cy="9" r="1.8" fill="#FFFFFF" opacity="0.8"/></pattern></defs>
+<g opacity="0.86">
+    <path d="M9.1 8 L151.83 8 L149.26 11.5 L149.21 15 L150.19 18.5 L149.31 22 L148.93 25.5 L148.72 29 L150.12 32.5 L149.19 36 L10.81 36 L10.58 32.5 L10.91 29 L8.11 25.5 L8.32 22 L10.97 18.5 L10.07 15 L8.73 11.5 L9.1 8 Z" fill="#CFC5EC"/>
+    <g clip-path="url(#strip)"><rect x="0" y="0" width="160" height="44" fill="url(#t)"/>
+      <path d="M0 10.5 H160" stroke="#FFFFFF" stroke-width="2" opacity="0.45"/>
+      <path d="M0 34.5 H160" stroke="#2E2A3B" stroke-width="1.4" opacity="0.07"/></g>
+  </g>
+</svg>
