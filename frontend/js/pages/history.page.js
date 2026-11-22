@@ -9,6 +9,7 @@ import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initLibraryViewSwitcher } from './library-views.js';
+import { selectionState, toggleItem, selectRange, selectionSummary } from '../utils/library-selection.js';
 import { folderButton as multiLessonFolderButton, selectionButton as multiLessonSelectionButton, unitsButton as multiLessonUnitsButton } from './multi-lesson-entry.js';
 
 const session = await initAuthenticatedShell();
@@ -339,6 +340,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   menu.addEventListener('toggle',()=>{if(menu.open)for(const other of document.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
   actions.replaceChildren(actions.querySelector('a.secondary-action'), menu);
   enableDrag(item, material);
+  markSelectable(item, [material], material.title);
   return item;
 }
 
@@ -415,6 +417,7 @@ function treeFiles(material) {
     const link=document.createElement('a');link.href=materialHref(material.id)+fragment;link.className='library-tree-part';
     link.textContent=label;link.setAttribute('aria-label',`${label} de ${material.title}`);list.append(link);
   }
+  markSelectable(list, [material], material.title);
   return list;
 }
 const SUBJECT_MENU_ICONS = {
@@ -506,6 +509,52 @@ async function removeSubject(group, button, menuButton) {
   }
 }
 
+/**
+ * The band at the top of a discipline (or unit) page: the folder in the discipline's colour, its
+ * name, and what is inside (lessons, units, lessons studied).
+ */
+function folderBand(group, unit, units) {
+  const lessons = unit ? group.materials.filter((material) => material.unit_id === unit.id) : group.materials;
+  const studied = lessons.filter((material) => studyFor(material.id).completed).length;
+  const band = document.createElement('header');
+  band.className = 'library-folder-band';
+  band.dataset.folderBand = '';
+  const icon = folderIcons.icon(unit ? 'unit' : 'subject', unit ? unit.id : group.id);
+  const copy = document.createElement('div');
+  copy.className = 'library-folder-band-copy';
+  if (unit) {
+    const parent = document.createElement('p');
+    parent.className = 'library-folder-band-parent';
+    parent.textContent = group.name;
+    copy.append(parent);
+  }
+  const title = document.createElement('h2');
+  title.textContent = unit ? unit.title : group.name;
+  const facts = document.createElement('ul');
+  facts.className = 'library-folder-band-facts';
+  facts.setAttribute('aria-label', 'Nesta pasta');
+  const fact = (text) => { const item = document.createElement('li'); item.textContent = text; facts.append(item); };
+  fact(lessonCountLabel(lessons.length));
+  if (!unit && units.length) fact(`${units.length} ${units.length === 1 ? 'unidade' : 'unidades'}`);
+  copy.append(title, facts);
+  band.append(icon, copy);
+  if (lessons.length) {
+    const progress = document.createElement('div');
+    progress.className = 'library-folder-band-progress';
+    const caption = document.createElement('span');
+    caption.id = `folder-band-progress-${unit ? unit.id : group.id}`;
+    caption.textContent = `${studied} de ${lessons.length} ${lessons.length === 1 ? 'estudada' : 'estudadas'}`;
+    const meter = document.createElement('progress');
+    meter.className = 'library-folder-band-meter';
+    meter.max = lessons.length;
+    meter.value = studied;
+    meter.setAttribute('aria-labelledby', caption.id);
+    progress.append(caption, meter);
+    band.append(progress);
+  }
+  return band;
+}
+
 function navigateFolder(subject = '', unit = '') {
   const url=new URL(location.href);
   for(const [key,value] of [['folder',subject],['unit',unit]]) { if(value)url.searchParams.set(key,value);else url.searchParams.delete(key); }
@@ -540,6 +589,7 @@ function renderFolderGroups(visible, _needle) {
     const section = document.createElement('section');
     section.className = 'library-group library-folder-group';
     section.dataset.folderTone = folderTone(group);
+    if (!selected) markSelectable(section, group.materials, group.name);
     const folder = document.createElement('details');
     folder.className = 'library-subject-folder';
     const summary = document.createElement('summary');
@@ -573,14 +623,23 @@ function renderFolderGroups(visible, _needle) {
     }
 
     const groupedIds = new Set();
+    // A discipline's page shows its units as sub-folders (icons in the grid view, rows in the list).
+    const unitGrid = selected && !selectedUnit && units.length ? document.createElement('div') : null;
+    if (unitGrid) {
+      unitGrid.className = 'library-unit-grid';
+      content.append(unitGrid);
+    }
     for (const unit of units) {
       const unitMaterials = group.materials.filter((material) => material.unit_id === unit.id);
       for (const material of unitMaterials) groupedIds.add(material.id);
       const unitFolder = document.createElement('details');
       unitFolder.className = 'library-unit-folder';
       const unitKey = String(unit.id);
-      unitFolder.open = openUnits.has(unitKey) || hasFilters();
+      // Selecting in the list view: every folder stays open, so each lesson can be picked.
+      unitFolder.open = openUnits.has(unitKey) || hasFilters() || (selecting && document.body.dataset.libraryLayout === 'list');
+      if (!selectedUnit) markSelectable(unitFolder, unitMaterials, unit.title);
       unitFolder.addEventListener('toggle', () => {
+        if (unitFolder.dataset.forcedOpen !== undefined) return; // opened by "Selecionar"
         if (unitFolder.open) openUnits.add(unitKey);
         else openUnits.delete(unitKey);
       });
@@ -606,7 +665,7 @@ function renderFolderGroups(visible, _needle) {
       if (!unitMaterials.length && hasFilters()) continue;
       unitFolder.append(unitContent);
       enableDrop(unitFolder, group.id, unit.id);
-      if(!selectedUnit)content.append(unitFolder);
+      if(!selectedUnit)(unitGrid||content).append(unitFolder);
       else if(String(unit.id)===selectedUnit)content.append(unitContent);
     }
 
@@ -617,7 +676,7 @@ function renderFolderGroups(visible, _needle) {
       const fileIcon = document.createElement('span');
       fileIcon.textContent = '📄';
       fileIcon.setAttribute('aria-hidden', 'true');
-      heading.append(fileIcon, document.createTextNode('Aulas sem unidade'));
+      heading.append(fileIcon, document.createTextNode(units.length ? 'Aulas sem unidade' : 'Aulas'));
       const list = document.createElement('div');
       list.className = 'library-standalone-list';
       for (const material of standalone) list.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name, standalone: true }));
@@ -635,7 +694,11 @@ function renderFolderGroups(visible, _needle) {
       folderToolbar.append(multiLessonFolderButton({ subjectId: group.id, unitId: currentUnit?.id || null, name: currentUnit?.title || group.name }));
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
-    if(selected){section.classList.add('library-folder-page');section.append(content);}else section.append(folder);
+    if(selected){
+      section.classList.add('library-folder-page');
+      section.append(folderBand(group, currentUnit, units), content);
+    } else section.append(folder);
+    if (selecting && !selected && document.body.dataset.libraryLayout === 'list') folder.open = true;
     if (subjectActions && !selected) { section.classList.add('has-subject-menu'); section.append(subjectActions); }
     groups.append(section);
   }
@@ -733,9 +796,22 @@ function render() {
   decorateSelection();
 }
 
-// ---- Multiple selection: move several lessons at once (Biblioteca 3.0) ---------------------
-const selected = new Set();
+// ---- Multiple selection: move several lessons at once (Biblioteca 3.0, reworked in 3.6) --------
+// While "Selecionar" is on, a click or tap anywhere on a lesson or a folder selects it (a folder
+// stands for the lessons inside it); nothing opens. Each item has one checkbox that holds the
+// keyboard focus (Space or Enter toggles it); Shift extends the selection from the last item.
+// Leaving the mode re-renders the canvas, so links, menus and dragging come back as they were.
+let selected = new Set();
 let selecting = false;
+let anchor = null; // the last item toggled: the start of a Shift range
+const selectableIds = new WeakMap();
+const selectableNames = new WeakMap();
+/** Registers a lesson or folder as one selectable item (its lessons' ids). */
+function markSelectable(element, list, name) {
+  element.dataset.selectable = '';
+  selectableIds.set(element, list.map((material) => material.id));
+  selectableNames.set(element, name);
+}
 const selectionBar = document.createElement('div');
 selectionBar.className = 'library-selection-bar';
 selectionBar.setAttribute('role', 'region');
@@ -764,7 +840,8 @@ selectToggle.textContent = 'Selecionar';
 selectToggle.setAttribute('aria-pressed', 'false');
 function setSelecting(on) {
   selecting = on;
-  if (!on) selected.clear();
+  if (!on) selected = new Set();
+  anchor = null;
   selectToggle.setAttribute('aria-pressed', String(on));
   selectToggle.textContent = on ? 'Concluir seleção' : 'Selecionar';
   document.body.classList.toggle('library-selecting', on);
@@ -777,12 +854,37 @@ cancelSelection.addEventListener('click', () => {
 });
 function updateSelectionBar() {
   selectionBar.hidden = !selecting;
-  selectionCount.textContent = selected.size
-    ? `${selected.size} ${selected.size === 1 ? 'aula selecionada' : 'aulas selecionadas'}`
-    : 'Toque nas aulas para selecionar';
+  selectionCount.textContent = selectionSummary(selected.size);
   moveSelected.disabled = !selected.size;
   integrateSelected.hidden = !multiLessonEnabled;
   integrateSelected.disabled = selected.size < 2;
+}
+const selectables = () => [...groups.querySelectorAll('[data-selectable]')];
+/** Paints every checkbox and row from the selected set. */
+function syncSelection() {
+  for (const item of selectables()) {
+    const box = item.querySelector(':scope > input.library-select');
+    const coverage = selectionState(selectableIds.get(item) || [], selected);
+    if (box) {
+      box.checked = coverage === 'all';
+      box.indeterminate = coverage === 'some';
+    }
+    item.classList.toggle('is-selected', coverage === 'all');
+    item.classList.toggle('is-partly-selected', coverage === 'some');
+  }
+  updateSelectionBar();
+}
+function toggleSelectable(item, { range = false } = {}) {
+  const items = selectables();
+  const index = items.indexOf(item);
+  const ids = items.map((node) => selectableIds.get(node) || []);
+  if (!ids[index]?.length) {
+    selectionCount.textContent = 'Esta pasta está vazia.';
+    return;
+  }
+  selected = range ? selectRange(selected, ids, items.indexOf(anchor), index) : toggleItem(selected, ids[index]);
+  anchor = item;
+  syncSelection();
 }
 function decorateSelection() {
   // The toggle lives in the folder toolbar, next to the path.
@@ -791,43 +893,59 @@ function decorateSelection() {
   selectToggle.hidden = !catalogEnabled || !materials.length;
   updateSelectionBar();
   if (!selecting) return;
-  for (const item of document.querySelectorAll('.library-material[data-material-id], .library-tree-files[data-material-id]')) {
-    const id = item.dataset.materialId;
-    if (item.querySelector(':scope > .library-select')) continue;
-    const material = materials.find((entry) => entry.id === id);
+  for (const item of selectables()) {
+    if (item.querySelector(':scope > input.library-select')) continue;
+    const ids = selectableIds.get(item) || [];
+    const folder = !item.dataset.materialId;
     const box = document.createElement('input');
     box.type = 'checkbox';
     box.className = 'library-select';
-    box.checked = selected.has(id);
-    box.setAttribute('aria-label', `Selecionar ${material?.title || 'aula'}`);
-    box.addEventListener('change', () => {
-      if (box.checked) selected.add(id);
-      else selected.delete(id);
-      item.classList.toggle('is-selected', box.checked);
-      updateSelectionBar();
+    const name = selectableNames.get(item) || 'aula';
+    box.setAttribute('aria-label', folder ? `Selecionar a pasta ${name} (${lessonCountLabel(ids.length)})` : `Selecionar ${name}`);
+    if (!ids.length) box.disabled = true;
+    box.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter') return;
+      event.preventDefault();
+      toggleSelectable(item, { range: event.shiftKey });
     });
-    item.classList.toggle('is-selected', box.checked);
-    item.prepend(box);
+    // Links, menus and folder openers step aside: the checkbox is the item's only stop.
+    for (const control of item.querySelectorAll('a, button, summary, input, select, [tabindex]')) control.tabIndex = -1;
+    item.draggable = false;
+    for (const node of item.querySelectorAll('[draggable="true"]')) node.draggable = false;
+    // The box never goes inside a <summary> (a control inside a control). A unit folder stays
+    // open while selecting, so a box after its summary is shown (CSS hides the unit's lessons in
+    // the icon view); a discipline's box sits on its tile, beside the <details>.
+    if (item.matches('details')) {
+      item.dataset.forcedOpen = '';
+      item.open = true;
+      item.querySelector(':scope > summary').after(box);
+    } else item.prepend(box);
   }
+  syncSelection();
 }
-// While selecting, a click on a lesson selects it instead of opening it.
+// While selecting, a click or tap anywhere on a lesson or folder selects it; nothing opens.
 document.addEventListener(
   'click',
   (event) => {
     if (!selecting) return;
-    const item = event.target.closest?.('.library-material[data-material-id], .library-tree-files[data-material-id]');
-    if (!item || event.target.closest('.library-select')) return;
-    const link = event.target.closest('a');
-    if (!link && !event.target.closest('h3')) return;
-    event.preventDefault();
-    const box = item.querySelector(':scope > .library-select');
-    if (box) {
-      box.checked = !box.checked;
-      box.dispatchEvent(new Event('change'));
-    }
+    const item = event.target.closest?.('[data-selectable]');
+    if (!item || !groups.contains(item)) return;
+    // On the checkbox itself the browser's toggle already matches the new state; anywhere else
+    // (title link, folder, row) the default action — opening — is cancelled.
+    const onBox = event.target.matches?.('input.library-select');
+    if (!onBox) event.preventDefault();
+    event.stopPropagation();
+    toggleSelectable(item, { range: event.shiftKey });
+    if (!onBox) item.querySelector(':scope > input.library-select')?.focus({ preventScroll: true });
   },
   true,
 );
+document.addEventListener('keydown', (event) => {
+  if (!selecting || event.key !== 'Escape' || event.defaultPrevented) return;
+  if (document.querySelector('dialog[open], .row-menu[open]')) return;
+  setSelecting(false);
+  selectToggle.focus();
+});
 moveSelected.addEventListener('click', () => {
   const chosen = materials.filter((material) => selected.has(material.id));
   if (!chosen.length) return;

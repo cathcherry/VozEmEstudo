@@ -184,24 +184,6 @@ body[data-page='history'] .library-new-folder { width: auto !important; padding-
 /* Multiple selection (move several lessons at once). */
 .library-select-toggle { margin-left: auto; white-space: nowrap; }
 .library-select-toggle[hidden] { display: none; }
-body.library-selecting .library-material,
-body.library-selecting .library-tree-files { position: relative; }
-body.library-selecting input.library-select {
-  position: absolute;
-  z-index: 3;
-  top: 12px;
-  left: 12px;
-  width: 26px;
-  height: 26px;
-  margin: 0;
-  accent-color: var(--accent-strong);
-  cursor: pointer;
-}
-body.library-selecting .library-tree-files > input.library-select { top: 11px; left: -34px; }
-body.library-selecting .library-tree-files { margin-left: 34px; }
-body[data-page='history'].library-selecting .library-material { padding-left: 52px; }
-.library-material.is-selected,
-.library-tree-files.is-selected > .library-tree-row { outline: 2px solid var(--accent-strong); outline-offset: 2px; border-radius: 14px; background: var(--accent-soft); }
 .library-selection-bar {
   position: fixed;
   z-index: 58;
@@ -884,9 +866,312 @@ body[data-page='history'].library-selecting .library-material { padding-left: 52
     position: relative;
   }
 }
-/* Selection mode: room for the checkbox at the start of each row. */
+/* ==== 3.6: selecting, and a discipline's interior ===========================================
+ * Selecting: the whole row or folder is the target (a click or tap selects, nothing opens); one
+ * checkbox per item, inside its title row; row actions and menus step aside until it ends.
+ * Interior: a band in the discipline's colour (the folder, its name and what is inside), then
+ * the units as sub-folders and the loose lessons. */
 @layer pages {
-  body[data-page='history'].library-selecting .library-material {
-    padding-left: 3.25rem;
+  body.library-selecting[data-page='history'] [data-selectable] {
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body.library-selecting[data-page='history'] :is(.material-row-actions, .subject-menu, .library-tree-part) {
+    display: none;
+  }
+  body[data-page='history'] input.library-select {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    accent-color: var(--brand-ink);
+    cursor: pointer;
+  }
+  body[data-page='history'] input.library-select:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+    border-radius: 4px;
+  }
+  /* Lesson rows: the box sits in the gutter, centred on the row. */
+  body.library-selecting[data-page='history'] .library-material {
+    padding-left: 3rem;
+  }
+  body.library-selecting[data-page='history'] .library-material > input.library-select {
+    position: absolute;
+    top: 50%;
+    left: var(--space-3);
+    translate: 0 -50%;
+  }
+  body.library-selecting[data-page='history'] .library-tree-files {
+    position: relative;
+    padding-left: 2.25rem;
+  }
+  body.library-selecting[data-page='history'] .library-tree-files > input.library-select {
+    position: absolute;
+    top: 0.7rem;
+    left: var(--space-2);
+  }
+  /* Folders: the box sits beside the folder's title row (never inside the <summary>). Rows put
+     it at the row's start; tiles (icon view, wider screens) in the tile's corner. */
+  body.library-selecting[data-page='history'] :is(.library-folder-group, .library-unit-folder)[data-selectable] {
+    position: relative;
+  }
+  body.library-selecting[data-page='history'] :is(.library-folder-group, .library-unit-folder)[data-selectable] > input.library-select {
+    position: absolute;
+    z-index: 1;
+    top: 1.375rem;
+    left: var(--space-3);
+    translate: 0 -50%;
+  }
+  body.library-selecting[data-page='history'][data-library-layout='list'] .library-unit-folder[data-selectable] > input.library-select {
+    top: 29px;
+  }
+  body.library-selecting[data-page='history'] .library-folder-group[data-selectable] > .library-subject-folder > summary,
+  body.library-selecting[data-page='history'] .library-unit-folder[data-selectable] > summary {
+    padding-left: 2.75rem;
+  }
+  /* Unit folders stay open while selecting; in the icon view their lessons stay out of sight. */
+  body.library-selecting[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > .library-unit-content {
+    display: none;
+  }
+  @media (min-width: 701px) {
+    body.library-selecting[data-page='history']:not([data-library-layout='list']) :is(.library-groups:not(.is-folder-page) > .library-folder-group, .library-unit-grid > .library-unit-folder) > input.library-select {
+      top: var(--space-2);
+      left: var(--space-2);
+      translate: none;
+    }
+    body.library-selecting[data-page='history']:not([data-library-layout='list']) .library-groups:not(.is-folder-page) > .library-folder-group[data-selectable] > .library-subject-folder > summary,
+    body.library-selecting[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder[data-selectable] > summary {
+      padding-left: var(--space-2);
+    }
+  }
+  @media (max-width: 700px) {
+    body.library-selecting[data-page='history'] .library-groups:not(.is-folder-page) > .library-folder-group[data-selectable] > input.library-select {
+      top: 1.5rem;
+    }
+  }
+  /* Phones: the selection bar is a sheet across the bottom (count, then the actions). */
+  @media (max-width: 700px) {
+    .library-selection-bar {
+      left: var(--space-3);
+      right: var(--space-3);
+      bottom: var(--space-3);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: none;
+      padding: var(--space-3);
+      border-radius: var(--radius-panel);
+      translate: none;
+    }
+    .library-selection-bar p {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    .library-selection-bar button {
+      width: 100%;
+      min-height: 2.75rem;
+    }
+    .library-selection-bar .primary-action {
+      grid-column: 1 / -1;
+    }
+    body.library-selecting[data-page='history'] .article-content {
+      padding-bottom: 11rem;
+    }
+  }
+  /* Selected: the item is washed in the brand tint with a fine ring (no heavy outline). */
+  body[data-page='history'] :is(.library-material, .library-tree-files).is-selected,
+  body[data-page='history'] .library-folder-group.is-selected > .library-subject-folder > summary,
+  body[data-page='history'] .library-unit-folder.is-selected > summary {
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--brand-ink) 13%, var(--paper-raised));
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand-ink) 60%, transparent);
+  }
+  /* Room under the canvas for the floating selection bar. */
+  body.library-selecting[data-page='history'] .article-content {
+    padding-bottom: 6.5rem;
+  }
+  body[data-page='history'] .library-material.is-selected + .library-material {
+    border-top-color: transparent;
+  }
+  body[data-page='history'] .library-tree-files.is-selected > .library-tree-row {
+    background: none;
+  }
+  body[data-page='history'] .library-folder-group.is-partly-selected > .library-subject-folder > summary,
+  body[data-page='history'] .library-unit-folder.is-partly-selected > summary {
+    border-radius: var(--radius-control);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-ink) 35%, transparent);
+  }
+  .library-selection-bar p {
+    min-width: 12ch;
+  }
+
+  /* Interior band */
+  body[data-page='history'] .library-folder-band {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(7rem, 11rem);
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0 var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid color-mix(in srgb, var(--tone, var(--mist)) 38%, var(--line));
+    border-radius: 4px var(--radius-panel) var(--radius-panel) var(--radius-panel);
+    background: color-mix(in srgb, var(--tone, var(--mist)) 15%, var(--paper-raised));
+  }
+  /* The folder's tab, in the same colour: the band reads as the open folder's front. */
+  body[data-page='history'] .library-folder-band::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: -1px;
+    width: 7.5rem;
+    height: 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--tone, var(--mist)) 38%, var(--line));
+    border-bottom: 0;
+    border-radius: 6px 12px 0 0;
+    background: color-mix(in srgb, var(--tone, var(--mist)) 15%, var(--paper-raised));
+  }
+  body[data-page='history'] .library-folder-band > .folder-customizable {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 3.75rem;
+  }
+  body[data-page='history'] .library-folder-band > .folder-customizable img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  body[data-page='history'] .library-folder-band .folder-mark {
+    width: 4rem;
+    height: 2.9rem;
+  }
+  body[data-page='history'] .library-folder-band h2 {
+    margin: 0;
+    color: var(--ink);
+    font: 500 var(--step-2) / 1.15 var(--font-display);
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+  body[data-page='history'] .library-folder-band-parent {
+    margin: 0 0 2px;
+    color: color-mix(in srgb, var(--tone-ink, var(--mist-ink)) 85%, var(--ink));
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body[data-page='history'] .library-folder-band-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body[data-page='history'] .library-folder-band-facts li + li {
+    padding-left: var(--space-3);
+    border-left: 1px solid color-mix(in srgb, var(--tone-ink, var(--ink)) 25%, transparent);
+  }
+  body[data-page='history'] .library-folder-band-progress {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    text-align: right;
+  }
+  body[data-page='history'] .library-folder-band-meter {
+    width: 100%;
+    height: 6px;
+    accent-color: var(--tone-ink, var(--brand-ink));
+  }
+  body[data-page='history'] .library-folder-band-meter::-webkit-progress-bar {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--tone-ink, var(--ink)) 14%, transparent);
+  }
+  body[data-page='history'] .library-folder-band-meter::-webkit-progress-value {
+    border-radius: 999px;
+    background: var(--tone-ink, var(--brand-ink));
+  }
+  body[data-page='history'] .library-standalone-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 var(--space-1);
+    padding: 0 var(--space-3);
+    color: var(--ink-muted);
+    font: 600 var(--step-ui) / 1.4 var(--font-ui);
+  }
+
+  /* Units as sub-folders: icon tiles in the icon view on wider screens. */
+  @media (min-width: 701px) {
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+      gap: var(--space-2);
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder {
+      border: 0;
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > summary {
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: var(--space-1);
+      padding: var(--space-4) var(--space-2) var(--space-3);
+      border-radius: var(--radius-panel);
+      text-align: center;
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > summary .folder-customizable {
+      width: 5rem;
+      height: 4rem;
+      flex: none;
+      margin: 0 0 var(--space-1);
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > summary .folder-mark {
+      width: 4.5rem;
+      height: 3.25rem;
+      margin: 0.4rem 0 0;
+      border-radius: 5px 8px 8px 8px;
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > summary .folder-mark::before {
+      top: -0.45rem;
+      width: 1.9rem;
+      height: 0.6rem;
+      border-radius: 5px 9px 0 0;
+    }
+    body[data-page='history']:not([data-library-layout='list']) .library-unit-grid > .library-unit-folder > summary .library-folder-count {
+      margin-left: 0;
+      color: var(--ink-muted);
+      font-size: var(--step--1);
+    }
+  }
+  @media (max-width: 700px) {
+    body[data-page='history'] .library-folder-band {
+      grid-template-columns: auto minmax(0, 1fr);
+      padding: var(--space-3) var(--space-4);
+      margin-top: var(--space-4);
+    }
+    body[data-page='history'] .library-folder-band > .folder-customizable {
+      width: 3.25rem;
+      height: 2.75rem;
+    }
+    body[data-page='history'] .library-folder-band .folder-mark {
+      width: 3rem;
+      height: 2.2rem;
+    }
+    body[data-page='history'] .library-folder-band h2 {
+      font-size: var(--step-1);
+    }
+    body[data-page='history'] .library-folder-band-progress {
+      grid-column: 1 / -1;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: var(--space-3);
+      text-align: left;
+    }
   }
 }
+
