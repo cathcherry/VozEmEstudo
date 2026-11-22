@@ -366,6 +366,19 @@
     // Stickers beside page titles: known kinds, no repeats, at most 3 (see utils/stickers.js).
     const STICKER_KINDS = ['star', 'heart', 'matcha', 'cloud', 'leaf', 'sparkle', 'book', 'pencil'];
     result.stickers = [...new Set((Array.isArray(value?.stickers) ? value.stickers : []).filter((k) => STICKER_KINDS.includes(k)))].slice(0, 3);
+    // Collections of the Arquivo de Descobertas (3.6): a name and discovery ids, nothing else.
+    // Same rules as utils/discovery-collections.js normalizeCollections.
+    result.discoveryCollections = [];
+    const collectionIds = new Set();
+    for (const entry of Array.isArray(value?.discoveryCollections) ? value.discoveryCollections : []) {
+      if (result.discoveryCollections.length >= 24) break;
+      const id = String(entry?.id || '');
+      const name = String(entry?.name ?? '').replace(/\s+/g, ' ').trim().slice(0, 60);
+      if (!/^c-[a-z0-9]{1,24}$/.test(id) || collectionIds.has(id) || !name) continue;
+      collectionIds.add(id);
+      const ids = [...new Set((Array.isArray(entry.ids) ? entry.ids : []).filter((x) => typeof x === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(x)))];
+      result.discoveryCollections.push({ id, name, ids: ids.slice(0, 200) });
+    }
     // Per-page wallpapers: only known pages and known wallpapers survive.
     result.pageWallpapers = {};
     for (const [page, wallpaper] of Object.entries(value?.pageWallpapers || {}))
@@ -453,6 +466,7 @@
       language: current.language,
       experience: current.experience,
       deskStarters: current.deskStarters,
+      discoveryCollections: current.discoveryCollections,
     });
     storage.set('audioestudo-ui-preferences', JSON.stringify(ui));
     applyUi(ui);

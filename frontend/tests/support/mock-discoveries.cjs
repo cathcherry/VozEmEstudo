@@ -38,9 +38,23 @@ function init(data, materials) {
       createdAt: seed.createdAt, updatedAt: seed.createdAt, completedAt: seed.createdAt,
       evidence: [{ id: `${seed.id}-e1`, segmentPosition: 0, endSegmentPosition: 0, startOffset: 0, endOffset: seed.quote.length, quote: seed.quote, note: '', sourceRevision: 1 }],
       links: [], discovery: { title: seed.title, explanation: seed.explanation, version: 1, history: [{ version: 1, title: seed.title, explanation: seed.explanation, createdAt: seed.createdAt }] },
-      reflections: [], connections: [], revisits: [],
+      reflections: (seed.reflections || []).map((text, n) => ({ id: `${seed.id}-r${n}`, text, createdAt: seed.createdAt })),
+      connections: [], revisits: (seed.revisits || []).map((r) => ({ day: r.createdAt.slice(0, 10), kind: r.kind || 'reflection', createdAt: r.createdAt })),
     });
+    const rec = s.investigations.get(seed.id);
+    // Extra verified quotes (same segment text): an evidence count closer to a real archive.
+    for (let n = 1; n < (seed.evidenceCount || 1); n += 1) rec.evidence.push({ ...rec.evidence[0], id: `${seed.id}-e${n + 1}` });
   }
+  // `seed.connectTo`: connections between seeded discoveries (both sides, like the database).
+  for (const seed of data.seedDiscoveries || [])
+    for (const otherId of seed.connectTo || []) {
+      const rec = s.investigations.get(seed.id);
+      const other = s.investigations.get(otherId);
+      if (!rec || !other || rec.connections.some((c) => c.otherId === otherId)) continue;
+      const connection = { id: `${seed.id}-c-${otherId.slice(-2)}`, note: '', createdAt: other.createdAt > rec.createdAt ? other.createdAt : rec.createdAt };
+      rec.connections.push({ ...connection, otherId });
+      other.connections.push({ ...connection, otherId: seed.id });
+    }
   for (const unlock of data.seedUnlocks || []) s.unlocks.push({ unlockedAt: unlock.occurredAt, kind: unlock.id.split('.')[0], ...unlock });
   data.discoveryState = s;
   return s;
@@ -219,6 +233,15 @@ function handleDiscoveries({ request, p, method, json, data, materials }) {
         id: r.id, title: r.discovery.title, subject: r.subject, materialId: r.materialId, lessonTitle: r.lessonTitle,
         createdAt: r.completedAt, updatedAt: r.updatedAt, version: r.discovery.version, evidenceCount: r.evidence.length,
         connectionCount: r.connections.length, revisitCount: r.revisits.length,
+        // 20261124090000_discovery_archive.sql (omitted with data.archiveFieldsMissing, as before it).
+        ...(data.archiveFieldsMissing ? {} : {
+          question: r.question, reflectionCount: r.reflections.length,
+          firstRevisitAt: r.revisits.map((v) => v.createdAt).sort()[0] || null,
+          connections: r.connections.map((c) => {
+            const o = s.investigations.get(c.otherId);
+            return { otherId: c.otherId, createdAt: c.createdAt, acrossSubjects: Boolean(r.subject && o.subject && r.subject.toLowerCase() !== o.subject.toLowerCase()) };
+          }),
+        }),
         stamps: s.unlocks.filter((u) => u.investigationId === r.id).map((u) => u.id),
       })),
     );
@@ -261,7 +284,7 @@ function handleDiscoveries({ request, p, method, json, data, materials }) {
     slots: SLOTS,
     unlocks: s.unlocks,
     layout: s.layout,
-    counts: { investigations: completed().length, evidence: [...s.investigations.values()].reduce((n, r) => n + r.evidence.length, 0), revisits: 0, connections: completed().reduce((n, r) => n + r.connections.length, 0) / 2 },
+    counts: { investigations: completed().length, evidence: [...s.investigations.values()].reduce((n, r) => n + r.evidence.length, 0), revisits: completed().reduce((n, r) => n + r.revisits.length, 0), connections: completed().reduce((n, r) => n + r.connections.length, 0) / 2 },
   });
   if (p === '/api/collection' && method === 'GET') return json(collection());
   if (p === '/api/collection/layout' && method === 'PUT') {

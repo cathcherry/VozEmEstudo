@@ -131,7 +131,7 @@ async function main() {
     assert.equal(await page.locator('[data-tasks-count]').textContent(), '3', 'and every function');
     assert.equal(await page.locator('.side-navigation a[href="./descobertas.html"]:visible').count(), 1, 'Descobertas stays in the menu');
     await page.goto(base + '/gabinete.html');
-    await page.locator('.cabinet-item').first().waitFor();
+    await page.locator('[data-drawer]').first().waitFor();
     assert.equal(await page.locator('input[name="experience-mode"][value="quiet"]').isChecked(), true, 'Gabinete shows the same choice');
     await page.locator('label', { hasText: 'Estudo aconchegante' }).click();
     await openDesk(page, base);

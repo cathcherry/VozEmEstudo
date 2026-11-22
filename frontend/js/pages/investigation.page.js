@@ -11,6 +11,7 @@ import { readingSelectionAnchor } from '../utils/annotation-anchor.js';
 import { suggestQuestions, missingForDiscovery } from '../utils/investigation-prompts.js';
 import { applyExperienceMode, artSlot, describeCollectible, passageHref } from '../utils/collectibles.js';
 import * as api from '../api/discovery.api.js';
+import { discoveryCard } from '../utils/discovery-card-ui.js';
 
 const STEPS = ['question', 'explore', 'evidence', 'explain', 'apply', 'reflect'];
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -175,6 +176,16 @@ function renderEvidence() {
   );
 }
 
+// The card this investigation becomes (3.6): a pencil sketch until the discovery is recorded,
+// then ink. Derived from the investigation itself (utils/discovery-card.js).
+function renderCard() {
+  const box = $('[data-investigation-card]');
+  box.hidden = false;
+  $('[data-investigation-card-body]').replaceChildren(
+    discoveryCard(state.view, { title: state.view.investigation.question, headingLevel: 3, lesson: '', subject: state.view.lesson?.subject || '', open: !isCompleted() }),
+  );
+}
+
 function renderFooter() {
   const footer = $('[data-investigation-footer]');
   footer.hidden = !state.view || isCompleted();
@@ -208,6 +219,7 @@ function render() {
       $(selector).disabled = isCompleted();
     renderEvidence();
     renderCounter();
+    renderCard();
     if (isCompleted()) {
       const link = $('[data-open-discovery]');
       link.href = `./descobertas.html?id=${encodeURIComponent(inv.id)}`;

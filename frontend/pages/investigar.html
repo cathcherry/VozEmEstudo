@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/learning-tools.css" />
 <link rel="stylesheet" href="/css/tool-pages.css" />
 <link rel="stylesheet" href="/css/personalization.css" />
-<link rel="stylesheet" href="/css/art.css" /><link rel="stylesheet" href="/css/discoveries.css" />
+<link rel="stylesheet" href="/css/art.css" /><link rel="stylesheet" href="/css/discoveries.css" /><link rel="stylesheet" href="/css/curiosities.css" />
 </head><body class="app-page" data-page="investigation">
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
 <aside class="side-navigation" id="navigation" aria-label="Navegação do aplicativo"><div class="sidebar-inner"><button type="button" class="sidebar-close" data-sidebar-close aria-label="Fechar navegação">Fechar <span aria-hidden="true">×</span></button><a class="sidebar-brand" href="./index.html" aria-label="Voz em Estudo"><img class="wordmark-logo" src="/assets/brand/logo-symbol.png?v=3" width="40" height="36" alt=""><span class="brand-name"><span class="brand-main">Voz</span> <span class="brand-em">em</span> <span class="brand-main">Estudo</span></span></a>
@@ -24,6 +24,7 @@
 <p class="investigation-status" data-investigation-status role="status" aria-live="polite"></p>
 <div class="investigation-unlocks" data-unlock-notice data-game-ui role="status" aria-live="polite" hidden></div>
 <div class="investigation-layout" data-investigation-layout hidden>
+<div class="investigation-side">
 <nav class="investigation-rail" aria-label="Etapas da investigação">
 <ol>
 <li><button type="button" data-step-button="question"><span class="step-number" aria-hidden="true">1</span><span class="step-name">Pergunta</span><span class="step-state" data-step-state="question"></span></button></li>
@@ -34,7 +35,12 @@
 <li><button type="button" data-step-button="reflect"><span class="step-number" aria-hidden="true">6</span><span class="step-name">Refletir</span><span class="step-optional">opcional</span><span class="step-state" data-step-state="reflect"></span></button></li>
 </ol>
 </nav>
-<div class="investigation-sheet">
+<aside class="investigation-card" data-investigation-card aria-labelledby="investigation-card-title" hidden>
+<h2 id="investigation-card-title">O cartão desta pergunta</h2>
+<div data-investigation-card-body></div>
+</aside>
+</div>
+<div class="investigation-sheet paper">
 <section class="investigation-step" data-step="question" aria-labelledby="step-question-title">
 <h2 id="step-question-title">Pergunta</h2>
 <div data-question-new>

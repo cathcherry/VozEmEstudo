@@ -5,6 +5,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { state, openApp, settle, allFlags, startServer, launchBrowser } = require('./support/mock-app.cjs');
+const { populated, ID } = require('./support/cabinet-fixtures.cjs');
 
 const set = process.argv[2] || 'after';
 const filter = process.argv[3] ? new RegExp(process.argv[3]) : null;
@@ -110,7 +111,20 @@ const shots = [
   ['3-6-focar', '/focar.html', KEY],
   ['3-6-foco-em-andamento', '/focar.html', KEY, { full: false, act: runFocusThenLibrary }],
   ['3-6-escrivaninha-arrumando', '/painel.html', KEY, { full: false, discoveries: true, act: arrangeDesk }],
-  ['3-6-gabinete-mesa', '/gabinete.html', KEY, { discoveries: true, act: (p) => p.locator('[data-desk-section]').scrollIntoViewIfNeeded() }],
+  // 3.6 Milestone E: the cabinet of curiosities, the archive of evolving cards, the investigation.
+  ['3-6-gabinete', '/gabinete.html?gaveta=stamp', KEY, { discoveries: 'rich', data: populated }],
+  ['3-6-gabinete-especimes', '/gabinete.html?gaveta=specimen', KEY, { discoveries: 'rich', data: populated }],
+  ['3-6-gabinete-objeto', '/gabinete.html?gaveta=object', KEY, { discoveries: 'rich', data: populated, full: false,
+    act: (p) => p.locator('.cabinet-item[data-collectible="object.globe"]').click() }],
+  ['3-6-gabinete-vazio', '/gabinete.html', KEY, { discoveries: 'none', data: (d) => ((d.seedUnlocks = []), d) }],
+  ['3-6-gabinete-noturno', '/gabinete.html?gaveta=specimen', [1440], { discoveries: 'rich', data: populated, theme: 'night' }],
+  ['3-6-descobertas', '/descobertas.html', KEY, { discoveries: 'rich', data: populated }],
+  ['3-6-descobertas-ligacoes', '/descobertas.html', KEY, { discoveries: 'rich', data: populated, act: (p) => p.getByRole('tab', { name: 'Ligações' }).click() }],
+  ['3-6-descobertas-colecoes', '/descobertas.html', KEY, { discoveries: 'rich', data: populated, prefs: { discoveryCollections: [{ id: 'c-energia', name: 'Energia na natureza', ids: [ID(1), ID(2), ID(3)] }] },
+    act: (p) => p.getByRole('tab', { name: 'Coleções' }).click() }],
+  ['3-6-descobertas-vazio', '/descobertas.html', KEY, { discoveries: 'none', data: (d) => ((d.seedUnlocks = []), d) }],
+  ['3-6-descoberta', `/descobertas.html?id=${ID(1)}`, KEY, { discoveries: 'rich', data: populated }],
+  ['3-6-investigacao', `/investigar.html?id=${ID(4)}&etapa=evidencias`, KEY, { discoveries: 'rich', data: populated }],
 ];
 
 const CATALOG_WITH_EMPTY = {
