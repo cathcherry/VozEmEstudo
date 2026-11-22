@@ -1,5 +1,5 @@
 -- Journals (3.6, Milestone D: Diário de estudo) postflight: READ ONLY. Run after
--- 20261124090000_journals.sql; compare with the preflight. Expected: every boolean true, every
+-- 20261124100000_journals.sql; compare with the preflight. Expected: every boolean true, every
 -- *_must_be_0 equal to 0.
 begin read only;
 select

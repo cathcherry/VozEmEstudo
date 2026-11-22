@@ -12,9 +12,9 @@ import {
 } from './fixtures/discoveries-db.fixture.js';
 
 // Real SQL (PGlite) for the Diário de estudo (3.6 Milestone D). No mock of the rules: every
-// assertion goes through the server functions of 20261124090000_journals.sql.
+// assertion goes through the server functions of 20261124100000_journals.sql.
 const read = (path) => readFileSync(new URL(`../../database/${path}`, import.meta.url), 'utf8');
-const migration = read('migrations/20261124090000_journals.sql');
+const migration = read('migrations/20261124100000_journals.sql');
 const a = identities.a.id;
 const b = identities.b.id;
 const A = resourceIds.materialA;

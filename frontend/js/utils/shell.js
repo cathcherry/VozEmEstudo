@@ -27,6 +27,8 @@ export async function revealStudyNavigation() {
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
     root.dataset.navClassrooms = String(Boolean(flags.classrooms));
     root.dataset.navDiscoveries = String(Boolean(flags.discoveries));
+    root.dataset.navJournal = String(Boolean(flags.journal));
+    root.dataset.navSpace = String(Boolean(flags.discoveries || flags.journal));
   } catch { /* Navigation keeps the always-available pages. */ }
 }
 
@@ -40,18 +42,20 @@ function ensureArtStyles() {
 }
 
 /**
- * Descobertas (the notebook) and, inside it, the Gabinete: added to the sidebar of every page and
- * shown only when the discoveries feature is on (CSS reads data-nav-discoveries). They stay in
+ * "Seu espaço": the student's own creative places, grouped under one caption in the sidebar of
+ * every page — the study journal (Diário), the discovery archive (Descobertas) and, inside it, the
+ * cabinet of curiosities (Gabinete). Each link shows only when its feature is on (CSS reads
+ * data-nav-journal / data-nav-discoveries; the caption reads data-nav-space). They stay in
  * "Estudo silencioso": the mode hides decoration and game flourishes, never a function.
  */
 export function mountDiscoveryNavigation(doc = document) {
   const nav = doc.querySelector('.side-navigation .primary-navigation');
-  if (!nav || nav.querySelector('[data-nav-feature="discoveries"]')) return;
+  if (!nav || nav.querySelector('[data-nav-feature="space"]')) return;
   const page = location.pathname.split('/').pop();
-  const item = (href, label, icon, current, sub = false) => {
+  const item = (href, label, icon, feature, current, sub = false) => {
     const link = doc.createElement('a');
     link.href = href;
-    link.dataset.navFeature = 'discoveries';
+    link.dataset.navFeature = feature;
     if (sub) link.className = 'nav-sub';
     const mark = uiIcon(icon, { className: 'nav-icon', document: doc });
     const text = doc.createElement('span');
@@ -65,9 +69,15 @@ export function mountDiscoveryNavigation(doc = document) {
     }
     return link;
   };
+  const caption = doc.createElement('p');
+  caption.className = 'nav-group-label';
+  caption.dataset.navFeature = 'space';
+  caption.textContent = 'Seu espaço';
   nav.append(
-    item('./descobertas.html', 'Descobertas', 'discoveries', ['descobertas.html', 'investigar.html'].includes(page)),
-    item('./gabinete.html', 'Gabinete', 'cabinet', page === 'gabinete.html', true),
+    caption,
+    item('./diario.html', 'Diário', 'journal', 'journal', page === 'diario.html'),
+    item('./descobertas.html', 'Descobertas', 'discoveries', 'discoveries', ['descobertas.html', 'investigar.html'].includes(page)),
+    item('./gabinete.html', 'Gabinete', 'cabinet', 'discoveries', page === 'gabinete.html', true),
   );
 }
 

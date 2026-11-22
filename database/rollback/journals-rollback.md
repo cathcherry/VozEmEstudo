@@ -1,4 +1,4 @@
-# Rollback — Diário de estudo (`20261124090000_journals.sql`)
+# Rollback — Diário de estudo (`20261124100000_journals.sql`)
 
 Rollback **não destrutivo primeiro**. Reverter o schema **não restaura dados**: diários, páginas,
 decorações e ligações só existem nas estruturas novas.

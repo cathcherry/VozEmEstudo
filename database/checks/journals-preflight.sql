@@ -1,5 +1,5 @@
 -- Journals (3.6, Milestone D: Diário de estudo) preflight: READ ONLY. Run before
--- 20261124090000_journals.sql and keep the output. Expected: every prerequisite true, every new
+-- 20261124100000_journals.sql and keep the output. Expected: every prerequisite true, every new
 -- structure NULL (not applied).
 begin read only;
 select current_database(), current_user, now();

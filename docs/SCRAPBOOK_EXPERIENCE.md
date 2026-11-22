@@ -129,7 +129,7 @@ As seções seguintes são preenchidas à medida que as entregas ficam acessíve
   salva com a fonte** (uma das ligações). Páginas viram com animação curta (instantânea com
   movimento reduzido). **Modo silencioso** e a opção **"Página limpa"** mostram só papel e texto.
   Salva sozinho, com versão por página e repetição segura. **F**: atrás da flag `journal`
-  (`FEATURE_JOURNAL=false` por padrão) e da migration `20261124090000_journals.sql`, que é
+  (`FEATURE_JOURNAL=false` por padrão) e da migration `20261124100000_journals.sql`, que é
   **somente staging** (não aplicada em produção). Sem a migration, a página diz que o diário ainda
   não foi habilitado.
 - **Capturas**: `docs/design-audit/after/3-6-diario-*` e `3-6-caderno-*` (1440 e 390 px).

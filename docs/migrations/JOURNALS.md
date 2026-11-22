@@ -1,4 +1,4 @@
-# Migration Diário de estudo — `20261124090000_journals.sql`
+# Migration Diário de estudo — `20261124100000_journals.sql`
 
 Marco D do ciclo 3.6: o **Diário de estudo** (`diario.html`), um diário pessoal feito de páginas de
 scrapbook. **Candidata, não aplicada em nenhum ambiente por este repositório. Somente staging até

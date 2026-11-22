@@ -376,7 +376,7 @@ naquela requisição (vazio num reenvio).
 
 ## Diário de estudo 🔒 — 3.6 (flag `journal`)
 
-Migration `20261124090000_journals.sql` (somente staging; ver `docs/migrations/JOURNALS.md`).
+Migration `20261124100000_journals.sql` (somente staging; ver `docs/migrations/JOURNALS.md`).
 Tudo privado à conta, `Cache-Control: no-store`. Sem a migration: `503 JOURNAL_SCHEMA_REQUIRED`.
 Versão otimista por diário e por página (`409 JOURNAL_VERSION_CONFLICT`); repetir o mesmo
 `requestId` com o mesmo corpo devolve o estado salvo (`replayed: true`).

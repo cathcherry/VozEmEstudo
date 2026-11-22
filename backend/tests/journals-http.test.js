@@ -9,7 +9,7 @@ import { identities, resourceIds } from './fixtures/ownership.fixture.js';
 // Real SQL (PGlite) behind the HTTP adapter: the Diário de estudo over the API — without the
 // migration (scoped 503), then journal → pages → decorations → links, with validation, replays,
 // conflicts, isolation between accounts and private caching headers.
-const migration = readFileSync(new URL('../../database/migrations/20261124090000_journals.sql', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../../database/migrations/20261124100000_journals.sql', import.meta.url), 'utf8');
 
 test('Diário de estudo over HTTP: schema required, journals, pages, decorations and links; private', async () => {
   const fixture = createSupabaseHttpFixture(),

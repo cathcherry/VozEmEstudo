@@ -2,7 +2,7 @@ import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { AppError } from '../domain/errors.js';
 
 // Diário de estudo (FEATURE_JOURNAL). Every rule lives in the database functions of
-// 20261124090000_journals.sql; this module only maps their errors. A missing schema answers a 503
+// 20261124100000_journals.sql; this module only maps their errors. A missing schema answers a 503
 // scoped to these routes; the rest of the app keeps working.
 const SCHEMA_CODES = ['42P01', '42883', '42703', 'PGRST202', 'PGRST205'];
 const MESSAGES = {

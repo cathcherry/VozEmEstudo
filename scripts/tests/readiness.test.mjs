@@ -107,7 +107,7 @@ test('journal: journals and journal pages are probed only with the flag on; no f
   const flags = { journal: true };
   const results = await runReadinessChecks(createReadinessChecks(db, flags, 'audios', 'test-version'));
   assert(results.some((r) => r.ok && r.label.includes('journal: journals ')));
-  assert(results.some((r) => !r.ok && r.label.includes('journal_pages') && r.label.includes('20261124090000_journals.sql')));
+  assert(results.some((r) => !r.ok && r.label.includes('journal_pages') && r.label.includes('20261124100000_journals.sql')));
   assert.deepEqual(readinessFlagErrors(flags), []);
 });
 
