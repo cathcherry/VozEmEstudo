@@ -2,6 +2,7 @@
 // Not linked from the app; the page is noindex. Built from the manifest, so it never drifts.
 import { ART, LUME_OUTFITS, LUME_STATES, kindOf } from '../art/manifest.js';
 import { mountArtSlots, mountCompanion, renderArt } from '../art/art.js';
+import { ICON_MAP, ICON_NAMES, icon } from '../utils/icons.js';
 
 function h(tag, attributes = {}, ...children) {
   const el = document.createElement(tag);
@@ -237,6 +238,140 @@ function hooksSection() {
   );
 }
 
+const FAMILY_NAMES = {
+  lavender: 'lavanda',
+  matcha: 'matcha',
+  honey: 'mel',
+  mist: 'névoa',
+  rose: 'rosa',
+  wood: 'madeira',
+};
+
+function scrapbookSections() {
+  const grid = (kind, sizes, extra = '') =>
+    h(
+      'div',
+      { class: `review-grid ${extra}`.trim() },
+      ids(kind).map((id) =>
+        tile(id, sizes, {
+          extra:
+            kind === 'emblem'
+              ? [h('dt', { text: 'Etiqueta' }), h('dd', { text: FAMILY_NAMES[ART[id].family] })]
+              : [],
+        }),
+      ),
+    );
+  return [
+    section(
+      'emblems',
+      'Emblemas das disciplinas',
+      'Um desenho de papelaria sobre uma etiqueta tingida. A cor da etiqueta agrupa a família; o desenho diz a disciplina. Legíveis de 32 a 96 px. A Biblioteca guarda o id escolhido para cada pasta.',
+      grid('emblem', [96, 48, 32], 'review-grid-compact'),
+    ),
+    section(
+      'stickers',
+      'Adesivos',
+      'Recorte branco e uma sombra curta, como um adesivo de verdade. Funcionam sobre papel claro e sobre a noite.',
+      grid('sticker', [96, 48], 'review-grid-compact'),
+    ),
+    section(
+      'tapes',
+      'Fitas washi',
+      'Semitransparentes, com pontas rasgadas. O CSS também tem a versão leve (.washi[data-tape]).',
+      grid('tape', [240, 120], 'review-grid-wide'),
+    ),
+    section(
+      'papers',
+      'Papéis',
+      'Folhas soltas para notas, diários e fundos de cartões.',
+      grid('paper', [150, 64]),
+    ),
+    section(
+      'frames',
+      'Molduras',
+      'A janela é transparente: uma foto ou nota colocada atrás aparece por dentro.',
+      grid('frame', [150, 72]),
+    ),
+    section(
+      'dividers',
+      'Divisores',
+      'Fios desenhados à mão para separar trechos de uma página.',
+      grid('divider', [320], 'review-grid-wide'),
+    ),
+    section(
+      'labels',
+      'Etiquetas',
+      'Placas em branco: o app escreve o nome por cima.',
+      grid('label', [200, 100], 'review-grid-wide'),
+    ),
+  ];
+}
+
+/** Live CSS primitives from materials.css, composed as a small scrapbook desk. */
+function materialsSection() {
+  const scope = (tone) => {
+    const root = h('div', { class: 'mat-scope review-materials', 'data-tone': tone });
+    root.innerHTML = `
+      <div class="review-mat-col">
+        <div class="paper page-stack review-mat-note" data-paper="ruled">
+          <span class="washi" data-tape="lavender-dots" style="--tilt:-5deg"></span>
+          <span class="bookmark-ribbon" data-tint="lavender"></span>
+          <p>Fotossíntese: a luz vira açúcar na folha.</p><p>Revisar o ciclo de Calvin.</p>
+        </div>
+        <div class="tab-strip" role="presentation">
+          <span class="paper-tab" data-tint="lavender">Aulas</span><span class="paper-tab" aria-current="page">Notas</span><span class="paper-tab" data-tint="matcha">Cartões</span>
+        </div>
+        <div class="paper" data-paper="grid" style="padding:14px 16px">Papel quadriculado</div>
+      </div>
+      <div class="review-mat-col">
+        <figure class="polaroid" style="--tilt:2deg"><span></span><figcaption>Excursão ao jardim</figcaption></figure>
+        <div class="index-card"><strong>Mitose</strong><br>Divisão em duas células iguais.</div>
+        <div class="paper" data-paper="kraft" data-edge="deckle" style="padding:14px 16px 20px">Kraft com borda deckle</div>
+      </div>
+      <div class="review-mat-col">
+        <div class="review-mat-covers">
+          <div class="book-cover" data-cover="cloth-lavender"><span class="book-cover-label">Biologia</span></div>
+          <div class="book-cover" data-cover="leather-matcha"><span class="book-cover-label" data-relief="embossed">Diário</span></div>
+          <div class="book-cover" data-cover="kraft"><span class="book-cover-label">Campo</span></div>
+          <div class="book-cover" data-cover="night"><span class="book-cover-label">Noite</span></div>
+        </div>
+        <div class="review-mat-drawers">
+          <span class="drawer"><span class="label-holder">Selos</span><span class="drawer-pull"></span></span>
+          <span class="drawer"><span class="label-holder">Folhas</span><span class="drawer-pull"></span></span>
+        </div>
+        <p class="review-mat-labels"><span class="embossed-label">BIOLOGIA</span> <span class="embossed-label" data-tint="matcha">REVISAR</span> <span class="embossed-label" data-tint="rose">PROVA</span></p>
+        <div class="paper" data-paper="aged" data-edge="torn" style="padding:14px 16px">Papel envelhecido, borda rasgada</div>
+      </div>`;
+    return root;
+  };
+  return section(
+    'materials',
+    'Materiais (CSS)',
+    'Primitivos de frontend/css/materials.css, ao vivo: papel, pilha de folhas, fita, marcador, abas, polaroide, ficha, capas de tecido e couro, gavetas com puxador de latão e etiquetas em relevo. Em alto contraste e cores forçadas, a decoração some e fica só a borda.',
+    h('div', { class: 'review-mat-pair' }, scope('light'), scope('dark')),
+  );
+}
+
+/** The functional icon sprite (Phosphor, MIT), with semantic and pack names. */
+function uiIconsSection() {
+  const grid = h('div', { class: 'review-ui-icons' });
+  for (const name of ICON_NAMES)
+    grid.append(
+      h(
+        'figure',
+        { class: 'review-ui-icon' },
+        icon(name, { size: 28 }),
+        h('figcaption', {}, h('code', { text: name }), h('span', { text: ICON_MAP[name] })),
+      ),
+    );
+  return section(
+    'ui-icons',
+    'Ícones de interface',
+    `Phosphor Icons 2.1.1 (licença MIT), peso duotone, ${ICON_NAMES.length} ícones num sprite (frontend/assets/icons/sprite.svg). O código usa o nome semântico; a camada clara usa a cor --icon-tint.`,
+    grid,
+  );
+}
+
 function controls() {
   const motion = h(
     'div',
@@ -341,14 +476,17 @@ function build() {
     ),
     section(
       'icons',
-      'Ícones',
-      'Traço de 1,6 em 24 × 24, na cor do texto ao redor.',
+      'Ícones ilustrados',
+      'Traço de 1,6 em 24 × 24, na cor do texto ao redor. Usados como arte (Descobertas, Gabinete, mesa); os ícones de função ficam no sprite Phosphor, mais abaixo.',
       h(
         'div',
         { class: 'review-grid review-grid-icons' },
         ids('icon').map((id) => tile(id, [32, 24, 16])),
       ),
     ),
+    ...scrapbookSections(),
+    materialsSection(),
+    uiIconsSection(),
     hooksSection(),
   );
   mountArtSlots(main);

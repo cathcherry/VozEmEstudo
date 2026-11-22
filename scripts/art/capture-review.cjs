@@ -16,6 +16,15 @@ const SECTIONS = {
   wallpapers: 'papeis-de-parede',
   empty: 'estados-vazios',
   icons: 'icones',
+  emblems: 'emblemas',
+  stickers: 'adesivos',
+  tapes: 'fitas-washi',
+  papers: 'papeis',
+  frames: 'molduras',
+  dividers: 'divisores',
+  labels: 'etiquetas',
+  materials: 'materiais-css',
+  'ui-icons': 'icones-interface',
   hooks: 'ganchos',
 };
 

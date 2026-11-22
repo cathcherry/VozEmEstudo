@@ -12,6 +12,17 @@ Componentes consultados:
 
 A adaptação integra a cor persistente, tipografia local, foco, navegação e responsividade da aplicação. O CSS do kit fica separado em `frontend/css/marque.css`.
 
+## Ícones de interface (3.6)
+
+Phosphor Icons 2.1.1 (`@phosphor-icons/core`, peso duotone), licença MIT, © 2023 Phosphor Icons
+(Tobias Fried e Helena Zhang). Fonte: https://phosphoricons.com e
+https://github.com/phosphor-icons/core. A licença acompanha o sprite em
+`frontend/assets/icons/PHOSPHOR-LICENSE.txt`. Os SVGs são copiados do pacote npm para
+`frontend/assets/icons/sprite.svg` por `npm run icons:build`; a única alteração é a camada clara do
+duotone, que passa a usar a cor da variável CSS `--icon-tint`. A MIT permite uso, cópia,
+modificação e distribuição, inclusive comercial, desde que o aviso de copyright e a licença
+acompanhem o material. A lista de ícones usados está em `frontend/js/utils/icons.js`.
+
 ## Fontes
 
 Plus Jakarta Sans e Inter, distribuídas sob SIL Open Font License. Arquivos WOFF2 locais em `frontend/assets/fonts/`. Licenças: `JAKARTA-OFL.txt` e `INTER-OFL.txt`.

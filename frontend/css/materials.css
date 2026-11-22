@@ -13,7 +13,10 @@
  */
 
 /* ==== Tokens ================================================================================ */
-:root {
+/* `.mat-scope` recomputes the tokens inside a preview that has its own surface colours
+   (theme cards in Aparência, the art review page); data-tone="dark" gives it the night values. */
+:root,
+.mat-scope {
   --mat-sheet: color-mix(in srgb, var(--paper-raised) 92%, #fffaf0);
   --mat-sheet-2: color-mix(in srgb, var(--mat-sheet) 94%, var(--ink));
   --mat-sheet-3: color-mix(in srgb, var(--mat-sheet) 88%, var(--ink));
@@ -47,7 +50,8 @@
   --mat-deckle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 6' preserveAspectRatio='none'%3E%3Cpath d='M0 0H40V3.2L37 4.4 34 2.8 31 4.6 28 3.4 25 5 22 3 19 4.4 16 2.6 13 4.8 10 3.2 7 4.2 4 2.8 0 4Z'/%3E%3C/svg%3E");
   --mat-torn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 40' preserveAspectRatio='none'%3E%3Cpath d='M0 0H3L4.6 3 2 6 5 9 2.6 12 5.4 15 2.2 18 4.8 21 2 24 5.2 27 2.4 30 4.6 33 2 36 3.4 40H0Z'/%3E%3C/svg%3E");
 }
-:root:is([data-theme='night'], [data-theme='custom']) {
+:root:is([data-theme='night'], [data-theme='custom']),
+.mat-scope[data-tone='dark'] {
   --mat-sheet: color-mix(in srgb, var(--paper-raised) 88%, #3d3656);
   --mat-rule: color-mix(in srgb, #7d9db8 45%, var(--mat-sheet));
   --mat-margin: color-mix(in srgb, #b86a7c 55%, var(--mat-sheet));
@@ -221,7 +225,8 @@
   isolation: isolate;
   display: grid;
   place-items: start center;
-  padding: 18% 12% 12% 18%;
+  min-width: 0;
+  padding: 18% 10% 10% 16%;
   aspect-ratio: 3 / 4;
   border-radius: 4px 10px 10px 4px;
   background-color: var(--cover);
@@ -313,7 +318,7 @@
 .book-cover-label {
   display: block;
   max-width: 100%;
-  padding: 0.5em 0.85em;
+  padding: 0.45em 0.6em;
   border-radius: 5px;
   background: color-mix(in srgb, #fffdf7 92%, var(--cover));
   color: #2e2a3b;
@@ -561,6 +566,7 @@
   gap: 0.6rem;
   padding: 0.6rem 0.6rem 1.4rem;
   background: color-mix(in srgb, #fff 94%, var(--paper));
+  color: #2e2a3b;
   border: 1px solid var(--mat-edge);
   rotate: var(--tilt);
   box-shadow: var(--mat-lift-2);
@@ -577,7 +583,8 @@
   font-family: var(--font-display);
   font-style: italic;
   text-align: center;
-  color: var(--ink-muted);
+  /* The print stays white at night, so its caption keeps dark ink. */
+  color: #5b5470;
 }
 .envelope {
   position: relative;

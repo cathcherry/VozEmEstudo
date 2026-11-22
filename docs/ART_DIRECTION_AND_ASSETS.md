@@ -1,4 +1,4 @@
-# Direção de arte e ativos (Voz em Estudo 3.5)
+# Direção de arte e ativos (Voz em Estudo 3.5 e 3.6)
 
 Este documento é o guia de estilo da arte do ciclo 3.5 e o inventário de todas as ilustrações. Ele
 segue a direção criativa de [`EXPERIENCE_VISION_3_5.md`](./EXPERIENCE_VISION_3_5.md) (seções 3, 4, 7
@@ -7,7 +7,8 @@ e 9).
 > **Nota sobre ferramentas.** Esta sessão **não tem ferramenta de geração de imagens por IA**. Toda a
 > arte foi desenhada à mão em SVG, com caminhos escritos um a um. O código que monta os arquivos fica
 > em `scripts/art/` e só junta peças, aplica a paleta e repete molduras comuns (borda de selo,
-> sombra no chão). Nenhuma arte de terceiros foi baixada ou usada.
+> sombra no chão). Nenhuma arte de terceiros foi baixada ou usada. No 3.6, a única peça de terceiros
+> é o pacote de **ícones de interface** Phosphor (MIT, seção 13); toda a arte continua original.
 
 ## 1. Princípios
 
@@ -262,6 +263,15 @@ backend):
 `arte-topo.png`, `lume-estados-e-trajes.png`, `selos.png`, `selos-fundo-noite.png`, `objetos.png`,
 `capas.png`, `papeis-de-parede.png`, `estados-vazios.png`, `icones.png`, `ganchos.png`.
 
+3.6: `emblemas.png`, `adesivos.png`, `fitas-washi.png`, `papeis.png`, `molduras.png`,
+`divisores.png`, `etiquetas.png`, `materiais-css.png` (claro e escuro) e `icones-interface.png`.
+Cada peça nova foi renderizada no Chromium em 32, 48 e 96 px (e no fundo noturno). Foram
+redesenhados: engrenagens com dentes deformados, anel de Saturno embolado, pratos da balança
+encostando na borda, bola de educação física fora da etiqueta, caracol com corpo duplicado, borla
+do marcador e vapor da xícara cortados pela borda, luz da luminária que ganhava recorte branco,
+pontas das fitas viradas do avesso, kraft com fibras pesadas demais, bordas deckle serrilhadas e a
+sombra que aparecia dentro da janela das molduras.
+
 **Controle de qualidade feito nesta entrega:** cada SVG foi renderizado no Chromium em 48, 96 e 200
 a 520 px. Foram redesenhados: braços da Lume (pareciam bastões), olhar de leitura (parecia bravo),
 pálpebra que não cobria o olho no piscar, seta solta no selo "Revisita", meridiano do globo fora do
@@ -326,3 +336,204 @@ acrescente o crédito em [`CREDITOS_INTERFACE.md`](./CREDITOS_INTERFACE.md).
 | ---------------------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `npm run test:art` (parte de `npm test` e `npm run check`) | `frontend/tests/art-manifest.test.mjs` | ids únicos e no padrão, pasta certa por tipo, arquivo existente, `viewBox`/`width`/`height` iguais ao manifesto, `alt` e licença, nenhum `script`, `style`, `text`, imagem externa ou `on*`, nenhum arquivo órfão, paleta respeitada, partes da Lume presentes, leitura sem movimento, falha suave do `art.js`                                           |
 | `npm run test:browser`                                     | `frontend/tests/art-check.cjs`         | todas as 61 peças carregam em `arte.html`; axe (WCAG 2.2 A/AA) sem violações no fundo claro, no escuro e em 390 px; a Lume se mexe em repouso, fica parada lendo e para com `prefers-reduced-motion`, "Reduzir animações", "Baixa estimulação" e "Movimento desligado"; ganchos `data-art-slot`, `setCompanionState`, id inexistente e Estudo silencioso |
+| `npm run test:art` (3.6)                                   | `frontend/tests/art-manifest.test.mjs` | quantidade e tamanho de cada tipo novo, família de cor dos emblemas, recorte dos adesivos, janela transparente das molduras, build reproduzível e igual aos arquivos, sugestão de emblema pelo nome (só palavras inteiras), cada ícone semântico presente no sprite Phosphor com a licença MIT, shell estático usando o sprite |
+| `npm run test:browser` (3.6)                               | `frontend/tests/emblem-picker-check.cjs` | seletor de emblema só pelo teclado (Tab entra na opção marcada, setas trocam, anel de foco visível), axe sem violações no diálogo, emblema sugerido pelo nome, escolha salva em `catalog-icons` e mostrada na pasta, ícones do shell vindos do sprite |
+
+## 11. Ciclo 3.6: referências e o que tiramos delas
+
+Pesquisa rápida antes de desenhar o conjunto de scrapbook, os materiais em CSS e os ícones. A ideia
+não era copiar nenhuma peça, e sim entender por que as boas referências parecem objetos de verdade
+sem pesar.
+
+| Referência | O que tiramos dela |
+| --- | --- |
+| [História do esqueuomorfismo na Apple (Egg Freckles)](https://eggfreckles.net/notes/apples-history-of-skeuomorphism), [Platinum, Mac OS 8–9 (OSNews)](https://www.osnews.com/?p=30328), [Aqua (Wikipedia)](https://en.wikipedia.org/wiki/Aqua_(user_interface)) | O Platinum criava volume com **sombras sutis e degradês simples, sem chanfros pesados**, e é lembrado como o auge da clareza. Daí vem a regra: controles têm uma borda de luz em cima e uma sombra curta embaixo, e nada além disso. Os temas mais carregados do Mac OS 8 foram abandonados justamente por quebrar a consistência. |
+| [Esqueuomorfismo: realismo e design figurativo (Justinmind)](https://www.justinmind.com/ui-design/skeuomorphic), [Boas práticas de 2026 (Clay)](https://clay.global/blog/skeuomorphism-ui), [Elementos esqueuomórficos interativos (Speckyboy)](https://speckyboy.com/interactive-skeuomorphic-design-elements.md) | Sombra em **duas ou três camadas** (contato, curta e ambiente longa), como objetos reais. Textura gerada (degradês repetidos, um ladrilho de ruído) em vez de imagem ladrilhada, que denuncia a repetição. Textura mais fraca em peças pequenas. Papel pautado e folhas empilhadas são os exemplos que mais funcionam. |
+| [Estilo esqueuomórfico (superdesign.dev)](https://superdesign.dev/styles/skeuomorphism) | No alto contraste do Windows as sombras e os degradês somem, então **todo controle precisa de uma borda de verdade**. Não misturar esqueuomorfismo com vidro ou neumorfismo no mesmo componente. |
+| [Livro de inventário de Plant Therapy (devlog)](https://short-leg-studio.itch.io/plant-therapy/devlog/515334/sneak-peek-inventory-book), [Pocket Inventory: Adventure Book](https://humblepixel.itch.io/pocket-inventory-series-1-adventure-book), [referência "Cozy Gamer"](https://chrislemke.github.io/website_designs/examples/Cozy_Gamer.html) | Em jogos aconchegantes, o inventário é um **livro ou diário**: abas de papel no lugar de uma barra de navegação, fita washi e fotos presas na página, prateleira ou gaveta como lugar das coleções. Inventário inicial simples e mínimo, nunca feio. |
+
+**Proporções que adotamos.** Papel quase branco quente sobre a mesa; sombra de contato de 1 px e uma
+ambiente de 8 a 34 px bem difusa; inclinação de 2 a 5° só em objetos soltos (fita, polaroide), nunca
+em controles; fita a 85 % de opacidade com pontas rasgadas; capas com 3:4, lombada de 6 a 9 px e
+costura tracejada a 7 px da borda; etiquetas de latão com borda de 3 px; adesivos com recorte branco
+de cerca de 3,5 % do tamanho.
+
+## 12. Materiais em CSS (`frontend/css/materials.css`)
+
+Carregado por `system.css` (`@import … layer(system)`), então existe em todas as páginas, abaixo da
+camada `a11y`. As classes estão documentadas em [`CSS_GUIDE.md`](./CSS_GUIDE.md#materiais-36) e
+aparecem ao vivo, no claro e no escuro, na seção "Materiais (CSS)" de `arte.html`.
+
+| Primitivo | Classe e variantes | Notas |
+| --- | --- | --- |
+| Papel | `.paper[data-paper="ruled\|grid\|dot\|kraft\|linen\|vellum\|aged"]` | ruído SVG de 180 px a 7 % (12 % no escuro); pauta, margem e pontos vêm de tokens |
+| Bordas | `.paper[data-edge="deckle"]` (embaixo), `[data-edge="torn"]` (à esquerda) | máscara SVG repetida; sombra por `drop-shadow` para seguir o recorte |
+| Pilha de folhas | `.page-stack` | duas folhas deslocadas, cada uma com borda própria, e uma sombra ambiente |
+| Capas | `.book-cover[data-cover="cloth-lavender\|leather-matcha\|linen-mist\|kraft\|night"]` + `.book-cover-label` (`data-relief="embossed"`) | trama ou grão, lombada, costura tracejada; a etiqueta é rebaixada (sombra interna) ou em relevo |
+| Argolas | `.binder-rings > i` | metal estanho, brilho em cima |
+| Abas e fitas | `.tab-strip`, `.paper-tab[data-tint]`, `.bookmark-ribbon[data-tint]` | a aba ativa se funde à folha; marcador com ponta em "V" |
+| Washi | `.washi[data-tape="lavender-dots\|matcha-stripes\|honey-gingham\|rose-floral\|mist-grid\|kraft\|stars\|check"]` (`--tilt`, `--tape-length`) | semitransparente, pontas rasgadas; decorativa (`aria-hidden`) |
+| Ficha, polaroide, envelope | `.index-card`, `.polaroid` (`--tilt`), `.envelope[data-airmail]` | ficha com fio rosa e pauta azul; envelope com aba e borda de correio aéreo |
+| Gaveta | `.drawer` + `.label-holder` + `.drawer-pull` | madeira com veios, chanfro, puxador e porta-etiqueta de latão; afunda 2 px ao passar o mouse |
+| Etiqueta em relevo | `.embossed-label[data-tint="matcha\|rose\|ink"]` | letras brancas em relevo sobre fita colorida |
+| Prévia com outra superfície | `.mat-scope[data-tone="dark"]` | recalcula os tokens dentro de uma prévia (cartões de tema, galeria) |
+
+**Escuro.** Os tokens `--mat-*` derivam das cores do tema e ganham valores noturnos em
+`[data-theme="night"]` e `custom`: madeira e kraft escurecem e o ruído sobe um pouco. **Movimento:**
+só a gaveta e as opções do seletor se mexem (2 px), e nada se mexe com `prefers-reduced-motion`,
+"Reduzir animações", "Baixa estimulação" ou movimento desligado. **Alto contraste e cores forçadas:**
+textura, máscara, inclinação e sombra somem e fica uma borda simples; fitas, marcadores e argolas
+desaparecem em cores forçadas.
+
+## 13. Ícones de interface (Phosphor) e emblemas ilustrados
+
+Duas famílias com papéis diferentes:
+
+1. **Ícones de função** (botões, navegação, menus): um único pacote licenciado, **Phosphor Icons
+   2.1.1, licença MIT** ([phosphoricons.com](https://phosphoricons.com),
+   [github.com/phosphor-icons/core](https://github.com/phosphor-icons/core), autores Helena Zhang e
+   Tobias Fried), no **peso duotone**. A camada clara do duotone usa `--icon-tint` (lavanda a 32 %,
+   rosa nos botões de excluir) e some em cores forçadas. O mapa semântico (`home`, `library`,
+   `review`, `edit`, `remove`…) fica em `frontend/js/utils/icons.js`; o código nunca usa o nome do
+   Phosphor. `npm run icons:build` copia os SVGs do pacote npm para
+   `frontend/assets/icons/sprite.svg` (um `<symbol id="i-<nome>">` por ícone) e troca os desenhos
+   antigos do shell estático das páginas pelo sprite. Rodar de novo é seguro: depois de mesclar
+   páginas de outro ramo, basta repetir o comando.
+   - API: `icon(name, { size, label, className })` devolve um `<svg>`; `iconMarkup(...)` devolve o
+     HTML. Sem `label`, o ícone é decorativo (`aria-hidden`); o nome acessível fica no botão.
+   - Onde foi aplicado: barra lateral e barra do topo de todas as páginas do app (Início,
+     Biblioteca, Revisar, Planejar, Focar, Turmas, Descobertas, Gabinete, Configurações,
+     Aparência, busca, modo foco, personalizar, arrumar a mesa), menus e ícones de arquivo e pasta
+     da Biblioteca, alternância grade e lista e filtros, player (tocar, pausar, voltar e avançar 10
+     s, tela cheia), leitura em voz alta, cronômetro de foco, camadas de sons ambientes, recorte do
+     envio e o aviso de questão reportada.
+   - Os 14 ícones ilustrados antigos (`icon.*` no manifesto) continuam como **arte** (mesa,
+     selos), não como ícones de função.
+2. **Emblemas das disciplinas** (`emblem.*`, 24 peças originais): um motivo de papelaria sobre uma
+   etiqueta tingida (lavanda, matcha, mel, névoa, rosa ou madeira), 64 × 64, legível de 32 a 96 px.
+
+**Seletor de emblema da Biblioteca.** Em "Nova disciplina", "Editar" e "Nova unidade", a opção
+"Ícone da pasta" abre uma grade de 25 botões de opção (pasta simples + 24 emblemas) com nome visível.
+É um grupo de rádio nativo: Tab entra na opção marcada, as setas percorrem, o anel de foco aparece
+na etiqueta. Enquanto a pessoa não escolhe, o emblema acompanha o nome digitado ("Química orgânica" →
+frasco). O PNG personalizado continua disponível. **Onde fica salvo:** no mesmo estado de nuvem
+`catalog-icons` que já guardava os ícones PNG (chave `subject-<id>` ou `unit-<id>`), com o valor
+`'emblem.<nome>'` (ou `'none'` para pasta simples; `true` continua sendo PNG). **Sem migração:**
+pastas sem escolha mostram o emblema sugerido pelo nome (`emblemFor` em `folder-icons.js`) e nomes
+sem correspondência continuam com a pasta simples.
+
+## 14. Inventário do ciclo 3.6
+
+Todas as 79 peças abaixo são **originais, desenhadas à mão em SVG para o Voz em Estudo**, com a
+mesma licença do projeto, geradas por `scripts/art/emblems.mjs`, `scripts/art/scrapbook.mjs` e
+`scripts/art/covers.mjs` (`npm run art:build`). As bordas irregulares (deckle, rasgo, fita) usam um
+gerador pseudoaleatório com semente fixa: cada build desenha exatamente o mesmo arquivo. O único
+material de terceiros do ciclo é o pacote de ícones Phosphor (seção 13), que não é arte do manifesto.
+
+| Id | Arquivo (em `frontend/assets/art/`) | Tamanho | Nome | Uso | Licença |
+| --- | --- | --- | --- | --- | --- |
+| `cover.cloth-lavender` | `covers/cloth-lavender.svg` | 240 × 320 | Tecido lavanda | Capas de caderno | original, Voz em Estudo |
+| `cover.leather-matcha` | `covers/leather-matcha.svg` | 240 × 320 | Couro matcha | Capas de caderno | original, Voz em Estudo |
+| `cover.marbled-honey` | `covers/marbled-honey.svg` | 240 × 320 | Marmorizado mel | Capas de caderno | original, Voz em Estudo |
+| `cover.botanical-press` | `covers/botanical-press.svg` | 240 × 320 | Herbário | Capas de caderno | original, Voz em Estudo |
+| `cover.constellation` | `covers/constellation.svg` | 240 × 320 | Constelação | Capas de caderno | original, Voz em Estudo |
+| `cover.field-notes` | `covers/field-notes.svg` | 240 × 320 | Caderneta de campo | Capas de caderno | original, Voz em Estudo |
+| `emblem.biologia` | `emblems/biologia.svg` | 64 × 64 | Biologia (etiqueta matcha) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.quimica` | `emblems/quimica.svg` | 64 × 64 | Química (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.fisica` | `emblems/fisica.svg` | 64 × 64 | Física (etiqueta mist) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.matematica` | `emblems/matematica.svg` | 64 × 64 | Matemática (etiqueta honey) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.historia` | `emblems/historia.svg` | 64 × 64 | História (etiqueta wood) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.geografia` | `emblems/geografia.svg` | 64 × 64 | Geografia (etiqueta matcha) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.literatura` | `emblems/literatura.svg` | 64 × 64 | Português e literatura (etiqueta rose) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.linguas` | `emblems/linguas.svg` | 64 × 64 | Línguas (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.artes` | `emblems/artes.svg` | 64 × 64 | Artes (etiqueta rose) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.musica` | `emblems/musica.svg` | 64 × 64 | Música (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.filosofia` | `emblems/filosofia.svg` | 64 × 64 | Filosofia (etiqueta mist) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.sociologia` | `emblems/sociologia.svg` | 64 × 64 | Sociologia (etiqueta honey) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.direito` | `emblems/direito.svg` | 64 × 64 | Direito (etiqueta wood) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.saude` | `emblems/saude.svg` | 64 × 64 | Medicina e saúde (etiqueta rose) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.economia` | `emblems/economia.svg` | 64 × 64 | Economia (etiqueta honey) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.computacao` | `emblems/computacao.svg` | 64 × 64 | Computação (etiqueta mist) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.engenharia` | `emblems/engenharia.svg` | 64 × 64 | Engenharia (etiqueta wood) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.psicologia` | `emblems/psicologia.svg` | 64 × 64 | Psicologia (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.educacao-fisica` | `emblems/educacao-fisica.svg` | 64 × 64 | Educação física (etiqueta matcha) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.astronomia` | `emblems/astronomia.svg` | 64 × 64 | Astronomia (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.botanica` | `emblems/botanica.svg` | 64 × 64 | Botânica (etiqueta matcha) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.idiomas` | `emblems/idiomas.svg` | 64 × 64 | Idiomas (etiqueta mist) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.geral` | `emblems/geral.svg` | 64 × 64 | Geral (etiqueta lavender) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `emblem.pesquisa` | `emblems/pesquisa.svg` | 64 × 64 | Pesquisa (etiqueta honey) | Pastas da Biblioteca e seletor "Ícone da pasta" | original, Voz em Estudo |
+| `paper.ruled` | `papers/ruled.svg` | 200 × 260 | Pautado | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.grid` | `papers/grid.svg` | 200 × 260 | Quadriculado | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.dot` | `papers/dot.svg` | 200 × 260 | Pontilhado | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.kraft` | `papers/kraft.svg` | 200 × 260 | Kraft | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.linen` | `papers/linen.svg` | 200 × 260 | Linho | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.vellum` | `papers/vellum.svg` | 200 × 260 | Vegetal | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `paper.aged-cream` | `papers/aged-cream.svg` | 200 × 260 | Creme envelhecido | Notas, diário, fundos de cartões | original, Voz em Estudo |
+| `tape.lavender-dots` | `tapes/lavender-dots.svg` | 160 × 44 | Bolinhas lavanda | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.matcha-stripes` | `tapes/matcha-stripes.svg` | 160 × 44 | Listras matcha | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.honey-gingham` | `tapes/honey-gingham.svg` | 160 × 44 | Xadrez mel | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.rose-floral` | `tapes/rose-floral.svg` | 160 × 44 | Florzinhas rosa | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.mist-grid` | `tapes/mist-grid.svg` | 160 × 44 | Grade névoa | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.kraft` | `tapes/kraft.svg` | 160 × 44 | Kraft | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.stars` | `tapes/stars.svg` | 160 × 44 | Estrelinhas | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `tape.check` | `tapes/check.svg` | 160 × 44 | Xadrez lavanda e matcha | Prender notas e fotos (decorativo) | original, Voz em Estudo |
+| `sticker.pressed-flower` | `stickers/pressed-flower.svg` | 96 × 96 | Flor prensada | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.leaf` | `stickers/leaf.svg` | 96 × 96 | Folha | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.moth` | `stickers/moth.svg` | 96 × 96 | Mariposa | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.teacup` | `stickers/teacup.svg` | 96 × 96 | Xícara | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.pencil` | `stickers/pencil.svg` | 96 × 96 | Lápis | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.paperclip` | `stickers/paperclip.svg` | 96 × 96 | Clipe | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.star` | `stickers/star.svg` | 96 × 96 | Estrela | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.moon` | `stickers/moon.svg` | 96 × 96 | Lua | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.bookmark` | `stickers/bookmark.svg` | 96 × 96 | Marcador | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.mushroom` | `stickers/mushroom.svg` | 96 × 96 | Cogumelo | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.fern` | `stickers/fern.svg` | 96 × 96 | Samambaia | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.snail` | `stickers/snail.svg` | 96 × 96 | Caracol | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.lamp` | `stickers/lamp.svg` | 96 × 96 | Luminária | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.envelope` | `stickers/envelope.svg` | 96 × 96 | Envelope | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.wax-seal` | `stickers/wax-seal.svg` | 96 × 96 | Selo de cera | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.ribbon-bow` | `stickers/ribbon-bow.svg` | 96 × 96 | Laço de fita | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.bee` | `stickers/bee.svg` | 96 × 96 | Abelha | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.clover` | `stickers/clover.svg` | 96 × 96 | Trevo | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.cloud` | `stickers/cloud.svg` | 96 × 96 | Nuvem | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `sticker.book-heart` | `stickers/book-heart.svg` | 96 × 96 | Coração de livros | Decoração colecionável de páginas e cadernos | original, Voz em Estudo |
+| `frame.polaroid` | `frames/polaroid.svg` | 200 × 240 | Polaroide | Fotos e notas no caderno | original, Voz em Estudo |
+| `frame.deckle` | `frames/deckle.svg` | 200 × 240 | Borda deckle | Fotos e notas no caderno | original, Voz em Estudo |
+| `frame.tape-corners` | `frames/tape-corners.svg` | 200 × 240 | Cantoneiras | Fotos e notas no caderno | original, Voz em Estudo |
+| `frame.scalloped` | `frames/scalloped.svg` | 200 × 240 | Recorte ondulado | Fotos e notas no caderno | original, Voz em Estudo |
+| `frame.stamp-border` | `frames/stamp-border.svg` | 200 × 240 | Borda de selo | Fotos e notas no caderno | original, Voz em Estudo |
+| `divider.wave` | `dividers/wave.svg` | 320 × 24 | Onda à mão | Separar trechos de páginas | original, Voz em Estudo |
+| `divider.sprig` | `dividers/sprig.svg` | 320 × 24 | Raminho | Separar trechos de páginas | original, Voz em Estudo |
+| `divider.stitch` | `dividers/stitch.svg` | 320 × 24 | Costura | Separar trechos de páginas | original, Voz em Estudo |
+| `divider.diamond` | `dividers/diamond.svg` | 320 × 24 | Losango | Separar trechos de páginas | original, Voz em Estudo |
+| `divider.moon-dots` | `dividers/moon-dots.svg` | 320 × 24 | Pontos e lua | Separar trechos de páginas | original, Voz em Estudo |
+| `label.brass-holder` | `labels/brass-holder.svg` | 200 × 72 | Porta-etiqueta de latão | Nome de gavetas, cadernos e pastas | original, Voz em Estudo |
+| `label.bookplate` | `labels/bookplate.svg` | 200 × 72 | Ex-libris | Nome de gavetas, cadernos e pastas | original, Voz em Estudo |
+| `label.ticket` | `labels/ticket.svg` | 200 × 72 | Bilhete | Nome de gavetas, cadernos e pastas | original, Voz em Estudo |
+| `label.tag` | `labels/tag.svg` | 200 × 72 | Etiqueta kraft | Nome de gavetas, cadernos e pastas | original, Voz em Estudo |
+
+| Material de terceiros | Arquivo | Licença | Fonte e autor | Permissões |
+| --- | --- | --- | --- | --- |
+| Phosphor Icons 2.1.1, peso duotone (76 ícones) | `frontend/assets/icons/sprite.svg` (+ `PHOSPHOR-LICENSE.txt`) | MIT | [github.com/phosphor-icons/core](https://github.com/phosphor-icons/core), npm `@phosphor-icons/core@2.1.1`; © 2023 Phosphor Icons (Helena Zhang, Tobias Fried) | uso, cópia, modificação e distribuição, inclusive comercial, mantendo o aviso e a licença |
+
+## 15. Como substituir as peças do 3.6 por arte desenhada à mão
+
+Vale tudo da seção 9 (mesmo nome e tamanho, ou `src` no manifesto; o gerador nunca sobrescreve um
+arquivo sem a marca `voz-art:generated`). Por tipo:
+
+- **Emblemas (64 × 64):** mantenha a etiqueta ocupando quase a prancheta inteira (4 a 60) e o motivo
+  dentro de 14 a 50, com contorno, para continuar legível em 32 px. A cor da etiqueta é o campo
+  `family` no manifesto; se trocar a cor, atualize o campo. O id é o que a Biblioteca guarda: **não
+  renomeie** um id já usado (crie um novo e deixe o antigo).
+- **Adesivos (96 × 96):** deixe 6 unidades de margem para o recorte branco. Um PNG transparente já
+  com recorte também serve; nesse caso não precisa do filtro.
+- **Fitas (160 × 44):** a faixa vai de y 8 a 36; mantenha a semitransparência (cerca de 85 %).
+- **Molduras (200 × 240):** a janela precisa continuar transparente (recorte par-ímpar ou PNG com
+  alfa), porque a foto fica atrás.
+- **Papéis, divisores e etiquetas:** fundo transparente fora da folha; etiquetas sem texto.
+- **Ícones de função:** não desenhe à mão um ícone isolado. Para trocar um ícone, troque o nome do
+  Phosphor no mapa de `icons.js` e rode `npm run icons:build`. Para trocar o pacote inteiro, gere
+  um sprite com os mesmos ids `i-<nome>` e registre a nova licença em `CREDITOS_INTERFACE.md`.
+- **Materiais em CSS:** são código, não arquivos. Para usar uma textura desenhada, troque
+  `--mat-noise` (ou o `background-image` da variante) por `url('/assets/…')` e mantenha as regras
+  de alto contraste e cores forçadas.

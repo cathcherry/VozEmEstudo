@@ -1,0 +1,37 @@
+{
+  "Ícone da pasta": {
+    "en": "Folder icon",
+    "es": "Icono de la carpeta",
+    "zh-CN": "文件夹图标"
+  },
+  "Emblema da pasta": {
+    "en": "Folder emblem",
+    "es": "Emblema de la carpeta",
+    "zh-CN": "文件夹徽章"
+  },
+  "Use as setas para percorrer os desenhos.": {
+    "en": "Use the arrow keys to move through the drawings.",
+    "es": "Usa las flechas para recorrer los dibujos.",
+    "zh-CN": "使用方向键浏览图案。"
+  },
+  "Ou use uma imagem sua:": {
+    "en": "Or use your own image:",
+    "es": "O usa una imagen tuya:",
+    "zh-CN": "或使用你自己的图片："
+  },
+  "Personalizado (PNG)": {
+    "en": "Custom (PNG)",
+    "es": "Personalizado (PNG)",
+    "zh-CN": "自定义（PNG）"
+  },
+  "Restaurar ícone padrão": {
+    "en": "Restore default icon",
+    "es": "Restaurar icono predeterminado",
+    "zh-CN": "恢复默认图标"
+  },
+  "Pasta simples": {
+    "en": "Plain folder",
+    "es": "Carpeta simple",
+    "zh-CN": "普通文件夹"
+  }
+}

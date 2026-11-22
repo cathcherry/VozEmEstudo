@@ -34,3 +34,17 @@ molduras, diário) nunca foi construída, e nenhuma transformação foi implemen
 ## 2. O que esta sessão entrega
 
 As seções seguintes são preenchidas à medida que as entregas ficam acessíveis no app.
+
+### Ativos, ícones e materiais (ramo `feat/3.6-assets`)
+
+- **Ícones coerentes** (era Pa): um só pacote licenciado para os ícones de função, Phosphor Icons
+  2.1.1 (MIT), peso duotone, num sprite (`frontend/js/utils/icons.js`, `npm run icons:build`).
+  Substitui os desenhos misturados do shell de todas as páginas do app, dos menus da Biblioteca, do
+  player, da leitura em voz alta, do cronômetro e dos sons ambientes. **OK.**
+- **Seletor de ícone de disciplina** (era genérico): grade de 24 emblemas ilustrados originais, com
+  nome, acessível pelo teclado, em "Nova disciplina", "Editar" e "Nova unidade". Fica salvo onde
+  os ícones PNG já ficavam; pastas antigas ganham o emblema que o nome sugere, sem migração. **OK.**
+- **Elementos de scrapbook** (era D): 79 peças SVG originais no manifesto (papéis, fitas washi,
+  adesivos, molduras, divisores, etiquetas, capas) e os primitivos de material em CSS
+  (`frontend/css/materials.css`). **Pa:** as peças existem, estão na galeria `arte.html` e
+  documentadas, mas ainda não há uma tela onde a pessoa as aplique numa página (diário).
