@@ -1,0 +1,485 @@
+/* Revisar 3.6 (review-layout.js): today's work first, one card at a time, tools out of the way.
+ * Hierarchy: the title, then one line of what is waiting (each item opens its tab), the tabs with
+ * their counts; in Flashcards a toolbar (the queue's name and size; Filtros, Novo cartão,
+ * Gerenciar) above a single review card on the paper. Managing cards and sets is a second view of
+ * ruled rows. Questões and Anotações are ruled lists, not boxes. No card inside a card. */
+@layer pages {
+  body[data-page='review'] .tool-intro[hidden] {
+    display: none;
+  }
+  /* ---- Para hoje ----------------------------------------------------------------------------- */
+  body[data-page='review'] .review-today {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-3);
+    min-height: 2.25rem;
+    margin: var(--space-2) 0 var(--space-4);
+  }
+  body[data-page='review'] .review-today:empty {
+    display: none;
+  }
+  body[data-page='review'] .review-today-label {
+    color: var(--ink);
+    font: 600 var(--step-0) / 1.4 var(--font-ui);
+  }
+  body[data-page='review'] .review-today-item {
+    min-height: 2.25rem;
+    padding: 0 var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--brand-ink) 22%, transparent);
+    border-radius: var(--radius-control);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+    font: 600 var(--step-ui) / 1 var(--font-ui);
+    cursor: pointer;
+  }
+  body[data-page='review'] .review-today-item:hover {
+    background: color-mix(in srgb, var(--brand-ink) 16%, transparent);
+  }
+  body[data-page='review'] .review-today-item:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
+  body[data-page='review'] .review-today-done {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-0);
+  }
+  body[data-page='review'] .tool-tab-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    margin-inline-start: var(--space-2);
+    padding: 0 0.35rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-ink);
+    color: var(--paper-raised);
+    font: 700 0.8125rem / 1 var(--font-ui);
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.08em;
+  }
+  /* Notes are not "due": their count is quieter than the work waiting today. */
+  body[data-page='review'] [data-tab='anotacoes'] .tool-tab-count {
+    background: var(--paper-sunken);
+    color: var(--ink-muted);
+  }
+  body[data-page='review'] .tool-tab-count[hidden] {
+    display: none;
+  }
+
+  /* ---- Flashcards: no panel chrome; the card is the only raised thing ------------------------- */
+  body[data-page='review'] .flashcards-panel,
+  body[data-page='review'] .quiz-history-panel,
+  body[data-page='review'] .question-reports-panel,
+  body[data-page='review'] #anotacoes .learning-tools-panel {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] :is(.flashcards-panel, .quiz-history-panel) > h2,
+  body[data-page='review'] #anotacoes .learning-tools-panel > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body[data-page='review'] .review-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-4);
+    margin: var(--space-5) 0 0;
+    padding: 0 0 var(--space-3);
+    border-bottom: 1px solid var(--line);
+  }
+  body[data-page='review'] .review-toolbar-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+  }
+  body[data-page='review'] .review-toolbar-heading h3 {
+    margin: 0;
+    font: 480 var(--step-1) / 1.2 var(--font-display);
+    font-variation-settings: var(--display-axes);
+  }
+  body[data-page='review'] .review-toolbar-heading [data-flashcard-count] {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body[data-page='review'] .review-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  body[data-page='review'] .review-toolbar-actions :is(.secondary-action, summary.secondary-action) {
+    min-height: 2.25rem;
+    padding-inline: var(--space-3);
+    font-size: var(--step-ui);
+  }
+  body[data-page='review'] .review-manage-toggle[aria-expanded='true'] {
+    border-color: var(--brand-ink);
+    background: var(--brand-wash);
+    color: var(--brand-ink);
+  }
+  /* Popovers */
+  body[data-page='review'] .review-popover {
+    position: relative;
+  }
+  body[data-page='review'] .review-popover > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    list-style: none;
+    cursor: pointer;
+  }
+  body[data-page='review'] .review-popover > summary::-webkit-details-marker {
+    display: none;
+  }
+  body[data-page='review'] .review-popover > summary::after {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    margin-top: -0.2rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    rotate: 45deg;
+  }
+  body[data-page='review'] .review-popover[open] > summary::after {
+    margin-top: 0.2rem;
+    rotate: 225deg;
+  }
+  body[data-page='review'] .review-popover[data-active='true'] > summary {
+    border-color: var(--brand-ink);
+    color: var(--brand-ink);
+  }
+  body[data-page='review'] .review-popover-surface {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + var(--space-1));
+    right: 0;
+    display: grid;
+    gap: var(--space-3);
+    width: min(22rem, calc(100vw - 2rem));
+    padding: var(--space-3);
+  }
+  body[data-page='review'] .review-filter .review-popover-surface label,
+  body[data-page='review'] .review-filter .flashcard-looks label {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  body[data-page='review'] .review-filter .review-popover-surface select {
+    width: 100%;
+    min-height: 2.25rem;
+    font-size: var(--step-ui);
+  }
+  body[data-page='review'] .review-filter .flashcard-looks {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-3) 0 0;
+    border-top: 1px solid var(--line);
+  }
+  body[data-page='review'] .review-filter .flashcard-looks [hidden] {
+    display: none;
+  }
+  body[data-page='review'] .review-create .flashcard-create-actions {
+    display: grid;
+    gap: var(--space-1);
+  }
+  body[data-page='review'] .review-create .flashcard-create-tile {
+    display: grid;
+    gap: 2px;
+    width: 100%;
+    min-height: 0;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    border-radius: var(--radius-control);
+    background: none;
+    box-shadow: none;
+    color: var(--ink);
+    text-align: left;
+  }
+  body[data-page='review'] .review-create .flashcard-create-tile:hover,
+  body[data-page='review'] .review-create .flashcard-create-tile:focus-visible {
+    background: var(--brand-wash);
+  }
+  body[data-page='review'] .review-create .flashcard-create-tile strong {
+    font-size: var(--step-ui);
+  }
+  body[data-page='review'] .review-create .flashcard-create-tile span {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  @media (min-width: 701px) {
+    body[data-page='review'] .review-create .review-popover-surface {
+      right: auto;
+      left: 0;
+    }
+  }
+
+  /* The review: one card, centred on the paper. */
+  body[data-page='review'] .review-columns {
+    display: block;
+  }
+  body[data-page='review'] .review-stage {
+    max-width: 46rem;
+    margin: var(--space-6) auto 0;
+  }
+  body[data-page='review'] .review-stage[hidden] {
+    display: none;
+  }
+  body[data-page='review'] .review-stage .flashcard-review-column {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] .review-create-parts {
+    max-width: 46rem;
+    margin: var(--space-3) auto 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] .review-create-parts > :is(p, div):empty {
+    display: none;
+  }
+
+  /* Gerenciar: ruled rows, the tools first. */
+  body[data-page='review'] .review-manage {
+    max-width: 52rem;
+    margin: var(--space-4) 0 0;
+  }
+  body[data-page='review'] .review-manage[hidden] {
+    display: none;
+  }
+  body[data-page='review'] .review-manage-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  body[data-page='review'] .review-manage-head h3 {
+    margin: 0;
+    font: 600 var(--step-0) / 1.3 var(--font-ui);
+  }
+  body[data-page='review'] .review-manage-head h3:focus {
+    outline: none;
+  }
+  body[data-page='review'] .review-manage .deck-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+    margin: 0;
+    padding: var(--space-3) 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] .review-manage .deck-tools-title {
+    margin: 0;
+    font-weight: 600;
+  }
+  body[data-page='review'] .review-manage .deck-tools-hint {
+    grid-column: 1;
+    margin: 0;
+  }
+  body[data-page='review'] .review-manage .deck-tools-buttons {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  body[data-page='review'] .review-manage .deck-tools-result {
+    grid-column: 1 / -1;
+  }
+  body[data-page='review'] .review-manage .deck-tools-result:empty {
+    display: none;
+  }
+  body[data-page='review'] .review-manage details.flashcard-management {
+    margin: 0;
+    border-width: 1px 0 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  body[data-page='review'] .review-manage details.flashcard-management:last-child {
+    border-bottom-width: 1px;
+  }
+  body[data-page='review'] .review-manage details.flashcard-management > label {
+    display: grid;
+    gap: var(--space-1);
+    max-width: 16rem;
+    margin-bottom: var(--space-3);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  /* ---- Questões: ruled rows ---------------------------------------------------------------- */
+  body[data-page='review'] .quiz-history-group + .quiz-history-group {
+    margin-top: var(--space-5);
+  }
+  body[data-page='review'] .quiz-history-group h3 {
+    margin: 0 0 var(--space-1);
+    color: var(--ink-muted);
+    font: 600 var(--step-ui) / 1.4 var(--font-ui);
+  }
+  body[data-page='review'] .quiz-history-list {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    list-style: none;
+  }
+  body[data-page='review'] .quiz-history-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+    padding: var(--space-3) 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] .quiz-history-copy strong {
+    display: block;
+    font: 600 var(--step-0) / 1.35 var(--font-ui);
+  }
+  body[data-page='review'] .quiz-history-copy small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body[data-page='review'] .quiz-history-list .button-link {
+    min-height: 2.25rem;
+    font-size: var(--step-ui);
+  }
+  body[data-page='review'] .quiz-history-panel .tool-hint {
+    margin-top: var(--space-4);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* ---- Anotações: search, then the notes written on ruled lines ------------------------------- */
+  body[data-page='review'] #anotacoes .learning-tools-panel > form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-2);
+    max-width: 40rem;
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  body[data-page='review'] #anotacoes .learning-tools-panel > form label {
+    flex: 1 1 16rem;
+  }
+  body[data-page='review'] #anotacoes .annotation-card {
+    margin: 0;
+    padding: var(--space-3) 0 var(--space-3) var(--space-4);
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid var(--honey);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body[data-page='review'] #anotacoes .annotation-card.annotation-green {
+    border-left-color: var(--matcha);
+  }
+  body[data-page='review'] #anotacoes .annotation-card.annotation-blue {
+    border-left-color: var(--mist);
+  }
+  body[data-page='review'] #anotacoes .annotation-card + .annotation-card {
+    margin-top: var(--space-2);
+  }
+  body[data-page='review'] #anotacoes .annotation-card h3 {
+    margin: 0;
+    color: var(--ink-muted);
+    font: 600 var(--step--1) / 1.4 var(--font-ui);
+  }
+  body[data-page='review'] #anotacoes .annotation-card blockquote {
+    margin: var(--space-1) 0 0;
+    padding: 0;
+    border: 0;
+    color: var(--ink);
+    font: 400 var(--step-1) / 1.4 var(--font-display);
+    font-variation-settings: var(--display-axes);
+  }
+  body[data-page='review'] #anotacoes .annotation-card > p {
+    margin: var(--space-1) 0 0;
+    color: var(--ink);
+    font-size: var(--step-0);
+  }
+  body[data-page='review'] #anotacoes .annotation-card > a {
+    display: inline-block;
+    margin-top: var(--space-1);
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+
+  @media (max-width: 700px) {
+    body[data-page='review'] .review-toolbar-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      width: 100%;
+    }
+    body[data-page='review'] .review-toolbar-actions > * {
+      min-width: 0;
+    }
+    body[data-page='review'] .review-toolbar-actions :is(.secondary-action, summary.secondary-action) {
+      justify-content: center;
+      width: 100%;
+      padding-inline: var(--space-2);
+    }
+    body[data-page='review'] .review-popover {
+      position: static;
+    }
+    body[data-page='review'] .review-toolbar {
+      position: relative;
+    }
+    body[data-page='review'] .review-popover-surface {
+      left: 0;
+      right: 0;
+      width: auto;
+    }
+    body[data-page='review'] .review-stage {
+      margin-top: var(--space-4);
+    }
+    body[data-page='review'] .review-manage .deck-tools {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body[data-page='review'] .review-manage .deck-tools-buttons {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+}
