@@ -40,12 +40,14 @@
     "test:art": "node --test frontend/tests/art-manifest.test.mjs",
     "art:build": "node scripts/art/build-art.mjs",
     "art:screenshots": "node scripts/art/capture-review.cjs",
+    "icons:build": "node scripts/icons/build-icons.mjs",
     "test:study-authoring": "node --test frontend/tests/study-authoring.test.mjs frontend/tests/study-document.test.mjs frontend/tests/resumable-upload.test.mjs"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "13.1.0",
     "@electric-sql/pglite": "0.5.8",
     "@eslint/js": "10.0.1",
+    "@phosphor-icons/core": "2.1.1",
     "eslint": "10.12.0",
     "globals": "17.13.0",
     "prettier": "3.9.9",

@@ -2,6 +2,7 @@ import { isFeatureEnabled } from '../utils/feature-flags.js';
 import { setStatus } from '../utils/shell.js';
 import { getCatalog, createSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { materialHref } from '../utils/library-ui.js';
+import { icon as uiIcon } from '../utils/icons.js';
 
 const NO_UNIT = '__no_unit__';
 
@@ -13,8 +14,9 @@ function node(tag, className, text) {
 }
 
 function folderIcon() {
-  const icon = node('span', 'folder-icon', '📁');
+  const icon = node('span', 'folder-icon');
   icon.setAttribute('aria-hidden', 'true');
+  icon.append(uiIcon('folder', { size: 18 }));
   return icon;
 }
 

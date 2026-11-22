@@ -16,6 +16,8 @@
  * "Escrivaninha lavanda") holds the reference values from the vision.
  */
 @layer legacy, system, pages, a11y;
+/* 3.6: skeuomorphic materials (paper, covers, tape, drawers) and the emblem picker. */
+@import url('materials.css') layer(system);
 
 /* ---- Fonts (SIL OFL, local; licences beside the files in /assets/fonts) ------------------- */
 @font-face {
@@ -1656,6 +1658,44 @@
   @media (forced-colors: active) {
     body.app-page .side-navigation nav a .nav-art-icon {
       background-color: CanvasText;
+    }
+  }
+
+  /* ==== Functional icons (3.6): Phosphor duotone via /assets/icons/sprite.svg ============== */
+  /* frontend/js/utils/icons.js. Size comes from the width/height attributes or the context;
+     the glyph is the text colour, the duotone layer a soft tint of the brand (lavender). */
+  .ui-icon {
+    flex: none;
+    fill: currentColor;
+    stroke: none;
+    vertical-align: -0.18em;
+    overflow: visible;
+    --icon-tint: var(--lavender);
+    --icon-tint-opacity: 0.32;
+  }
+  body.app-page .side-navigation nav a:is(.active, [aria-current='page']) .ui-icon {
+    --icon-tint-opacity: 0.45;
+  }
+  body.app-page .side-navigation nav a.nav-sub .nav-icon {
+    flex-basis: 1rem;
+    width: 1rem;
+    height: 1rem;
+  }
+  .delete-button .ui-icon,
+  .danger-action .ui-icon {
+    --icon-tint: var(--rose);
+  }
+  .player-icon .player-skip-amount {
+    margin-inline-start: -0.2rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1;
+    align-self: flex-end;
+  }
+  @media (forced-colors: active) {
+    .ui-icon {
+      fill: currentColor;
+      --icon-tint-opacity: 0;
     }
   }
 

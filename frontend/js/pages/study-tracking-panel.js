@@ -2,6 +2,7 @@ import { isStudySyncEnabled,studySync,importLocalProgress } from '../utils/study
 import { getFocusSession } from '../utils/focus-host.js';
 import { getStudyOverview,saveStudySettings,tickStudySession } from '../api/study.api.js';
 import { toast } from '../utils/toast.js';
+import { iconMarkup } from '../utils/icons.js';
 
 // Focus timer and weekly study time. The timer is a view of the account's single focus session
 // (utils/focus-session.js), the same one shown by the side panel and the capsule on every page.
@@ -61,7 +62,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null}={}) 
   const weekTitle=make('h2','Sua semana');weekTitle.id='week-heading';
   const gear=make('button',null,'icon-action week-settings');gear.type='button';gear.setAttribute('aria-haspopup','dialog');
   gear.setAttribute('aria-label','Ajustes do foco, meta e sincronização');gear.title='Ajustes do foco, meta e sincronização';
-  gear.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+  gear.innerHTML=iconMarkup('settings');
   weekHead.append(weekTitle,gear);
   const metrics=make('div',null,'study-metrics');metrics.setAttribute('aria-live','polite');
   week.append(weekHead,metrics);

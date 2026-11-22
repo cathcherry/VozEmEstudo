@@ -9,6 +9,7 @@ import { MediaPlayer, timeLabel } from '../utils/media-player.js';
 import { retainOriginalVideo } from '../api/playback.api.js';
 import { describeProcessing } from '../utils/processing-disclosure.js';
 import { toast, dismissToast } from '../utils/toast.js';
+import { iconMarkup } from '../utils/icons.js';
 
 await initAuthenticatedShell();
 const form = document.querySelector('.transcription-form'),
@@ -207,29 +208,28 @@ const player = new MediaPlayer(document.querySelector('[data-upload-player]'), {
   trim: true,
   onRangeChange: updateRange,
 });
-const icon = (paths) =>
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+const icon = (name) => iconMarkup(name);
 /** Trimming lives in the player: waveform handles plus one compact row of time fields. */
 function compactTrimControls() {
   const root = player.root,
     fields = root.querySelector('.trim-fields');
-  for (const [selector, label, paths] of [
+  for (const [selector, label, name] of [
     [
       '[data-preview-trim]',
       'Ouvir trecho',
-      '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+      'listen',
     ],
     [
       '[data-reset-trim]',
       'Usar arquivo inteiro',
-      '<path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4"/>',
+      'full-range',
     ],
   ]) {
     const button = root.querySelector(selector);
     button.className = 'icon-action';
     button.setAttribute('aria-label', label);
     button.title = label;
-    button.innerHTML = icon(paths);
+    button.innerHTML = icon(name);
   }
   fields.querySelectorAll('label > span').forEach((span) => span.classList.add('sr-only'));
   const separator = document.createElement('span');
@@ -240,9 +240,7 @@ function compactTrimControls() {
   fields.insertBefore(separator, endField);
   const scissors = document.createElement('span');
   scissors.className = 'trim-glyph';
-  scissors.innerHTML = icon(
-    '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
-  );
+  scissors.innerHTML = icon('trim');
   fields.insertBefore(scissors, startField);
   fields.append(downloadButton);
   fields.classList.add('trim-inline');

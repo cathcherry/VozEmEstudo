@@ -5,43 +5,26 @@
 import { LAYERS, PRESETS, parseMusicUrl } from './soundscape-mix.js';
 import { createSoundscapeController } from './soundscape-controller.js';
 import { toast } from './toast.js';
+import { icon as uiIcon } from './icons.js';
 
-const SVG = 'http://www.w3.org/2000/svg';
-export const ICONS = {
-  sound: [
-    'M4 15v-3a8 8 0 0 1 16 0v3',
-    'M4 15a2 2 0 0 1 2-2h1v7H6a2 2 0 0 1-2-2z',
-    'M20 15a2 2 0 0 0-2-2h-1v7h1a2 2 0 0 0 2-2z',
-  ],
-  play: ['M8 5v14l11-7z'],
-  pause: ['M8 5v14', 'M16 5v14'],
-  close: ['M6 6l12 12', 'M18 6 6 18'],
-  window: ['M4 5h16v14H4z', 'M12 12h6v5h-6z'],
-  rain: [
-    'M6.5 13a3.5 3.5 0 0 1 0-7 5 5 0 0 1 9.6-1.2A3.6 3.6 0 1 1 17.5 13z',
-    'M8 16l-1 3',
-    'M12 16l-1 3',
-    'M16 16l-1 3',
-  ],
-  ocean: [
-    'M2 8c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2',
-    'M2 13c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2',
-    'M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2',
-  ],
-  wind: ['M3 8h11a3 3 0 1 0-3-3', 'M3 12h16a3 3 0 1 1-3 3', 'M3 16h7'],
-  forest: ['M12 3l6 8h-3.5l4.5 6H5l4.5-6H6z', 'M12 17v4'],
-  fireplace: ['M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5 0 2 1 3 2 3 0-3-1-5 1-8.5z'],
-  thunder: ['M13 2 5 14h6l-1 8 8-12h-6z'],
-  stream: ['M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z', 'M9 14a3 3 0 0 0 3 3'],
-  crickets: ['M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z', 'M17 3v3', 'M15.5 4.5h3'],
-  library: ['M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z', 'M4 21V5', 'M8 7h7'],
-  cafe: [
-    'M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z',
-    'M16 10h1.5a2.5 2.5 0 0 1 0 5H16',
-    'M8 3v3',
-    'M12 3v3',
-  ],
-};
+/** Soundscape names -> the shared icon set (frontend/js/utils/icons.js, Phosphor duotone). */
+export const ICONS = Object.freeze({
+  sound: 'listen',
+  play: 'play',
+  pause: 'pause',
+  close: 'close',
+  window: 'mini-window',
+  rain: 'rain',
+  ocean: 'ocean',
+  wind: 'wind',
+  forest: 'forest',
+  fireplace: 'fireplace',
+  thunder: 'thunder',
+  stream: 'stream',
+  crickets: 'crickets',
+  library: 'library',
+  cafe: 'cafe',
+});
 const VOLUME_LABEL = {
   rain: 'Volume da chuva',
   ocean: 'Volume das ondas do mar',
@@ -74,26 +57,7 @@ const make = (tag, text, className) => {
   return node;
 };
 export function icon(name, size = 18) {
-  const svg = document.createElementNS(SVG, 'svg');
-  for (const [key, value] of Object.entries({
-    viewBox: '0 0 24 24',
-    width: size,
-    height: size,
-    fill: 'none',
-    stroke: 'currentColor',
-    'stroke-width': '1.8',
-    'stroke-linecap': 'round',
-    'stroke-linejoin': 'round',
-    'aria-hidden': 'true',
-    focusable: 'false',
-  }))
-    svg.setAttribute(key, String(value));
-  for (const d of ICONS[name]) {
-    const path = document.createElementNS(SVG, 'path');
-    path.setAttribute('d', d);
-    svg.append(path);
-  }
-  return svg;
+  return uiIcon(ICONS[name], { size });
 }
 const iconButton = (name, label, className) => {
   const button = make('button', null, className);

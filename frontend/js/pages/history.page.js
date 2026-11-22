@@ -1,4 +1,5 @@
 import { createFolderIcons } from '../utils/folder-icons.js';
+import { icon as uiIcon, iconMarkup } from '../utils/icons.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
@@ -161,6 +162,7 @@ function openUnitDialog(subject) {
   unitMessage.textContent = '';
   unitForm.querySelector('[name="subjectId"]').value = subject.id;
   document.querySelector('[data-unit-subject-name]').textContent = subject.name;
+  unitIconPicker.select(null, '');
   unitDialog.showModal();
   unitForm.querySelector('[name="title"]').focus();
 }
@@ -258,8 +260,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   if (standalone) {
     const icon = document.createElement('span');
     icon.className = 'library-file-icon';
-    icon.textContent = '📄';
-    icon.setAttribute('aria-hidden', 'true');
+    icon.append(uiIcon('document', { size: 18 }));
     item.querySelector('.material-row-heading').prepend(icon);
   }
 
@@ -267,7 +268,7 @@ function row(material, { folderName = null, standalone = false } = {}) {
   const menu = document.createElement('details');
   menu.className = 'row-menu';
   const summary = document.createElement('summary');
-  summary.textContent = '⋯';
+  summary.replaceChildren(uiIcon('more', { size: 18 }));
   summary.title = 'Mais opções';
   summary.setAttribute('aria-label', `Ações para ${material.title}`);
   const options = document.createElement('div');
@@ -323,18 +324,9 @@ function row(material, { folderName = null, standalone = false } = {}) {
   if (generate) { generate.dataset.icon = 'add'; options.append(generate); }
   remove.dataset.icon = 'remove';
   options.append(remove);
-  const menuIcons = {
-    open: 'M5 12h12M13 7l5 5-5 5',
-    edit: 'M4 20h4L20 8l-4-4L4 16v4M14 6l4 4',
-    organize: 'M4 6h16M4 12h10M4 18h7M17 15l3 3-3 3',
-    folder: 'M3 7h7l2 2h9v11H3zM3 7V4h7l2 3',
-    list: 'M5 4h14v16H5zM8 8h8M8 12h8',
-    add: 'M12 5v14M5 12h14',
-  };
-  for(const option of options.children) {
-    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('fill','none');svg.setAttribute('stroke','currentColor');svg.setAttribute('stroke-width','1.6');svg.setAttribute('aria-hidden','true');
-    const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',option===remove?'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7':menuIcons[option.dataset.icon]||menuIcons.list);svg.append(path);option.append(svg);
-  }
+  // Shared icon set (frontend/js/utils/icons.js): menu intent -> icon name.
+  const menuIcons = { open: 'open', edit: 'edit', organize: 'organize', folder: 'folder', list: 'questions', add: 'add', remove: 'remove' };
+  for (const option of options.children) option.append(uiIcon(menuIcons[option.dataset.icon] || 'questions', { size: 18 }));
   menu.append(summary, options);
   menu.addEventListener('toggle',()=>{if(menu.open)for(const other of document.querySelectorAll('.row-menu[open]'))if(other!==menu)other.open=false;});
   actions.replaceChildren(actions.querySelector('a.secondary-action'), menu);
@@ -396,7 +388,7 @@ function lessonCountLabel(total) { return `${total} ${total === 1 ? 'aula' : 'au
 
 // List view (Finder-like): one row per lesson with an original document icon, its date,
 // duration and progress; the lesson's parts (transcript, summary…) follow when known.
-const DOC_ICON='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 15h6M9 18h4"/></svg>';
+const DOC_ICON=iconMarkup('document');
 function treeFiles(material) {
   const list=document.createElement('div');list.className='library-tree-files';list.dataset.materialId=material.id;
   const available=treeResources[material.id]||{};
@@ -417,22 +409,8 @@ function treeFiles(material) {
   }
   return list;
 }
-const SUBJECT_MENU_ICONS = {
-  edit: 'M4 20h4L20 8l-4-4L4 16v4M14 6l4 4',
-  remove: 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7M14 10v7',
-};
-function menuIcon(path) {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '1.6');
-  svg.setAttribute('aria-hidden', 'true');
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  line.setAttribute('d', path);
-  svg.append(line);
-  return svg;
-}
+const SUBJECT_MENU_ICONS = { edit: 'edit', remove: 'remove' };
+const menuIcon = (name) => uiIcon(name, { size: 18 });
 /** "⋯" menu for a subject folder: Editar (rename, icon) and Remover (lessons are kept). */
 function subjectMenu(group) {
   const menu = document.createElement('details');
@@ -440,7 +418,7 @@ function subjectMenu(group) {
   menu.dataset.subjectMenu = '';
   menu.dataset.subjectId = String(group.id);
   const summary = document.createElement('summary');
-  summary.textContent = '⋯';
+  summary.replaceChildren(uiIcon('more', { size: 18 }));
   summary.title = 'Opções da disciplina';
   summary.setAttribute('aria-label', `Opções da disciplina ${group.name}`);
   const options = document.createElement('div');
@@ -546,7 +524,7 @@ function renderFolderGroups(visible, _needle) {
     summary.id = `library-group-${groupIndex++}`;
     summary.title = 'Abrir disciplina';
     summary.addEventListener('click', event => { if(document.body.dataset.libraryLayout==='list')return;event.preventDefault(); navigateFolder(String(group.id || group.name)); });
-    const icon = folderIcons.icon('subject',group.id);
+    const icon = folderIcons.icon('subject',group.id,group.name);
     const name = document.createElement('strong');
     name.textContent = group.name;
     const total = document.createElement('span');
@@ -587,7 +565,7 @@ function renderFolderGroups(visible, _needle) {
       const unitSummary = document.createElement('summary');
       unitSummary.addEventListener('click',event=>{if(document.body.dataset.libraryLayout==='list')return;event.preventDefault();navigateFolder(String(group.id||group.name),String(unit.id));});
       unitSummary.title = 'Abra a unidade ou arraste uma aula para movê-la';
-      const unitIcon = folderIcons.icon('unit',unit.id);
+      const unitIcon = folderIcons.icon('unit',unit.id,unit.title);
       const unitName = document.createElement('strong');
       unitName.textContent = unit.title;
       const unitCount = document.createElement('span');
@@ -614,9 +592,7 @@ function renderFolderGroups(visible, _needle) {
     if (standalone.length && !selectedUnit) {
       const heading = document.createElement('h3');
       heading.className = 'library-standalone-heading';
-      const fileIcon = document.createElement('span');
-      fileIcon.textContent = '📄';
-      fileIcon.setAttribute('aria-hidden', 'true');
+      const fileIcon = uiIcon('document', { size: 18 });
       heading.append(fileIcon, document.createTextNode('Aulas sem unidade'));
       const list = document.createElement('div');
       list.className = 'library-standalone-list';
@@ -881,6 +857,7 @@ function openSubjectDialog(subject = null) {
   subjectDialog.querySelector('#subject-dialog-title').textContent = subject ? 'Editar disciplina' : 'Nova disciplina';
   subjectForm.querySelector('[type="submit"]').textContent = subject ? 'Salvar' : 'Criar pasta';
   subjectForm.querySelector('[name="name"]').value = subject?.name || '';
+  subjectIconPicker.select(subject?.id, subject?.name);
   subjectDialog.showModal();
   subjectForm.querySelector('[name="name"]').focus();
 }

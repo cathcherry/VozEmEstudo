@@ -13,6 +13,7 @@ import { initProfileStudySync } from './profile-study-sync.js';
 import { initPreferenceCloud, releaseAccountPreferences } from './preference-cloud.js';
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
+import { icon as uiIcon } from './icons.js';
 // The art system (Lume, stamps, objects, covers): fills every [data-art-slot] on signed-in pages.
 import '../art/art.js';
 
@@ -52,10 +53,7 @@ export function mountDiscoveryNavigation(doc = document) {
     link.href = href;
     link.dataset.navFeature = 'discoveries';
     if (sub) link.className = 'nav-sub';
-    const mark = doc.createElement('span');
-    mark.className = 'nav-art-icon';
-    mark.setAttribute('aria-hidden', 'true');
-    mark.style.setProperty('--art-icon', `url("/assets/art/icons/${icon}.svg")`);
+    const mark = uiIcon(icon, { className: 'nav-icon', document: doc });
     const text = doc.createElement('span');
     text.textContent = label;
     link.append(mark, text);
@@ -68,7 +66,7 @@ export function mountDiscoveryNavigation(doc = document) {
     return link;
   };
   nav.append(
-    item('./descobertas.html', 'Descobertas', 'notebook', ['descobertas.html', 'investigar.html'].includes(page)),
+    item('./descobertas.html', 'Descobertas', 'discoveries', ['descobertas.html', 'investigar.html'].includes(page)),
     item('./gabinete.html', 'Gabinete', 'cabinet', page === 'gabinete.html', true),
   );
 }

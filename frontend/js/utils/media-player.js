@@ -1,13 +1,9 @@
-const icons = {
-  play: '<path d="m9 5 11 7-11 7z"/>',
-  pause: '<path d="M8 5v14M16 5v14"/>',
-  rewind:
-    '<path d="M6 7H2V3M2 7a10 10 0 1 1-1 8"/><text x="8" y="15" stroke="none" fill="currentColor" font-size="8">10</text>',
-  forward:
-    '<path d="M18 7h4V3M22 7a10 10 0 1 0 1 8"/><text x="8" y="15" stroke="none" fill="currentColor" font-size="8">10</text>',
-};
+import { iconMarkup } from './icons.js';
+// Shared icon set (frontend/js/utils/icons.js). The skip buttons add a small "10" beside the icon.
 const svg = (name) =>
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
+  name === 'rewind' || name === 'forward'
+    ? `${iconMarkup(name)}<small class="player-skip-amount" aria-hidden="true">10</small>`
+    : iconMarkup(name);
 export function timeLabel(seconds = 0, precision = false) {
   const value = precision
     ? Math.round(Math.max(0, Number(seconds) || 0) * 100) / 100

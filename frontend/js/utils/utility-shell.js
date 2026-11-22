@@ -8,8 +8,8 @@
 // Hiding or closing a presentation never stops the session.
 import { getFocusSession } from './focus-host.js';
 import { getSoundscape } from './soundscape-ui.js';
+import { icon as uiIcon } from './icons.js';
 
-const SVG = 'http://www.w3.org/2000/svg';
 const MODES = [
   ['pomodoro', 'Foco', 'Foco'],
   ['short', 'Pausa', 'Pausa curta'],
@@ -30,33 +30,17 @@ const make = (tag, text, className) => {
   if (className) node.className = className;
   return node;
 };
-const icon = (paths, size = 18) => {
-  const svg = document.createElementNS(SVG, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('width', String(size));
-  svg.setAttribute('height', String(size));
-  svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', '1.8');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
-  svg.setAttribute('aria-hidden', 'true');
-  for (const d of paths) {
-    const path = document.createElementNS(SVG, 'path');
-    path.setAttribute('d', d);
-    svg.append(path);
-  }
-  return svg;
-};
+// Shared icon set (frontend/js/utils/icons.js): these names map onto it.
 const ICONS = {
-  timer: ['M12 8v5l3 2', 'M9 2h6', 'M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16z'],
-  play: ['M8 5v14l11-7z'],
-  pause: ['M8 5v14', 'M16 5v14'],
-  stop: ['M7 7h10v10H7z'],
-  expand: ['M15 3h6v6', 'M9 21H3v-6', 'M21 3l-7 7', 'M3 21l7-7'],
-  minimize: ['M4 14h6v6', 'M20 10h-6V4', 'M14 10l7-7', 'M3 21l7-7'],
-  close: ['M6 6l12 12', 'M18 6 6 18'],
+  timer: 'focus',
+  play: 'play',
+  pause: 'pause',
+  stop: 'stop',
+  expand: 'expand',
+  minimize: 'minimize',
+  close: 'close',
 };
+const icon = (name, size = 18) => uiIcon(name, { size });
 const iconButton = (name, label, className) => {
   const button = make('button', null, `utility-icon ${className || ''}`.trim());
   button.type = 'button';
