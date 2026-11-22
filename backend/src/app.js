@@ -25,6 +25,7 @@ import { classroomRouter } from './routes/classroom.routes.js';
 import { notebookRouter } from './routes/notebook.routes.js';
 import { multiLessonRouter } from './routes/multi-lesson.routes.js';
 import { investigationRouter, discoveryRouter, collectionRouter } from './routes/discovery.routes.js';
+import { journalRouter } from './routes/journal.routes.js';
 import { searchOwnLibrary } from './services/search.service.js';
 import { MEDIA_EXTENSIONS, MAX_TRANSCRIPTION_SECONDS } from './services/media.service.js';
 import { getAiRegistry } from './ai/provider-registry.js';
@@ -122,6 +123,8 @@ if (isFeatureEnabled('discoveries')) {
   app.use('/api/discoveries', requireAuth, discoveryRouter);
   app.use('/api/collection', requireAuth, collectionRouter);
 }
+// 3.6 Milestone D: the Diário de estudo (personal scrapbook journals; private).
+if (isFeatureEnabled('journal')) app.use('/api/journals', requireAuth, journalRouter);
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {
