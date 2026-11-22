@@ -68,6 +68,14 @@ próprios. **Acessibilidade:** sem animação automática; a gaveta e o seletor 
 reduzido; em alto contraste (`data-high-contrast`, temas `contrast-*`) e em cores forçadas, textura,
 máscara, inclinação e sombra somem e fica uma borda.
 
+**Gabinete e Arquivo (3.6, Marco E).** `frontend/css/curiosities.css` (camada `pages`, carregado
+por `gabinete.html`, `descobertas.html` e `investigar.html`) compõe os materiais: `.curio-cabinet`
+(armário, `data-fill="empty|some|full"`), `.curio-drawer` (soma-se a `.drawer`; `data-fill` mostra
+a ficha pela fresta), `.curio-tray` (gaveta aberta; anima só com `data-opening` e sem movimento
+reduzido), `.curio-compartment`, `.specimen-dialog` (etiqueta de museu) e `.specimen-card`
+(`data-stage="sketch|inked|stamped|bound|pressed"`, `data-traits` com as marcas; carimbo, linha e
+flor são decorativos e repetidos em texto).
+
 ### Ícones de interface
 
 Use `icon(name)` ou `iconMarkup(name)` de `frontend/js/utils/icons.js` (Phosphor duotone, sprite em

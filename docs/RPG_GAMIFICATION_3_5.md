@@ -73,7 +73,7 @@ antigo deste aparelho (`voz-experience-mode`) é migrado. Ver `EXPERIENCE_VISION
 
 ## 5. Implementado × futuro
 
-Implementado (Marco 6, atrás de `FEATURE_DISCOVERIES`, migration só em staging):
+Implementado (Marco 6, atrás de `FEATURE_DISCOVERIES`; a migration já está aplicada em produção):
 investigação de uma aula confirmada, evidência verificada, explicação, aplicar por referência,
 reflexão, descoberta versionada, conexões, revisitas, 12 colecionáveis, mesa (API e escolha de
 lugar), modos por aparelho, páginas `investigar.html`, `descobertas.html`, `gabinete.html`.
@@ -88,3 +88,30 @@ Futuro:
 - Sugestões de pergunta com IA (opcional, com citação obrigatória).
 - ~~Modo sincronizado entre aparelhos.~~ Feito no Marco 5, junto com a escrivaninha do Início
   (objetos desbloqueados colocados por arrastar ou pelo teclado) e as oito atmosferas.
+
+## 6. Ciclo 3.6, Marco E: Gabinete, hierarquia e transformações (implementado)
+
+Nenhuma regra de desbloqueio nova: os 12 colecionáveis e os eventos da seção 2 continuam iguais.
+O que mudou é como o que a pessoa já fez aparece.
+
+- **Gabinete de curiosidades** (`gabinete.html`): armário com prateleiras e quatro gavetas (Selos,
+  Objetos de mesa, Capas, Espécimes). Cada item se inspeciona numa etiqueta de museu com data, aula
+  e descoberta de origem; objetos vão para a mesa por "Colocar na mesa". Itens não encontrados são
+  contornos com a dica da regra. As prateleiras e as gavetas mostram o que já foi encontrado (a
+  **transformação do ambiente**), derivado de `GET /api/collection`.
+- **Cartões que evoluem** (`frontend/js/utils/discovery-card.js`): esboço a lápis (investigação
+  aberta) → passado a tinta (explicação + evidência) → carimbado (reflexão) → costurado com linha
+  (ligação) → flor prensada (revisita significativa, a mesma regra da seção 2). As marcas são
+  independentes, derivadas só de dados guardados, explicadas uma a uma e nunca retiradas. Não há
+  XP, pontos, níveis, sequências nem prazos; nenhum texto diz que a pessoa "domina" algo.
+- **Hierarquia no Arquivo**: grupos por disciplina, fios entre descobertas ligadas (vermelhos entre
+  disciplinas), coleções criadas pela pessoa (preferências da conta, sem migração) e **marcos**
+  lidos dos desbloqueios: primeira evidência, primeira explicação, primeira descoberta, primeira
+  reflexão, primeira ponte entre disciplinas, primeira revisita.
+- **Modos**: no silencioso, selos e marcos ilustrados (`[data-game-ui]`) somem; os cartões, os
+  estados e as explicações continuam, porque descrevem o estudo, não um prêmio.
+- **Dados**: `20261124090000_discovery_archive.sql` acrescenta à lista de descobertas a pergunta,
+  as reflexões, as ligações e a primeira revisita (ver `docs/migrations/DISCOVERY_ARCHIVE.md`).
+
+Futuro (não feito): campanhas, aventuras em turma, ambientes desbloqueáveis, fios desenhados por
+cima da grade de cartões.

@@ -1455,3 +1455,43 @@
     padding-right: 0;
   }
 }
+@layer pages {
+  /* Phones: milestones as a compact two-column sheet of stamps (label and date). */
+  @media (max-width: 760px) {
+    body.app-page .discoveries-page .archive-milestones {
+      padding: var(--space-3) var(--space-4);
+    }
+    .archive-milestone-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2);
+    }
+    .archive-milestone {
+      grid-template-columns: minmax(0, 1fr);
+      padding: var(--space-2);
+    }
+    .archive-milestone > :not(.archive-milestone-art) {
+      grid-column: 1;
+    }
+    .archive-milestone-art {
+      grid-row: auto;
+    }
+    .archive-milestone-art img {
+      width: 2rem;
+    }
+    .archive-milestone :is(.archive-milestone-lesson, a) {
+      display: none;
+    }
+  }
+}
+@layer pages {
+  @media (max-width: 760px) {
+    .specimen-art {
+      aspect-ratio: auto;
+      min-height: 11rem;
+    }
+    .specimen-art img {
+      max-height: 9rem;
+      width: auto;
+    }
+  }
+}
