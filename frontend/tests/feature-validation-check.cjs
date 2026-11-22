@@ -634,6 +634,8 @@ async function main() {
       const notebook = notesPage.locator('[data-lesson-notebook]');
       await notebook.getByRole('heading', { name: 'Caderno da aula' }).waitFor();
       await notebook.getByText('Privado: só você vê este caderno.').waitFor();
+      // 3.6: the notebook starts as a closed cover; opening it shows the page.
+      await notebook.getByRole('button', { name: 'Abrir o caderno' }).click();
       const rangeCard = notesPage.locator('[data-annotations-panel] .annotation-card', { hasText: 'O oxigênio' }).first();
       await rangeCard.getByText('Abrange 2 trechos da transcrição').waitFor();
       // First save fails (unknown outcome): "Não salvo — tentar de novo", same request on retry.

@@ -8,6 +8,21 @@ export async function initMaterialTools({ materialId, context, segments }) {
   const notesEnabled = await isFeatureEnabled('annotations').catch(() => false);
   // Notes 3.0: the lesson notebook and highlights across segments (needs annotations too).
   const notebooks = notesEnabled && (await isFeatureEnabled('notebooks').catch(() => false));
+  // 3.6: a visible way from the lesson to its notebook (opens Anotações and the notebook cover).
+  const actions = document.querySelector('[data-material-actions]');
+  if (notebooks && actions && !actions.querySelector('[data-open-notebook]')) {
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'secondary-action';
+    open.dataset.openNotebook = '';
+    open.textContent = 'Caderno da aula';
+    open.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('voz:open-notes'));
+      document.dispatchEvent(new CustomEvent('voz:open-notebook'));
+      document.querySelector('[data-lesson-notebook]')?.scrollIntoView?.({ block: 'start' });
+    });
+    actions.prepend(open);
+  }
   const results = await Promise.allSettled([
     notesEnabled
       ? initAnnotationsPanel({

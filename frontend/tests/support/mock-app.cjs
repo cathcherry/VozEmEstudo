@@ -821,6 +821,9 @@ async function setup(context, base, flags, data, options = {}) {
     // 3.5 Milestone 6: investigations, discoveries and the collection (./mock-discoveries.cjs).
     if (/^\/api\/(investigations|discoveries|collection)(\/|$)/.test(p))
       return require('./mock-discoveries.cjs').handleDiscoveries({ request, p, method, json, data, materials });
+    // 3.6 Milestone D: the Diário de estudo (./mock-journals.cjs).
+    if (/^\/api\/journals(\/|$)/.test(p))
+      return require('./mock-journals.cjs').handleJournals({ request, p, method, json, data, materials });
     return json({ error: { message: `Sem simulação para ${method} ${p}` } }, 404);
   });
   await context.addInitScript(
@@ -928,6 +931,8 @@ const allFlags = {
   multi_lesson: false,
   // 3.5 Milestone 6, off by default; discoveries-check.cjs turns it on.
   discoveries: false,
+  // 3.6 Milestone D, off by default; journal-check.cjs turns it on.
+  journal: false,
 };
 
 /** Serves the static front end on a free local port. */

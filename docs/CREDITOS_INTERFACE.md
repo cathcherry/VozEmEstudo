@@ -29,6 +29,8 @@ Plus Jakarta Sans e Inter, distribuídas sob SIL Open Font License. Arquivos WOF
 
 No 3.5, a interface usa Fraunces (títulos, variável com eixo SOFT) e Instrument Sans (interface), ambas SIL Open Font License, copiadas de `@fontsource-variable/fraunces` e `@fontsource-variable/instrument-sans` 5.3.0 (subconjunto latino). Licenças: `FRAUNCES-OFL.txt` e `INSTRUMENT-SANS-OFL.txt`.
 
+No 3.6, os títulos do caderno da aula e do Diário de estudo usam Caveat (letra manuscrita, só em títulos; o texto continua em Instrument Sans), SIL Open Font License 1.1, © 2014 The Caveat Project Authors, copiada de `@fontsource-variable/caveat` 5.3.0 (subconjunto latino, variável 400–700): `caveat-latin-wght.woff2`. Licença: `CAVEAT-OFL.txt`.
+
 ## Marca e referências
 
 Logo, favicon e mascotes reaproveitados dos arquivos do projeto fornecido. As quatro imagens enviadas pela usuária foram usadas como referência de composição; não foram incorporadas como páginas prontas.

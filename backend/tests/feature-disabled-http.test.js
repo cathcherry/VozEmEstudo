@@ -17,6 +17,7 @@ const FLAGGED = {
   notebooks: '/api/notebooks/x',
   multi_lesson: '/api/multi-lesson',
   discoveries: '/api/discoveries',
+  journal: '/api/journals',
 };
 
 function probe(env) {

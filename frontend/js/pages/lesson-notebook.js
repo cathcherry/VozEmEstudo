@@ -17,6 +17,9 @@ import {
   referenceBlock,
   sameContent,
 } from '../utils/notebook-doc.js';
+import { cachedLook, loadLook, saveLook } from '../utils/notebook-look.js';
+import { COVER_CHOICES, PAPERS, artSrc, artTitle, motionReduced, spineColor } from '../utils/scrapbook.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -42,6 +45,9 @@ const STATUS = {
   invalid: 'Não salvo',
   conflict: 'Não salvo — outro aparelho alterou este caderno',
 };
+/** This tab remembers an opened notebook, so a reload does not close it again. */
+const openKey = (materialId) => `voz-notebook-open:${materialId}`;
+const SECTION_DIVIDER = 'divider.sprig';
 /** Browser key of the copy not yet saved (namespaced by account; see local-account-data.js). */
 export const notebookPendingKey = (owner, materialId) => `voz-notebook-pending-v1:${owner}:${materialId}`;
 
@@ -92,7 +98,161 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   tools.append(toolsLabel);
   const announce = make('p', '', 'sr-only');
   announce.setAttribute('aria-live', 'polite');
-  panel.append(header, conflict, titleField, empty, list, tools, announce);
+
+  // ---- The notebook as an object (3.6): a cover that opens, a spine, a stacked page with a
+  // ribbon, paper tabs for its sections and dividers between them. Cover and paper per lesson
+  // live in the account's synced preferences (notebook-look.js), never in the notebook body.
+  let look = cachedLook(owner, materialId);
+  const bookId = `lesson-notebook-book-${materialId}`.replace(/[^A-Za-z0-9_-]/g, '');
+  const coverButton = make('button', undefined, 'nb-cover');
+  coverButton.type = 'button';
+  coverButton.setAttribute('aria-expanded', 'false');
+  coverButton.setAttribute('aria-controls', bookId);
+  const coverArt = make('span', undefined, 'cover-face');
+  const coverImg = make('img');
+  coverImg.alt = '';
+  coverImg.width = 240;
+  coverImg.height = 320;
+  const coverLabel = make('span', 'Caderno da aula', 'cover-face-label');
+  coverLabel.setAttribute('translate', 'no');
+  coverArt.append(coverImg, coverLabel);
+  coverButton.append(coverArt, make('span', 'Abrir o caderno', 'nb-cover-hint'));
+  const closed = make('div', undefined, 'nb-closed');
+  closed.append(coverButton);
+
+  const book = make('div', undefined, 'nb-book');
+  book.id = bookId;
+  book.hidden = true;
+  const spine = make('div', undefined, 'nb-spine');
+  spine.setAttribute('aria-hidden', 'true');
+  const sheet = make('div', undefined, 'nb-page paper page-stack');
+  const ribbon = make('span', undefined, 'bookmark-ribbon');
+  ribbon.setAttribute('aria-hidden', 'true');
+  ribbon.dataset.tint = 'lavender';
+  const sections = make('nav', undefined, 'nb-tabs tab-strip');
+  sections.setAttribute('aria-label', 'Seções do caderno');
+  sections.hidden = true;
+  sheet.append(ribbon, titleField, empty, list, tools);
+  const binding = make('div', undefined, 'nb-binding');
+  binding.append(spine, sheet);
+
+  // Appearance: cover and paper, with a live preview (the book changes as you choose).
+  const looks = make('details', undefined, 'nb-look');
+  const coverSet = make('fieldset', undefined, 'nb-look-covers');
+  coverSet.append(make('legend', 'Capa'));
+  for (const id of COVER_CHOICES) {
+    const option = make('label', undefined, 'nb-look-cover');
+    const input = make('input');
+    input.type = 'radio';
+    input.name = `${bookId}-cover`;
+    input.value = id;
+    input.className = 'cover-radio';
+    const img = make('img');
+    img.src = artSrc(id);
+    img.alt = '';
+    img.width = 36;
+    img.height = 48;
+    img.loading = 'lazy';
+    input.addEventListener('change', () => input.checked && changeLook({ cover: id }, `Capa ${artTitle(id)}.`));
+    option.append(input, img, make('span', artTitle(id), 'sr-only'));
+    coverSet.append(option);
+  }
+  const paperSet = make('fieldset', undefined, 'nb-look-papers');
+  paperSet.append(make('legend', 'Papel'));
+  for (const [id, name] of PAPERS) {
+    const option = make('label', undefined, 'swatch');
+    const input = make('input');
+    input.type = 'radio';
+    input.name = `${bookId}-paper`;
+    input.value = id;
+    input.className = 'swatch-radio';
+    const sample = make('span', undefined, 'swatch-paper paper');
+    sample.dataset.paper = id;
+    sample.setAttribute('aria-hidden', 'true');
+    input.addEventListener('change', () => input.checked && changeLook({ paper: id }, `Papel ${name}.`));
+    option.append(input, sample, make('span', name, 'swatch-name'));
+    paperSet.append(option);
+  }
+  const preview = make('span', undefined, 'nb-look-preview');
+  preview.setAttribute('aria-hidden', 'true');
+  const previewCover = make('img');
+  previewCover.alt = '';
+  const previewPaper = make('span', undefined, 'paper');
+  preview.append(previewCover, previewPaper);
+  const looksBody = make('div', undefined, 'nb-look-body');
+  looksBody.append(preview, coverSet, paperSet);
+  looks.append(make('summary', 'Capa e papel'), looksBody);
+
+  const bookBar = make('div', undefined, 'nb-bar');
+  const closeBook = button('Fechar o caderno', 'text-action nb-close');
+  bookBar.append(looks, closeBook);
+  book.append(bookBar, sections, binding);
+
+  function paintLook() {
+    coverImg.src = previewCover.src = artSrc(look.cover);
+    spine.style.setProperty('--spine', spineColor(look.cover));
+    sheet.dataset.paper = previewPaper.dataset.paper = look.paper;
+    for (const input of coverSet.querySelectorAll('input')) input.checked = input.value === look.cover;
+    for (const input of paperSet.querySelectorAll('input')) input.checked = input.value === look.paper;
+  }
+  function changeLook(change, message) {
+    look = { ...look, ...change };
+    paintLook();
+    announce.textContent = `${message} Salvo na sua conta.`;
+    void saveLook(owner, materialId, look);
+  }
+  function paintCoverTitle() {
+    coverLabel.textContent = (content?.title || '').trim() || 'Caderno da aula';
+  }
+  function setOpen(open, { focus = true } = {}) {
+    const wasOpen = !book.hidden;
+    book.hidden = !open;
+    closed.hidden = open;
+    coverButton.setAttribute('aria-expanded', String(open));
+    panel.dataset.open = String(open);
+    try {
+      if (open) sessionStorage.setItem(openKey(materialId), '1');
+      else sessionStorage.removeItem(openKey(materialId));
+    } catch {
+      /* this tab only */
+    }
+    if (open && !wasOpen && !motionReduced()) {
+      // The front cover swings open from the spine (skipped with reduced motion).
+      const flap = coverArt.cloneNode(true);
+      flap.classList.add('nb-cover-flap');
+      flap.setAttribute('aria-hidden', 'true');
+      binding.append(flap);
+      flap.addEventListener('animationend', () => flap.remove(), { once: true });
+      setTimeout(() => flap.remove(), 1000);
+    }
+    if (focus) (open ? titleInput : coverButton).focus();
+  }
+  coverButton.addEventListener('click', () => setOpen(true));
+  closeBook.addEventListener('click', () => setOpen(false));
+  document.addEventListener('voz:open-notebook', () => setOpen(true));
+  paintLook();
+  void loadLook(owner, materialId).then((saved) => {
+    look = saved;
+    paintLook();
+  });
+  let reopen = false;
+  try {
+    reopen = sessionStorage.getItem(openKey(materialId)) === '1';
+  } catch {
+    /* this tab only */
+  }
+  if (reopen) setOpen(true, { focus: false });
+
+  // From the notebook only: the personal study journal (FEATURE_JOURNAL).
+  const diary = make('a', 'Abrir meu Diário de estudo', 'nb-diary-link');
+  diary.href = './diario.html';
+  diary.hidden = true;
+  header.append(diary);
+  void isFeatureEnabled('journal')
+    .then((on) => (diary.hidden = !on))
+    .catch(() => {});
+
+  panel.append(header, conflict, closed, book, announce);
 
   const references = new Map();
   let content = emptyContent(),
@@ -147,6 +307,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   }
   titleInput.addEventListener('input', () => {
     content.title = titleInput.value;
+    paintCoverTitle();
     changed();
   });
 
@@ -334,6 +495,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       input.addEventListener('input', () => {
         block.text = input.value;
         changed();
+        renderSections();
       });
       const level = make('select');
       level.append(new Option('Título', '2'), new Option('Subtítulo', '3'));
@@ -341,6 +503,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       level.addEventListener('change', () => {
         block.level = Number(level.value);
         changed();
+        renderSections();
       });
       set.append(field('Texto do título', input), field('Nível', level));
     } else if (block.type === 'paragraph')
@@ -356,6 +519,13 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     else if (block.type === 'checklist') set.append(checklistEditor(block, number));
     else if (block.type === 'annotation_ref') set.append(referenceView(block));
     set.append(bar);
+    if (block.type === 'heading' && index > 0) {
+      // A hand-drawn divider opens each new section (decorative).
+      const divider = make('img', undefined, 'nb-divider');
+      divider.src = artSrc(SECTION_DIVIDER);
+      divider.alt = '';
+      item.append(divider);
+    }
     item.append(set);
     return item;
   }
@@ -363,6 +533,26 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   function renderBlocks() {
     list.replaceChildren(...content.doc.blocks.map(blockEditor));
     empty.hidden = content.doc.blocks.length > 0;
+    renderSections();
+  }
+  // Paper tabs for the notebook's sections (its main headings): a quick way to jump to one.
+  const TINTS = ['lavender', 'matcha', 'honey', 'rose', 'mist'];
+  function renderSections() {
+    const headings = content.doc.blocks.filter((block) => block.type === 'heading' && block.level === 2);
+    sections.hidden = headings.length === 0;
+    sections.replaceChildren(
+      ...headings.slice(0, 8).map((block, index) => {
+        const tab = button(block.text.trim() || `Seção ${index + 1}`, 'paper-tab');
+        tab.dataset.tint = TINTS[index % TINTS.length];
+        tab.setAttribute('translate', 'no');
+        tab.addEventListener('click', () => {
+          const target = list.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
+          target?.scrollIntoView?.({ block: 'start', behavior: motionReduced() ? 'auto' : 'smooth' });
+          focusBlock(block.id, 'input[type=text]');
+        });
+        return tab;
+      }),
+    );
   }
   function renderReferences() {
     for (const [index, block] of content.doc.blocks.entries()) {
@@ -373,6 +563,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   }
   function renderAll() {
     titleInput.value = content.title;
+    paintCoverTitle();
     renderBlocks();
   }
 
@@ -443,6 +634,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       announce.textContent = 'O caderno chegou ao limite de 300 blocos.';
       return;
     }
+    if (book.hidden) setOpen(true, { focus: false });
     references.set(note.id, { ...note, deleted: false });
     const block = referenceBlock(note);
     content.doc.blocks.push(block);

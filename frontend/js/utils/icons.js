@@ -95,6 +95,12 @@ export const ICON_MAP = Object.freeze({
   question: 'question',
   lantern: 'lamp',
   leaf: 'leaf',
+  // Diário de estudo and the lesson notebook (3.6)
+  previous: 'caret-left',
+  next: 'caret-right',
+  rotate: 'arrow-clockwise',
+  journal: 'book-open-text',
+  sticker: 'sticker',
 });
 
 export const ICON_NAMES = Object.freeze(Object.keys(ICON_MAP));

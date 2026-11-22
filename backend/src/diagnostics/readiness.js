@@ -17,6 +17,7 @@ export const featureSchema = Object.freeze({
   classrooms: { migration: '20261121140000_classrooms.sql', tables: { classrooms: 'id,owner_id,status', classroom_members: 'classroom_id,user_id,role,status', classroom_invites: 'id,token_hash,max_uses,use_count', classroom_submissions: 'id,status,teacher_confirmed_revision_id', classroom_lessons: 'id,published_revision_id,status', classroom_shared_items: 'id,flashcard_set_id,revoked_at' } },
   multi_lesson: { migration: '20261121170000_multi_lesson.sql', tables: { ai_generations: 'id,generation_key,status', multi_lesson_materials: 'id,user_id,sources,status', multi_lesson_jobs: 'id,status,next_attempt_at,locked_by' } },
   discoveries: { migration: '20261123090000_discoveries.sql', tables: { investigations: 'id,user_id,source_revision_id,status,version', investigation_evidence: 'id,investigation_id,removed_at', discoveries: 'id,investigation_id,version', collection_unlocks: 'user_id,collectible_id,source_event', desk_layouts: 'user_id,items,version' } },
+  journal: { migration: '20261124090000_journals.sql', tables: { journals: 'id,user_id,cover,paper,version,deleted_at', journal_pages: 'id,journal_id,user_id,template,decorations,links,version' } },
   notebooks: { migration: '20261121130000_notes_3_0.sql', tables: { study_notebooks: 'id,user_id,material_id,version,visibility', study_annotations: 'id,end_segment_position,anchor_version,visibility' } },
 });
 
