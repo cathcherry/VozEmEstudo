@@ -146,7 +146,8 @@
     border-radius: 2px;
   }
   .nb-look .swatch {
-    width: 4.3rem;
+    min-width: 4.3rem;
+    padding-inline: 0.15rem;
   }
   .nb-close {
     margin-left: auto;

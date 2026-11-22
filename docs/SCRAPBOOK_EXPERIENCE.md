@@ -128,11 +128,32 @@ As seções seguintes são preenchidas à medida que as entregas ficam acessíve
   aulas e descobertas da própria conta aparecem como bilhetes no pé da página; uma **citação só é
   salva com a fonte** (uma das ligações). Páginas viram com animação curta (instantânea com
   movimento reduzido). **Modo silencioso** e a opção **"Página limpa"** mostram só papel e texto.
-  Salva sozinho, com versão por página e repetição segura. **F**: atrás da flag `journal`
-  (`FEATURE_JOURNAL=false` por padrão) e da migration `20261124100000_journals.sql`, que é
-  **somente staging** (não aplicada em produção). Sem a migration, a página diz que o diário ainda
-  não foi habilitado.
+  Salva sozinho, com versão por página e repetição segura. A migration
+  `20261124100000_journals.sql` foi **aplicada no staging e na produção em 22/11/2026**, com backup
+  conferido. A flag `journal` (`FEATURE_JOURNAL`) vem desligada no `.env.example`;
+  `ATIVAR_RECURSOS_3_4.cmd` a liga. Com a flag ligada, o diário fica acessível pela barra lateral
+  em **Seu espaço › Diário**. Sem a flag, o item não aparece, e a página explica que o recurso
+  não está ativo.
 - **Capturas**: `docs/design-audit/after/3-6-diario-*` e `3-6-caderno-*` (1440 e 390 px).
 - **Ainda não**: fotos enviadas pela pessoa (as molduras mostram desenhos do manifesto), reordenar
   páginas pela interface (a API aceita `position`), dupla página aberta lado a lado, decorações no
-  caderno da aula (lá só capa, papel, abas e divisores) e um item de navegação para o diário.
+  caderno da aula (lá só capa, papel, abas e divisores).
+
+### Navegação "Seu espaço" (integração)
+
+A barra lateral ganhou o grupo **Seu espaço**, com Diário, Descobertas e Gabinete. Cada item
+aparece só quando a flag correspondente está ligada (`journal` e `discoveries`). Antes, o Gabinete e
+o Arquivo só podiam ser abertos por links internos.
+
+### Estado de acesso ao fim da sessão (22/11/2026)
+
+| Recurso | Banco de produção | Flag | Como a pessoa chega |
+| --- | --- | --- | --- |
+| Correções de UX (Biblioteca, Revisar, Focar/Planejar, mesa) | não precisa | nenhuma | direto, **OK** |
+| Ícones, emblemas, seletor de emblema | não precisa | nenhuma | Biblioteca, **OK** |
+| Caderno da aula (capa, papel, abas) | não precisa (preferências) | `notebooks` | aba Anotações › Caderno da aula, **OK** |
+| Gabinete, Arquivo de descobertas, cartões que evoluem, Investigar | aplicada | `discoveries` | Seu espaço › Descobertas / Gabinete |
+| Diário de estudo (scrapbook) | aplicada | `journal` | Seu espaço › Diário |
+
+Na linha de comando, `ATIVAR_RECURSOS_3_4.cmd` liga `discoveries` e `journal`. Enquanto o script não
+roda, esses dois ficam ocultos.

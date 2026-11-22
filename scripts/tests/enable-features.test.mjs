@@ -12,12 +12,7 @@ test('enables every implemented flag, keeps secrets untouched, and is idempotent
   assert.match(once.text, /^GROQ_MODEL=openai\/gpt-oss-120b$/m);
   assert.match(once.text, /^# comment$/m);
   assert.equal(applySettings(once.text).text, once.text, 'second run changes nothing');
-  // 3.6 staging-only flags are deliberately absent: the 3.4 script never touches them, so they
-  // stay at their default (false). Their migrations are not in the 3.4 release either.
-  const STAGING_ONLY = ['journal'];
-  for (const name of FEATURE_FLAG_NAMES.filter((n) => !STAGING_ONLY.includes(n)))
-    assert.ok(`FEATURE_${name.toUpperCase()}` in RELEASE_SETTINGS, name);
-  for (const name of STAGING_ONLY) assert.ok(!(`FEATURE_${name.toUpperCase()}` in RELEASE_SETTINGS), name);
+  for (const name of FEATURE_FLAG_NAMES) assert.ok(`FEATURE_${name.toUpperCase()}` in RELEASE_SETTINGS, name);
 });
 
 test('the enabled flag set satisfies every readiness dependency', () => {

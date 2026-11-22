@@ -25,6 +25,8 @@ export const RELEASE_SETTINGS = Object.freeze({
   FEATURE_MULTI_LESSON: 'true',
   // Discoveries/Gabinete/Investigar: migration 20261123090000 applied in production on 22/11/2026.
   FEATURE_DISCOVERIES: 'true',
+  // Diário de estudo: migration 20261124100000 applied in production on 22/11/2026.
+  FEATURE_JOURNAL: 'true',
   // Not implemented: must stay off.
   FEATURE_SOCIAL_BASIC: 'false',
   GROQ_MODEL: 'openai/gpt-oss-120b',
