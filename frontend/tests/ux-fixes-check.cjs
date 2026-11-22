@@ -99,8 +99,7 @@ async function library(browser, base) {
     assert.match(page.url(), /historico\.html\?folder=sub-bio$/, `${label}: a lesson title click must not open the lesson`);
     assert.equal(await barText(page), '1 aula selecionada');
     // A click on an empty part of the row toggles it off again.
-    const box = await loose.boundingBox();
-    await page.mouse.click(box.x + box.width - 12, box.y + box.height - 8);
+    await loose.locator('.material-meta').click();
     assert.equal(await barText(page), 'Toque nas aulas ou pastas para selecionar');
     await page.locator('.library-unit-folder > summary', { hasText: 'Célula' }).click();
     assert.match(page.url(), /folder=sub-bio$/);
@@ -193,6 +192,8 @@ async function desk(browser, base) {
     assert.deepEqual(await drawer(page), []);
     assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.hourglass');
     // Drag a placed object onto another: they swap places; nothing is ever in two places.
+    await settle(page); // the page below the desk has finished loading: nothing moves under the pointer
+    await slotTarget(page, 'desk-center').scrollIntoViewIfNeeded();
     const release = await dragTo(page, slotTarget(page, 'desk-center'), slotTarget(page, 'desk-right'));
     assert.equal(await page.locator('[data-desk-slot="desk-center"]').getAttribute('data-lifting'), 'true', 'carried: faded at its place');
     assert.equal(await page.locator('[data-desk-tray]').getAttribute('data-dropzone'), 'true', 'the drawer takes it back');
