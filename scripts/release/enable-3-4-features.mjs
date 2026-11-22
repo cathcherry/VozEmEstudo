@@ -23,7 +23,6 @@ export const RELEASE_SETTINGS = Object.freeze({
   FEATURE_CLASSROOMS: 'true',
   FEATURE_NOTEBOOKS: 'true',
   FEATURE_MULTI_LESSON: 'true',
-  // 3.5 staging only: its migration (20261123090000_discoveries.sql) is not in production.
   // Discoveries/Gabinete/Investigar: migration 20261123090000 applied in production on 22/11/2026.
   FEATURE_DISCOVERIES: 'true',
   // Not implemented: must stay off.
