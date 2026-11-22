@@ -206,12 +206,10 @@ body.app-page[data-page='material'] .question-batch-row {
   color: var(--muted);
   font-size: 0.8rem;
 }
-.material-page-menu,
 .list-row-head .row-menu {
   position: relative;
 }
-.list-row-head .row-menu > summary,
-.material-page-menu > summary {
+.list-row-head .row-menu > summary {
   display: grid;
   place-items: center;
   min-width: 34px;
@@ -265,11 +263,6 @@ body.app-page[data-page='material'] .question-batch-row {
   display: grid;
   gap: 0.1rem;
   margin: 0.25rem 0 0 1.6rem;
-}
-.export-note {
-  margin: 0.4rem 0 0;
-  color: var(--muted);
-  font-size: 0.8rem;
 }
 .share-result input {
   font-family: ui-monospace, monospace;

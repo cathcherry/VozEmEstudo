@@ -7,23 +7,11 @@
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
-.material-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: start;
-}
-.material-heading > div {
-  min-width: 0;
-}
 .material-header-actions,
 .review-navigation {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-.compact-edit {
-  font-size: 0.85rem;
 }
 .title-placeholder {
   display: block;
@@ -47,10 +35,6 @@
 }
 .waiting-screen > p {
   color: var(--muted);
-}
-.waiting-screen .waiting-tip {
-  margin-block: 2rem;
-  font-size: 0.95rem;
 }
 .material-tabs {
   display: flex;
@@ -76,25 +60,6 @@
 [role='tabpanel'] {
   margin-top: 0;
   min-height: 18rem;
-}
-.quiet-menu {
-  position: relative;
-  font-size: 0.9rem;
-}
-.quiet-menu summary {
-  cursor: pointer;
-  padding: 0.5rem;
-}
-.quiet-menu[open] {
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 0.4rem;
-  background: var(--surface);
-}
-.quiet-menu button,
-.quiet-menu label {
-  display: block;
-  margin: 0.5rem;
 }
 .transcription-segment {
   border: 0;
@@ -162,10 +127,6 @@
   justify-content: space-between;
   gap: 1rem;
   cursor: pointer;
-}
-.question-batch-row[open] .small-action {
-  display: inline-block;
-  margin-top: 1rem;
 }
 .markdown-content {
   line-height: var(--reading-line-height);
@@ -237,19 +198,6 @@
   background: var(--surface);
   cursor: pointer;
 }
-.download-clip .download-label {
-  max-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: max-width 0.2s;
-}
-.download-clip:hover .download-label,
-.download-clip:focus-visible .download-label {
-  max-width: 10rem;
-}
-.clip-export-row {
-  justify-content: flex-end;
-}
 .player-heading strong,
 [data-selected-file] {
   display: block;
@@ -296,19 +244,10 @@
   .tag-chip {
     animation: none;
   }
-  .download-label {
-    transition: none;
-  }
 }
 @media (max-width: 600px) {
-  .material-heading {
-    flex-direction: column;
-  }
   .material-tabs [role='tab'] {
     padding-inline: 0.6rem;
-  }
-  .section-title-row {
-    flex-wrap: wrap;
   }
   .review-navigation {
     flex-direction: column-reverse;
@@ -319,13 +258,6 @@
   }
 }
 @media print {
-  body.print-export * {
-    visibility: hidden;
-  }
-  body.print-export [data-print-export],
-  body.print-export [data-print-export] * {
-    visibility: visible;
-  }
   [data-print-export] {
     position: absolute;
     inset: 0;
@@ -333,10 +265,5 @@
     color: black;
     padding: 2rem;
   }
-}
-.identification-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 0.5rem;
 }
 }

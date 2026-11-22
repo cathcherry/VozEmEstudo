@@ -46,11 +46,11 @@
 <button type="button" class="tool-tab" role="tab" id="tab-flashcards" aria-controls="flashcards" data-tab="flashcards">Flashcards compartilhados</button>
 <button type="button" class="tool-tab" role="tab" id="tab-membros" aria-controls="membros" data-tab="membros">Membros</button>
 </div>
-<section class="tool-section" id="aulas" role="tabpanel" aria-labelledby="tab-aulas" hidden>
+<section class="tool-section" id="aulas" role="tabpanel" aria-labelledby="tab-aulas" hidden><div class="classroom-main">
 <div class="classrooms-toolbar" data-manager-only hidden><button type="button" class="primary-action" data-classroom-open="publish" aria-haspopup="dialog">Publicar aula</button></div>
 <ul class="classroom-items" data-lessons-list></ul>
 <article class="classroom-reader" data-lesson-reader hidden aria-labelledby="lesson-reader-title" tabindex="-1"></article>
-<h3>Materiais de apoio</h3>
+</div><div class="classroom-aside"><h3>Materiais de apoio</h3>
 <div class="classrooms-toolbar" data-manager-only hidden><button type="button" class="secondary-action" data-classroom-open="resource" aria-haspopup="dialog">Adicionar link</button></div>
 <ul class="classroom-items" data-resources-list></ul>
 <div data-integrated-section hidden>
@@ -60,7 +60,7 @@
 <ul class="classroom-items" data-integrated-list></ul>
 <article class="classroom-reader" data-integrated-reader hidden aria-labelledby="integrated-reader-title" tabindex="-1"></article>
 </div>
-</section>
+</div></section>
 <section class="tool-section" id="envios" role="tabpanel" aria-labelledby="tab-envios" hidden>
 <p class="tool-hint" data-submissions-hint></p>
 <div class="classrooms-toolbar" data-student-only hidden><button type="button" class="primary-action" data-classroom-open="submit" aria-haspopup="dialog">Enviar gravação</button></div>

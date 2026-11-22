@@ -219,6 +219,7 @@ export default {
   "Anotações e destaques desta aula": "本课程的笔记与标记",
   "Anotações indisponíveis.": "笔记不可用。",
   "Anotações pessoais": "个人笔记",
+  "Anotar": "记笔记",
   "Anterior": "上一题",
   "Ao aprovar, todos os membros da turma passam a ver o conteúdo, com o nome do aluno.": "批准后，班级所有成员都能看到该内容及学生姓名。",
   "Ao finalizar a lista": "完成列表后",
@@ -1223,6 +1224,7 @@ export default {
   "Investigação começada. Agora explore os trechos da aula.": "探究已开始。现在浏览课程片段。",
   "Investigações desta aula": "本课的探究",
   "Investigações e o Gabinete em destaque, com o caminho até os próximos itens.": "突出显示探究和收藏柜，并显示获得下一件物品的进度。",
+  "Investigar": "探究",
   "Investigar uma pergunta": "探究一个问题",
   "Investigue uma pergunta de uma aula: a primeira evidência que você guardar já deixa um selo aqui.": "探究一节课中的问题：你保存的第一条证据就会在这里留下一枚印章。",
   "Ir ao destaque": "转到标记",
@@ -3862,6 +3864,10 @@ export default {
   [
    "{0} de {1}",
    "{0} / {1}"
+  ],
+  [
+   "{0} membro",
+   "{0} 名成员"
   ],
   [
    "Nível {0}",

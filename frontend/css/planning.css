@@ -215,3 +215,432 @@ body:is([data-page='plan'],[data-page='review']) .planning-more { display: grid;
 body:is([data-page='plan'],[data-page='review']) .planning-more[hidden] { display: none; }
 body:is([data-page='plan'],[data-page='review']) .planning-more-toggle { justify-self: start; }
 }
+
+/* ==== Planejar 3.5 (Milestone 8): goals as notebook pages, tasks as ruled lines ===========
+ * One primary action (Novo objetivo) with the secondary ones beside it and the task filters at
+ * the end of the same band. Each goal is one panel: a Fraunces title, a quiet progress line and
+ * its own actions as text buttons in the header. Subgoals are a ruled group inside the goal (a
+ * left rule, not a card). Tasks are rows: check, title, due date, links, edit. The calendar is a
+ * month sheet beside an agenda written as one list. */
+@layer pages {
+  body.app-page[data-page='plan'] .tool-page .planning-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3) var(--space-5);
+    max-width: 62rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-panel > * {
+    grid-column: 1 / -1;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-panel > #planning-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-panel > .planning-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+  }
+  /* The filters sit right above the list they sort, at its right edge. */
+  body.app-page[data-page='plan'] .tool-page .planning-panel > .planning-controls {
+    display: flex;
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2) var(--space-4);
+    margin: 0;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 550;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-controls select {
+    width: auto;
+    min-height: 2.25rem;
+    padding-block: 0;
+    font-size: var(--step-ui);
+  }
+  body.app-page[data-page='plan'] .tool-page [data-planning-status]:empty {
+    display: none;
+  }
+  body.app-page[data-page='plan'] .tool-page [data-planning-list] {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-2);
+  }
+
+  /* ---- A goal ------------------------------------------------------------------------------ */
+  body.app-page[data-page='plan'] .tool-page .planning-goal {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: var(--space-5) var(--space-6) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal-header {
+    order: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal h3 {
+    flex: 1 1 16rem;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+    letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal-actions {
+    flex: none;
+    width: auto;
+    max-width: 100%;
+    margin-right: calc(-1 * var(--space-2));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-1);
+    margin: 0;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal-actions > .planning-edit-form {
+    flex-basis: 100%;
+  }
+  /* Inline actions read as text buttons (one quiet voice for "add" and "edit" everywhere). */
+  body.app-page[data-page='plan'] .tool-page .planning-goal .planning-inline-button {
+    min-height: 2rem;
+    padding: 0 var(--space-2);
+    border: 0;
+    border-radius: var(--radius-control);
+    background: transparent;
+    box-shadow: none;
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal .planning-inline-button:hover,
+  body.app-page[data-page='plan'] .tool-page .planning-goal .planning-inline-button[aria-expanded='true'] {
+    background: var(--brand-wash);
+  }
+  /* Progress: a hairline that fills with matcha, under the title; the sentence stays below. */
+  body.app-page[data-page='plan'] .tool-page .planning-progress {
+    order: 1;
+    display: block;
+    height: 4px;
+    margin-top: var(--space-3);
+    border-radius: 999px;
+    background:
+      linear-gradient(to right, var(--matcha) calc(var(--done, 0) * 100%), transparent 0),
+      var(--paper-sunken);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal > .planning-meta {
+    order: 2;
+    margin: var(--space-2) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal > :not(.planning-goal-header, .planning-progress, .planning-meta) {
+    order: 3;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal[data-status='completed'] h3 {
+    color: var(--ink-muted);
+  }
+
+  /* ---- Subgoal: a ruled group, never a card inside the goal ---------------------------------- */
+  body.app-page[data-page='plan'] .tool-page .planning-subgoal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0 var(--space-3);
+    margin: var(--space-5) 0 0;
+    padding: 0 0 0 var(--space-4);
+    border: 0;
+    border-left: 2px solid color-mix(in srgb, var(--lavender) 55%, transparent);
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-subgoal > * {
+    grid-column: 1 / -1;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-subgoal > h4 {
+    grid-column: 1;
+    margin: 0;
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-subgoal > .planning-inline-button {
+    grid-column: 2;
+    justify-self: end;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-subgoal > .planning-meta {
+    margin: 2px 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-ungrouped-title {
+    margin: var(--space-5) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+
+  /* ---- Tasks: ruled lines -------------------------------------------------------------------- */
+  body.app-page[data-page='plan'] .tool-page .planning-tasks {
+    display: grid;
+    gap: 0;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-tasks > .planning-task {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-4);
+    min-height: 3rem;
+    margin: 0;
+    padding: var(--space-2) 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > label {
+    display: flex;
+    flex: 1 1 16rem;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+    margin: 0;
+    font-size: var(--step-0);
+    font-weight: 500;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > label input[type='checkbox'] {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0.15rem 0 0;
+    accent-color: var(--matcha-ink);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task.is-done > label span {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--ink-muted) 60%, transparent);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > small {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task.is-overdue > small {
+    color: var(--rose-ink);
+    font-weight: 600;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > a {
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > a:hover {
+    text-decoration: underline;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-task > .planning-edit-form {
+    flex-basis: 100%;
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-edit-form:not([hidden]) {
+    margin: var(--space-3) 0 var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+    box-shadow: var(--recessed);
+  }
+  body.app-page[data-page='plan'] .tool-page .planning-goal > .planning-empty:not(.nino-note) {
+    margin: var(--space-4) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+
+  /* ---- Empty planner: the art, the sentence and the one action ------------------------------- */
+  body.app-page[data-page='plan'] .tool-page .planning-start.nino-note {
+    max-width: 40rem;
+    margin: 0;
+  }
+
+  /* ---- Calendar: a month sheet beside an agenda written as one list -------------------------- */
+  body.app-page[data-page='plan'] .tool-page .calendar-toolbar {
+    margin: 0 0 var(--space-4);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month-title {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 480;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-step {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-color: var(--line);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+    font-size: 1.15rem;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-layout {
+    gap: var(--space-6);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month {
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month .study-calendar-grid > span {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-align: center;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month .study-calendar-grid button {
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month .study-calendar-grid button.is-today {
+    border-color: var(--brand-ink);
+    color: var(--brand-ink);
+    font-weight: 700;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-month .study-calendar-grid button[aria-pressed='true'] {
+    color: var(--accent-contrast, #fff);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-note {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-agenda-head h3 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entries {
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entries .calendar-entry {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-3) 0 var(--space-3) var(--space-3);
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-inline-start: 3px solid var(--brand-ink);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entries .calendar-entry.is-task {
+    border-inline-start: 3px solid var(--honey);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entry-when {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entry-body h4 {
+    margin: 0;
+    font-size: var(--step-0);
+    font-weight: 600;
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entry-body > p {
+    margin: 2px 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entry-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-4);
+    margin-top: var(--space-1);
+  }
+  body.app-page[data-page='plan'] .tool-page .calendar-entry-actions :is(button, a) {
+    margin: 0;
+    min-height: 2rem;
+    font-size: var(--step-ui);
+  }
+
+  /* ---- Narrow screens ------------------------------------------------------------------------ */
+  @media (max-width: 760px) {
+    body.app-page[data-page='plan'] .tool-page .planning-panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-panel > .planning-controls {
+      justify-content: flex-start;
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-toolbar :is(.primary-action, .secondary-action) {
+      min-height: 2.5rem;
+      padding-inline: var(--space-3);
+      font-size: var(--step-ui);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-subgoal {
+      padding-left: var(--space-3);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-task {
+      column-gap: var(--space-3);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-task > .planning-inline-button {
+      margin-left: auto;
+      padding-inline: var(--space-1);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-goal {
+      padding: var(--space-4) var(--space-4) var(--space-3);
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-goal-actions {
+      margin-left: calc(-1 * var(--space-2));
+      margin-right: 0;
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-task > label {
+      flex-basis: 100%;
+    }
+    body.app-page[data-page='plan'] .tool-page .planning-task > small {
+      margin-left: calc(1.125rem + var(--space-3));
+    }
+    body.app-page[data-page='plan'] .tool-page .calendar-month-title {
+      min-width: 0;
+      font-size: var(--step-1);
+      white-space: nowrap;
+    }
+    body.app-page[data-page='plan'] .tool-page .calendar-entries .calendar-entry {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-1);
+    }
+  }
+}

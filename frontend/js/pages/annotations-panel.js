@@ -2,6 +2,8 @@ import { ninoNote } from '../utils/material-ui.js';
 import { listAnnotations,saveAnnotation } from '../api/learning-tools.api.js';
 import { selectionAnchor,focusAnnotation,readingSelectionAnchor,focusReadingAnnotation } from '../utils/annotation-anchor.js';
 import { pendingMutation } from '../utils/pending-mutation.js';
+import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { createSelectionToolbar } from './selection-toolbar.js';
 const make=(tag,text)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;};
 // Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
 const signal=(name,detail)=>{try{const view=document.defaultView;if(view?.CustomEvent)document.dispatchEvent(new view.CustomEvent(`voz:${name}`,{detail}));}catch{/* optional */}};
@@ -44,45 +46,40 @@ export async function initAnnotationsPanel({panel,materialId,context,segments,ma
       anchor={...selection,sourceRevisionId:source().review.sourceRevisionId};preview.textContent=`Destaque da revisão ${source().transcription.current_revision}: ${selection.quote}`;
     });
     clear.addEventListener('click',()=>{anchor=null;preview.textContent='';});
-    // Contextual popover over a selection in the reading view: highlight now, or comment it.
-    const pop=make('div');pop.className='selection-popover';pop.hidden=true;pop.setAttribute('role','toolbar');pop.setAttribute('aria-label','Ações do trecho selecionado');
-    const mark=make('button','Destacar'),comment=make('button','Comentar'),popNote=make('span');mark.type=comment.type='button';popNote.className='selection-popover-note';
-    pop.append(mark,comment,popNote);document.body.append(pop);
-    let pending=null;
+    // Floating toolbar over a selection in the reading view (selection-toolbar.js): highlight now,
+    // write a note about it, or start an investigation from it (discoveries, confirmed lessons).
     const reading=()=>segments.closest('[data-mode]')?.dataset.mode==='reading';
-    const hidePop=()=>{pop.hidden=true;pending=null;};
-    const showPop=()=>{
-      if(!reading())return hidePop();
-      const result=readingSelectionAnchor(segments,undefined,{multi:multiSegment});
-      if(result.error==='empty')return hidePop();
-      const rect=globalThis.getSelection().getRangeAt(0).getBoundingClientRect();
-      pending=result.error?null:result;
-      mark.hidden=comment.hidden=Boolean(result.error);
-      popNote.textContent=result.error?selectionError(result.error):'';
-      popNote.hidden=!result.error;
-      pop.hidden=false;
-      const width=pop.offsetWidth||180;
-      pop.style.left=`${Math.max(8,Math.min((document.defaultView?.innerWidth||1024)-width-8,rect.left+rect.width/2-width/2))}px`;
-      pop.style.top=`${Math.max(8,rect.top-pop.offsetHeight-10)}px`;
-    };
-    segments.addEventListener('mouseup',()=>setTimeout(showPop,0));
-    segments.addEventListener('keyup',(event)=>{if(event.shiftKey)showPop();});
-    document.addEventListener('mousedown',(event)=>{if(!pop.contains(event.target))hidePop();});
-    document.addEventListener('keydown',(event)=>{if(event.key==='Escape')hidePop();});
-    document.defaultView?.addEventListener('scroll',hidePop,{passive:true});
-    mark.addEventListener('click',()=>{
-      const material=source();if(!pending||!material?.review?.sourceRevisionId)return hidePop();
+    let discoveries=false;void isFeatureEnabled('discoveries').then((on)=>{discoveries=Boolean(on);}).catch(()=>{});
+    const confirmed=()=>source()?.review?.state==='ready_to_generate';
+    const highlight=(pending)=>{
+      const material=source();if(!material?.review?.sourceRevisionId)return;
       const body={sourceRevisionId:material.review.sourceRevisionId,...anchorFrom(pending),noteText:'',color:'yellow'};
-      hidePop();globalThis.getSelection()?.removeAllRanges();
+      globalThis.getSelection()?.removeAllRanges();
       void save({id:crypto.randomUUID(),materialId,version:0,body}).then(()=>{status.textContent='Destaque salvo no caderno da aula.';signal('notes-changed',{materialId});return load(0);}).catch((error)=>{status.textContent=error.message;});
-    });
-    comment.addEventListener('click',()=>{
-      const material=source();if(!pending||!material?.review?.sourceRevisionId)return hidePop();
+    };
+    const annotate=(pending)=>{
+      const material=source();if(!material?.review?.sourceRevisionId)return;
       anchor={...anchorFrom(pending),sourceRevisionId:material.review.sourceRevisionId};
       preview.textContent=`Destaque da revisão ${material.transcription.current_revision}: ${pending.quote}`;
-      hidePop();
       signal('open-notes',{});
       setTimeout(()=>text.focus(),0);
+    };
+    const investigateHref=(pending)=>{
+      const params=new URLSearchParams({aula:materialId});
+      const quote=String(pending.quote||'').replace(/\s+/g,' ').trim();
+      if(quote)params.set('trecho',[...quote].slice(0,240).join(''));
+      return `./investigar.html?${params}`;
+    };
+    createSelectionToolbar({
+      container:segments,
+      isActive:reading,
+      resolve:()=>readingSelectionAnchor(segments,undefined,{multi:multiSegment}),
+      errorText:selectionError,
+      actions:[
+        {id:'highlight',label:'Destacar',run:highlight},
+        {id:'note',label:'Anotar',run:annotate},
+        {id:'investigate',label:'Investigar',available:()=>discoveries&&confirmed(),href:investigateHref},
+      ],
     });
     const submit=make('button','Salvar anotação');submit.type='submit';
     form.append(textLabel,colorLabel,capture,clear,preview,submit);panel.append(form);

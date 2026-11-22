@@ -542,3 +542,404 @@
     gap: var(--space-4);
   }
 }
+
+/* ==== Descobertas and Gabinete, polished (3.5, Milestone 8) ================================
+ * The Arquivo is a notebook: one ruled page with a margin line and a stitched binding; each
+ * discovery is an entry dated in the margin, its stamps pressed in ink at the right. The page of
+ * one discovery uses the same paper. The Gabinete is a cabinet of curiosities: each kind is a
+ * drawer (a wooden front with a brass pull and a label plate) holding a tray of compartments;
+ * what is still to be found is a faint outline in its compartment, never a coloured card. */
+@layer pages {
+  body.app-page :is(.discoveries-page, .cabinet-page) {
+    --page-rule: color-mix(in srgb, var(--mist) 26%, transparent);
+    --page-margin: color-mix(in srgb, var(--rose) 55%, transparent);
+    --ruled: 2rem;
+  }
+
+  /* ---- The notebook ---------------------------------------------------------------------------- */
+  body.app-page .discoveries-page .discoveries-home > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body.app-page .discoveries-page :is(.discovery-notebook, .discovery-detail:not([hidden])) {
+    position: relative;
+    max-width: 54rem;
+    margin: var(--space-5) 0 0;
+    padding: var(--space-5) var(--space-6) var(--space-6) calc(var(--space-6) + 4.5rem);
+    border: 1px solid var(--line);
+    border-radius: 6px var(--radius-panel) var(--radius-panel) 6px;
+    background:
+      linear-gradient(to right, transparent calc(var(--space-6) + 3.5rem), var(--page-margin) 0 calc(var(--space-6) + 3.5rem + 1.5px), transparent 0),
+      repeating-linear-gradient(to bottom, transparent 0 calc(var(--ruled) - 1px), var(--page-rule) 0 var(--ruled)) 0 var(--space-5) / 100% 100% no-repeat,
+      var(--paper-raised);
+    box-shadow:
+      inset 14px 0 18px -16px rgb(var(--shadow-color) / 0.35),
+      var(--elev-2);
+  }
+  /* The binding: small stitches down the left edge. */
+  body.app-page .discoveries-page :is(.discovery-notebook, .discovery-detail:not([hidden]))::before {
+    content: '';
+    position: absolute;
+    top: var(--space-4);
+    bottom: var(--space-4);
+    left: 10px;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, color-mix(in srgb, var(--lavender-ink) 45%, transparent) 0 8px, transparent 8px 16px);
+    border-radius: 1px;
+  }
+  body.app-page .discoveries-page .discovery-notebook {
+    display: grid;
+    gap: 0;
+    list-style: none;
+  }
+  body.app-page .discoveries-page .discovery-notebook > .discovery-page-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-5);
+    /* Written on the rules: every line is one ruled line high, a blank line between entries. */
+    padding: 0 0 var(--ruled);
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    line-height: var(--ruled);
+  }
+  body.app-page .discoveries-page .discovery-page-card:last-child {
+    padding-bottom: 0;
+  }
+  body.app-page .discoveries-page .discovery-page-card > :not(.stamp-row, .discovery-page-day) {
+    grid-column: 1;
+  }
+  /* The date in the margin, left of the red line. */
+  body.app-page .discoveries-page .discovery-page-day {
+    position: absolute;
+    top: 0;
+    left: calc(-4.5rem - 2px);
+    display: grid;
+    justify-items: center;
+    width: 3.25rem;
+    color: var(--ink-muted);
+    line-height: 1.1;
+  }
+  body.app-page .discoveries-page .discovery-page-day strong {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 450;
+    color: var(--ink);
+  }
+  body.app-page .discoveries-page .discovery-page-day small {
+    font-size: var(--step--1);
+    text-transform: lowercase;
+  }
+  body.app-page .discoveries-page .discovery-page-card h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+    line-height: var(--ruled);
+  }
+  body.app-page .discoveries-page .discovery-page-card h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  body.app-page .discoveries-page .discovery-page-card h3 a:hover {
+    color: var(--brand-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  body.app-page .discoveries-page .discovery-page-card .discovery-meta,
+  body.app-page .discoveries-page .discovery-page-card .discovery-counts {
+    margin: 0;
+    line-height: var(--ruled);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  /* Stamps pressed on the page: ink, slightly turned, no pill. */
+  body.app-page .discoveries-page .discovery-page-card > .stamp-row {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+    margin: 0;
+  }
+  body.app-page .discoveries-page .stamp-row {
+    gap: var(--space-1);
+  }
+  body.app-page .discoveries-page .stamp {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: var(--ink-muted);
+  }
+  body.app-page .discoveries-page .stamp :is(img, .collectible-art) {
+    width: 3.25rem;
+    height: 3.25rem;
+    mix-blend-mode: multiply;
+    opacity: 0.9;
+    rotate: -7deg;
+  }
+  body.app-page .discoveries-page .stamp:nth-child(even) :is(img, .collectible-art) {
+    rotate: 5deg;
+  }
+  body.app-page .discoveries-page .discovery-page-card .stamp > span:not([data-art-slot]) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  html[data-theme='night'] body.app-page .discoveries-page .stamp :is(img, .collectible-art) {
+    mix-blend-mode: normal;
+  }
+  /* One discovery: the same paper (margin and binding; no rules under longer prose). */
+  body.app-page .discoveries-page .discovery-detail:not([hidden]) {
+    background:
+      linear-gradient(to right, transparent calc(var(--space-6) + 3.5rem), var(--page-margin) 0 calc(var(--space-6) + 3.5rem + 1.5px), transparent 0),
+      var(--paper-raised);
+  }
+  body.app-page .discoveries-page .discovery-detail:not([hidden]) > .text-action {
+    display: inline-block;
+    margin-bottom: var(--space-3);
+  }
+  body.app-page .discoveries-page .discovery-heading h2 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-3);
+    font-weight: 480;
+    line-height: 1.15;
+  }
+  body.app-page .discoveries-page .discovery-block h3 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body.app-page .discoveries-page .discovery-detail .evidence-quote {
+    background: color-mix(in srgb, var(--honey) 12%, var(--paper-raised));
+  }
+  body.app-page .discoveries-page .empty-state-card {
+    max-width: 40rem;
+  }
+
+  /* ---- The cabinet -------------------------------------------------------------------------------- */
+  body.app-page .cabinet-page .experience-mode {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-5) 0 var(--space-6);
+    padding: 0;
+    border: 0;
+  }
+  body.app-page .cabinet-page .experience-mode legend {
+    padding: 0;
+    margin-bottom: var(--space-1);
+    font-size: var(--step-ui);
+  }
+  body.app-page .cabinet-page .experience-mode .tool-hint {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+  }
+  body.app-page .cabinet-page .experience-mode .segmented-control {
+    justify-self: start;
+    display: inline-flex;
+    gap: 2px;
+  }
+  body.app-page .cabinet-page .experience-mode .segmented-control label {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  body.app-page .cabinet-page .cabinet-drawers {
+    gap: var(--space-5);
+  }
+  /* A drawer: the front is the summary (wood, a label plate, a brass pull). */
+  body.app-page .cabinet-page .cabinet-drawer {
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--desk-edge) 55%, var(--line));
+    border-radius: var(--radius-panel);
+    background: color-mix(in srgb, var(--desk-top) 22%, var(--paper-raised));
+    box-shadow: var(--elev-2);
+  }
+  body.app-page .cabinet-page .cabinet-drawer > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 3.75rem;
+    padding: var(--space-2) var(--space-5) var(--space-2) var(--space-5);
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--paper-raised) 35%, transparent) 0 1px, transparent 1px),
+      linear-gradient(to bottom, var(--desk-top), color-mix(in srgb, var(--desk-top) 85%, var(--desk-edge)));
+    color: var(--ink);
+    list-style: none;
+    cursor: pointer;
+  }
+  body.app-page .cabinet-page .cabinet-drawer > summary::-webkit-details-marker {
+    display: none;
+  }
+  /* The label plate. */
+  body.app-page .cabinet-page .cabinet-drawer > summary > span:first-child {
+    padding: 2px var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--honey-ink) 40%, transparent);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--paper-raised) 88%, var(--honey));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(var(--shadow-color) / 0.25);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body.app-page .cabinet-page .cabinet-drawer .cabinet-count {
+    color: color-mix(in srgb, var(--ink) 75%, var(--desk-edge));
+    font-family: var(--font-ui);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  /* The brass pull, at the right of the front. */
+  body.app-page .cabinet-page .cabinet-drawer > summary::after {
+    content: '';
+    margin-left: auto;
+    width: 3rem;
+    height: 0.75rem;
+    border-radius: 999px;
+    background: linear-gradient(to bottom, #f1d38c, #b48a32);
+    box-shadow: 0 2px 3px rgb(var(--shadow-color) / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.55);
+    transition: transform var(--dur) var(--ease);
+  }
+  body.app-page .cabinet-page .cabinet-drawer[open] > summary::after {
+    transform: translateY(1px);
+  }
+  body.app-page .cabinet-page .cabinet-drawer > summary:focus-visible {
+    outline: none;
+    box-shadow: inset var(--focus-ring);
+  }
+  /* The tray: compartments divided by thin walls. */
+  body.app-page .cabinet-page .cabinet-drawer > .cabinet-items {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid color-mix(in srgb, var(--desk-edge) 45%, var(--line));
+    /* The felt at the bottom of the tray shows as the walls and in empty compartments. */
+    background: color-mix(in srgb, var(--paper-sunken) 75%, var(--desk-top));
+    box-shadow: inset 0 6px 10px -8px rgb(var(--shadow-color) / 0.4);
+  }
+  body.app-page .cabinet-page .cabinet-items > .cabinet-item {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-4) var(--space-4);
+    border: 0;
+    border-radius: 0;
+    background: var(--paper-raised);
+    text-align: center;
+  }
+  body.app-page .cabinet-page .cabinet-item > [data-art-slot] {
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+  }
+  body.app-page .cabinet-page .cabinet-item > [data-art-slot] :is(img, .art-icon) {
+    width: auto;
+    height: auto;
+    max-width: 5rem;
+    max-height: 5rem;
+    object-fit: contain;
+  }
+  body.app-page .cabinet-page .cabinet-drawer[data-drawer='stamp'] .cabinet-item[data-state='unlocked'] > [data-art-slot] {
+    rotate: -6deg;
+  }
+  body.app-page .cabinet-page .cabinet-item strong {
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  body.app-page .cabinet-page .cabinet-item p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    line-height: 1.45;
+  }
+  body.app-page .cabinet-page .cabinet-item .cabinet-origin {
+    margin-top: var(--space-1);
+    font-size: var(--step--1);
+  }
+  /* Still to be found: a faint outline in an empty compartment. */
+  body.app-page .cabinet-page .cabinet-items > .cabinet-item[data-state='locked'] {
+    background: color-mix(in srgb, var(--paper-sunken) 70%, var(--paper-raised));
+    color: var(--ink-muted);
+  }
+  body.app-page .cabinet-page .cabinet-item[data-state='locked'] > [data-art-slot] {
+    filter: grayscale(1);
+    opacity: 0.28;
+  }
+  body.app-page .cabinet-page .cabinet-item[data-state='locked'] strong {
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  /* ---- Your desk, from the cabinet: compact ------------------------------------------------------ */
+  body.app-page .cabinet-page .desk-section {
+    margin-top: var(--space-7);
+  }
+  body.app-page .cabinet-page .desk-section > h2 {
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-2);
+    font-weight: 480;
+  }
+  body.app-page .cabinet-page .desk-choices {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-3) var(--space-4);
+  }
+  body.app-page .cabinet-page .desk-choice label {
+    font-size: var(--step-ui);
+  }
+
+  @media (max-width: 760px) {
+    body.app-page .discoveries-page :is(.discovery-notebook, .discovery-detail:not([hidden])) {
+      padding: var(--space-4) var(--space-4) var(--space-5) calc(var(--space-4) + 3.5rem);
+      background:
+        linear-gradient(to right, transparent calc(var(--space-4) + 2.75rem), var(--page-margin) 0 calc(var(--space-4) + 2.75rem + 1.5px), transparent 0),
+        repeating-linear-gradient(to bottom, transparent 0 calc(var(--ruled) - 1px), var(--page-rule) 0 var(--ruled)) 0 var(--space-4) / 100% 100% no-repeat,
+        var(--paper-raised);
+    }
+    body.app-page .discoveries-page .discovery-detail:not([hidden]) {
+      padding-left: calc(var(--space-4) + 0.75rem);
+      background: var(--paper-raised);
+    }
+    body.app-page .discoveries-page .discovery-page-day {
+      left: -3.6rem;
+      width: 2.75rem;
+    }
+    body.app-page .discoveries-page .discovery-notebook > .discovery-page-card {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page .discoveries-page .discovery-page-card > .stamp-row {
+      grid-column: 1;
+      grid-row: auto;
+      margin-top: var(--space-2);
+    }
+    body.app-page .cabinet-page .cabinet-drawer > .cabinet-items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    body.app-page .cabinet-page .cabinet-items > .cabinet-item {
+      padding: var(--space-4) var(--space-2) var(--space-3);
+    }
+    body.app-page .cabinet-page .experience-mode .segmented-control label > span {
+      padding: 0 0.6rem;
+    }
+  }
+}

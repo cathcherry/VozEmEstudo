@@ -9,21 +9,36 @@
  * stay. Colours come from the atmosphere tokens (--desk-wall, --desk-top, --desk-edge). */
 @layer pages {
   body[data-page='dashboard'] {
-    --desk-depth: 3.25rem;
-    --desk-overlap: 1.5rem;
-    --desk-stage-h: 13rem;
+    --desk-depth: 4rem;
+    --desk-lip: 0.55rem;
+    --desk-overlap: 1.75rem;
+    --desk-stage-h: 16rem;
     --desk-bleed: clamp(var(--space-4), 3vw, var(--space-6));
     --desk-col-gap: clamp(var(--space-5), 3vw, var(--space-7));
-    --desk-object: 4.8rem;
-    --desk-lume: 5.75rem;
+    --desk-object: 5.1rem;
+    --desk-shelf-object: 3.7rem;
+    --desk-lume: 8.75rem;
     --desk-inset: 0.75rem;
+    /* Fine wood grain: long fibres along the board (fractal noise stretched horizontally). The
+       colour is neutral brown at low alpha, so every atmosphere's --desk-top shows through. */
+    --desk-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='120'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0035 0.24' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.15 0 0 0 0 0.07 0 0 0 0.9 -0.36'/%3E%3C/filter%3E%3Crect width='640' height='120' filter='url%28%23g%29'/%3E%3C/svg%3E");
+    --desk-grain-strength: 0.55;
+    --desk-lamp-light: color-mix(in srgb, var(--honey) 34%, transparent);
+  }
+  html[data-theme='night'] body[data-page='dashboard'] {
+    --desk-grain-strength: 0.8;
+    --desk-lamp-light: color-mix(in srgb, var(--honey) 30%, transparent);
   }
   /* The room bleeds into the page margin (inset a little, with rounded corners), so its content
      still lines up with the columns below. */
   body[data-page='dashboard'] .desk-scene {
     position: relative;
+    /* Objects never push the page sideways (the art has air around it). */
+    overflow-x: clip;
     margin: calc(-1 * var(--space-2)) calc(var(--desk-inset) - var(--desk-bleed)) var(--space-5);
   }
+  /* The wall: the atmosphere's tone, lit by the window (upper right) and a little darker where it
+     meets the desk, so the room has depth without a decorative gradient. */
   body[data-page='dashboard'] .desk-room {
     position: relative;
     display: grid;
@@ -34,32 +49,45 @@
     padding: var(--space-5) calc(var(--desk-bleed) - var(--desk-inset)) 0;
     border-radius: var(--radius-window) var(--radius-window) 0 0;
     background:
-      linear-gradient(to bottom, transparent calc(100% - var(--desk-depth)), var(--desk-top) 0),
-      radial-gradient(58% 120% at 86% 0%, color-mix(in srgb, var(--paper-raised) 60%, transparent), transparent 70%),
+      radial-gradient(46% 95% at 84% 18%, color-mix(in srgb, var(--paper-raised) 55%, transparent), transparent 72%),
+      linear-gradient(to bottom, transparent 55%, color-mix(in srgb, var(--desk-edge) 10%, transparent) calc(100% - var(--desk-depth))),
       var(--desk-wall);
     isolation: isolate;
   }
-  /* The light line along the back of the desk and its front edge. */
+  /* The desk top: a board seen slightly from above (darker at the back, where the wall shades it;
+     lighter towards the front), with grain. */
   body[data-page='dashboard'] .desk-room::before,
   body[data-page='dashboard'] .desk-room::after {
     content: '';
     position: absolute;
     inset-inline: 0;
+    z-index: -1;
     pointer-events: none;
   }
   body[data-page='dashboard'] .desk-room::before {
-    bottom: calc(var(--desk-depth) - 1px);
-    height: 1px;
-    background: color-mix(in srgb, var(--paper-raised) 45%, transparent);
-    box-shadow: 0 -10px 18px -12px rgb(var(--shadow-color) / 0.25);
+    bottom: var(--desk-lip);
+    height: calc(var(--desk-depth) - var(--desk-lip));
+    background:
+      linear-gradient(to bottom, rgb(var(--shadow-color) / 0.16), transparent 38%),
+      linear-gradient(to bottom, transparent 60%, color-mix(in srgb, var(--paper-raised) 14%, transparent)),
+      var(--desk-grain) 0 0 / 640px 100%,
+      var(--desk-top);
+    background-blend-mode: normal, normal, multiply, normal;
+    opacity: 1;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--paper-raised) 30%, transparent);
   }
+  /* The front edge of the board: a highlight where the light catches it, the end grain below and
+     a soft shadow cast on the page. */
   body[data-page='dashboard'] .desk-room::after {
     bottom: 0;
-    height: 5px;
-    background: var(--desk-edge);
-    opacity: 0.7;
+    height: var(--desk-lip);
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--paper-raised) 42%, var(--desk-top)) 0 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, var(--desk-edge), color-mix(in srgb, var(--desk-edge) 82%, #000));
+    box-shadow:
+      0 1px 0 rgb(var(--shadow-color) / 0.18),
+      0 14px 18px -12px rgb(var(--shadow-color) / 0.42);
   }
-
   /* ---- Greeting, on the wall ------------------------------------------------------------ */
   body[data-page='dashboard'] .desk-room > .dashboard-heading {
     grid-column: 1;
@@ -106,9 +134,9 @@
     position: absolute;
     top: 0;
     right: var(--space-2);
-    width: 47%;
-    height: 6.75rem;
-    border: 5px solid var(--desk-frame);
+    width: 54%;
+    height: 8.5rem;
+    border: 6px solid var(--desk-frame);
     border-radius: 999px 999px 6px 6px;
     background: color-mix(in srgb, var(--accent-soft) 70%, var(--paper-raised));
     box-shadow:
@@ -126,7 +154,15 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 40%;
+    object-position: 62% 42%;
+  }
+  /* Glass: a faint diagonal reflection, so the pane reads as a window, not a picture. */
+  body[data-page='dashboard'] .desk-window-pane::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(118deg, transparent 30%, color-mix(in srgb, #fff 22%, transparent) 30% 38%, transparent 38% 44%, color-mix(in srgb, #fff 14%, transparent) 44% 48%, transparent 48%);
+    pointer-events: none;
   }
   /* Mullions: one upright, one cross bar. */
   body[data-page='dashboard'] .desk-window-frame {
@@ -142,31 +178,31 @@
   body[data-page='dashboard'] .desk-window::after {
     content: '';
     position: absolute;
-    left: -12px;
-    right: -12px;
-    bottom: -12px;
-    height: 7px;
+    left: -14px;
+    right: -14px;
+    bottom: -14px;
+    height: 8px;
     border-radius: 2px;
     background: var(--desk-frame);
     box-shadow: 0 3px 6px -3px rgb(var(--shadow-color) / 0.35);
   }
   body[data-page='dashboard'] .desk-slot-sill {
     position: absolute;
-    left: 8%;
-    bottom: -8px;
+    left: 6%;
+    bottom: -10px;
     z-index: 1;
-    width: 2.4rem;
+    width: 3.1rem;
   }
   /* A wall shelf with two places (and, with more decoration, a few books). */
   body[data-page='dashboard'] .desk-shelf {
     position: absolute;
-    top: 0.75rem;
+    top: 1.1rem;
     left: 0;
     display: flex;
     align-items: flex-end;
-    gap: var(--space-2);
-    width: 40%;
-    height: 3.6rem;
+    gap: var(--space-1);
+    width: 37%;
+    height: var(--desk-shelf-object);
     padding: 0 var(--space-1);
   }
   body[data-page='dashboard'] .desk-shelf::after {
@@ -174,66 +210,78 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -6px;
-    height: 6px;
+    bottom: -7px;
+    height: 7px;
     border-radius: 2px;
-    background: var(--desk-shelf);
-    box-shadow: 0 4px 8px -4px rgb(var(--shadow-color) / 0.4);
+    background:
+      linear-gradient(to bottom, color-mix(in srgb, var(--paper-raised) 35%, transparent) 0 1px, transparent 1px),
+      var(--desk-grain) 0 0 / 320px 100%,
+      var(--desk-shelf);
+    background-blend-mode: normal, multiply, normal;
+    box-shadow: 0 6px 10px -5px rgb(var(--shadow-color) / 0.45);
   }
   body[data-page='dashboard'] .desk-shelf .desk-slot {
-    width: 3.3rem;
+    flex: none;
+    width: var(--desk-shelf-object);
   }
+  /* A few books lean at the end of the shelf; "Bastante" adds the fourth. */
   body[data-page='dashboard'] .desk-books {
-    display: none;
+    display: flex;
+    flex: none;
+    order: 3;
     align-items: flex-end;
     gap: 2px;
-    height: 100%;
+    height: 78%;
+    margin-left: auto;
   }
   body[data-page='dashboard'] .desk-books i {
-    width: 7px;
-    border-radius: 1px 1px 0 0;
-    background: var(--lavender);
-    opacity: 0.75;
+    width: 8px;
+    border-radius: 1.5px 1.5px 0 0;
+    background:
+      linear-gradient(to bottom, transparent 18%, rgb(255 255 255 / 0.4) 18% 22%, transparent 22% 76%, rgb(255 255 255 / 0.35) 76% 80%, transparent 80%),
+      var(--lavender);
+    box-shadow: inset -1.5px 0 0 rgb(var(--shadow-color) / 0.18);
+  }
+  body[data-page='dashboard'] .desk-scene:not([data-decor='abundant']) .desk-books i:nth-child(4) {
+    display: none;
   }
   body[data-page='dashboard'] .desk-books i:nth-child(1) {
     height: 74%;
-    background: var(--rose);
+    background-color: var(--rose);
   }
   body[data-page='dashboard'] .desk-books i:nth-child(2) {
     height: 86%;
   }
   body[data-page='dashboard'] .desk-books i:nth-child(3) {
     height: 66%;
-    background: var(--matcha);
+    background-color: var(--matcha);
   }
   body[data-page='dashboard'] .desk-books i:nth-child(4) {
     height: 80%;
-    background: var(--mist);
+    background-color: var(--mist);
     transform: rotate(8deg);
     transform-origin: bottom left;
-  }
-  body[data-page='dashboard'] .desk-scene[data-decor='abundant'] .desk-books {
-    display: flex;
   }
   body[data-page='dashboard'] .desk-slot-wall {
     position: absolute;
     top: 0;
-    left: 41%;
-    width: 2.2rem;
+    left: 39%;
+    width: 2.6rem;
   }
   /* The desk surface: objects stand a little into it, so they look placed, not perched. */
   /* The row reaches into the column gap, so five things fit beside the lesson sheet. */
   body[data-page='dashboard'] .desk-top-row {
     position: absolute;
-    right: 0;
+    right: 0.6rem;
     left: calc(var(--space-2) - var(--desk-col-gap));
-    bottom: calc(var(--desk-depth) - 1.15rem);
+    bottom: calc(var(--desk-depth) - 1.6rem);
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
   }
   body[data-page='dashboard'] .desk-top-row > * {
-    margin-inline: -0.35rem;
+    flex: none;
+    margin-inline: -0.85rem;
   }
   body[data-page='dashboard'] .desk-slot-lamp {
     width: calc(var(--desk-object) * 1.3);
@@ -243,10 +291,28 @@
     flex: none;
     width: var(--desk-lume);
     aspect-ratio: 1;
-    margin-bottom: -0.5rem;
+    margin-bottom: -0.65rem;
   }
   body[data-page='dashboard'] .desk-stage .desk-lume:empty {
     display: block;
+  }
+  /* The lamp, when it is on the desk, throws a warm pool of light on the board and the wall
+     behind it. Painted under every object (z-index -1 inside the room's stacking context). */
+  body[data-page='dashboard'] .desk-slot:has(> .desk-slot-object[data-object-id='object.desk-lamp'])::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -90%;
+    bottom: -1.5rem;
+    width: 340%;
+    height: 210%;
+    background:
+      radial-gradient(26% 12% at 52% 84%, var(--desk-lamp-light), transparent),
+      radial-gradient(50% 50% at 50% 62%, color-mix(in srgb, var(--desk-lamp-light) 60%, transparent), transparent);
+    pointer-events: none;
+  }
+  html[data-theme='night'] body[data-page='dashboard'] .desk-slot:has(> .desk-slot-object[data-object-id='object.desk-lamp'])::before {
+    mix-blend-mode: screen;
   }
 
   /* Decoration density: "Pouca" keeps only the desk, Lume and the objects on it. */
@@ -324,22 +390,23 @@
       background-position: 100% 0;
     }
   }
-  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) body[data-page='dashboard'] .desk-weather {
+  /* Reduced motion: the window, the drawer, a placed object and a new stamp simply appear. */
+  html:is([data-reduced-motion='true'], [data-low-stimulation='true']) body[data-page='dashboard'] .desk-scene :is(.desk-weather[data-motion], .desk-tray, .desk-slot-object, .desk-unlock-stamp) {
     animation: none;
   }
   @media (prefers-reduced-motion: reduce) {
-    body[data-page='dashboard'] .desk-weather {
+    body[data-page='dashboard'] .desk-scene :is(.desk-weather[data-motion], .desk-tray, .desk-slot-object, .desk-unlock-stamp) {
       animation: none;
     }
   }
 
   /* ---- The lesson sheet rests on the desk ------------------------------------------------ */
-  body[data-page='dashboard'] .desk-scene + .dash-home .dash-continue {
+  body[data-page='dashboard'] .desk-scene ~ .dash-home .dash-continue {
     z-index: 1;
     margin-top: calc(-1 * (var(--space-5) + var(--desk-overlap)));
   }
   /* Without decoration the room is only the greeting, written on the paper. */
-  html:is([data-experience='quiet'], [data-screen-reader-mode='true'], [data-high-contrast='true']) body[data-page='dashboard'] .desk-scene + .dash-home .dash-continue {
+  html:is([data-experience='quiet'], [data-screen-reader-mode='true'], [data-high-contrast='true']) body[data-page='dashboard'] .desk-scene ~ .dash-home .dash-continue {
     margin-top: 0;
   }
   html:is([data-experience='quiet'], [data-screen-reader-mode='true'], [data-high-contrast='true']) body[data-page='dashboard'] .desk-room {
@@ -424,7 +491,7 @@
   body[data-page='dashboard'] .desk-tray[hidden] {
     display: none;
   }
-  body[data-page='dashboard'] .desk-scene[data-editing='true'] + .dash-home .dash-continue {
+  body[data-page='dashboard'] .desk-scene[data-editing='true'] ~ .dash-home .dash-continue {
     margin-top: 0;
   }
   @keyframes desk-drawer {
@@ -625,6 +692,11 @@
 
   /* ---- Responsive ------------------------------------------------------------------------ */
   @media (max-width: 1180px) {
+    body[data-page='dashboard'] {
+      --desk-object: 4.4rem;
+      --desk-shelf-object: 3.2rem;
+      --desk-lume: 7.25rem;
+    }
     body[data-page='dashboard'] .desk-unlock {
       top: auto;
       right: auto;
@@ -640,10 +712,12 @@
   }
   @media (max-width: 700px) {
     body[data-page='dashboard'] {
-      --desk-depth: 2.75rem;
+      --desk-depth: 3rem;
+      --desk-lip: 0.45rem;
       --desk-stage-h: 9.75rem;
-      --desk-object: 3.6rem;
-      --desk-lume: 4.5rem;
+      --desk-object: 3.9rem;
+      --desk-shelf-object: 2.8rem;
+      --desk-lume: 6.75rem;
       --desk-overlap: 1.25rem;
       --desk-inset: 0px;
     }
@@ -667,20 +741,17 @@
     }
     body[data-page='dashboard'] .desk-window {
       right: var(--space-3);
-      width: 38%;
-      height: 5.25rem;
+      width: 44%;
+      height: 6.75rem;
+      border-width: 5px;
     }
     body[data-page='dashboard'] .desk-shelf {
-      top: 0.5rem;
-      width: 36%;
-      height: 3rem;
-    }
-    body[data-page='dashboard'] .desk-shelf .desk-slot {
-      width: 2.6rem;
+      top: 0.6rem;
+      width: 34%;
     }
     body[data-page='dashboard'] .desk-slot-wall {
-      left: 42%;
-      width: 1.9rem;
+      left: 37%;
+      width: 2.1rem;
     }
     body[data-page='dashboard'] .desk-tray {
       margin: 0;
