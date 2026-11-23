@@ -353,10 +353,10 @@ async function main() {
     await ready(page);
     await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).waitFor();
     await page
-      .locator('[data-cards-preview]', { hasText: 'Crie cartões a partir do resumo' })
+      .locator('[data-cards-preview]', { hasText: 'Nenhum cartão.' })
       .waitFor();
-    await page.locator('[data-events-preview]', { hasText: 'Planeje quando' }).waitFor();
-    await page.locator('[data-week-body]', { hasText: 'Use o cronômetro' }).waitFor();
+    await page.locator('[data-events-preview]', { hasText: 'Nenhum estudo agendado.' }).waitFor();
+    await page.locator('[data-week-body]', { hasText: 'Nenhum tempo registrado' }).waitFor();
     await settle(page);
     assert.equal(await page.locator('.dash-day-bar').count(), 0, 'no empty chart');
     assert(await page.locator('[data-tasks-count]').isHidden(), 'no zero counters');

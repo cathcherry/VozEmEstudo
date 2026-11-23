@@ -28,12 +28,13 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const uuid = () => crypto.randomUUID();
 const DRAWERS = [
   { kind: 'stamp', label: 'Selos', about: 'Selos de primeiras vezes: a primeira evidência, a primeira explicação, a primeira ponte entre disciplinas.' },
-  { kind: 'object', label: 'Objetos de mesa', about: 'Objetos que aparecem com investigações repetidas. Podem ir para a mesa do Início.' },
+  { kind: 'object', label: 'Objetos de mesa', about: 'Objetos que aparecem com investigações repetidas.' },
   { kind: 'cover', label: 'Capas', about: 'Capas para o caderno de descobertas.' },
   { kind: 'specimen', label: 'Espécimes', about: 'As suas descobertas, como fichas que mudam com o que você acrescenta a elas.' },
 ];
 const KIND_NAME = { stamp: 'Selo', object: 'Objeto de mesa', cover: 'Capa', specimen: 'Espécime' };
 const SPECIMEN_LIMIT = 12;
+const DESK_ON_HOME = false;
 
 let collection = null;
 let discoveries = [];
@@ -343,7 +344,8 @@ function inspectCollectible(id) {
   }
   $('[data-specimen-facts]').replaceChildren(...facts);
   const actions = [];
-  if (unlock && item.kind === 'object') actions.push(deskAction(id));
+  // 3.7: Início is a dashboard again (no desk). Placement data is kept (DESK_ON_HOME restores it).
+  if (DESK_ON_HOME && unlock && item.kind === 'object') actions.push(deskAction(id));
   if (unlock && item.kind === 'cover')
     actions.push(el('a', { className: 'secondary-action button-link', href: './aparencia.html#estudio', text: 'Escolher a capa em Aparência' }));
   if (!unlock) actions.push(el('a', { className: 'secondary-action button-link', href: './historico.html', text: 'Escolher uma aula para investigar' }));

@@ -7,18 +7,29 @@ import { formatDate, formatDuration } from '../utils/format.js';
 import { materialState, emptyState, errorState } from '../utils/material-ui.js';
 import { initGlobalSearch } from './global-search.js';
 import { initDashboardHome } from './dashboard-home.js';
-import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { isFeatureEnabled, getFeatureFlags } from '../utils/feature-flags.js';
 import { listAnnotations } from '../api/learning-tools.api.js';
 import { initDashboardCustomize } from './dashboard-customize.js';
 import { t, intlLocale } from '../i18n/i18n.js';
-import { initDeskScene, setDeskContext } from './desk-scene.js';
-import { isToday } from '../utils/desk.js';
+import * as discoveryApi from '../api/discovery.api.js';
 import { initRailTabs } from './dashboard-rail-tabs.js';
 import { icon as uiIcon } from '../utils/icons.js';
 
 const session=await initAuthenticatedShell();
-// The escrivaninha (atmosphere, objects, Lume) and, on narrow screens, the margin notes as tabs.
-void initDeskScene({ owner: session.user.id }).catch(() => { /* decoration only */ });
+// Investigations summary (only when discoveries are on and the adventure layer is visible).
+void (async () => {
+  const box = document.querySelector('[data-desk-expedition]');
+  const flags = await getFeatureFlags().catch(() => ({}));
+  if (!box || !flags.discoveries) return;
+  const collection = await discoveryApi.getCollection().catch(() => null);
+  if (!collection) return;
+  const done = collection.counts?.investigations || 0;
+  const found = collection.unlocks?.length || 0;
+  const total = collection.catalog?.length || 0;
+  box.querySelector('[data-expedition-text]').textContent =
+    `${done} ${done === 1 ? 'investigação concluída' : 'investigações concluídas'} · ${found} de ${total} itens no Gabinete`;
+  box.hidden = false;
+})();
 initRailTabs();
 // Saved layout first, so the cards appear where the person put them.
 void initDashboardCustomize({ owner: session.user.id }).catch(() => { /* The default layout stays usable. */ });
@@ -26,7 +37,7 @@ void initDashboardCustomize({ owner: session.user.id }).catch(() => { /* The def
 initDashboardHome();
 // Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.
 const searchForm=document.querySelector('.topbar-search');
-if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.desk-scene')||document.querySelector('.dashboard-heading'),
+if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.dashboard-heading'),
   notes:async(q)=>(await isFeatureEnabled('annotations').catch(()=>false))?listAnnotations({q,offset:0}):null,
   openNotes:(q)=>{location.href=`./revisar.html?busca=${encodeURIComponent(q)}#anotacoes`;}});
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
@@ -147,8 +158,6 @@ async function load() {
     if (last.length) for (const material of last) {
       continued.append(dashboardLesson(material));
     } else continued.append(emptyState(t(materials.length?'dashboard.noActive':'dashboard.emptyLibrary'),t(materials.length?'dashboard.noActiveHint':'dashboard.emptyLibraryHint'),{href:materials.length?'./historico.html':'./nova-transcricao.html',action:t(materials.length?'dashboard.openLibrary':'nav.newTranscription'),mascot:materials.length?'reading':'laptop'}));
-    // Lume reads along while a lesson is in progress and is happy after a lesson studied today.
-    setDeskContext({ lessonInProgress: active.length > 0, reviewedToday: materials.some((m)=>isToday(studyFor(m.id).reviewedAt)) });
     const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,6);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
     for (const material of recentMaterials) recent.append(dashboardLesson(material));

@@ -35,7 +35,9 @@ const m = require('./mock-app.cjs');
               );
             else if (x) localStorage.setItem('audioestudo-theme', x);
           }
-        } catch {}
+        } catch {
+          // storage blocked: shoot with defaults
+        }
       }, opts);
       await page.goto(base + p);
       await page.waitForLoadState('networkidle').catch(() => {});

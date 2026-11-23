@@ -1926,6 +1926,7 @@ export default {
   "Objetos da gaveta": "Objetos del cajón",
   "Objetos de mesa": "Objetos de escritorio",
   "Objetos de mesa que você encontrou podem ir para a escrivaninha do Início. Inspecione um objeto e escolha “Colocar na mesa”, ou arrume tudo de uma vez no Início.": "Los objetos de escritorio que encontraste pueden ir al escritorio de Inicio. Inspecciona un objeto y elige «Poner en el escritorio», o arréglalo todo de una vez en Inicio.",
+  "Objetos que aparecem com investigações repetidas.": "Objetos que aparecen con investigaciones repetidas.",
   "Objetos que aparecem com investigações repetidas. Podem ir para a mesa do Início.": "Objetos que aparecen con investigaciones repetidas. Pueden ir al escritorio de Inicio.",
   "Oceano": "Océano",
   "Óculos de leitura": "Gafas de lectura",

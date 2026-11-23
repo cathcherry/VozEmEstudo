@@ -1926,6 +1926,7 @@ export default {
   "Objetos da gaveta": "Objects in the drawer",
   "Objetos de mesa": "Desk objects",
   "Objetos de mesa que você encontrou podem ir para a escrivaninha do Início. Inspecione um objeto e escolha “Colocar na mesa”, ou arrume tudo de uma vez no Início.": "Desk objects you found can go on the desk on Home. Inspect an object and choose “Put on the desk”, or arrange everything at once on Home.",
+  "Objetos que aparecem com investigações repetidas.": "Objects that appear with repeated investigations.",
   "Objetos que aparecem com investigações repetidas. Podem ir para a mesa do Início.": "Objects that appear with repeated investigations. They can go on the desk on Home.",
   "Oceano": "Ocean",
   "Óculos de leitura": "Reading glasses",

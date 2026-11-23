@@ -1926,6 +1926,7 @@ export default {
   "Objetos da gaveta": "抽屉里的物品",
   "Objetos de mesa": "桌面物件",
   "Objetos de mesa que você encontrou podem ir para a escrivaninha do Início. Inspecione um objeto e escolha “Colocar na mesa”, ou arrume tudo de uma vez no Início.": "你找到的书桌物品可以放到首页的书桌上。查看一件物品并选择“放到书桌上”，或在首页一次性整理。",
+  "Objetos que aparecem com investigações repetidas.": "多次探究后出现的物品。",
   "Objetos que aparecem com investigações repetidas. Podem ir para a mesa do Início.": "多次探究后出现的物品，可以放到首页的书桌上。",
   "Oceano": "海洋",
   "Óculos de leitura": "阅读眼镜",
