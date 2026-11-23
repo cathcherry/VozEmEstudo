@@ -244,7 +244,7 @@ body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; borde
     letter-spacing: 0;
     text-transform: none;
   }
-  body.auth-page .auth-brand-panel h1 {
+  body.auth-page .auth-brand-panel :is(h1, h2) {
     max-width: 16ch;
     margin: 0;
     font-family: var(--font-display);
@@ -283,24 +283,13 @@ body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; borde
     font-weight: 400;
     line-height: 1.4;
   }
-  /* The form window. */
+  /* The form card (3.7: no empty title-bar band). */
   body.auth-page .login-box {
-    --titlebar: 2.25rem;
-    padding: calc(var(--titlebar) + var(--space-5)) var(--space-6) var(--space-6);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-window);
-    background:
-      linear-gradient(
-          180deg,
-          color-mix(in srgb, var(--paper-sunken) 60%, var(--paper-raised)) 0,
-          var(--paper-sunken) var(--titlebar),
-          var(--line) var(--titlebar),
-          var(--line) calc(var(--titlebar) + 1px),
-          transparent calc(var(--titlebar) + 1px)
-        )
-        no-repeat,
-      var(--paper-raised);
-    box-shadow: var(--elev-3), inset 0 1px 0 var(--edge-light);
+    padding: var(--space-6);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-3);
   }
   body.auth-page .login-box-heading > p {
     position: absolute;
@@ -373,10 +362,39 @@ body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; borde
     font-size: var(--step--1);
     font-weight: 600;
   }
-  body.auth-page .register-layout {
-    gap: var(--space-6);
-    width: min(44rem, calc(100% - 2 * var(--space-4)));
+  /* Cadastro and Recuperar senha share the login composition: a short intro and the form. */
+  body.auth-page .register-layout.login-layout,
+  body.auth-page[data-page] .register-layout.login-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 28rem);
+    gap: clamp(var(--space-6), 7vw, 7rem);
+    align-items: center;
+    width: min(72rem, calc(100% - 2 * var(--space-4)));
+    margin: 0 auto;
     padding: var(--space-6) 0;
+  }
+  body.auth-page .register-layout .register-brand-mascot {
+    position: static;
+    justify-self: start;
+    justify-content: flex-start;
+    width: auto;
+    height: auto;
+    margin: var(--space-3) 0 0;
+    transform: none;
+  }
+  body.auth-page .register-layout .register-brand-mascot img {
+    width: 5.5rem;
+    height: auto;
+  }
+  @media (max-width: 900px) {
+    body.auth-page .register-layout.login-layout,
+    body.auth-page[data-page] .register-layout.login-layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-5);
+    }
+    body.auth-page .register-layout .auth-brand-panel :is(h2) {
+      font-size: var(--step-3);
+    }
   }
   @media (max-width: 900px) {
     body.auth-page .login-layout {
@@ -389,8 +407,7 @@ body.auth-page .password-rules li[data-ok='true']::before { content:'✓'; borde
   }
   @media (max-width: 600px) {
     body.auth-page .login-box {
-      padding: calc(var(--titlebar) + var(--space-4)) var(--space-4) var(--space-5);
-      border-radius: var(--radius-panel);
+      padding: var(--space-5) var(--space-4);
     }
   }
 }

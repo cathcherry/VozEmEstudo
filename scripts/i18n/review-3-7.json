@@ -63,5 +63,35 @@
     "en": "To bring lessons here, use Select and then Move to…",
     "es": "Para traer clases, usa Seleccionar y luego Mover a…",
     "zh-CN": "要添加课程，请使用“选择”，然后“移动到…”"
+  },
+  "Suas aulas viram material de estudo.": {
+    "en": "Your lessons become study material.",
+    "es": "Tus clases se convierten en material de estudio.",
+    "zh-CN": "你的课程变成学习材料。"
+  },
+  "Transcrição, resumo, questões e flashcards em um só lugar.": {
+    "en": "Transcript, summary, questions and flashcards in one place.",
+    "es": "Transcripción, resumen, preguntas y tarjetas en un solo lugar.",
+    "zh-CN": "转写、摘要、题目和抽认卡集中在一处。"
+  },
+  "Vamos recuperar seu acesso.": {
+    "en": "Let's get you back in.",
+    "es": "Vamos a recuperar tu acceso.",
+    "zh-CN": "我们来恢复你的访问。"
+  },
+  "Suas aulas e anotações continuam guardadas na sua conta.": {
+    "en": "Your lessons and notes are still saved in your account.",
+    "es": "Tus clases y notas siguen guardadas en tu cuenta.",
+    "zh-CN": "你的课程和笔记仍保存在你的账户中。"
+  },
+  "Informe seu e-mail. Se houver uma conta com senha, enviaremos um link para criar uma nova.": {
+    "en": "Enter your email. If there is an account with a password, we'll send a link to create a new one.",
+    "es": "Escribe tu correo. Si hay una cuenta con contraseña, enviaremos un enlace para crear una nueva.",
+    "zh-CN": "请输入你的邮箱。如果存在使用密码的账户，我们会发送创建新密码的链接。"
+  },
+  "Estudo mais leve, no seu ritmo.": {
+    "en": "Lighter studying, at your own pace.",
+    "es": "Estudio más ligero, a tu ritmo.",
+    "zh-CN": "更轻松的学习，按你的节奏。"
   }
 }
