@@ -40,3 +40,12 @@ test('a completed attempt is diagnosed once per page; a failure is retried', asy
   assert.equal(calls, 2, 'cached after success, not after failure');
   assert.equal((await loadDiagnostic('s-2', fetcher)).sessionId, 's-2', 'per attempt');
 });
+
+test('results show letter and text, icon and word, and no long disclaimer', () => {
+  assert.match(panel, /answerLine\('Sua resposta', item\.selectedIndex, item\.selectedText\)/);
+  assert.match(panel, /answerLine\('Resposta correta', item\.correctIndex, item\.correctText\)/);
+  assert.match(panel, /mark\('close', 'Errou'/);
+  assert.match(panel, /Trecho da aula/);
+  assert.doesNotMatch(panel + quiz, /clínica|diagnóstica/);
+  assert.doesNotMatch(panel, /Gabarito: \$\{/, 'letter-only line replaced');
+});
