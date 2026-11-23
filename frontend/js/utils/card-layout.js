@@ -53,10 +53,12 @@ export function enhanceCard(card, block, { saveLayout, saveOrder }) {
       const scale=Math.max(.2,Math.min(body.clientWidth/320,body.clientHeight/380));
       frame.style.setProperty('--widget-scale',scale);
     }
-    const text=body.querySelector(':scope > p, :scope > .profile-checklist');
+    // Only short plain text of older cards grows to fill the card; formatted text, checklists
+    // and notes keep the reading size (3.7).
+    const text=body.querySelector(':scope > p.card-plain');
     if(text){
       const base=parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
-      let low=base*.875,high=text.matches('p')?base*2.375:base*1.5;
+      let low=base*.875,high=base*1.75;
       for(let i=0;i<7;i++){
         const size=(low+high)/2;text.style.fontSize=`${size}px`;
         if(body.scrollHeight>body.clientHeight+1 || body.scrollWidth>body.clientWidth+1) high=size;else low=size;
