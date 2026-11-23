@@ -48,5 +48,20 @@
     "en": "Material",
     "es": "Material",
     "zh-CN": "材料"
+  },
+  "+ Nova unidade": {
+    "en": "+ New unit",
+    "es": "+ Nueva unidad",
+    "zh-CN": "+ 新建单元"
+  },
+  "Nenhuma aula nesta unidade.": {
+    "en": "No lessons in this unit.",
+    "es": "Ninguna clase en esta unidad.",
+    "zh-CN": "此单元中没有课程。"
+  },
+  "Para trazer aulas, use Selecionar e depois Mover para…": {
+    "en": "To bring lessons here, use Select and then Move to…",
+    "es": "Para traer clases, usa Seleccionar y luego Mover a…",
+    "zh-CN": "要添加课程，请使用“选择”，然后“移动到…”"
   }
 }

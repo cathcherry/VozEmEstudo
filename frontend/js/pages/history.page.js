@@ -592,10 +592,8 @@ function renderFolderGroups(visible, _needle) {
     if (catalogEnabled && group.id && selected && !selectedUnit) {
       createUnitButton = document.createElement('button');
       createUnitButton.type = 'button';
-      createUnitButton.className = 'catalog-add-unit';
-      createUnitButton.textContent = '+';
-      createUnitButton.title = 'Nova unidade';
-      createUnitButton.setAttribute('aria-label','Nova unidade');
+      createUnitButton.className = 'catalog-add-unit secondary-action';
+      createUnitButton.textContent = '+ Nova unidade';
       createUnitButton.dataset.createUnitShortcut='';
       createUnitButton.addEventListener('click', () => openUnitDialog({ id: group.id, name: group.name }));
     }
@@ -637,7 +635,7 @@ function renderFolderGroups(visible, _needle) {
       if (unitMaterials.length) {
         for (const material of unitMaterials) unitContent.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name }));
       } else {
-        const empty=emptyState('Espaço para novas aulas', 'Suas aulas vão aparecer aqui.', { href: null, mascot: true });
+        const empty=emptyState('Nenhuma aula nesta unidade.', 'Para trazer aulas, use Selecionar e depois Mover para…', { href: null, mascot: false });
         empty.classList.add('library-folder-empty');unitContent.append(empty);
       }
       if (!unitMaterials.length && hasFilters()) continue;
@@ -658,7 +656,7 @@ function renderFolderGroups(visible, _needle) {
       for (const material of standalone) list.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name, standalone: true }));
       content.append(list);
     } else if (!group.materials.length) {
-      content.append(emptyState('Nenhuma aula nesta disciplina.', '', { href: null, mascot: 'rest' }));
+      content.append(Object.assign(emptyState('Nenhuma aula nesta disciplina.', 'Para trazer aulas, use Selecionar e depois Mover para…', { href: null, mascot: false }), { className: 'empty-state-card library-folder-empty' }));
     }
 
     if(createUnitButton)folderToolbar.append(createUnitButton);
@@ -666,7 +664,9 @@ function renderFolderGroups(visible, _needle) {
     const subjectActions = catalogEnabled && group.id ? subjectMenu(group) : null;
     if (subjectActions && selected) folderToolbar.append(subjectActions);
     // Milestone C: study the whole unit or subject as one integrated material.
-    if (multiLessonEnabled && group.id && selected)
+    // Only when the folder has lessons: an empty unit has nothing to study together (3.7).
+    const folderLessons = currentUnit ? group.materials.filter((material) => material.unit_id === currentUnit.id).length : group.materials.length;
+    if (multiLessonEnabled && group.id && selected && folderLessons)
       folderToolbar.append(multiLessonFolderButton({ subjectId: group.id, unitId: currentUnit?.id || null, name: currentUnit?.title || group.name }));
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
