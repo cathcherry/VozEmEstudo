@@ -83,6 +83,7 @@ export default {
   "A pessoa perde o acesso à turma na hora, e o que ela compartilhou deixa de aparecer. Convites antigos não servem mais para ela.": "The person loses access to the class at once, and what they shared stops appearing. Older invitations no longer work for them.",
   "A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.": "This format can't be previewed in the browser. Server-side clipping is still available.",
   "A resposta marcada como certa está errada": "The answer marked as correct is wrong",
+  "A resposta não foi salva.": "The answer was not saved.",
   "A revisão ainda não está ativa": "Review isn't active yet",
   "A seleção passou do limite (1.000 caracteres ou 50 trechos).": "The selection is over the limit (1,000 characters or 50 passages).",
   "A senha não atende aos requisitos de segurança: use pelo menos 8 caracteres com letra minúscula, maiúscula, número e símbolo.": "The password doesn't meet the security requirements: use at least 8 characters with a lowercase letter, an uppercase letter, a number and a symbol.",
@@ -145,6 +146,7 @@ export default {
   "Abrir o Gabinete": "Open the Cabinet",
   "Abrir painel do cronômetro": "Open timer panel",
   "Abrir perfil": "Open profile",
+  "Acertou": "Right",
   "Acervo em construção": "Growing collection",
   "Acesse a transcrição, o resumo e as questões pela Biblioteca.": "Access the transcript, summary and questions from the Library.",
   "Acesso": "Access",
@@ -325,6 +327,7 @@ export default {
   "As etapas desta aula e o próximo passo sugerido.": "This lesson's steps and the suggested next step.",
   "As gavetas ainda estão vazias": "The drawers are still empty",
   "As investigações ainda não estão ativas": "Investigations are not active yet",
+  "As respostas ficam salvas na sua conta. Depois de salva, a resposta de uma questão não muda.": "Your answers are saved in your account. Once saved, the answer to a question does not change.",
   "As respostas serão salvas na sua conta. Depois de concluir, você poderá revisar seus erros.": "Your answers will be saved to your account. When you finish, you can review your mistakes.",
   "As senhas não coincidem.": "Passwords don't match.",
   "As suas descobertas, como fichas que mudam com o que você acrescenta a elas.": "Your discoveries, as cards that change with what you add to them.",
@@ -497,6 +500,7 @@ export default {
   "Carregando o ano…": "Loading the year…",
   "Carregando o caderno…": "Loading the notebook…",
   "Carregando o diagnóstico…": "Loading the diagnosis…",
+  "Carregando o resultado…": "Loading the result…",
   "Carregando os recursos disponíveis…": "Loading available resources…",
   "Carregando questão...": "Loading question...",
   "Carregando seus materiais…": "Loading your materials…",
@@ -560,6 +564,7 @@ export default {
   "Com marcações de tempo": "With timestamps",
   "Com paisagem": "With a view",
   "Combinações rápidas": "Quick combinations",
+  "Começar": "Start",
   "Começar a estudar": "Start studying",
   "Começar a investigação": "Start the investigation",
   "Começar em": "Start on",
@@ -581,6 +586,7 @@ export default {
   "Como transcrever uma aula": "How to transcribe a lesson",
   "Como um cartão muda": "How a card changes",
   "Como você aparece para a turma": "How you appear to the class",
+  "Como você quer responder?": "How do you want to answer?",
   "Como você se lembrou?": "How well did you remember?",
   "Compacto": "Compact",
   "Compacto mostra mais conteúdo na tela no Início, em Revisar e em Planejar.": "Compact shows more content on screen in Home, Review and Plan.",
@@ -603,6 +609,7 @@ export default {
   "Conceitos centrais e definições que importam.": "Central concepts and the definitions that matter.",
   "Conceitos essenciais": "Essential concepts",
   "concluída": "done",
+  "Concluída": "Completed",
   "Concluídas": "Completed",
   "Concluído": "Completed",
   "Concluindo seu acesso…": "Completing sign-in…",
@@ -634,6 +641,7 @@ export default {
   "Confirmar nova senha": "Confirm new password",
   "Confirmar permissão de uso": "Confirm permission to use",
   "Confirmar registra que você conferiu esta revisão.": "Confirming records that you checked this version.",
+  "Confirmar resposta": "Confirm answer",
   "Confirmar senha": "Confirm password",
   "Confirme a declaração de permissão antes de enviar.": "Confirm the permission declaration before uploading.",
   "Confirme a transcrição primeiro": "Confirm the transcript first",
@@ -705,6 +713,10 @@ export default {
   "Cores da interface": "Interface colors",
   "Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.": "Colors, font and named custom themes, with reading and focus settings.",
   "Correção": "Correction",
+  "Correção a cada questão": "Correction after each question",
+  "Correção gerada automaticamente a partir da aula; confira no trecho se algo parecer estranho.": "Correction generated automatically from the lesson; check the excerpt if something looks odd.",
+  "Correção no final": "Correction at the end",
+  "Correta": "Correct",
   "Costurado com linha": "Sewn with thread",
   "Creme envelhecido": "Aged cream",
   "Creme quente e terracota.": "Warm cream and terracotta.",
@@ -786,6 +798,7 @@ export default {
   "Definições e terminologia": "Definitions and terminology",
   "Deixe esta janela aberta enquanto estuda: o som continua quando você troca de página no Voz em Estudo.": "Keep this window open while you study: the sound continues when you change pages in Voz em Estudo.",
   "Deixe esta janela aberta: o som continua enquanto você navega pelo Voz em Estudo.": "Keep this window open: the sound continues while you browse Voz em Estudo.",
+  "Depois de confirmar, você vê se acertou e a explicação antes de seguir. Bom para aprender enquanto pratica.": "After confirming, you see whether you got it right and the explanation before moving on. Good for learning while you practise.",
   "Depois, outro.": "Then another.",
   "Desativa animações e transições da interface.": "Turns off interface animations and transitions.",
   "desativada": "off",
@@ -864,6 +877,7 @@ export default {
   "e escolha um MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM ou MOV de até 100 MB.": "and choose an MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM or MOV file up to 100 MB.",
   "É obrigatório revisar os materiais gerados por IA?": "Do I have to review AI-generated materials?",
   "e também aparecem na busca do Início.": "and also appear in the Home search.",
+  "É uma marca pessoal: ninguém mais recebe este aviso. A questão continua na lista e aparece entre as suas questões marcadas, para você conferir com a aula.": "It is a personal mark: nobody else receives this notice. The question stays in the list and appears among your flagged questions, so you can check it against the lesson.",
   "E-mail": "Email",
   "E-mail da conta": "Account email",
   "E-mail de acesso": "Sign-in email",
@@ -943,6 +957,7 @@ export default {
   "Envios": "Submissions",
   "Equilibrada": "Balanced",
   "Equilibrado": "Balanced",
+  "Errou": "Wrong",
   "Esboço a lápis": "Pencil sketch",
   "Escolha “Investigar uma pergunta” e escreva o que você quer entender.": "Choose “Investigate a question” and write what you want to understand.",
   "Escolha a fonte": "Choose the source",
@@ -1348,6 +1363,7 @@ export default {
   "Ir ao destaque": "Go to highlight",
   "Ir para a Biblioteca": "Go to Library",
   "Ir para a primeira ou a última aba": "Go to the first or last tab",
+  "Ir para a próxima sem resposta": "Go to the next unanswered",
   "Ir para Leitura e foco": "Go to Reading and focus",
   "Ir para Material integrado": "Go to Integrated material",
   "Ir para Revisar": "Go to Review",
@@ -1433,6 +1449,9 @@ export default {
   "Links desta lista": "Links for this list",
   "Liso": "Plain",
   "Lista": "List",
+  "lista completa": "full list",
+  "Lista completa": "Full list",
+  "Lista de questões": "Question list",
   "Lista de questões pronta.": "Question list ready.",
   "Lista numerada": "Numbered list",
   "Lista:": "List:",
@@ -1464,6 +1483,7 @@ export default {
   "Manuscrita": "Handwritten",
   "Mapa do ano (role para os lados)": "Year map (scroll sideways)",
   "Máquina de escrever": "Typewriter",
+  "Marca pessoal para conferir depois": "Personal mark to check later",
   "Marcação removida.": "Mark removed.",
   "Marcar aula como estudada": "Mark lesson as studied",
   "Marcar problema": "Mark problem",
@@ -1635,6 +1655,7 @@ export default {
   "Não foi possível carregar o ano agora.": "The year could not be loaded right now.",
   "Não foi possível carregar o diagnóstico.": "Couldn't load the diagnosis.",
   "Não foi possível carregar o histórico. Selecione o cartão novamente para tentar.": "Couldn't load the history. Select the card again to retry.",
+  "Não foi possível carregar o resultado.": "Could not load the result.",
   "Não foi possível carregar os conjuntos agora.": "Couldn't load the sets right now.",
   "Não foi possível carregar os flashcards.": "The flashcards could not be loaded.",
   "Não foi possível carregar os links.": "Couldn't load the links.",
@@ -1650,6 +1671,7 @@ export default {
   "Não foi possível completar o calendário.": "Couldn't complete the calendar.",
   "Não foi possível concluir": "Couldn't complete",
   "Não foi possível concluir a ação.": "The action could not be completed.",
+  "Não foi possível concluir a tentativa.": "Could not finish the attempt.",
   "Não foi possível concluir a transcrição.": "Couldn't complete the transcription.",
   "Não foi possível concluir o acesso.": "Couldn't complete sign-in.",
   "Não foi possível concluir o acesso. Inicie o login novamente no mesmo navegador.": "Couldn't complete sign-in. Start signing in again in the same browser.",
@@ -1818,6 +1840,7 @@ export default {
   "Nova reflexão": "New reflection",
   "Nova senha": "New password",
   "Nova tarefa": "New task",
+  "Nova tentativa": "New attempt",
   "Nova transcrição": "New transcription",
   "Nova turma": "New class",
   "Nova unidade": "New unit",
@@ -1902,6 +1925,7 @@ export default {
   "O que gerar": "What to generate",
   "O que há de errado?": "What is wrong?",
   "O que mudou no que você pensava? O que ainda ficou em aberto?": "What changed in what you thought? What is still open?",
+  "O que parece errado?": "What looks wrong?",
   "O que você entendeu hoje?": "What did you understand today?",
   "O que você ofereceu à turma e a resposta do professor. Só você e quem gerencia a turma veem esta lista.": "What you offered the class and the teacher's answer. Only you and the class managers see this list.",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "Study time tracking appears here once it is enabled on this server.",
@@ -2151,6 +2175,7 @@ export default {
   "Preferências neste dispositivo": "Preferences on this device",
   "Preferências neste navegador": "Preferences in this browser",
   "Preparação para prova": "Exam preparation",
+  "Preparando a lista…": "Preparing the list…",
   "Preparando a revisão…": "Preparing the review…",
   "Preparando material": "Preparing material",
   "Preparando o áudio…": "Preparing the audio…",
@@ -2227,6 +2252,7 @@ export default {
   "Qualquer pessoa com o link poderá ler os textos escolhidos até a expiração ou revogação. Áudio, vídeo, anotações pessoais e progresso ficam fora da cópia. Uma revogação impede novos acessos, mas não remove cópias já baixadas.": "Anyone with the link can read the chosen texts until it expires or is revoked. Audio, video, personal notes and progress are left out of the copy. Revoking blocks new access but doesn't remove copies already downloaded.",
   "Quando": "When",
   "Quando deseja receber o feedback?": "When do you want feedback?",
+  "Quando ver a correção": "When to see the correction",
   "Quantidade": "Number of questions",
   "Quantidade de questões": "Number of questions",
   "Quantidade máxima": "Maximum number",
@@ -2236,6 +2262,7 @@ export default {
   "Questão marcada.": "Question marked.",
   "Questão respondida": "Answered question",
   "Questão sem enunciado salvo": "Question without a saved statement",
+  "Questão sinalizada para revisar.": "Question flagged to review.",
   "questões": "questions",
   "Questões": "Questions",
   "Questões de listas anteriores": "Questions from previous lists",
@@ -2276,7 +2303,7 @@ export default {
   "Recusar envio": "Decline submission",
   "Reduz efeitos e elementos visuais secundários.": "Reduces secondary visual effects and elements.",
   "Reescrever a pergunta": "Rewrite the question",
-  "Refazer apenas as questões erradas": "Redo only the questions you got wrong",
+  "Refazer apenas as questões erradas": "Redo only the wrong questions",
   "Refletir": "Reflect",
   "Reflexão guardada.": "Reflection kept.",
   "Reflexão salva.": "Reflection saved.",
@@ -2292,6 +2319,7 @@ export default {
   "relatório da tentativa": "attempt report",
   "Relatório da última tentativa concluída": "Report of the last completed attempt",
   "Remover": "Remove",
+  "Remover a sinalização desta questão": "Remove the flag from this question",
   "Remover capa": "Remove cover",
   "Remover da turma": "Remove from class",
   "Remover este horário do calendário?": "Remove this session from the calendar?",
@@ -2301,6 +2329,7 @@ export default {
   "Remover música": "Remove music",
   "Remover o vídeo guardado desta aula?": "Remove the stored video for this lesson?",
   "Remover seleção": "Clear selection",
+  "Remover sinalização": "Remove flag",
   "Remover tag": "Remove tag",
   "Remover vídeo": "Remove video",
   "Renomear": "Rename",
@@ -2319,11 +2348,13 @@ export default {
   "Resolva as perguntas com respostas diferentes": "Resolve questions with different answers",
   "Responda às questões, consulte as explicações e volte ao material para revisar suas dúvidas.": "Answer the questions, read the explanations and go back to the material to review your doubts.",
   "Responda estas questões como uma lista comum, com placar e revisão dos erros. A lista fica guardada na primeira aula usada.": "Answer these questions as a regular list, with a score and a review of your mistakes. The list is kept in the first lesson used.",
+  "Responda tudo sem ver o gabarito, como numa prova. A correção de todas aparece quando você concluir.": "Answer everything without seeing the answer key, as in an exam. The correction of all questions appears when you finish.",
   "Responder": "Answer",
   "Responder a lista": "Answer the list",
   "Responder de novo": "Answer again",
   "Resposta": "Answer",
   "Resposta correta:": "Correct answer:",
+  "Resposta incorreta": "Incorrect answer",
   "Resposta ou explicação": "Answer or explanation",
   "Resposta registrada. O gabarito será apresentado ao concluir.": "Answer recorded. The answer key will be shown when you finish.",
   "Resposta:": "Answer:",
@@ -2333,7 +2364,10 @@ export default {
   "Restaurar padrão": "Restore default",
   "Restaurar preferências": "Restore preferences",
   "Restaurar visual padrão": "Restore default look",
+  "Resultado": "Result",
   "Resultado anterior": "Previous result",
+  "Resultado conferido com o gabarito gerado automaticamente.": "Result checked against the automatically generated answer key.",
+  "Resultado da tentativa": "Attempt result",
   "Resultado e revisão": "Results and review",
   "Resumo": "Summary",
   "Resumo da Biblioteca": "Library overview",
@@ -2361,6 +2395,8 @@ export default {
   "revisão anterior": "earlier version",
   "Revisão de hoje": "Today's review",
   "Revisão disponível": "Review available",
+  "revisão dos erros": "review of mistakes",
+  "Revisão dos erros": "Review of mistakes",
   "Revisão em dia": "Reviews up to date",
   "Revisão pendente": "Review pending",
   "Revisão rápida": "Quick review",
@@ -2417,6 +2453,7 @@ export default {
   "Salvar bloco": "Save block",
   "Salvar cartões": "Save cards",
   "Salvar como conjunto de flashcards": "Save as a flashcard set",
+  "Salvar e avançar": "Save and continue",
   "Salvar edição": "Save edit",
   "Salvar horário": "Save session",
   "Salvar meta e fuso": "Save goal and time zone",
@@ -2429,6 +2466,7 @@ export default {
   "Salvar organização": "Save organization",
   "Salvar pasta": "Save folder",
   "Salvar perfil": "Save profile",
+  "Salvar resposta": "Save answer",
   "Salvar subobjetivo": "Save subgoal",
   "Salvar tarefa": "Save task",
   "Salvar tema": "Save theme",
@@ -2482,6 +2520,7 @@ export default {
   "Sem confirmação do servidor. Tentaremos de novo.": "No confirmation from the server. We will try again.",
   "Sem conjunto": "No set",
   "Sem conteúdo sustentado por trechos:": "No content supported by passages:",
+  "Sem correção disponível para esta questão.": "No correction available for this question.",
   "Sem desenho": "No drawing",
   "Sem disciplina": "No subject",
   "sem fundo": "no background",
@@ -2534,6 +2573,12 @@ export default {
   "Simples": "Simple",
   "Simples (Verdana)": "Simple (Verdana)",
   "Simples, com glossário": "Simple, with glossary",
+  "Sinalização removida.": "Flag removed.",
+  "Sinalizada": "Flagged",
+  "Sinalizar": "Flag",
+  "Sinalizar esta questão para revisar (marca pessoal)": "Flag this question to review (personal mark)",
+  "Sinalizar para revisar": "Flag to review",
+  "Sinalizar questão para revisar": "Flag question to review",
   "Sincronização da conta": "Account sync",
   "Sincronização deste navegador": "Sync for this browser",
   "Sincronização e andamento deste navegador": "Sync and progress in this browser",
@@ -2586,6 +2631,7 @@ export default {
   "Sua aula continua depois que a gravação termina.": "Your lesson goes on after the recording ends.",
   "Sua aula rende": "Your lesson leads to",
   "Sua conta e preferências": "Your account and preferences",
+  "Sua escolha continua marcada; tente de novo.": "Your choice is still selected; try again.",
   "Sua estante": "Your shelf",
   "Sua estante está vazia. Comece um diário: você escolhe a capa e o papel depois.": "Your shelf is empty. Start a journal: you choose the cover and the paper later.",
   "Sua explicação": "Your explanation",
@@ -2593,6 +2639,9 @@ export default {
   "Sua mesa": "Your desk",
   "Sua pergunta": "Your question",
   "Sua reflexão": "Your reflection",
+  "Sua resposta": "Your answer",
+  "Sua resposta · correta": "Your answer · correct",
+  "Sua resposta · incorreta": "Your answer · incorrect",
   "Sua semana": "Your week",
   "Sua transcrição está pronta": "Your transcript is ready",
   "Suas alterações deste aparelho estão guardadas. Escolha como continuar; nada é apagado sem confirmação.": "Your changes on this device are kept. Choose how to continue; nothing is deleted without confirmation.",
@@ -2646,8 +2695,11 @@ export default {
   "Tentar novamente": "Try again",
   "tentar outra vez": "try again",
   "Tentar processamento": "Retry processing",
+  "tentativa em andamento": "attempt in progress",
   "Tentativas anteriores": "Previous attempts",
+  "Tentativas desta lista": "Attempts at this list",
   "Tente de novo agora ou continue depois pela aula.": "Try again now or continue later from the lesson.",
+  "Tente novamente.": "Try again.",
   "Tente outra busca ou ajuste os filtros.": "Try another search or adjust the filters.",
   "Tente outra busca ou filtro.": "Try another search or filter.",
   "Ter": "Tue",
@@ -2692,6 +2744,7 @@ export default {
   "Todas as aulas": "All lessons",
   "Todas as aulas: busque por título ou tag, agrupe por disciplina e use o menu ⋯ de cada aula para editar informações. Cada aula mostra as etapas de estudo — conferir a transcrição, resumo, questões e flashcards — e o próximo passo.": "All lessons: search by title or tag, group by subject and use each lesson's ⋯ menu to edit its details. Each lesson shows the study steps — check the transcript, summary, questions and flashcards — and the next step.",
   "Todas as disciplinas": "All subjects",
+  "Todas as questões têm resposta. Revise se quiser e conclua a tentativa.": "Every question has an answer. Review if you like and finish the attempt.",
   "Todas as tags": "All tags",
   "Todas as tarefas daqui estão concluídas.": "All tasks here are completed.",
   "Todas são de outras disciplinas.": "All of them are from other subjects.",
@@ -2726,6 +2779,7 @@ export default {
   "Translúcido": "Translucent",
   "Transparência da geração": "Generation transparency",
   "Trecho": "Clip",
+  "Trecho da aula": "Lesson excerpt",
   "Trecho selecionado · 02:10–04:35": "Selected clip · 02:10–04:35",
   "Trechos que sustentam": "Supporting passages",
   "Três fotos com moldura e legenda, e uma nota.": "Three framed photos with captions, and a note.",
@@ -2837,10 +2891,12 @@ export default {
   "Ver o ano": "Show the year",
   "Ver o Gabinete": "See the Cabinet",
   "Ver pendentes": "View unanswered",
+  "Ver questão": "See question",
   "Ver questões": "View questions",
   "Ver recomendação de quantidade": "See recommended number",
   "Ver resposta": "Show answer",
   "Ver resposta e trechos": "Show answer and passages",
+  "Ver resultado": "See result",
   "Ver resultado e erros": "View results and mistakes",
   "Ver todas": "See all",
   "Ver todas no Arquivo de Descobertas": "See them all in the Discovery Archive",
@@ -2852,6 +2908,7 @@ export default {
   "Verde garrafa": "Bottle green",
   "Verificando…": "Checking…",
   "Verifique a conexão e tente de novo. As outras seções continuam disponíveis.": "Check your connection and try again. The other sections are still available.",
+  "Verifique a conexão.": "Check your connection.",
   "versão anterior": "previous version",
   "Versão do resumo": "Summary version",
   "Verso": "Back",
@@ -2872,6 +2929,8 @@ export default {
   "Visualização das pastas": "Folder view",
   "Você a ligou a 1 outra descoberta.": "You linked it to 1 other discovery.",
   "Você a ligou a outra descoberta.": "You linked it to another discovery.",
+  "Você acertou": "You got it right",
+  "Você acertou todas as questões desta tentativa.": "You got every question right in this attempt.",
   "Você ainda não enviou gravações para esta turma.": "You have not submitted recordings to this class yet.",
   "Você ainda não ofereceu flashcards nem materiais integrados a esta turma.": "You haven't offered flashcards or integrated materials to this class yet.",
   "Você ainda não respondeu nenhuma lista. Crie questões a partir de uma aula para praticar e revisar os erros aqui.": "You haven't answered any lists yet. Create questions from a lesson to practice and review your mistakes here.",
@@ -2904,6 +2963,7 @@ export default {
   "Você voltou a uma descoberta e acrescentou algo.": "You came back to a discovery and added something.",
   "Voltar": "Back",
   "Voltar 10 segundos": "Back 10 seconds",
+  "Voltar à aula": "Back to the lesson",
   "Voltar à Biblioteca": "Back to Library",
   "Voltar à revisão": "Back to review",
   "Voltar ao início": "Back to Home",
@@ -3013,6 +3073,10 @@ export default {
    "{0} of {1} were generated: some were repeats and were discarded; generate more to complete the list."
   ],
   [
+   "Resposta da questão {0} salva. Todas as questões têm resposta; você pode concluir a tentativa.",
+   "Answer to question {0} saved. Every question has an answer; you can finish the attempt."
+  ],
+  [
    "{0} min de estudo registrados · meta: {1} · {2} revisões marcadas como concluídas na conta",
    "{0} min of study recorded · goal: {1} · {2} reviews marked as done in your account"
   ],
@@ -3109,6 +3173,10 @@ export default {
    "{0} note was left out: limit of {1} cards per set."
   ],
   [
+   "Resposta correta: {0} (texto da alternativa não disponível)",
+   "Correct answer: {0} (option text not available)"
+  ],
+  [
    "Coleção criada: {0}. Escolha os cartões que entram nela.",
    "Collection created: {0}. Choose the cards that go in it."
   ],
@@ -3119,6 +3187,10 @@ export default {
   [
    "{0} aulas não estão mais disponíveis e foram ignoradas.",
    "{0} lessons are no longer available and were ignored."
+  ],
+  [
+   "Sua resposta: {0} (texto da alternativa não disponível)",
+   "Your answer: {0} (option text not available)"
   ],
   [
    "Limite de {0} cartões por conjunto: {1} ficam de fora.",
@@ -3175,6 +3247,10 @@ export default {
   [
    "{0} perguntas com respostas diferentes resolvidas.",
    "{0} questions with different answers resolved."
+  ],
+  [
+   "Resposta da questão {0} salva. Questão {1} de {2}.",
+   "Answer to question {0} saved. Question {1} of {2}."
   ],
   [
    "Resposta incorreta. A resposta prevista é {0}.{1}",
@@ -3239,6 +3315,10 @@ export default {
   [
    "Pausa longa pausado: {0} restantes. Abrir Focar",
    "Long break paused: {0} left. Open Focus"
+  ],
+  [
+   "Sinalizada para revisar: {0}. Editar ou remover",
+   "Flagged to review: {0}. Edit or remove"
   ],
   [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
@@ -3441,6 +3521,10 @@ export default {
    "{0} of {1} decorations on this page."
   ],
   [
+   "Questão {0} de {1} · {2} respondida",
+   "Question {0} of {1} · {2} answered"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "Remove the subject “{0}”?\\n\\n{1}"
   ],
@@ -3533,6 +3617,10 @@ export default {
    "Choose at most {0} units."
   ],
   [
+   "Continuar tentativa de {0}: {1}",
+   "Continue attempt from {0}: {1}"
+  ],
+  [
    "Não foi possível carregar {0}.",
    "Couldn't load {0}."
   ],
@@ -3567,6 +3655,14 @@ export default {
   [
    "Capa {0}. Salvo na sua conta.",
    "Cover {0}. Saved to your account."
+  ],
+  [
+   "Resposta da questão {0} salva",
+   "Answer to question {0} saved"
+  ],
+  [
+   "Rever todas as questões ({0})",
+   "Review all questions ({0})"
   ],
   [
    "Destaque da revisão {0}: {1}",
@@ -3621,6 +3717,10 @@ export default {
    "{0} added: page {1}."
   ],
   [
+   "Resposta correta: {0} — {1}",
+   "Correct answer: {0} — {1}"
+  ],
+  [
    "Nada encontrado para “{0}”",
    "Nothing found for “{0}”"
   ],
@@ -3643,6 +3743,14 @@ export default {
   [
    "Ouvir a mistura sonora {0}",
    "Listen to the {0} sound mix"
+  ],
+  [
+   "Continuar tentativa de {0}",
+   "Continue attempt from {0}"
+  ],
+  [
+   "acertos ({0}%) · {1} erros",
+   "correct ({0}%) · {1} mistakes"
   ],
   [
    "Pelo menos {0} caracteres",
@@ -3689,6 +3797,22 @@ export default {
    "Remove the link to {0}"
   ],
   [
+   "Ver resultado de {0}: {1}",
+   "See result from {0}: {1}"
+  ],
+  [
+   "{0} tentativas concluídas",
+   "{0} completed attempts"
+  ],
+  [
+   "acertos ({0}%) · {1} erro",
+   "correct ({0}%) · {1} mistake"
+  ],
+  [
+   "acerto ({0}%) · {1} erros",
+   "correct ({0}%) · {1} mistakes"
+  ],
+  [
    "Opções da disciplina {0}",
    "Options for subject {0}"
   ],
@@ -3711,6 +3835,14 @@ export default {
   [
    "{0} removido do caderno.",
    "{0} removed from the notebook."
+  ],
+  [
+   "Em andamento · {0} · {1}",
+   "In progress · {0} · {1}"
+  ],
+  [
+   "acerto ({0}%) · {1} erro",
+   "correct ({0}%) · {1} mistake"
   ],
   [
    "{0}% do áudio ouvido{1}",
@@ -3747,6 +3879,18 @@ export default {
   [
    "Abrir o diário {0}, {1}",
    "Open the journal {0}, {1}"
+  ],
+  [
+   "Revisão dos erros · {0}",
+   "Review of mistakes · {0}"
+  ],
+  [
+   "{0} tentativa concluída",
+   "{0} completed attempt"
+  ],
+  [
+   "Sua resposta: {0} — {1}",
+   "Your answer: {0} — {1}"
   ],
   [
    "Adicionar a: {0} ({1})",
@@ -3837,6 +3981,10 @@ export default {
    "Remove moment {0}"
   ],
   [
+   "Concluída · {0} · {1}",
+   "Completed · {0} · {1}"
+  ],
+  [
    "Cópia de {0} criada.",
    "Copy of {0} created."
   ],
@@ -3901,6 +4049,14 @@ export default {
    "Page linked to {0}."
   ],
   [
+   "Lista completa · {0}",
+   "Full list · {0}"
+  ],
+  [
+   "Ver resultado de {0}",
+   "See result from {0}"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · expires {1}"
   ],
@@ -3943,6 +4099,10 @@ export default {
   [
    "Desenho da foto {0}",
    "Drawing in photo {0}"
+  ],
+  [
+   "Você sinalizou: {0}",
+   "You flagged: {0}"
   ],
   [
    "Ações da lista {0}",
@@ -4001,6 +4161,10 @@ export default {
    "Free study · {0}"
   ],
   [
+   "{0} questões · {1}",
+   "{0} questions · {1}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · question {1}"
   ],
@@ -4057,6 +4221,10 @@ export default {
    "Page {0} of {1}"
   ],
   [
+   "{0} questão · {1}",
+   "{0} question · {1}"
+  ],
+  [
    "Questão {0}. {1}",
    "Question {0}. {1}"
   ],
@@ -4101,6 +4269,10 @@ export default {
    "Version {0} · {1}"
   ],
   [
+   "Tentativas ({0})",
+   "Attempts ({0})"
+  ],
+  [
    "Explicação: {0}",
    "Explanation: {0}"
   ],
@@ -4131,6 +4303,14 @@ export default {
   [
    "Descoberta: {0}",
    "Discovery: {0}"
+  ],
+  [
+   "Ver questão {0}",
+   "See question {0}"
+  ],
+  [
+   "Sinalizada: {0}",
+   "Flagged: {0}"
   ],
   [
    "Salvar {0} {1}",
@@ -4279,6 +4459,10 @@ export default {
   [
    "Colocar {0}",
    "Place {0}"
+  ],
+  [
+   "Questão {0}",
+   "Question {0}"
   ],
   [
    "Versão {0}",
