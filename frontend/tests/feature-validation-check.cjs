@@ -641,14 +641,14 @@ async function main() {
       await notebook.getByRole('button', { name: 'Abrir o caderno' }).click();
       const rangeCard = notesPage.locator('[data-annotations-panel] .annotation-card', { hasText: 'O oxigênio' }).first();
       await rangeCard.getByText('Abrange 2 trechos da transcrição').waitFor();
-      // First save fails (unknown outcome): "Não salvo — tentar de novo", same request on retry.
+      // First save fails (unknown outcome): "Não foi possível salvar." + "Tentar de novo", same request on retry.
       notesData.notebookFailures = 1;
-      await notebook.getByRole('button', { name: 'Parágrafo' }).click();
-      const notebookParagraph = notebook.getByLabel('Texto do parágrafo');
-      assert.equal(await notesPage.evaluate(() => document.activeElement?.closest('.notebook-block') !== null), true, 'focus moves to the new block');
-      await notebookParagraph.fill('Fase clara: luz vira energia química.');
+      // Opening the notebook puts the caret in the writing area: type at once.
+      const notebookText = notebook.getByRole('textbox', { name: 'Texto do caderno' });
+      assert.equal(await notesPage.evaluate(() => document.activeElement?.classList.contains('nb-editor')), true, 'focus moves into the text');
+      await notesPage.keyboard.type('Fase clara: luz vira energia química.');
       const status = notebook.locator('.notebook-status');
-      await status.filter({ hasText: 'Não salvo — tentar de novo' }).waitFor({ timeout: 5000 });
+      await status.filter({ hasText: 'Não foi possível salvar.' }).waitFor({ timeout: 5000 });
       await settle(notesPage);
       await axeCheck(notesPage, '[data-notes-section]', 'Caderno da aula (não salvo)');
       await notebook.getByRole('button', { name: 'Tentar de novo' }).click();
@@ -656,23 +656,19 @@ async function main() {
       const [failed, retried] = notesData.notebookSaves;
       assert.equal(retried.requestId, failed.requestId, 'retry reuses the request id (idempotent)');
       assert.equal(notesData.notebooks['l-foto'].doc.blocks[0].text, 'Fase clara: luz vira energia química.');
-      record('Caderno: salvamento automático; falha mostra "Não salvo — tentar de novo" e o reenvio usa o mesmo pedido');
+      record('Caderno: salvamento automático; falha mostra "Não foi possível salvar." com "Tentar de novo", e o reenvio usa o mesmo pedido');
 
       // Cite the multi-segment highlight: a reference that keeps its revision.
       await rangeCard.getByRole('button', { name: 'Citar no caderno' }).click();
-      const reference = notebook.locator('.notebook-block-annotation_ref');
+      const reference = notebook.locator('figure.nb-atom');
       await reference.locator('blockquote', { hasText: 'O oxigênio' }).waitFor();
       await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
       const refBlock = notesData.notebooks['l-foto'].doc.blocks.find((b) => b.type === 'annotation_ref');
       assert.equal(refBlock.sourceRevisionId, 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee');
       assert.equal(refBlock.sourceRevision, 1);
-      // Keyboard: move the reference above the paragraph; focus stays on the moved block.
-      await reference.getByRole('button', { name: 'Mover bloco 2 para cima' }).focus();
-      await notesPage.keyboard.press('Enter');
-      await notesPage.waitForFunction(() => document.activeElement?.closest('.notebook-block')?.matches('.notebook-block-annotation_ref'));
-      assert.equal(await notebook.locator('.notebook-block').first().getAttribute('class'), 'notebook-block notebook-block-annotation_ref');
-      await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
-      record('Caderno: "Citar no caderno" cria uma referência ao destaque com a revisão; blocos movidos pelo teclado mantêm o foco');
+      // It goes in below the line being written, and the text goes on after it.
+      assert.deepEqual(notesData.notebooks['l-foto'].doc.blocks.map((b) => b.type), ['paragraph', 'annotation_ref']);
+      record('Caderno: "Citar no caderno" cria uma referência ao destaque com a revisão, abaixo da linha em que se escreve');
 
       // Another device saved meanwhile: conflict, both versions kept on request.
       const savedNotebook = notesData.notebooks['l-foto'];
@@ -682,7 +678,9 @@ async function main() {
         last_request_id: 'other-device',
         doc: { ...savedNotebook.doc, blocks: [...savedNotebook.doc.blocks, { id: 'other', type: 'paragraph', text: 'Escrito no celular.' }] },
       };
-      await notebookParagraph.fill('Fase clara: a luz vira energia química (ATP).');
+      await notebookText.locator('p', { hasText: 'Fase clara' }).click();
+      await notesPage.keyboard.press('End');
+      await notesPage.keyboard.type(' (ATP)');
       const conflictBox = notebook.locator('.notebook-conflict');
       await conflictBox.getByRole('button', { name: 'Manter as duas versões' }).waitFor({ timeout: 5000 });
       assert.match(await status.textContent(), /outro aparelho/);
@@ -692,7 +690,7 @@ async function main() {
       await status.filter({ hasText: /^Salvo$/ }).waitFor({ timeout: 5000 });
       const merged = notesData.notebooks['l-foto'].doc.blocks.map((b) => b.text || b.type);
       assert(merged.includes('Escrito no celular.'), 'the other device text is kept');
-      assert(merged.includes('Fase clara: a luz vira energia química (ATP).'), 'this device text is kept');
+      assert(merged.includes('Fase clara: luz vira energia química. (ATP)'), 'this device text is kept');
       assert(merged.some((t) => /^Cópia deste aparelho/.test(t)), 'the copy is labelled');
       record('Caderno: outro aparelho salvou antes → aviso de conflito; "Manter as duas versões" guarda os dois textos');
 

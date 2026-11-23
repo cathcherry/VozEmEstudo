@@ -1,0 +1,56 @@
+{
+  "Sem título": { "en": "Untitled", "es": "Sin título", "zh-CN": "无标题" },
+  "Formatar o texto do caderno": { "en": "Format the notebook text", "es": "Dar formato al texto del cuaderno", "zh-CN": "设置笔记本文本格式" },
+  "Numerada": { "en": "Numbered", "es": "Numerada", "zh-CN": "编号" },
+  "Citar trecho da aula": { "en": "Quote from the lesson", "es": "Citar un fragmento de la clase", "zh-CN": "引用课程片段" },
+  "Texto do caderno": { "en": "Notebook text", "es": "Texto del cuaderno", "zh-CN": "笔记本文本" },
+  "Comece a escrever aqui…": { "en": "Start writing here…", "es": "Empieza a escribir aquí…", "zh-CN": "从这里开始写…" },
+  "Escreva à vontade: Enter começa um novo parágrafo. Comece a linha com # para título, - para lista, 1. para lista numerada, [ ] para checklist ou > para citação.": {
+    "en": "Write freely: Enter starts a new paragraph. Start a line with # for a heading, - for a list, 1. for a numbered list, [ ] for a checklist or > for a quote.",
+    "es": "Escribe con libertad: Enter empieza un párrafo nuevo. Empieza la línea con # para título, - para lista, 1. para lista numerada, [ ] para checklist o > para cita.",
+    "zh-CN": "随意书写：按 Enter 开始新段落。行首输入 # 为标题，- 为列表，1. 为编号列表，[ ] 为清单，> 为引用。"
+  },
+  "Remover citação": { "en": "Remove quote", "es": "Quitar cita", "zh-CN": "移除引用" },
+  "Trecho citado da aula": { "en": "Quoted lesson passage", "es": "Fragmento citado de la clase", "zh-CN": "引用的课程片段" },
+  "Bloco preservado": { "en": "Preserved block", "es": "Bloque conservado", "zh-CN": "保留的内容块" },
+  "Bloco preservado: este conteúdo não pode ser editado aqui, mas continua salvo no caderno.": {
+    "en": "Preserved block: this content cannot be edited here, but it stays saved in the notebook.",
+    "es": "Bloque conservado: este contenido no se puede editar aquí, pero sigue guardado en el cuaderno.",
+    "zh-CN": "保留的内容块：此内容无法在这里编辑，但仍保存在笔记本中。"
+  },
+  "Destaques da aula": { "en": "Lesson highlights", "es": "Destacados de la clase", "zh-CN": "课程标注" },
+  "Trechos que você destacou na transcrição. Use “Citar no caderno” para levar um trecho ao seu texto.": {
+    "en": "Passages you highlighted in the transcript. Use “Citar no caderno” to bring a passage into your text.",
+    "es": "Fragmentos que destacaste en la transcripción. Usa “Citar no caderno” para llevar un fragmento a tu texto.",
+    "zh-CN": "你在转写中标注的片段。使用“引用到笔记本”把片段放进你的文字。"
+  },
+  "Escrever uma anotação solta": { "en": "Write a standalone note", "es": "Escribir una nota suelta", "zh-CN": "写一条单独的笔记" },
+  "Trecho citado no caderno da aula.": { "en": "Passage quoted in the lesson notebook.", "es": "Fragmento citado en el cuaderno de la clase.", "zh-CN": "已将片段引用到课程笔记本。" },
+  "Item marcado.": { "en": "Item checked.", "es": "Elemento marcado.", "zh-CN": "已勾选。" },
+  "Item desmarcado.": { "en": "Item unchecked.", "es": "Elemento desmarcado.", "zh-CN": "已取消勾选。" },
+  "Nada para desfazer.": { "en": "Nothing to undo.", "es": "Nada que deshacer.", "zh-CN": "没有可撤销的操作。" },
+  "Citação removida do caderno. Ctrl+Z desfaz.": { "en": "Quote removed from the notebook. Ctrl+Z undoes it.", "es": "Cita quitada del cuaderno. Ctrl+Z la deshace.", "zh-CN": "已从笔记本移除引用。Ctrl+Z 可撤销。" },
+  "A citação da aula não é apagada pelo teclado. Use o botão “Remover citação” dela.": {
+    "en": "The lesson quote is not deleted with the keyboard. Use its “Remover citação” button.",
+    "es": "La cita de la clase no se borra con el teclado. Usa su botón “Remover citação”.",
+    "zh-CN": "课程引用不会被键盘删除。请使用它的“移除引用”按钮。"
+  },
+  "A seleção inclui uma citação da aula. Para tirá-la, use o botão “Remover citação”.": {
+    "en": "The selection includes a lesson quote. To remove it, use the “Remover citação” button.",
+    "es": "La selección incluye una cita de la clase. Para quitarla, usa el botón “Remover citação”.",
+    "zh-CN": "所选内容包含课程引用。要移除它，请使用“移除引用”按钮。"
+  },
+  "Selecione um trecho na transcrição e escolha “Citar no caderno”. Ele entra aqui com o tempo e a revisão.": {
+    "en": "Select a passage in the transcript and choose “Citar no caderno”. It comes here with its time and revision.",
+    "es": "Selecciona un fragmento en la transcripción y elige “Citar no caderno”. Llega aquí con el tiempo y la revisión.",
+    "zh-CN": "在转写中选择一个片段并选择“引用到笔记本”。它会带着时间和修订版本出现在这里。"
+  },
+  "Destaque da revisão {0} · {1}": { "en": "Highlight from revision {0} · {1}", "es": "Destacado de la revisión {0} · {1}", "zh-CN": "修订 {0} 的标注 · {1}" },
+  "Texto.": { "en": "Text.", "es": "Texto.", "zh-CN": "正文。" },
+  "Título.": { "en": "Heading.", "es": "Título.", "zh-CN": "标题。" },
+  "Subtítulo.": { "en": "Subheading.", "es": "Subtítulo.", "zh-CN": "副标题。" },
+  "Lista.": { "en": "List.", "es": "Lista.", "zh-CN": "列表。" },
+  "Lista numerada.": { "en": "Numbered list.", "es": "Lista numerada.", "zh-CN": "编号列表。" },
+  "Checklist.": { "en": "Checklist.", "es": "Checklist.", "zh-CN": "清单。" },
+  "Citação.": { "en": "Quote.", "es": "Cita.", "zh-CN": "引用。" }
+}

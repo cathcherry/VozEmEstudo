@@ -1,7 +1,7 @@
 /* 3.6: the lesson notebook ("Caderno da aula", Notes 3.0) as a real notebook. A closed cover that
  * opens, a cloth spine, a stacked page with a margin and a ribbon, paper tabs for its sections,
- * hand-drawn dividers, quotes and highlights as index cards with washi tape. The editing markup
- * (lesson-notebook.js) is unchanged; this file only dresses it. Quiet mode keeps the page and
+ * cited highlights as index cards with washi tape. The page is a writing area (notebook-editor.js):
+ * a comfortable column of text with a small toolbar, no form fields. Quiet mode keeps the page and
  * drops the ornaments; high contrast and forced colours fall back to plain bordered surfaces. */
 @layer pages {
   .lesson-notebook {
@@ -225,95 +225,221 @@
     }
   }
 
-  /* ---- Writing on the page: fields sit on the paper, not in boxes ------------------------- */
-  .nb-page .notebook-field {
-    font-weight: 600;
-    font-size: var(--step--1);
-    color: var(--ink-muted);
+  /* ---- Writing on the page: one comfortable writing area, a small toolbar ------------------- */
+  .notebook-page-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
   }
-  .nb-page :is(.notebook-field input, .notebook-field textarea, .notebook-checklist input[type='text']) {
-    padding: 0.2rem 0.35rem;
+  .notebook-name {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding: 0;
     border: 0;
-    border-bottom: 1px dashed color-mix(in srgb, var(--ink) 25%, transparent);
-    border-radius: 2px;
-    background: color-mix(in srgb, var(--mat-sheet) 55%, transparent);
-    color: var(--ink);
-    font-size: var(--step-0, 1rem);
-    line-height: 1.75rem;
-  }
-  .nb-page .notebook-field select {
-    justify-self: start;
-    width: auto;
-    min-height: 2.25rem;
-    padding: 0.15rem 0.5rem;
-    font-size: var(--step--1);
-  }
-  #lesson-notebook-name {
+    background: transparent;
     color: var(--hand-ink);
     font-family: var(--font-hand);
     font-size: 1.9rem;
     font-weight: 650;
     line-height: 2.4rem;
-    border-bottom-style: solid;
   }
-  .nb-page .notebook-blocks {
-    gap: 0.9rem;
+  .notebook-name::placeholder {
+    color: color-mix(in srgb, var(--hand-ink) 45%, transparent);
   }
-  .nb-page .notebook-block fieldset {
-    position: relative;
-    padding: 0.35rem 0 0.4rem;
-    border: 0;
-    border-radius: 0;
+  .notebook-name:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 4px;
+    border-radius: 4px;
   }
-  .nb-page .notebook-block legend {
-    padding: 0;
+  .lesson-notebook .notebook-status-row {
+    margin-left: auto;
+    gap: 0.35rem;
+  }
+  .lesson-notebook .notebook-status {
     color: var(--ink-muted);
-    font-size: 0.78rem;
-    font-weight: 600;
+    font-size: var(--step--1, 0.88rem);
+    font-weight: 500;
   }
-  .nb-page .notebook-block-heading input[type='text'] {
+  .lesson-notebook .notebook-status[data-state='saved']::before {
+    content: '✓ ';
+  }
+  .lesson-notebook .notebook-status:is([data-state='retrying'], [data-state='invalid'], [data-state='conflict']) {
+    color: var(--danger, #9b1c1c);
+    font-weight: 650;
+  }
+  .lesson-notebook .notebook-retry {
+    min-height: 2rem;
+    font-size: var(--step--1, 0.88rem);
+  }
+
+  .notebook-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.2rem;
+    border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--paper-raised) 88%, transparent);
+  }
+  .notebook-tool-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 2.25rem;
+    margin: 0;
+    padding: 0.15rem 0.55rem;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--step--1, 0.88rem);
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+  }
+  .notebook-tool-button:hover {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+  .notebook-tool-button[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--brand-ink) 16%, transparent);
+    color: var(--brand-ink);
+  }
+  .notebook-tool-button:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 1px;
+  }
+  .notebook-tool-glyph {
+    min-width: 1.1ch;
+    font-weight: 750;
+    text-align: center;
+  }
+  .notebook-toolbar-gap {
+    flex: 1 1 0.5rem;
+  }
+
+  .notebook-writing {
+    position: relative;
+    max-inline-size: 46rem;
+    cursor: text;
+  }
+  .nb-editor {
+    min-height: 14rem;
+    padding: 0.2rem 0.15rem 2.5rem;
+    color: var(--ink);
+    caret-color: var(--brand-ink);
+    font-size: var(--step-0, 1rem);
+    line-height: var(--rule-gap, 1.75rem);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    outline: none;
+  }
+  .nb-editor:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--brand-ink) 55%, transparent);
+    outline-offset: 6px;
+    border-radius: 4px;
+  }
+  .nb-editor > * {
+    margin: 0;
+  }
+  .nb-editor h3 {
+    margin-top: 0.6rem;
     color: var(--hand-ink);
     font-family: var(--font-hand);
     font-size: 1.65rem;
     font-weight: 650;
+    line-height: 2.25rem;
   }
-  .nb-divider {
+  .nb-editor h3:not(:first-child) {
+    margin-top: 1.4rem;
+  }
+  .nb-editor h4 {
+    margin-top: 0.5rem;
+    color: var(--hand-ink);
+    font-size: 1.15em;
+    font-weight: 700;
+  }
+  .nb-editor blockquote {
+    margin-block: 0.35rem;
+    padding: 0.1rem 0.9rem;
+    border-inline-start: 4px solid color-mix(in srgb, var(--brand-ink) 55%, transparent);
+    background: color-mix(in srgb, var(--mat-sheet) 60%, transparent);
+    font-style: italic;
+  }
+  .nb-editor :is(ul, ol) {
+    padding-inline-start: 1.6rem;
+  }
+  .nb-editor ul[data-type='checklist'] {
+    padding-inline-start: 0.1rem;
+    list-style: none;
+  }
+  .nb-editor ul[data-type='checklist'] > li {
+    position: relative;
+    padding-inline-start: 1.85rem;
+  }
+  .nb-editor ul[data-type='checklist'] > li[data-checked='true'] {
+    color: var(--ink-muted);
+    text-decoration: line-through;
+  }
+  .nb-check {
+    position: absolute;
+    inset-inline-start: 0.1rem;
+    top: calc((var(--rule-gap, 1.75rem) - 1.15rem) / 2);
+    display: inline-flex;
+    user-select: none;
+  }
+  .nb-check input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    accent-color: var(--brand-ink);
+    cursor: pointer;
+  }
+  .nb-editor-placeholder {
+    position: absolute;
+    top: 0.2rem;
+    inset-inline-start: 0.15rem;
+    display: none;
+    margin: 0;
+    color: color-mix(in srgb, var(--ink) 50%, transparent);
+    font-style: italic;
+    line-height: var(--rule-gap, 1.75rem);
+    pointer-events: none;
+  }
+  .notebook-writing:has(.nb-editor.is-empty) .nb-editor-placeholder {
     display: block;
-    width: min(18rem, 70%);
-    height: auto;
-    margin: 0.4rem auto 0.6rem;
-    opacity: 0.9;
   }
-  .nb-page .notebook-block-tools {
-    gap: 0.3rem;
-  }
-  .nb-page .notebook-tool {
-    min-height: 2rem;
-    padding: 0.1rem 0.7rem;
-    background: color-mix(in srgb, var(--paper-raised) 80%, transparent);
-    font-size: 0.8rem;
+  .notebook-hint {
+    max-inline-size: 46rem;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1, 0.88rem);
+    line-height: 1.45;
   }
 
-  /* Quotes and cited highlights: index cards held by washi tape. */
-  .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset {
-    margin-top: 0.6rem;
-    padding: 1.9rem 1rem 0.8rem;
+  /* Cited highlights (and preserved blocks): index cards held by washi tape, inside the text. */
+  .nb-editor .nb-atom {
+    position: relative;
+    display: grid;
+    gap: 0.3rem;
+    margin: 1rem 0 0.8rem;
+    padding: 1.2rem 1rem 0.7rem;
     background-color: var(--mat-sheet);
-    background-image:
-      linear-gradient(var(--mat-margin), var(--mat-margin)),
-      repeating-linear-gradient(transparent 0 calc(1.5rem - 1px), var(--mat-rule) calc(1.5rem - 1px) 1.5rem);
-    background-size: 100% 1.5px, 100% 1.5rem;
-    background-position: 0 1.5rem, 0 1.5rem;
-    background-repeat: no-repeat, repeat-y;
     border: 1px solid var(--mat-edge);
     border-radius: 3px;
     box-shadow: var(--mat-lift-1);
-    rotate: -0.5deg;
+    rotate: -0.4deg;
+    white-space: normal;
+    font-size: var(--step--1, 0.92rem);
+    line-height: 1.5;
+    cursor: default;
   }
-  .nb-page .notebook-block-annotation_ref:nth-child(even) fieldset {
-    rotate: 0.5deg;
+  .nb-editor .nb-atom > * {
+    margin: 0;
   }
-  .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset::before {
+  .nb-editor .nb-atom::before {
     /* A strip of washi across the top edge (decorative; same drawing as .washi). */
     content: '';
     position: absolute;
@@ -323,61 +449,70 @@
     height: 1.3rem;
     rotate: -4deg;
     opacity: 0.85;
-    background-color: #f8e4e8;
-    background-image:
-      radial-gradient(circle at 50% 50%, #d98a9b 0 2.2px, transparent 2.6px),
-      radial-gradient(circle at 50% 50%, #b5cda4 0 1.4px, transparent 1.8px);
-    background-size: 16px 22px, 16px 22px;
-    background-position: 4px 0, 12px 11px;
-  }
-  .nb-page .notebook-block-annotation_ref fieldset::before {
     background-color: #e3edda;
     background-image: repeating-linear-gradient(45deg, #b5cda4 0 4px, transparent 4px 10px);
   }
-  /* Highlight colours as a marker stroke under the quoted words. */
-  .nb-page .notebook-ref-quote {
-    padding: 0.1rem 0.3rem;
-    border: 0;
+  .notebook-ref-meta,
+  .notebook-ref-comment {
+    color: var(--ink-muted);
+  }
+  .notebook-ref-notice {
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+  .notebook-ref-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding-top: 0.2rem;
+  }
+  .nb-editor .notebook-tool {
+    min-height: 2rem;
+    margin: 0;
+    padding: 0.1rem 0.7rem;
+    background: color-mix(in srgb, var(--paper-raised) 80%, transparent);
+    font-size: 0.8rem;
+    font-style: normal;
+  }
+  /* Highlight colours as a marker stroke under the quoted words (an inline span, so the stroke
+   * follows each wrapped line). */
+  .nb-editor .nb-atom .notebook-ref-quote {
+    margin: 0;
+    padding: 0 0 0 0.6rem;
+    background: none;
+    font-size: var(--step-0, 1rem);
     font-style: italic;
-    background: linear-gradient(transparent 12%, color-mix(in srgb, #f1d38c 70%, transparent) 12% 88%, transparent 88%);
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .nb-page .notebook-ref-mark {
+    padding: 0.05em 0.2em;
+    background: linear-gradient(transparent 8%, color-mix(in srgb, #f1d38c 70%, transparent) 8% 92%, transparent 92%);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
   }
-  .nb-page .notebook-ref-quote.annotation-green {
-    background: linear-gradient(transparent 12%, color-mix(in srgb, #b5cda4 75%, transparent) 12% 88%, transparent 88%);
+  .nb-page .annotation-green .notebook-ref-mark {
+    background: linear-gradient(transparent 8%, color-mix(in srgb, #b5cda4 75%, transparent) 8% 92%, transparent 92%);
   }
-  .nb-page .notebook-ref-quote.annotation-blue {
-    background: linear-gradient(transparent 12%, color-mix(in srgb, #a9c4d9 75%, transparent) 12% 88%, transparent 88%);
+  .nb-page .annotation-blue .notebook-ref-mark {
+    background: linear-gradient(transparent 8%, color-mix(in srgb, #a9c4d9 75%, transparent) 8% 92%, transparent 92%);
   }
-  .nb-page .notebook-ref-quote.annotation-pink {
-    background: linear-gradient(transparent 12%, color-mix(in srgb, #edbdc7 75%, transparent) 12% 88%, transparent 88%);
+  .nb-page .annotation-pink .notebook-ref-mark {
+    background: linear-gradient(transparent 8%, color-mix(in srgb, #edbdc7 75%, transparent) 8% 92%, transparent 92%);
   }
-  :root:is([data-theme='night'], [data-theme='custom']) .nb-page .notebook-ref-quote {
+  :root:is([data-theme='night'], [data-theme='custom']) .nb-page .notebook-ref-mark {
     color: #2e2a3b;
-  }
-  .nb-page .notebook-add {
-    padding-top: 0.75rem;
-    border-top: 1px dashed color-mix(in srgb, var(--ink) 18%, transparent);
-  }
-  .nb-page .notebook-add-button {
-    border-radius: 6px 6px 2px 2px;
-    background: color-mix(in srgb, #f1d38c 22%, var(--paper-raised));
-  }
-  .nb-page .notebook-add-button:nth-of-type(2n) {
-    background: color-mix(in srgb, #cfc5ec 30%, var(--paper-raised));
-  }
-  .nb-page .notebook-add-button:nth-of-type(3n) {
-    background: color-mix(in srgb, #b5cda4 30%, var(--paper-raised));
   }
 
   /* ---- Quiet mode: the same page, no ornaments ------------------------------------------- */
-  :root[data-experience='quiet'] .lesson-notebook :is(.bookmark-ribbon, .nb-divider, .nb-cover-flap) {
+  :root[data-experience='quiet'] .lesson-notebook :is(.bookmark-ribbon, .nb-cover-flap) {
     display: none;
   }
-  :root[data-experience='quiet'] .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset::before {
+  :root[data-experience='quiet'] .nb-editor .nb-atom::before {
     display: none;
   }
-  :root[data-experience='quiet'] .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset {
+  :root[data-experience='quiet'] .nb-editor .nb-atom {
     rotate: none;
   }
 
@@ -398,30 +533,65 @@
     display: none;
   }
   :root:is([data-high-contrast='true'], [data-theme='contrast-light'], [data-theme='contrast-dark'])
-    .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset {
+    .nb-editor .nb-atom {
     rotate: none;
     background-image: none;
     box-shadow: none;
     border: 1px solid var(--line-strong);
   }
   :root:is([data-high-contrast='true'], [data-theme='contrast-light'], [data-theme='contrast-dark'])
-    .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset::before {
+    .nb-editor .nb-atom::before {
     display: none;
   }
   @media (forced-colors: active) {
     .nb-spine {
       background: CanvasText;
     }
-    .nb-page :is(.notebook-block-quote, .notebook-block-annotation_ref) fieldset::before {
+    .nb-editor .nb-atom::before {
       display: none;
     }
-    .nb-page .notebook-ref-quote {
+    .nb-page .notebook-ref-mark {
       background: none;
-      border-inline-start: 4px solid CanvasText;
     }
   }
 
   @media (max-width: 620px) {
+    .notebook-page-top {
+      padding-inline-end: 2.2rem;
+    }
+    /* Phone: the writing column keeps its width even with the largest text, so the frame uses
+     * pixels here (rem would grow with the text and squeeze the column), and the toolbar shows a
+     * glyph per line type (each keeps its spoken name) at a touch size. */
+    .lesson-notebook {
+      padding: 12px 8px;
+      /* The section around it keeps at least 1rem of padding: use part of it for the text. */
+      margin-inline: -12px;
+    }
+    .notebook-tool-button {
+      flex: none;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .notebook-cite-tool {
+      flex-shrink: 1;
+      min-width: 0;
+      white-space: normal;
+      text-align: start;
+    }
+    .notebook-tool-button:not(.notebook-cite-tool) .notebook-tool-label {
+      display: none;
+    }
+    .notebook-toolbar-gap {
+      display: none;
+    }
+    .notebook-name {
+      font-size: min(1.6rem, 30px);
+      line-height: 1.25;
+    }
+    .nb-editor {
+      min-height: 11rem;
+    }
     .lesson-notebook .notebook-header {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -431,16 +601,26 @@
       justify-self: start;
     }
     .nb-binding {
-      grid-template-columns: 0.75rem minmax(0, 1fr);
+      grid-template-columns: 8px minmax(0, 1fr);
     }
     .nb-page {
-      padding: 2.1rem 0.85rem 1rem 2.4rem;
+      padding: 30px 10px 14px 14px;
     }
+    /* No margin line on a phone: it would cross the text. */
     .nb-page[data-paper='ruled'] {
-      background-position: -0.6rem 0, 0 2.25rem;
+      background-image: repeating-linear-gradient(
+        transparent 0 calc(var(--rule-gap) - 1px),
+        var(--mat-rule) calc(var(--rule-gap) - 1px) var(--rule-gap)
+      );
+      background-position: 0 2.25rem;
+      background-size: 100% var(--rule-gap);
     }
     .nb-tabs {
-      padding-inline: 1.2rem 0.5rem;
+      padding-inline: 12px 4px;
+    }
+    .nb-editor .nb-atom {
+      padding: 1rem 10px 10px;
+      rotate: none;
     }
     .nb-look-body {
       grid-template-columns: minmax(0, 1fr);
