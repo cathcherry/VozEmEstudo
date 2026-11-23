@@ -3,8 +3,8 @@
 // - a visible close button (×) in the title bar when the dialog has none of its own;
 // - Esc closes (native), the × closes, and a click on the backdrop closes when it is safe:
 //   never while an operation runs (aria-busy="true") or after the person typed something
-//   (the dialog has unsaved input), and never for dialogs marked data-light-dismiss="off";
-// - closing with unsaved input (Esc or ×) asks first, so nothing typed is lost by accident.
+//   (the dialog has unsaved input), and never for dialogs marked data-light-dismiss="off".
+//   Esc and × are deliberate and close as before (dialogs with drafts guard them themselves).
 // Dialogs that already handle `cancel` themselves keep doing so: we only ever dispatch the same
 // cancelable `cancel` event the browser sends for Esc, then close if nobody prevented it.
 import { t } from '../i18n/i18n.js';
@@ -23,23 +23,28 @@ function hasUnsavedInput(dialog) {
   return dirty.has(dialog) && dialog.dataset.unsavedGuard !== 'off';
 }
 
-function confirmDiscard(dialog) {
-  if (!hasUnsavedInput(dialog)) return true;
-  return window.confirm(label('dialog.discard', 'Descartar o que você escreveu?'));
-}
-
 /** Same path as Esc: a cancelable `cancel`, then close unless a handler prevented it. */
 export function requestDialogClose(dialog) {
   if (!dialog?.open) return;
   if (dialog.getAttribute('aria-busy') === 'true') return;
-  if (!confirmDiscard(dialog)) return;
   const event = new Event('cancel', { cancelable: true });
   dialog.dispatchEvent(event);
   if (!event.defaultPrevented && dialog.open) dialog.close();
 }
 
+/** A close control of the dialog's own: a known class, a *-close data attribute or a "Fechar" label. */
+function hasOwnClose(dialog) {
+  if (dialog.querySelector(CLOSE_SELECTOR)) return true;
+  return [...dialog.querySelectorAll('button')].some((button) => {
+    if (/(^|[\s-])close(\s|$)/.test(button.className)) return true;
+    if ([...button.attributes].some((attr) => /^data-[\w-]*close$/.test(attr.name))) return true;
+    const name = (button.getAttribute('aria-label') || button.textContent || '').trim();
+    return /^(fechar|close|cerrar|关闭)$/i.test(name);
+  });
+}
+
 function addCloseButton(dialog) {
-  if (dialog.querySelector(CLOSE_SELECTOR)) return;
+  if (hasOwnClose(dialog)) return;
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'dialog-close';
@@ -60,10 +65,6 @@ function enhance(dialog) {
   });
   dialog.addEventListener('submit', () => dirty.delete(dialog), true);
   dialog.addEventListener('close', () => dirty.delete(dialog));
-  // Esc: ask before discarding typed text.
-  dialog.addEventListener('cancel', (event) => {
-    if (event.isTrusted && hasUnsavedInput(dialog) && !confirmDiscard(dialog)) event.preventDefault();
-  });
   dialog.addEventListener('click', (event) => {
     const closer = event.target.closest?.('[data-dialog-close="auto"], [data-dialog-cancel]');
     if (closer && dialog.contains(closer)) requestDialogClose(dialog);

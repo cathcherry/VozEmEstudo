@@ -3,7 +3,6 @@ export default {
   'common.skipToContent': 'Saltar al contenido',
   'common.helpAndData': 'Ayuda y datos',
   'common.close': 'Cerrar',
-  'dialog.discard': '¿Descartar lo que escribiste?',
   'common.closeMenu': 'Cerrar menú',
   'common.retry': 'Intentar de nuevo',
   'common.seeAllF': 'Ver todas',

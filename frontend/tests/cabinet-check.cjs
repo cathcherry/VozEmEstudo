@@ -38,8 +38,7 @@ async function main() {
       assert.equal(await page.locator('[data-drawer="cover"]').getAttribute('data-fill'), 'empty');
       assert.match(await page.locator('[data-drawer="specimen"]').textContent(), /4 descobertas/);
       assert(await page.locator('[data-cabinet-guide]').isHidden(), 'the guide is for an empty cabinet');
-      assert.equal(await page.locator('[data-desk-section], [data-desk-form]').count(), 0, 'no leftover desk form');
-      assert.equal(await page.locator('a[href="./painel.html"]', { hasText: 'Arrumar a mesa no Início' }).count(), 1);
+      assert.equal(await page.locator('[data-desk-section], [data-desk-form], .cabinet-desk-note').count(), 0, 'no leftover desk form or note');
       // Mouse: open, close.
       await stamps.click();
       await page.locator('#curio-tray[data-tray="stamp"]').waitFor();
