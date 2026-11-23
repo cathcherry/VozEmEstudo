@@ -34,6 +34,14 @@ function dbError(error) {
   throw error;
 }
 
+/** The literal lesson excerpt that supports the answer, when the generation kept one. */
+export function evidenceOf(metadata) {
+  if (!metadata || typeof metadata !== 'object') return null;
+  const quote = typeof metadata.evidence === 'string' ? metadata.evidence
+    : Array.isArray(metadata.citations) ? metadata.citations.find((c) => c?.quote)?.quote : null;
+  return typeof quote === 'string' && quote.trim() ? quote.trim().slice(0, 600) : null;
+}
+
 export async function findOwnedBatch(userId, materialId, batchId) {
   await getOwnedMaterial(userId, materialId);
   const { data, error } = await getAdminSupabase()
@@ -98,8 +106,12 @@ export async function readOwnedSession(userId, sessionId) {
   let keys = new Map();
   if (showFeedback && rawAnswers.length) {
     const ids = rawAnswers.map((answer) => answer.question_id);
+    // The supporting excerpt ("Trecho da aula") lives in metadata, a column added by the
+    // study authoring migration; it is released together with the key, never before.
+    const keyFields = isFeatureEnabled('study_authoring')
+      ? 'id,correct_index,explanation,metadata' : 'id,correct_index,explanation';
     const { data, error: keyError } = await db.from('questions')
-      .select('id,correct_index,explanation').eq('batch_id', session.batch_id).in('id', ids);
+      .select(keyFields).eq('batch_id', session.batch_id).in('id', ids);
     dbError(keyError);
     keys = new Map((data || []).map((entry) => [entry.id, entry]));
   }
@@ -113,6 +125,7 @@ export async function readOwnedSession(userId, sessionId) {
       entry.correct = answer.selected_index === key.correct_index;
       entry.correctIndex = key.correct_index;
       entry.explanation = key.explanation || null;
+      entry.evidence = evidenceOf(key.metadata);
     }
     return entry;
   });
