@@ -6,8 +6,9 @@
 //      compact toolbar and a "Gerenciar" view; no nested cards; 390 and 1440 without overflow.
 //   3. One focus engine: the timer controls live only on Focar; Planejar shows history and
 //      analysis and links to Focar; other pages show a small topbar indicator while it runs.
-//   4. Arrumar a mesa: an object on the desk leaves the drawer list, moving swaps, storing
-//      returns it, "Desfazer" undoes the last move; with discoveries on (server layout) and off.
+//   4. 3.7, no desk on Início: the Gabinete's museum label of a found object no longer offers
+//      "Colocar na mesa", and neither the Gabinete nor Início touches the saved desk data
+//      (server layout, deskStarters in the preferences).
 // Nothing here calls a real backend, AI provider or Supabase project.
 const path = require('node:path');
 const fs = require('node:fs');
@@ -144,131 +145,48 @@ async function library(browser, base) {
 }
 
 const prefs = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences') || '{}'));
-const drawer = (page) => page.locator('[data-desk-object]').evaluateAll((nodes) => nodes.map((node) => node.dataset.deskObject));
-const onDesk = (page) =>
-  page.evaluate(() =>
-    Object.fromEntries(
-      [...document.querySelectorAll('[data-desk-slot]')]
-        .map((slot) => [slot.dataset.deskSlot, slot.querySelector('.desk-slot-object')?.dataset.objectId || ''])
-        .filter(([, id]) => id),
-    ),
-  );
-const slotTarget = (page, slot) => page.locator(`[data-desk-slot="${slot}"] .desk-slot-target`);
-async function dragTo(page, from, to) {
-  const a = await from.boundingBox();
-  const b = await to.boundingBox();
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(a.x + a.width / 2 + 20, a.y + a.height / 2 + 20, { steps: 3 });
-  await page.mouse.move(b.x + b.width / 2, b.y + Math.min(40, b.height / 2), { steps: 8 });
-  return async () => page.mouse.up();
-}
-
 async function desk(browser, base) {
-  // ---- Discoveries off: starter objects in the appearance preferences ----------------------
-  {
-    const { context, page } = await openApp(browser, base, allFlags, state());
-    await page.goto(base + '/painel.html');
-    await page.locator('[data-desk-scene][data-ready="true"]').waitFor({ state: 'attached' });
-    await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-    // Teacup, inkwell and cactus are on the desk: the drawer holds only the hourglass.
-    assert.deepEqual(await drawer(page), ['object.hourglass']);
-    assert.equal(await page.getByRole('button', { name: 'Desfazer' }).isDisabled(), true);
-    await page.locator('[data-desk-object="object.hourglass"]').click();
-    await slotTarget(page, 'desk-center').click();
-    await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
-    assert.deepEqual(await drawer(page), [], 'placed: the hourglass left the drawer');
-    await page.locator('.desk-tray-empty').waitFor();
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.hourglass');
-    // Choose the hourglass on the desk: it is lifted and can be stored.
-    await slotTarget(page, 'desk-center').click();
-    assert.equal(await page.locator('[data-desk-slot="desk-center"]').getAttribute('data-picked'), 'true');
-    await page.getByRole('button', { name: 'Guardar ampulheta na gaveta' }).click();
-    await page.locator('[data-desk-object="object.hourglass"]').waitFor();
-    assert.equal((await prefs(page)).deskStarters['desk-center'], undefined, 'stored: back in the drawer');
-    // Undo the last move: the hourglass is back where it was, in the screen and the preferences.
-    await page.getByRole('button', { name: 'Desfazer' }).click();
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    assert.deepEqual(await drawer(page), []);
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.hourglass');
-    // Drag a placed object onto another: they swap places; nothing is ever in two places.
-    await settle(page); // the page below the desk has finished loading: nothing moves under the pointer
-    await slotTarget(page, 'desk-center').scrollIntoViewIfNeeded();
-    const release = await dragTo(page, slotTarget(page, 'desk-center'), slotTarget(page, 'desk-right'));
-    assert.equal(await page.locator('[data-desk-slot="desk-center"]').getAttribute('data-lifting'), 'true', 'carried: faded at its place');
-    assert.equal(await page.locator('[data-desk-tray]').getAttribute('data-dropzone'), 'true', 'the drawer takes it back');
-    await release();
-    await page.locator('[data-desk-slot="desk-right"] [data-object-id="object.hourglass"]').waitFor();
-    const placed = await onDesk(page);
-    assert.equal(placed['desk-center'], 'object.teacup');
-    assert.equal(new Set(Object.values(placed)).size, Object.values(placed).length, 'each object once');
-    // Ctrl+Z undoes the swap.
-    await page.keyboard.press('Control+z');
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    await axeCheck(page, 'body', 'Arrumar a mesa (sem descobertas)');
-    await page.getByRole('button', { name: 'Concluir' }).click();
-    await page.reload();
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    await context.close();
-  }
-  // ---- Discoveries on: collectibles saved with PUT /api/collection/layout ------------------
-  {
-    const data = state();
-    data.seedUnlocks = [
-      { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
-      { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
-    ];
-    for (const width of [1440, 390]) {
-      const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data, { width, height: width < 700 ? 844 : 1000 });
-      await page.goto(base + '/painel.html');
-      await page.locator('[data-desk-scene][data-ready="true"]').waitFor({ state: 'attached' });
-      await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-      if (width > 700) {
-        await page.locator('[data-desk-object="object.globe"]').waitFor();
-        assert.deepEqual(await drawer(page), ['object.hourglass', 'object.globe'], 'one globe, even if unlocked twice');
-        // From the drawer onto the teacup: the globe takes the place, the teacup goes to the drawer.
-        await page.locator('[data-desk-object="object.globe"]').click();
-        await slotTarget(page, 'desk-right').click();
-        await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
-        assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'desk-right', objectId: 'object.globe' }]);
-        assert.deepEqual(await drawer(page), ['object.teacup', 'object.hourglass']);
-        assert.equal((await prefs(page)).deskStarters['desk-right'], undefined);
-        // Undo: the teacup is back and the server layout is empty again.
-        await page.getByRole('button', { name: 'Desfazer' }).click();
-        await page.locator('[data-desk-slot="desk-right"] [data-object-id="object.teacup"]').waitFor();
-        await page.waitForFunction(() => document.querySelector('[data-desk-status]').textContent.includes('Desfeito'));
-        assert.deepEqual(data.discoveryState.layout.items, []);
-        assert.deepEqual(await drawer(page), ['object.hourglass', 'object.globe']);
-        await shot(page, `mesa-${width}`, false);
-      } else {
-        // Phone: tap the globe, tap the free middle place.
-        await page.locator('[data-desk-object="object.globe"]').click();
-        await slotTarget(page, 'desk-center').click();
-        await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.globe"]').waitFor();
-        assert(!(await drawer(page)).includes('object.globe'));
-        await noHorizontalScroll(page, 'Arrumar a mesa 390');
-        await shot(page, `mesa-${width}`, false);
-      }
-      await context.close();
-    }
-    // The Gabinete's "Colocar na mesa" (museum label of an object) follows the same desk
-    // (starters included) and swaps.
-    const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
-    await page.goto(base + '/gabinete.html?gaveta=object');
-    await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
-    const label = page.locator('[data-specimen-dialog]');
-    await label.locator('.specimen-desk-now', { hasText: 'Na mesa: Mesa, ao centro.' }).waitFor();
-    const place = label.getByLabel('Lugar na mesa');
-    assert.equal(await place.inputValue(), 'desk-center');
-    await place.selectOption({ label: 'Mesa, à direita (troca com xícara de chá)' });
-    await label.getByRole('button', { name: 'Mudar de lugar' }).click();
-    await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa: Mesa, à direita.' }).waitFor();
-    assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'desk-right', objectId: 'object.globe' }]);
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.teacup', 'the teacup took the globe’s place');
-    await axeCheck(page, '[data-specimen-dialog]', 'Gabinete, Colocar na mesa');
-    await context.close();
-  }
-  record('Arrumar a mesa: objeto colocado sai da gaveta; mover troca de lugar; guardar devolve; Desfazer e Ctrl+Z; arrastar mostra destinos; com descobertas (layout no servidor) e sem (preferências); Gabinete usa a mesma mesa');
+  const data = state();
+  data.seedUnlocks = [
+    { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString(), lessonTitle: 'Fotossíntese e respiração celular' },
+    { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
+  ];
+  // A desk arranged before 3.7: the globe in the middle on the server, the starters in the preferences.
+  const savedLayout = { items: [{ slot: 'desk-center', objectId: 'object.globe' }], version: 1 };
+  data.discoveryState = {
+    investigations: new Map(),
+    unlocks: data.seedUnlocks.map((u) => ({ unlockedAt: u.occurredAt, ...u })),
+    layout: structuredClone(savedLayout),
+    requests: [],
+  };
+  const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
+  await page.goto(base + '/gabinete.html?gaveta=object');
+  const starters = { 'desk-left': 'object.inkwell', 'desk-right': 'object.teacup', window: 'object.hourglass' };
+  await page.evaluate(async (value) => (await import('/js/utils/preferences.js')).setUiPreference('deskStarters', value), starters);
+  await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
+  const label = page.locator('[data-specimen-dialog]');
+  await label.locator('[data-specimen-title]', { hasText: 'Globo' }).waitFor();
+  // The museum label stays (facts), but there is no desk to send the object to.
+  assert.match(await label.locator('[data-specimen-facts]').textContent(), /Quando.*Como apareceu/);
+  assert.equal(await label.getByRole('button', { name: 'Colocar na mesa' }).count(), 0, 'no "Colocar na mesa"');
+  assert.equal(await label.getByRole('button', { name: 'Mudar de lugar' }).count(), 0);
+  assert.equal(await label.getByRole('button', { name: 'Guardar no gabinete' }).count(), 0);
+  assert.equal(await label.locator('[data-specimen-desk], #specimen-desk-slot').count(), 0, 'no desk place picker');
+  assert.doesNotMatch(await label.textContent(), /Colocar na mesa|Lugar na mesa|Na mesa:/);
+  await settle(page);
+  await axeCheck(page, '[data-specimen-dialog]', 'Gabinete, etiqueta sem mesa');
+  await label.getByRole('button', { name: 'Fechar' }).click();
+  // Início neither shows nor rewrites the desk.
+  await page.goto(base + '/painel.html');
+  await page.waitForFunction(() => document.querySelector('[data-dashboard-data]')?.getAttribute('aria-busy') === 'false');
+  assert.equal(await page.locator('[data-desk-scene], [data-desk-arrange], [data-desk-tray]').count(), 0, 'no desk on Início');
+  await settle(page);
+  // The saved desk data is exactly as it was.
+  assert.deepEqual(data.discoveryState.layout, savedLayout, 'server layout untouched');
+  assert.equal(data.discoveryState.requests.filter((r) => r.kind === 'layout').length, 0, 'no PUT /api/collection/layout');
+  assert.deepEqual((await prefs(page)).deskStarters, starters, 'deskStarters untouched');
+  await context.close();
+  record('Sem mesa no Início (3.7): a etiqueta de um objeto no Gabinete não oferece "Colocar na mesa" nem escolha de lugar; Gabinete e Início não alteram o layout do servidor nem os deskStarters das preferências; axe');
 }
 
 async function review(browser, base) {

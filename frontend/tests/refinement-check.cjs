@@ -1,6 +1,6 @@
-// 3.5 Milestone 8 (Refinement) in a real browser with the simulated app: the art-directed desk
-// scene renders (wood, edge, Lume and window proportions, lamp light), the sheet rests on the
-// desk; Planejar, Focar and Turmas have no horizontal scroll at 390 px and pass axe at 390 and
+// 3.5 Milestone 8 (Refinement) in a real browser with the simulated app: Início is a dashboard
+// (3.7: no desk scene; the two columns end on the same line; nothing animates in the main column
+// with reduced motion); Planejar, Focar and Turmas have no horizontal scroll at 390 px and pass axe at 390 and
 // 1440 px; the transcript selection toolbar works with the keyboard (Shift+F10, arrows, Escape,
 // the fallback button), never covers the selection, offers Investigar with the passage only for
 // confirmed lessons with discoveries on, and passes axe.
@@ -74,61 +74,47 @@ async function main() {
   const { server, base } = await startServer();
   const browser = await launchBrowser();
   try {
-    // ---------- 1. The desk scene ------------------------------------------------------------
+    // ---------- 1. Início, a dashboard (3.7: the desk scene left) ---------------------------
     for (const width of [1440, 390]) {
       const data = state();
       data.seedUnlocks = [{ id: 'object.desk-lamp', kind: 'object', occurredAt: new Date().toISOString(), lessonTitle: 'Fotossíntese e respiração celular' }];
       const { context, page } = await openApp(browser, base, { ...flags, discoveries: true }, data, { width, height: width < 700 ? 844 : 1000 });
       await page.goto(base + '/painel.html');
       await ready(page);
-      await page.locator('[data-desk-scene][data-ready="true"]').waitFor({ state: 'attached' });
-      await page.locator('.desk-lume .lume-companion').waitFor({ state: 'attached' });
-      const scene = await page.evaluate(() => {
-        const room = document.querySelector('.desk-room');
-        const top = getComputedStyle(room, '::before');
-        const edge = getComputedStyle(room, '::after');
-        const box = (s) => document.querySelector(s).getBoundingClientRect();
-        return {
-          surface: top.backgroundImage,
-          edgeShadow: edge.boxShadow,
-          room: box('.desk-room').toJSON(),
-          lume: box('.desk-lume').toJSON(),
-          window: box('.desk-window').toJSON(),
-          sheet: box('.dash-continue').toJSON(),
-          teacup: box('[data-object-id="object.teacup"]').toJSON(),
-        };
-      });
-      assert.match(scene.surface, /data:image\/svg\+xml/, 'the desk top has wood grain');
-      assert.notEqual(scene.edgeShadow, 'none', 'the desk edge casts a shadow');
-      assert(scene.lume.width >= scene.teacup.width * 1.4, 'Lume is clearly bigger than an object');
-      assert(scene.window.width >= (width < 700 ? 140 : 150), `a generous window (${scene.window.width}px)`);
-      assert(scene.sheet.top < scene.room.bottom, 'the lesson sheet rests on the desk (overlaps its edge)');
-      if (width < 700) assert(scene.room.height <= 300, `the phone scene stays compact (${scene.room.height}px)`);
-      // The lamp throws a light pool once it is on the desk.
-      await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-      await page.locator('[data-desk-object="object.desk-lamp"]').click();
-      await page.locator('[data-desk-slot="lamp-corner"] .desk-slot-target').click();
-      await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
-      await page.getByRole('button', { name: 'Concluir' }).click();
-      const glow = await page.evaluate(() => getComputedStyle(document.querySelector('[data-desk-slot="lamp-corner"]'), '::before').backgroundImage);
-      assert.match(glow, /radial-gradient/, 'the lamp light pool');
+      await settle(page);
+      assert.equal(await page.locator('[data-desk-scene], .desk-room, .desk-stage, .desk-lume, [data-desk-arrange]').count(), 0, `Início ${width}: no desk scene`);
+      assert.equal(await page.getByRole('button', { name: 'Arrumar a mesa' }).count(), 0);
+      // The heading is the first thing shown in main, then the dashboard (no scene between them).
+      const order = await page.evaluate(() => [...document.querySelector('main').children].filter((n) => n.getClientRects().length).slice(0, 2).map((n) => n.className));
+      assert.match(order[0], /dashboard-heading/);
+      assert.match(order[1], /dash-home/);
+      if (width > 700) {
+        // Columns end on the same line (the last visible block of each column grows).
+        const ends = await page.evaluate(() => {
+          const bottom = (s) => document.querySelector(s).getBoundingClientRect().bottom;
+          return { main: bottom('.dash-main'), rail: bottom('.dash-rail') };
+        });
+        assert(Math.abs(ends.main - ends.rail) <= 2, `.dash-main and .dash-rail end on the same line (${ends.main} vs ${ends.rail})`);
+      }
       await noHorizontalScroll(page, `Início ${width}`);
-      await axeCheck(page, 'body', `Início ${width} (mesa com luminária)`);
-      await shot(page, `mesa-${width}`, false);
+      await axeCheck(page, 'body', `Início ${width} (painel)`);
+      await shot(page, `inicio-${width}`, false);
+      // Visiting Início never writes the desk layout.
+      assert.equal((data.discoveryState?.requests || []).filter((r) => r.kind === 'layout').length, 0);
       await context.close();
     }
-    // Reduced motion: nothing in the scene animates.
+    // Reduced motion: nothing in the main column animates.
     {
       const { context, page } = await openApp(browser, base, flags, state(), { width: 1440, height: 1000 }, { context: { reducedMotion: 'reduce' } });
       await page.goto(base + '/painel.html');
       await ready(page);
       const animated = await page.evaluate(() =>
-        [...document.querySelectorAll('.desk-scene *')].filter((n) => getComputedStyle(n).animationName !== 'none' && getComputedStyle(n).animationDuration !== '0s').map((n) => n.className.baseVal ?? n.className + ':' + getComputedStyle(n).animationName),
+        [...document.querySelectorAll('main *')].filter((n) => getComputedStyle(n).animationName !== 'none' && getComputedStyle(n).animationDuration !== '0s').map((n) => n.className.baseVal ?? n.className + ':' + getComputedStyle(n).animationName),
       );
-      assert.deepEqual(animated, [], 'no animation in the desk scene with reduced motion');
+      assert.deepEqual(animated, [], 'no animation in main with reduced motion');
       await context.close();
     }
-    record('Escrivaninha: madeira com veios, borda com sombra, Lume e janela maiores, a folha da aula sobre a borda da mesa, luz da luminária; compacta no celular; movimento reduzido; axe 1440 e 390');
+    record('Início como painel (3.7): sem cena da escrivaninha nem "Arrumar a mesa"; título seguido do painel; colunas terminam na mesma linha a 1440 (±2px); sem rolagem horizontal; movimento reduzido sem animações no main; nenhum PUT do layout; axe 1440 e 390');
 
     // ---------- 2. Planejar, Focar, Turmas at 390 and 1440 ------------------------------------
     const pages = [
