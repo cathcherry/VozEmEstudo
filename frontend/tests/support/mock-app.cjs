@@ -371,6 +371,9 @@ async function setup(context, base, flags, data, options = {}) {
         }));
         detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
       }
+      // `data.summaryText = { [id]: markdown }`: a longer summary (read-aloud-check.cjs).
+      if (data.summaryText?.[m.id])
+        detail.summaries = detail.summaries.map((s) => ({ ...s, text: data.summaryText[m.id] }));
       // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
       if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
       if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
