@@ -14,6 +14,8 @@ import { initPreferenceCloud, releaseAccountPreferences } from './preference-clo
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
 import { icon as uiIcon } from './icons.js';
+import './dialog-enhance.js';
+import './floating-menu.js';
 // The art system (Lume, stamps, objects, covers): fills every [data-art-slot] on signed-in pages.
 import '../art/art.js';
 

@@ -1431,8 +1431,13 @@
    * A slim title bar band (drawn by the dialog's background), the close control sits in it. */
   dialog:not(.dash-customize):not(.utility-panel):not([data-sheet]) {
     --titlebar: 2.25rem;
+    box-sizing: border-box;
+    min-width: min(26rem, calc(100vw - 2rem));
     max-width: min(40rem, calc(100vw - 2rem));
     max-height: calc(100dvh - 2rem);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-wrap: break-word;
     padding: calc(var(--titlebar) + var(--space-4)) var(--space-5) var(--space-5);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-window);
@@ -1490,11 +1495,27 @@
     background: color-mix(in srgb, var(--ink) 8%, transparent);
     color: var(--ink);
   }
+  /* No field wider than its dialog (3.7: no horizontal scroll bars in dialogs). */
+  dialog :is(input:not([type='checkbox'], [type='radio'], [type='range']), select, textarea) {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  dialog :is(form, fieldset, label, .field, .form-row) {
+    min-width: 0;
+  }
   dialog .form-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: var(--space-2);
+  }
+
+  /* ==== Floating menus (utils/floating-menu.js): options in the top layer, never cut ======= */
+  .floating-menu-content:popover-open,
+  .floating-menu-content[style*='position: fixed'] {
+    z-index: 1000;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   /* ==== Toasts ============================================================================== */

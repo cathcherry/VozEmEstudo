@@ -5,6 +5,7 @@ export default {
   'common.skipToContent': 'Pular para o conteúdo',
   'common.helpAndData': 'Ajuda e dados',
   'common.close': 'Fechar',
+  'dialog.discard': 'Descartar o que você escreveu?',
   'common.closeMenu': 'Fechar menu',
   'common.retry': 'Tentar novamente',
   'common.seeAllF': 'Ver todas',

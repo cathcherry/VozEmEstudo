@@ -3,6 +3,7 @@ export default {
   'common.skipToContent': '跳到主要内容',
   'common.helpAndData': '帮助与数据',
   'common.close': '关闭',
+  'dialog.discard': '放弃你输入的内容？',
   'common.closeMenu': '关闭菜单',
   'common.retry': '重试',
   'common.seeAllF': '查看全部',
