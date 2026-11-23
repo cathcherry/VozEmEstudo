@@ -804,8 +804,12 @@
   }
 
   /* ---- Responsive ------------------------------------------------------------------------ */
-  /* Medium widths: the margin notes move under the desk, two per row. */
-  @media (max-width: 1180px) {
+  /* Narrower content (small screens, or large text): the right column moves under the main one,
+     two sections per row. A container query in rem follows the text size, unlike a px media query. */
+  body[data-page='dashboard'] main.dash-home-page {
+    container-type: inline-size;
+  }
+  @container (max-width: 56rem) {
     body[data-page='dashboard'] .dash-home {
       grid-template-columns: minmax(0, 1fr);
     }
