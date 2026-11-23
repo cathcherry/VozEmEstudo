@@ -162,7 +162,7 @@ async function desk(browser, base) {
   const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
   await page.goto(base + '/gabinete.html?gaveta=object');
   const starters = { 'desk-left': 'object.inkwell', 'desk-right': 'object.teacup', window: 'object.hourglass' };
-  await page.evaluate(async (desk) => (await import('/js/utils/preferences.js')).setUiPreference('deskStarters', desk), starters);
+  await page.evaluate(async (value) => (await import('/js/utils/preferences.js')).setUiPreference('deskStarters', value), starters);
   await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
   const label = page.locator('[data-specimen-dialog]');
   await label.locator('[data-specimen-title]', { hasText: 'Globo' }).waitFor();
