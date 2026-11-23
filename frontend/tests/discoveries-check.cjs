@@ -2,7 +2,7 @@
 // lesson, "Investigar uma pergunta" → a question (suggested from the lesson) → evidence picked by
 // selecting transcript text and by a whole segment → own explanation → apply (a highlight) →
 // reflection → discovery; the Arquivo de Descobertas (edit, reflection, connection across
-// subjects) and the Gabinete (drawers with date and lesson, desk placement, experience modes).
+// subjects) and the Gabinete (drawers with date and lesson, museum labels, experience modes).
 // axe at 1280 and 390 px, no horizontal scroll at 390 px, keyboard paths. Nothing here calls a
 // real backend, database or AI provider: the rules are tested against Postgres in
 // backend/tests/discoveries-*.test.js.
@@ -43,7 +43,7 @@ function sample() {
       createdAt: earlier,
     },
   ];
-  // Found earlier (three investigations): placeable on the desk.
+  // Found earlier (three investigations): an object for the Gabinete's object drawer.
   data.seedUnlocks = [
     { id: 'object.magnifying-glass', event: 'investigation_completed', sourceId: '0b1c2d3e-0000-4000-8000-000000000001', investigationId: '0b1c2d3e-0000-4000-8000-000000000001', currentDiscoveryId: '0b1c2d3e-0000-4000-8000-000000000001', materialId: 'l-rev', lessonTitle: 'Revolução Industrial: causas e consequências', subject: 'História', occurredAt: earlier },
   ];
@@ -240,13 +240,14 @@ async function main() {
     await page.locator('[data-drawer="object"]').click();
     assert.equal(await page.locator('.cabinet-item[data-collectible="object.desk-lamp"]').getAttribute('data-state'), 'locked');
     assert.doesNotMatch(await page.locator('main').textContent(), /domina|dominou|mestre/i, 'never claims mastery');
-    // Place the magnifying glass on the desk from its museum label.
+    // The magnifying glass's museum label: where it came from; 3.7, no desk on Início, so no
+    // "Colocar na mesa" and the saved layout is left as it was.
     await page.locator('.cabinet-item[data-collectible="object.magnifying-glass"]').click();
-    await dialog.getByLabel('Lugar na mesa').selectOption({ label: 'Janela' });
-    await dialog.getByRole('button', { name: 'Colocar na mesa' }).click();
-    await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa: Janela.' }).waitFor();
-    assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'window', objectId: 'object.magnifying-glass' }]);
-    await dialog.getByRole('button', { name: 'Guardar no gabinete' }).waitFor();
+    await dialog.locator('[data-specimen-title]', { hasText: 'Lupa' }).waitFor();
+    assert.match(await dialog.locator('[data-specimen-facts]').textContent(), /Revolução Industrial: causas e consequências/);
+    assert.equal(await dialog.getByRole('button', { name: 'Colocar na mesa' }).count(), 0, 'no "Colocar na mesa"');
+    assert.equal(await dialog.getByLabel('Lugar na mesa').count(), 0, 'no desk place picker');
+    assert.deepEqual(data.discoveryState.layout.items, [], 'the layout is not written');
     await settle(page);
     await axeCheck(page, '[data-specimen-dialog]', 'Gabinete: etiqueta do objeto');
     await page.keyboard.press('Escape');
@@ -262,7 +263,7 @@ async function main() {
     await page.locator('.archive-cards .specimen-card').first().waitFor();
     assert.equal(await page.locator('.stamp-row').first().isVisible(), false, 'quiet mode hides stamps');
     assert.equal(await page.locator('[data-archive-panel="subjects"] .specimen-card').count(), 2, 'and keeps every record');
-    record('Gabinete (API simulada): gavetas com data e aula de origem, itens ainda não encontrados com o que os faz aparecer, objeto colocado na mesa; modos aventura e silencioso mudam só o que aparece');
+    record('Gabinete (API simulada): gavetas com data e aula de origem, itens ainda não encontrados com o que os faz aparecer, etiqueta do objeto com a aula de origem e sem "Colocar na mesa" (3.7); modos aventura e silencioso mudam só o que aparece');
 
     // ---------- 390 px: axe and no horizontal scroll on the three pages ---------------------
     await page.setViewportSize({ width: 390, height: 844 });
