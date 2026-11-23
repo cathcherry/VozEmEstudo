@@ -137,7 +137,7 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
       );
       assert.equal(list.coverage.shortfall, 'insufficient_content');
       assert.deepEqual(list.config.difficulties, ['basic', 'advanced']);
-      assert.equal(list.prompt_version, 'questions-v2.3');
+      assert.equal(list.prompt_version, 'questions-v2.4');
       const material = (await request(materialPath)).body;
       const dto = material.questionBatches.find((batch) => batch.id === listId);
       assert.equal(dto.title, 'Física — Conceitos básicos');
@@ -187,7 +187,7 @@ test('study authoring over HTTP: named summaries, custom lists, answer keys and 
         (row) => row.processing_job_id === legacy.body.jobId,
       );
       assert.equal(batch.generated_count, 3);
-      assert.equal(batch.prompt_version, 'questions-v1');
+      assert.equal(batch.prompt_version, 'questions-v1.1');
     });
 
     await t.test('answer key is owner-only and not cached', async () => {
