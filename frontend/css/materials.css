@@ -873,7 +873,25 @@ dialog:has(.emblem-picker) {
   width: min(34rem, calc(100vw - 2rem));
 }
 .folder-icon-options > summary {
+  display: block;
+  width: auto;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink);
   font-weight: 600;
+  list-style: none;
+  pointer-events: none;
+  cursor: default;
+}
+.folder-icon-options > summary::after,
+.folder-icon-options > summary .folder-customizable {
+  display: none;
+}
+.folder-icon-options .folder-icon-controls {
+  padding: 0.5rem 0 0;
 }
 .folder-png-preview > img {
   display: block;
@@ -882,7 +900,7 @@ dialog:has(.emblem-picker) {
   object-fit: contain;
 }
 .emblem-custom-heading {
-  margin: 0.25rem 0 0;
+  margin: 0.6rem 0 0;
   color: var(--ink-muted);
   font-size: var(--step--1);
 }

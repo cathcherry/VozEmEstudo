@@ -100,7 +100,7 @@ async function library(browser, base) {
     assert.equal(await barText(page), '1 aula selecionada');
     // A click on an empty part of the row toggles it off again.
     await loose.locator('.material-meta').click();
-    assert.equal(await barText(page), 'Toque nas aulas ou pastas para selecionar');
+    assert.equal(await barText(page), 'Nenhuma aula selecionada');
     await page.locator('.library-unit-folder > summary', { hasText: 'Célula' }).click();
     assert.match(page.url(), /folder=sub-bio$/);
     assert.equal(await barText(page), '1 aula selecionada');

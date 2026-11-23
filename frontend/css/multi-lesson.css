@@ -60,3 +60,129 @@
 .multi-lesson-export-status { margin: 8px 0 0; }
 .multi-lesson-export-status:empty { display: none; }
 }
+
+/* 3.7: the dialog as a wide window — header, two columns that scroll (what goes in | what to
+   make), actions always visible. The dialog itself does not scroll, so its top never goes away. */
+@layer pages {
+  dialog.multi-lesson-dialog {
+    width: min(54rem, calc(100vw - 2rem));
+    max-width: min(54rem, calc(100vw - 2rem));
+    max-height: min(46rem, calc(100dvh - 2rem));
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  dialog.multi-lesson-dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .multi-lesson-dialog .multi-lesson-form {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+  .multi-lesson-head {
+    display: grid;
+    gap: var(--space-1);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+  }
+  .multi-lesson-head h2,
+  .multi-lesson-head p {
+    margin: 0;
+  }
+  .multi-lesson-head .app-dialog-hint {
+    color: var(--ink-muted);
+  }
+  .multi-lesson-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--space-5);
+    min-height: 0;
+    padding: var(--space-4) var(--space-1) var(--space-4) 0;
+    overflow-y: auto;
+  }
+  .multi-lesson-pick,
+  .multi-lesson-options {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  .multi-lesson-options {
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--line);
+  }
+  .multi-lesson-dialog .multi-lesson-units {
+    max-height: none;
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+    background: var(--paper-sunken);
+  }
+  .multi-lesson-dialog fieldset > legend {
+    padding: 0 var(--space-1);
+    font-weight: 650;
+  }
+  .multi-lesson-dialog .multi-lesson-status {
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--brand-wash) 70%, transparent);
+    font-weight: 600;
+  }
+  .multi-lesson-dialog .multi-lesson-status[data-state='success'] {
+    background: color-mix(in srgb, var(--matcha) 22%, transparent);
+    color: var(--ink);
+  }
+  .multi-lesson-dialog .multi-lesson-status[data-state='error'] {
+    background: color-mix(in srgb, var(--danger, #a3232f) 10%, transparent);
+  }
+  .multi-lesson-dialog .multi-lesson-status[data-state='success']::before {
+    content: '✓ ';
+  }
+  .multi-lesson-dialog .multi-lesson-preview {
+    max-height: none;
+    overflow: visible;
+  }
+  .multi-lesson-dialog .multi-lesson-preview h3 {
+    margin: var(--space-2) 0 var(--space-1);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0;
+    color: var(--ink-muted);
+  }
+  .multi-lesson-dialog .multi-lesson-reason {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  .multi-lesson-dialog label[hidden] {
+    display: none;
+  }
+  .multi-lesson-foot {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-3) 0 var(--space-4);
+    border-top: 1px solid var(--line);
+    background: var(--paper-raised);
+  }
+  .multi-lesson-foot .multi-lesson-error {
+    margin: 0;
+  }
+  @media (max-width: 720px) {
+    .multi-lesson-body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+    .multi-lesson-options {
+      padding-left: 0;
+      padding-top: var(--space-4);
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .multi-lesson-foot .form-actions > button {
+      flex: 1 1 0;
+    }
+  }
+}

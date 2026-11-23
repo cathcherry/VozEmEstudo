@@ -39,7 +39,7 @@ test('Shift extends from the anchor to the target, in either direction, with the
 });
 
 test('the bar says what is selected, or how to start', () => {
-  assert.equal(selectionSummary(0), 'Toque nas aulas ou pastas para selecionar');
+  assert.equal(selectionSummary(0), 'Nenhuma aula selecionada');
   assert.equal(selectionSummary(1), '1 aula selecionada');
   assert.equal(selectionSummary(4), '4 aulas selecionadas');
 });

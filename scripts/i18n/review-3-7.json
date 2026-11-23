@@ -3,5 +3,50 @@
     "en": "Objects that appear with repeated investigations.",
     "es": "Objetos que aparecen con investigaciones repetidas.",
     "zh-CN": "多次探究后出现的物品。"
+  },
+  "Ícone": {
+    "en": "Icon",
+    "es": "Icono",
+    "zh-CN": "图标"
+  },
+  "Criar disciplina": {
+    "en": "Create subject",
+    "es": "Crear asignatura",
+    "zh-CN": "创建科目"
+  },
+  "Criar unidade": {
+    "en": "Create unit",
+    "es": "Crear unidad",
+    "zh-CN": "创建单元"
+  },
+  "Nenhuma aula selecionada": {
+    "en": "No lessons selected",
+    "es": "Ninguna clase seleccionada",
+    "zh-CN": "未选择课程"
+  },
+  "Cancelar seleção": {
+    "en": "Cancel selection",
+    "es": "Cancelar selección",
+    "zh-CN": "取消选择"
+  },
+  "Um resumo e questões que ligam as aulas escolhidas. Entram as aulas com a transcrição confirmada.": {
+    "en": "A summary and questions that connect the chosen lessons. Lessons with a confirmed transcript are included.",
+    "es": "Un resumen y preguntas que conectan las clases elegidas. Entran las clases con la transcripción confirmada.",
+    "zh-CN": "将所选课程联系起来的摘要和题目。只包含转写已确认的课程。"
+  },
+  "Reaproveitar se já existir um material igual": {
+    "en": "Reuse an identical material if one exists",
+    "es": "Reutilizar si ya existe un material igual",
+    "zh-CN": "如已有相同材料则直接使用"
+  },
+  "Aulas": {
+    "en": "Lessons",
+    "es": "Clases",
+    "zh-CN": "课程"
+  },
+  "Material": {
+    "en": "Material",
+    "es": "Material",
+    "zh-CN": "材料"
   }
 }

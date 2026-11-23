@@ -953,32 +953,17 @@ body[data-page='history'] .library-new-folder { width: auto !important; padding-
       top: 1.5rem;
     }
   }
-  /* Phones: the selection bar is a sheet across the bottom (count, then the actions). */
+  /* Phones: the same compact bar, full width across the bottom (count, actions, ×). */
   @media (max-width: 700px) {
     .library-selection-bar {
       left: var(--space-3);
       right: var(--space-3);
       bottom: var(--space-3);
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
       max-width: none;
-      padding: var(--space-3);
-      border-radius: var(--radius-panel);
       translate: none;
     }
-    .library-selection-bar p {
-      grid-column: 1 / -1;
-      text-align: center;
-    }
-    .library-selection-bar button {
-      width: 100%;
-      min-height: 2.75rem;
-    }
-    .library-selection-bar .primary-action {
-      grid-column: 1 / -1;
-    }
     body.library-selecting[data-page='history'] .article-content {
-      padding-bottom: 11rem;
+      padding-bottom: 7rem;
     }
   }
   /* Selected: the item is washed in the brand tint with a fine ring (no heavy outline). */
@@ -1004,8 +989,81 @@ body[data-page='history'] .library-new-folder { width: auto !important; padding-
     border-radius: var(--radius-control);
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-ink) 35%, transparent);
   }
+  /* The selection bar (3.7): one compact row — count, actions, ×. */
+  .library-selection-bar {
+    flex-wrap: nowrap;
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    border-color: var(--line-strong);
+    box-shadow: var(--elev-3);
+  }
   .library-selection-bar p {
-    min-width: 12ch;
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--ink);
+    font-size: var(--step--1);
+    font-weight: 650;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .library-selection-actions {
+    display: flex;
+    flex: none;
+    gap: var(--space-2);
+  }
+  .library-selection-actions > button {
+    min-height: 2.5rem;
+    padding-inline: var(--space-3);
+    white-space: nowrap;
+  }
+  .library-selection-actions > button[hidden] {
+    display: none;
+  }
+  .library-selection-close {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-muted);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .library-selection-close:hover {
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    color: var(--ink);
+  }
+  .library-selection-close:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 2px;
+  }
+  @media (max-width: 480px) {
+    .library-selection-bar {
+      flex-wrap: wrap;
+    }
+    .library-selection-bar p {
+      flex-basis: calc(100% - 3.5rem);
+      order: 0;
+    }
+    .library-selection-close {
+      order: 1;
+    }
+    .library-selection-actions {
+      order: 2;
+      flex: 1 1 100%;
+    }
+    .library-selection-actions > button {
+      flex: 1 1 0;
+    }
   }
 
   /* Interior band */
