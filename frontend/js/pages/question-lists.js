@@ -204,6 +204,7 @@ export function renderQuestionLists({
   materialId,
   flags,
   actions,
+  sessions = [],
 }) {
   container.replaceChildren();
   const total = batches.reduce(
@@ -228,26 +229,45 @@ export function renderQuestionLists({
     const head = el('div', null, 'list-row-head question-batch-head');
     const name = listName(batch, index, batches.length);
     const title = el('h3', name);
+    // Saved attempts of this list (quiz_v2): an open one is resumed from here, the others keep
+    // their results one click away — attempt history lives with the list, not elsewhere.
+    const attempts = (sessions || []).filter((s) => s.batch_id === batch.id);
+    const openAttempt = attempts.find((s) => s.status !== 'completed');
+    const finishedAttempts = attempts.length - (openAttempt ? 1 : 0);
     const parts = [
       batch.requested_count && batch.requested_count > count
         ? `${count} de ${batch.requested_count} questões pedidas`
         : `${count} questões`,
       answered
         ? `${answered} respondidas · ${correct} ${correct === 1 ? 'acerto' : 'acertos'}`
-        : 'ainda não respondidas',
+        : openAttempt
+          ? 'tentativa em andamento'
+          : finishedAttempts
+            ? `${finishedAttempts} ${finishedAttempts === 1 ? 'tentativa concluída' : 'tentativas concluídas'}`
+            : 'ainda não respondidas',
       batch.created_at ? formatDate(batch.created_at) : '',
       batch.stale ? 'revisão anterior' : '',
     ];
     const metaLine = el('p', parts.filter(Boolean).join(' · '));
     const link = el(
       'a',
-      !answered ? 'Responder' : answered < count ? 'Continuar' : 'Responder de novo',
-      `${answered && answered < count ? 'primary-action' : 'secondary-action'} list-primary`,
+      openAttempt
+        ? 'Continuar tentativa'
+        : attempts.length
+          ? 'Nova tentativa'
+          : !answered
+            ? 'Responder'
+            : answered < count
+              ? 'Continuar'
+              : 'Responder de novo',
+      `${openAttempt || (answered && answered < count) ? 'primary-action' : 'secondary-action'} list-primary`,
     );
     const feedback = batch.config?.feedbackMode;
-    link.href =
-      `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}` +
-      (feedback ? `&feedback=${encodeURIComponent(feedback)}` : '');
+    const answerUrl =
+      `./responder.html?material=${encodeURIComponent(materialId)}&batch=${encodeURIComponent(batch.id)}`;
+    link.href = openAttempt
+      ? `${answerUrl}&session=${encodeURIComponent(openAttempt.id)}`
+      : answerUrl + (feedback ? `&feedback=${encodeURIComponent(feedback)}` : '');
     link.setAttribute('aria-label', `${link.textContent}: ${name}`);
     const menu = el('details', null, 'row-menu');
     menu.dataset.batchId = String(batch.id);
@@ -312,6 +332,36 @@ export function renderQuestionLists({
           'list-coverage-note',
         ),
       );
+    if (attempts.length) {
+      const history = el('details', null, 'list-attempts');
+      history.dataset.listAttempts = String(batch.id);
+      history.append(el('summary', `Tentativas (${attempts.length})`));
+      const rows = el('ul', null, 'list-attempts-rows');
+      for (const attempt of attempts.slice(0, 10)) {
+        const row = el('li');
+        const open = attempt.status !== 'completed';
+        const date = attempt.created_at ? formatDate(attempt.created_at) : '';
+        row.append(
+          el(
+            'span',
+            [
+              open ? 'Em andamento' : 'Concluída',
+              attempt.kind === 'review' ? 'revisão dos erros' : 'lista completa',
+              date,
+            ]
+              .filter(Boolean)
+              .join(' · '),
+          ),
+        );
+        const go = el('a', open ? 'Continuar' : 'Ver resultado', 'text-action');
+        go.href = `${answerUrl}&session=${encodeURIComponent(attempt.id)}`;
+        go.setAttribute('aria-label', `${open ? 'Continuar tentativa' : 'Ver resultado'} de ${date}: ${name}`);
+        row.append(go);
+        rows.append(row);
+      }
+      history.append(rows);
+      card.append(history);
+    }
     const progress = el('div', null, 'question-batch-progress');
     progress.setAttribute('aria-hidden', 'true');
     progress.style.setProperty('--answered', String(count ? answered / count : 0));

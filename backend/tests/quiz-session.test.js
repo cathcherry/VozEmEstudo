@@ -95,4 +95,16 @@ test('the session API only returns keys to answered questions and authorized mod
   assert.match(code,/\.in\('id', ids\)/);
   assert.match(code,/\.eq\('user_id', userId\)/);
   assert.doesNotMatch(code,/\.select\('\*'\)/);
+  // The supporting excerpt travels with the key (same gate), and only where the column exists.
+  assert.match(code,/entry\.evidence = evidenceOf\(key\.metadata\)/);
+  assert.match(code,/isFeatureEnabled\('study_authoring'\)/);
+});
+
+test('evidence excerpt: literal quote from metadata or a citation, otherwise null', async () => {
+  const { evidenceOf } = await import('../src/repositories/quiz-session.repository.js');
+  assert.equal(evidenceOf({ evidence: '  A fotossíntese ocorre no cloroplasto. ' }), 'A fotossíntese ocorre no cloroplasto.');
+  assert.equal(evidenceOf({ citations: [{ lesson: 'A1' }, { quote: 'trecho citado' }] }), 'trecho citado');
+  assert.equal(evidenceOf({}), null);
+  assert.equal(evidenceOf(null), null);
+  assert.equal(evidenceOf({ evidence: 42 }), null);
 });

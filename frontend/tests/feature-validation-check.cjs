@@ -88,7 +88,7 @@ async function main() {
     data.calendarPageSize = 0;
     record('Calendário: exportação ICS percorre todas as páginas, mesmo sem "limit" na resposta');
 
-    // ---------- Questions: "Reportar problema" (own flag, saved in the account, undo) ----------
+    // ---------- Questions: "Sinalizar para revisar" (personal mark, saved in the account, undo) ----------
     {
       const q = state();
       q.lessonStage = { 'l-foto': 'questions' };
@@ -98,16 +98,19 @@ async function main() {
       await p.goto(base + '/material.html?id=l-foto#questoes');
       const list = p.locator('details.list-questions').first();
       await list.locator('summary').click();
-      const open = list.getByRole('button', { name: 'Reportar problema' });
+      const open = list.getByRole('button', { name: 'Sinalizar para revisar' });
       await open.click();
-      const dialog = p.getByRole('dialog', { name: 'Reportar problema na questão' });
+      const dialog = p.getByRole('dialog', { name: 'Sinalizar questão para revisar' });
       await dialog.waitFor();
       await settle(p);
-      await axeCheck(p, 'dialog[open]', 'Reportar problema');
+      await axeCheck(p, 'dialog[open]', 'Sinalizar para revisar');
+      // Honest wording: a personal mark nobody else receives, and a visible close button.
+      assert.match(await dialog.textContent(), /ninguém mais recebe/);
+      assert.equal(await dialog.locator('[data-dialog-close]').getAttribute('aria-label'), 'Fechar');
       await dialog.getByLabel('Não está na aula').check();
       await dialog.getByLabel('Detalhe (opcional)').fill('Ribossomo não foi citado.');
-      await dialog.getByRole('button', { name: 'Marcar problema' }).click();
-      await list.locator('.question-report-flag', { hasText: 'Você marcou: Não está na aula' }).waitFor();
+      await dialog.getByRole('button', { name: 'Sinalizar', exact: true }).click();
+      await list.locator('.question-report-flag', { hasText: 'Sinalizada: Não está na aula' }).waitFor();
       await p.waitForFunction(() => document.activeElement?.textContent === 'Editar', null, { timeout: 3000 });
       await p.waitForTimeout(600);
       const saved = q.profileState.find((row) => row.key === 'question-reports').data.q1;
@@ -133,13 +136,13 @@ async function main() {
       const otherList = other.page.locator('details.list-questions').first();
       await otherList.locator('summary').click();
       await otherList.locator('.question-report-flag', { hasText: 'Não está na aula' }).waitFor();
-      await otherList.getByRole('button', { name: 'Desfazer a marcação desta questão' }).click();
-      await otherList.getByRole('button', { name: 'Reportar problema' }).waitFor();
+      await otherList.getByRole('button', { name: 'Remover a sinalização desta questão' }).click();
+      await otherList.getByRole('button', { name: 'Sinalizar para revisar' }).waitFor();
       await other.page.waitForTimeout(600);
       assert.equal(q.profileState.find((row) => row.key === 'question-reports').data.q1.removed, true);
       await other.context.close();
       await view.context.close();
-      record('Questões: "Reportar problema" com motivo e detalhe, salvo na conta, visto em outro aparelho e desfeito sem voltar');
+      record('Questões: "Sinalizar para revisar" (marca pessoal) com motivo e detalhe, salvo na conta, visto em outro aparelho e desfeito sem voltar');
     }
 
     // ---------- A very long lesson (3 h, 2 200 segments): renders, searches without freezing ---

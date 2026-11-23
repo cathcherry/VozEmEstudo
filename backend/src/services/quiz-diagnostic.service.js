@@ -1,5 +1,10 @@
 import { AppError } from '../domain/errors.js';
 
+function optionText(question, index) {
+  const text = Array.isArray(question.options) ? question.options[index] : null;
+  return typeof text === 'string' && text.trim() ? text : null;
+}
+
 /** E11: descriptive analysis of the generated answer key, never an LLM diagnosis. */
 export function buildQuizDiagnostic(payload) {
   const { session, questions, answers } = payload;
@@ -27,7 +32,11 @@ export function buildQuizDiagnostic(payload) {
         statement: question.statement,
         selectedIndex: answer.selectedIndex,
         correctIndex: answer.correctIndex,
+        // Option text as stored with the question; null (never a guess) when it is missing.
+        selectedText: optionText(question, answer.selectedIndex),
+        correctText: optionText(question, answer.correctIndex),
         explanation: answer.explanation || null,
+        evidence: answer.evidence || null,
       });
     }
   }
@@ -40,6 +49,6 @@ export function buildQuizDiagnostic(payload) {
     incorrect: total - correct,
     percent: Math.round(correct * 100 / total),
     toReview: review,
-    interpretation: 'Desempenho medido pelo gabarito gerado; não é avaliação clínica, diagnóstica ou de domínio do assunto.',
+    interpretation: 'Resultado conferido com o gabarito gerado automaticamente.',
   };
 }

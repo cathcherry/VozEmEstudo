@@ -775,7 +775,9 @@ async function setup(context, base, flags, data, options = {}) {
       });
     }
     if (p === '/api/study/settings') return json({ ok: true });
-    if (p === '/api/quiz-sessions' && method === 'GET') return json(data.quizSessions);
+    // Question attempts (list, answering, results): stateful simulation in ./mock-quiz.cjs.
+    if (/^\/api\/quiz-sessions(\/|$)/.test(p))
+      return require('./mock-quiz.cjs').handleQuiz({ request, p, method, json, data });
     if (p === '/api/study/sessions' && method === 'POST') {
       data.sessions++;
       const body = request.postDataJSON();
