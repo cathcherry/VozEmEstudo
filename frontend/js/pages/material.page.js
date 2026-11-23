@@ -251,7 +251,7 @@ function layout() {
 
 // ---- Study path of this lesson ----------------------------------------------------------
 // Flashcard sets and question attempts live outside the material, so they load once on demand.
-let lessonExtras = { sets: null, attempted: false };
+let lessonExtras = { sets: null, attempted: false, sessions: [] };
 let lessonExtrasLoaded = false;
 async function loadLessonExtras() {
   lessonExtrasLoaded = true;
@@ -261,11 +261,17 @@ async function loadLessonExtras() {
       : null,
     flags.quiz_v2 ? listQuizSessions().catch(() => []) : [],
   ]);
+  const mine = (Array.isArray(sessions) ? sessions : []).filter(
+    (session) => session.material_id === materialId,
+  );
   lessonExtras = {
     sets: Array.isArray(sets) ? sets.length : null,
-    attempted: sessions.some((session) => session.material_id === materialId),
+    attempted: mine.length > 0,
+    sessions: mine,
   };
   updateLessonSteps();
+  // The Questões tab shows each list's attempts (continue / see result) once they are known.
+  if (mine.length && currentMaterial) renderQuestionBatches(currentMaterial.questionBatches || []);
 }
 function currentLessonMode() {
   const batches = currentMaterial?.questionBatches || [];
@@ -925,6 +931,7 @@ function renderQuestionBatches(batches) {
     answers: studyFor(materialId).answers,
     materialId,
     flags,
+    sessions: lessonExtras.sessions,
     actions: {
       export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
       ...(flags.study_authoring && flags.sharing
