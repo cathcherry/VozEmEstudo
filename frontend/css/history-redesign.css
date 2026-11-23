@@ -345,7 +345,8 @@ body[data-page='history'] .folder-customizable { width:42px; height:36px; flex:0
 .folder-icon-options .folder-customizable { width:30px!important; height:28px!important; flex:0 0 30px!important; }
 .folder-icon-options .folder-mark { scale:.75; }
 .folder-icon-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 0; }
-.folder-png-input { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.folder-png-input { position:absolute; left:0; top:0; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.folder-icon-controls { position:relative; }
 .folder-png-label { padding:9px 12px; border:1px solid var(--border-light); border-radius:9px; cursor:pointer; color:var(--accent-strong); background:var(--surface); font-size:.8rem; }
 .folder-icon-controls:focus-within .folder-png-label { outline:2px solid var(--accent); outline-offset:2px; }
 .folder-icon-reset { width:30px; height:30px; padding:0; border:0; border-radius:50%; background:var(--surface-alt); color:var(--muted); cursor:pointer; }
