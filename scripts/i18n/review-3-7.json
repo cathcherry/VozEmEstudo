@@ -93,5 +93,35 @@
     "en": "Lighter studying, at your own pace.",
     "es": "Estudio más ligero, a tu ritmo.",
     "zh-CN": "更轻松的学习，按你的节奏。"
+  },
+  "Página não encontrada": {
+    "en": "Page not found",
+    "es": "Página no encontrada",
+    "zh-CN": "找不到页面"
+  },
+  "O endereço pode ter mudado ou estar incompleto.": {
+    "en": "The address may have changed or be incomplete.",
+    "es": "La dirección puede haber cambiado o estar incompleta.",
+    "zh-CN": "地址可能已更改或不完整。"
+  },
+  "Ir para o Início": {
+    "en": "Go to Home",
+    "es": "Ir a Inicio",
+    "zh-CN": "前往首页"
+  },
+  "Abrir a Biblioteca": {
+    "en": "Open the Library",
+    "es": "Abrir la Biblioteca",
+    "zh-CN": "打开资料库"
+  },
+  "Escolha uma atmosfera: cores, a roupa da Lume e uma mistura sonora. Depois, ajuste o que quiser.": {
+    "en": "Choose an atmosphere: colours, Lume's outfit and a sound mix. Then adjust whatever you like.",
+    "es": "Elige una atmósfera: colores, la ropa de Lume y una mezcla sonora. Después, ajusta lo que quieras.",
+    "zh-CN": "选择一种氛围：颜色、Lume 的服装和混音。之后可随意调整。"
+  },
+  "A Lume, ilustrações e os selos no caderno.": {
+    "en": "Lume, illustrations and the stamps in the notebook.",
+    "es": "Lume, ilustraciones y los sellos en el cuaderno.",
+    "zh-CN": "Lume、插图和笔记本里的印章。"
   }
 }

@@ -148,6 +148,12 @@ if (env.serveFrontend) {
   );
   app.use(express.static(path.join(frontendRoot, 'pages')));
   app.get('/', (_req, res) => res.redirect('/index.html'));
+  // A page address that does not exist gets a friendly page; API and asset requests keep JSON 404s.
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api/') || !req.accepts('html')) return next();
+    if (/\.(css|js|png|jpe?g|svg|webp|woff2?|json|ico|mp3|wav)$/i.test(req.path)) return next();
+    res.status(404).sendFile('404.html', { root: path.join(frontendRoot, 'pages') });
+  });
 }
 
 app.use(notFoundMiddleware);

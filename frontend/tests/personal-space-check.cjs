@@ -152,8 +152,8 @@ async function main() {
     assert.equal(strong, '#3f634a');
     await page.locator('[data-studio-outfits] label', { hasText: 'Chapéu de explorador' }).click();
     assert.equal((await prefs(page)).lumeOutfit, 'explorer-hat');
-    await page.locator('label', { hasText: 'Sem paisagem' }).click();
-    assert.equal(await rootData(page, 'atmosphereWallpaper'), 'off');
+    // 3.7: the desk window option only affected the desk; it is hidden, the preference is kept.
+    assert(await page.locator('[data-desk-window-setting]').isHidden(), 'no desk window option without a desk');
     await page.locator('[data-preview-lume] .lume-companion[data-outfit="explorer-hat"]').waitFor();
     await axeCheck(page, 'main', 'Aparência › estúdio');
     await shot(page, 'estudio-detalhes-1440', false);
@@ -179,7 +179,7 @@ async function main() {
     await page.locator('[data-theme-option="forest"]').click();
     assert.equal(await rootData(page, 'atmospherePalette'), 'off');
     assert.equal(await rootData(page, 'atmosphere'), 'rainy-library');
-    record('Atmosferas: 8 prévias; escolher aplica paleta, traje e paisagem na hora; som oferecido, nunca tocado sozinho; estúdio muda destaque, traje e janela com prévia ao vivo; Início usa a paleta, sem mesa; contraste reforçado vence a paleta e esconde decoração no Início; temas clássicos vencem a paleta; axe');
+    record('Atmosferas: 8 prévias; escolher aplica paleta, traje e paisagem na hora; som oferecido, nunca tocado sozinho; estúdio muda destaque e traje com prévia ao vivo (sem opção de janela); Início usa a paleta, sem mesa; contraste reforçado vence a paleta e esconde decoração no Início; temas clássicos vencem a paleta; axe');
     await context.close();
 
     // ---------- 5. 390 px: Início with tabs, Aparência; no horizontal scroll -------------
