@@ -333,8 +333,10 @@ Página: `conta.html`.
 - **Visualização e edição**: a página abre limpa, sem alças, menus ou botões de arrumação, e sem os
   blocos e seções ocultos. **Personalizar perfil** liga o modo de edição, com uma barra fixa
   (Adicionar bloco, Mostrar tudo, Concluir; Esc também sai).
-- **Meus cards**: blocos personalizáveis (templates, texto, código, HTML/CSS próprio sem scripts,
-  incorporação de YouTube ou Spotify) e **Seus dados**: blocos com dados reais — aulas recentes,
+- **Meus cards** (3.7): a janela **Novo card** oferece Texto (com formatação e cor de fundo),
+  Checklist, Imagem, GIF, YouTube (youtube-nocookie) e Spotify, com prévia ao vivo; cards antigos 3D,
+  HTML/CSS e de código continuam visíveis, só leitura (detalhes em [PERFIL_CARDS.md](PERFIL_CARDS.md)).
+  **Seus dados**: blocos com dados reais — aulas recentes,
   disciplinas favoritas (por acessos), objetivos ativos com tarefas feitas (`planning`) e minutos da
   semana com a meta (`study_tracking`). Sem dados, o bloco diz isso; nada é inventado.
 - No modo de edição, o menu ⋯ de cada bloco tem Editar, Duplicar, Ocultar/Mostrar, Mover para

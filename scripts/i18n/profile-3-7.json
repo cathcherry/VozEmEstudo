@@ -1,0 +1,217 @@
+{
+  "Meus cards": { "en": "My cards", "es": "Mis tarjetas", "zh-CN": "我的卡片" },
+  "Novo card": { "en": "New card", "es": "Nueva tarjeta", "zh-CN": "新卡片" },
+  "Novo card · {0}": {
+    "en": "New card · {0}",
+    "es": "Nueva tarjeta · {0}",
+    "zh-CN": "新卡片 · {0}"
+  },
+  "Editar card · {0}": {
+    "en": "Edit card · {0}",
+    "es": "Editar tarjeta · {0}",
+    "zh-CN": "编辑卡片 · {0}"
+  },
+  "O que o card vai mostrar?": {
+    "en": "What will the card show?",
+    "es": "¿Qué mostrará la tarjeta?",
+    "zh-CN": "卡片要显示什么？"
+  },
+  "Notas com títulos, listas, destaques e cor de fundo.": {
+    "en": "Notes with headings, lists, highlights and a background colour.",
+    "es": "Notas con títulos, listas, resaltados y color de fondo.",
+    "zh-CN": "带标题、列表、高亮和背景色的笔记。"
+  },
+  "Passos para marcar; fica salvo na conta.": {
+    "en": "Steps to tick off; saved to your account.",
+    "es": "Pasos para marcar; se guarda en la cuenta.",
+    "zh-CN": "可勾选的步骤；保存在账户中。"
+  },
+  "Imagem": { "en": "Image", "es": "Imagen", "zh-CN": "图片" },
+  "Uma foto ou ilustração sua, com legenda.": {
+    "en": "A photo or illustration of yours, with a caption.",
+    "es": "Una foto o ilustración tuya, con pie de foto.",
+    "zh-CN": "你的照片或插图，可加说明。"
+  },
+  "Uma animação curta; fica parada quando você pede menos movimento.": {
+    "en": "A short animation; it stays still when you ask for less motion.",
+    "es": "Una animación corta; se queda quieta si pides menos movimiento.",
+    "zh-CN": "简短动画；选择减少动态时保持静止。"
+  },
+  "Um vídeo, no modo de privacidade reforçada do YouTube.": {
+    "en": "A video, in YouTube's privacy-enhanced mode.",
+    "es": "Un vídeo, en el modo de privacidad mejorada de YouTube.",
+    "zh-CN": "一个视频，使用 YouTube 增强隐私模式。"
+  },
+  "Uma música, álbum, playlist ou podcast.": {
+    "en": "A song, album, playlist or podcast.",
+    "es": "Una canción, álbum, playlist o pódcast.",
+    "zh-CN": "一首歌曲、专辑、播放列表或播客。"
+  },
+  "Seus dados": { "en": "Your data", "es": "Tus datos", "zh-CN": "你的数据" },
+  "Aulas recentes, objetivos, minutos da semana e mais.": {
+    "en": "Recent lessons, goals, minutes this week and more.",
+    "es": "Clases recientes, objetivos, minutos de la semana y más.",
+    "zh-CN": "最近的课程、目标、本周分钟数等。"
+  },
+  "Outros tipos": { "en": "Other types", "es": "Otros tipos", "zh-CN": "其他类型" },
+  "Cards que mostram seus próprios dados de estudo e se atualizam sozinhos.": {
+    "en": "Cards that show your own study data and update themselves.",
+    "es": "Tarjetas que muestran tus propios datos de estudio y se actualizan solas.",
+    "zh-CN": "显示你自己的学习数据并自动更新的卡片。"
+  },
+  "Título do card": { "en": "Card title", "es": "Título de la tarjeta", "zh-CN": "卡片标题" },
+  "Prévia": { "en": "Preview", "es": "Vista previa", "zh-CN": "预览" },
+  "Conteúdo da prévia": {
+    "en": "Preview content",
+    "es": "Contenido de la vista previa",
+    "zh-CN": "预览内容"
+  },
+  "Adicionar card": { "en": "Add card", "es": "Añadir tarjeta", "zh-CN": "添加卡片" },
+  "Salvar card": { "en": "Save card", "es": "Guardar tarjeta", "zh-CN": "保存卡片" },
+  "Formatação do texto": {
+    "en": "Text formatting",
+    "es": "Formato del texto",
+    "zh-CN": "文本格式"
+  },
+  "Transformar a linha em título": {
+    "en": "Turn the line into a heading",
+    "es": "Convertir la línea en título",
+    "zh-CN": "将该行设为标题"
+  },
+  "Negrito (Ctrl+B)": {
+    "en": "Bold (Ctrl+B)",
+    "es": "Negrita (Ctrl+B)",
+    "zh-CN": "粗体（Ctrl+B）"
+  },
+  "Itálico (Ctrl+I)": {
+    "en": "Italic (Ctrl+I)",
+    "es": "Cursiva (Ctrl+I)",
+    "zh-CN": "斜体（Ctrl+I）"
+  },
+  "Destaque": { "en": "Highlight", "es": "Resaltado", "zh-CN": "高亮" },
+  "Destacar o trecho": {
+    "en": "Highlight the passage",
+    "es": "Resaltar el fragmento",
+    "zh-CN": "高亮该段"
+  },
+  "Lista com marcadores": {
+    "en": "Bulleted list",
+    "es": "Lista con viñetas",
+    "zh-CN": "项目符号列表"
+  },
+  "Lista numerada": { "en": "Numbered list", "es": "Lista numerada", "zh-CN": "编号列表" },
+  "Citação": { "en": "Quote", "es": "Cita", "zh-CN": "引用" },
+  "Inserir link (https://)": {
+    "en": "Insert link (https://)",
+    "es": "Insertar enlace (https://)",
+    "zh-CN": "插入链接（https://）"
+  },
+  "Também dá para digitar: **negrito**, *itálico*, ==destaque==, ## título, - lista, > citação e [texto](https://link).": {
+    "en": "You can also type: **bold**, *italic*, ==highlight==, ## heading, - list, > quote and [text](https://link).",
+    "es": "También puedes escribir: **negrita**, *cursiva*, ==resaltado==, ## título, - lista, > cita y [texto](https://enlace).",
+    "zh-CN": "也可以直接输入：**粗体**、*斜体*、==高亮==、## 标题、- 列表、> 引用和 [文字](https://链接)。"
+  },
+  "Cor de fundo": { "en": "Background colour", "es": "Color de fondo", "zh-CN": "背景色" },
+  "Sem cor": { "en": "No colour", "es": "Sin color", "zh-CN": "无颜色" },
+  "Sol": { "en": "Sun", "es": "Sol", "zh-CN": "阳光" },
+  "Menta": { "en": "Mint", "es": "Menta", "zh-CN": "薄荷" },
+  "Céu": { "en": "Sky", "es": "Cielo", "zh-CN": "天空" },
+  "Lavanda": { "en": "Lavender", "es": "Lavanda", "zh-CN": "薰衣草" },
+  "Rosa": { "en": "Rose", "es": "Rosa", "zh-CN": "玫瑰" },
+  "Areia": { "en": "Sand", "es": "Arena", "zh-CN": "沙色" },
+  "Passos": { "en": "Steps", "es": "Pasos", "zh-CN": "步骤" },
+  "Um passo por linha (até 30). Marcar um passo no perfil fica salvo na sua conta.": {
+    "en": "One step per line (up to 30). Ticking a step on your profile is saved to your account.",
+    "es": "Un paso por línea (hasta 30). Marcar un paso en el perfil se guarda en tu cuenta.",
+    "zh-CN": "每行一个步骤（最多 30 个）。在个人资料中勾选会保存到账户。"
+  },
+  "Arquivo GIF": { "en": "GIF file", "es": "Archivo GIF", "zh-CN": "GIF 文件" },
+  "Descrição para leitores de tela (recomendado)": {
+    "en": "Description for screen readers (recommended)",
+    "es": "Descripción para lectores de pantalla (recomendado)",
+    "zh-CN": "屏幕阅读器描述（建议填写）"
+  },
+  "O que a imagem mostra, em poucas palavras.": {
+    "en": "What the image shows, in a few words.",
+    "es": "Lo que muestra la imagen, en pocas palabras.",
+    "zh-CN": "用几个词描述图片内容。"
+  },
+  "Legenda (opcional)": {
+    "en": "Caption (optional)",
+    "es": "Pie de foto (opcional)",
+    "zh-CN": "说明（可选）"
+  },
+  "Enquadramento": { "en": "Framing", "es": "Encuadre", "zh-CN": "取景" },
+  "Preencher o card": { "en": "Fill the card", "es": "Llenar la tarjeta", "zh-CN": "填满卡片" },
+  "Mostrar inteira": { "en": "Show it whole", "es": "Mostrar entera", "zh-CN": "完整显示" },
+  "Link do vídeo no YouTube": {
+    "en": "YouTube video link",
+    "es": "Enlace del vídeo de YouTube",
+    "zh-CN": "YouTube 视频链接"
+  },
+  "Link do Spotify": { "en": "Spotify link", "es": "Enlace de Spotify", "zh-CN": "Spotify 链接" },
+  "Vídeo reconhecido.": {
+    "en": "Video recognised.",
+    "es": "Vídeo reconocido.",
+    "zh-CN": "已识别视频。"
+  },
+  "Pausar GIF": { "en": "Pause GIF", "es": "Pausar GIF", "zh-CN": "暂停 GIF" },
+  "Animar GIF": { "en": "Play GIF", "es": "Animar GIF", "zh-CN": "播放 GIF" },
+  "Abrir no YouTube": {
+    "en": "Open on YouTube",
+    "es": "Abrir en YouTube",
+    "zh-CN": "在 YouTube 打开"
+  },
+  "Abrir no Spotify": {
+    "en": "Open on Spotify",
+    "es": "Abrir en Spotify",
+    "zh-CN": "在 Spotify 打开"
+  },
+  "Copiar como texto": { "en": "Copy as text", "es": "Copiar como texto", "zh-CN": "复制为文本" },
+  "Card salvo.": { "en": "Card saved.", "es": "Tarjeta guardada.", "zh-CN": "卡片已保存。" },
+  "Card adicionado ao perfil.": {
+    "en": "Card added to your profile.",
+    "es": "Tarjeta añadida al perfil.",
+    "zh-CN": "卡片已添加到个人资料。"
+  },
+  "Salvando a imagem…": {
+    "en": "Saving the image…",
+    "es": "Guardando la imagen…",
+    "zh-CN": "正在保存图片…"
+  },
+  "Passo marcado como feito.": {
+    "en": "Step marked as done.",
+    "es": "Paso marcado como hecho.",
+    "zh-CN": "步骤已标记为完成。"
+  },
+  "Passo desmarcado.": {
+    "en": "Step unticked.",
+    "es": "Paso desmarcado.",
+    "zh-CN": "已取消勾选步骤。"
+  },
+  "{0} de {1} feitos": {
+    "en": "{0} of {1} done",
+    "es": "{0} de {1} hechos",
+    "zh-CN": "已完成 {0}/{1}"
+  },
+  "Formato antigo: continua no seu perfil, mas não pode mais ser editado. Use “Copiar como texto” no menu para reaproveitar o conteúdo.": {
+    "en": "Old format: it stays on your profile but can no longer be edited. Use “Copy as text” in the menu to reuse its content.",
+    "es": "Formato antiguo: sigue en tu perfil, pero ya no se puede editar. Usa «Copiar como texto» en el menú para reutilizar el contenido.",
+    "zh-CN": "旧格式：仍保留在个人资料中，但无法再编辑。可在菜单中使用“复制为文本”重新利用内容。"
+  },
+  "Este link não pode ser exibido com segurança. Edite o card e cole o link do YouTube ou do Spotify de novo.": {
+    "en": "This link cannot be shown safely. Edit the card and paste the YouTube or Spotify link again.",
+    "es": "Este enlace no se puede mostrar de forma segura. Edita la tarjeta y pega de nuevo el enlace de YouTube o Spotify.",
+    "zh-CN": "无法安全显示此链接。请编辑卡片并重新粘贴 YouTube 或 Spotify 链接。"
+  },
+  "A imagem não está disponível neste aparelho agora.": {
+    "en": "The image is not available on this device right now.",
+    "es": "La imagen no está disponible en este dispositivo ahora.",
+    "zh-CN": "此设备上暂时无法显示该图片。"
+  },
+  "Adicione um card: texto, checklist, imagem, GIF, um vídeo do YouTube, música do Spotify ou seus dados de estudo.": {
+    "en": "Add a card: text, checklist, image, GIF, a YouTube video, Spotify music or your study data.",
+    "es": "Añade una tarjeta: texto, checklist, imagen, GIF, un vídeo de YouTube, música de Spotify o tus datos de estudio.",
+    "zh-CN": "添加卡片：文本、清单、图片、GIF、YouTube 视频、Spotify 音乐或你的学习数据。"
+  }
+}

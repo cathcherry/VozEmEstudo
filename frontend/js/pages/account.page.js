@@ -3,7 +3,11 @@ import { loadCloudState, saveCloudState, registerCloudMerge, cachedCloudState } 
 import { PROFILE_LAYOUT_KEY, PROFILE_SECTIONS, BLOCK_SIZES, DATA_BLOCKS, normalizeProfileLayout, newDataBlock, duplicateBlock, moveBlock as movedBlocks, renderDataBlock } from './profile-editor.js';
 import { getFeatureFlags } from '../utils/feature-flags.js';
 import { milestones, evaluateMilestones, orderedMilestones, unlockedAvatars, mergeMilestoneStates } from '../utils/gamification.js';
-import { widgetDocument, blockTemplates, templateFields, compileTemplate } from '../utils/profile-widgets.js';
+import { widgetDocument } from '../utils/profile-widgets.js';
+import { cardTemplateOf, isLegacyCard, legacyPlainText, normalizeTone, toggleChecklistItem } from '../utils/profile-cards.js';
+import { htmlToText, renderCardBody } from '../utils/profile-card-view.js';
+import { createCardEditor } from './profile-card-editor.js';
+import { toast } from '../utils/toast.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, updateUserIdentity, setStatus } from '../utils/shell.js';
 import { updateProfile } from '../api/auth.api.js';
@@ -81,10 +85,7 @@ let removeAvatar = false;
 let removeCover = false;
 let avatarObjectUrl = null;
 let coverObjectUrl = null;
-let editingBlockId = null;
 let cardCleanups = [];
-let activeTemplate = null;
-let blockMode = "template";
 
 name.value = metadata.display_name || metadata.full_name || metadata.name || '';
 email.value = session.user.email || '';
@@ -178,30 +179,25 @@ function renderAboutBlock(userMetadata) {
   container.prepend(card);
 }
 
-function safeEmbedUrl(raw) {
-  let url;
-  try {
-    url = new URL(raw.trim());
-  } catch {
-    throw new Error('Cole um link válido do YouTube ou Spotify.');
-  }
-  const host = url.hostname.toLowerCase().replace(/^www\./, '');
-  if (host === 'youtu.be' || host === 'youtube.com' || host === 'm.youtube.com') {
-    const videoId = host === 'youtu.be'
-      ? url.pathname.split('/').filter(Boolean)[0]
-      : url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts)\/([^/?]+)/)?.[1];
-    if (!videoId || !/^[\w-]{6,20}$/.test(videoId))
-      throw new Error('Esse link do YouTube não contém um vídeo válido.');
-    return `https://www.youtube-nocookie.com/embed/${videoId}`;
-  }
-  if (host === 'open.spotify.com') {
-    const parts = url.pathname.split('/').filter(Boolean);
-    if (parts[0] === 'embed') parts.shift();
-    if (!['track', 'album', 'playlist', 'episode', 'show'].includes(parts[0]) || !parts[1])
-      throw new Error('Use um link de música, álbum, playlist, episódio ou programa do Spotify.');
-    return `https://open.spotify.com/embed/${parts[0]}/${encodeURIComponent(parts[1])}`;
-  }
-  throw new Error('Por enquanto, os embeds aceitam links do YouTube e Spotify.');
+// Images of image/GIF cards: one object URL per stored slot for the page's lifetime.
+const mediaUrls = new Map();
+function cardMedia(slot) {
+  if (!/^card-[\w-]{1,64}$/.test(String(slot || ''))) return Promise.resolve(null);
+  if (!mediaUrls.has(slot))
+    mediaUrls.set(slot, readProfileMedia(userId, slot).then((blob) => (blob ? URL.createObjectURL(blob) : null)).catch(() => null));
+  return mediaUrls.get(slot);
+}
+async function saveCardMedia(slot, blob) {
+  await saveProfileMedia(userId, slot, blob);
+  mediaUrls.set(slot, Promise.resolve(URL.createObjectURL(blob)));
+}
+/** An image is removed only when no card uses it any more (a duplicate shares its image). */
+function releaseCardMedia(slot) {
+  if (!slot || loadBlocks().some((block) => block.media === slot)) return;
+  const url = mediaUrls.get(slot);
+  mediaUrls.delete(slot);
+  void url?.then((value) => value && URL.revokeObjectURL(value));
+  void removeProfileMedia(userId, slot).catch(() => {});
 }
 
 function renderProfileBlocks() {
@@ -213,12 +209,16 @@ function renderProfileBlocks() {
   for (const block of shown) {
     const position = blocks.findIndex((item) => item.id === block.id);
     const card = document.createElement('article');
-    card.className = `profile-block profile-block-${block.type}${block.hidden ? ' is-hidden-block' : ''}`;
+    const kind = cardTemplateOf(block);
+    const legacy = isLegacyCard(block);
+    const tone = normalizeTone(block.tone);
+    card.className = `profile-block profile-block-${block.type} card-kind-${kind || 'legacy'}${tone ? ` card-tone-${tone}` : ''}${block.hidden ? ' is-hidden-block' : ''}`;
     card.dataset.customBlock = block.id;
     const heading = document.createElement('div');
     heading.className = 'profile-block-heading';
     const title = document.createElement('h3');
     title.textContent = block.title;
+    title.setAttribute('translate', 'no');
     if (block.hidden) {
       const badge = document.createElement('span');
       badge.className = 'profile-hidden-badge';
@@ -261,7 +261,10 @@ function renderProfileBlocks() {
       saveBlocks(blocksNext); renderProfileBlocks(); announce(notice);
       document.querySelector(`[data-custom-block="${CSS.escape(focusId)}"] summary`)?.focus();
     };
-    if (block.type !== 'data') action('Editar', () => openBlockEditor(block));
+    if (legacy) {
+      // Retired kinds (3D, HTML/CSS, code) stay as they are; their text can seed a new card.
+      action('Copiar como texto', () => cardEditor.openText(`${block.title} (texto)`.slice(0, 80), legacyPlainText(block, htmlToText)));
+    } else if (block.type !== 'data') action('Editar', () => cardEditor.open(block));
     action('Duplicar', () => {
       const next = duplicateBlock(loadBlocks(), block.id);
       const copy = next[next.findIndex((item) => item.id === block.id) + 1];
@@ -285,64 +288,42 @@ function renderProfileBlocks() {
     action('Remover', () => {
       if (!confirm(`Remover o bloco "${block.title}"? Esta ação não pode ser desfeita.`)) return;
       saveBlocks(loadBlocks().filter((item) => item.id !== block.id));
+      releaseCardMedia(block.media);
       renderProfileBlocks();
       announce(`${block.title} removido.`);
       document.querySelector('[data-block-open]')?.focus();
     });
     heading.append(handle, title, actions);
     card.append(heading);
-    if (block.templateId === 'checklist') {
-      const items = String(block.templateValues?.items || '').split('\n').filter(item => item.trim()).slice(0,30);
-      const list = document.createElement('div'); list.className='profile-checklist';
-      for (const [itemIndex,text] of items.entries()) {
-        const label=document.createElement('label');
-        const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=Boolean(block.checkedItems?.[itemIndex]);
-        const caption=document.createElement('span');caption.textContent=text;
-        checkbox.addEventListener('change',()=>{
-          const current=loadBlocks();const item=current.find(candidate=>candidate.id===block.id);
-          if(item) { item.checkedItems={...item.checkedItems,[itemIndex]:checkbox.checked};saveBlocks(current); }
-        });label.append(checkbox,caption);list.append(label);
-      }
-      card.append(list);
-    } else if (block.type === 'widget') {
-      const frame = document.createElement('iframe');
-      frame.title = block.title;
-      frame.setAttribute('sandbox', '');
-      frame.referrerPolicy = 'no-referrer';
-      frame.srcdoc = widgetDocument(block.content, block.css);
-      frame.className = 'profile-widget-frame';
-      card.append(frame);
-    } else if (block.type === 'code') {
-      const code = document.createElement('pre');
-      const codeText = document.createElement('code');
-      codeText.textContent = block.content;
-      code.append(codeText);
-      card.append(code);
-    } else if (block.type === 'data') {
+    if (block.type === 'data') {
       const slot = document.createElement('div');
       slot.className = 'profile-data-slot';
       slot.setAttribute('aria-busy', 'true');
       slot.textContent = 'Carregando…';
       card.append(slot);
       void renderDataBlock(block.source).then((node) => { slot.replaceChildren(node); slot.setAttribute('aria-busy', 'false'); });
-    } else if (block.type === 'embed') {
-      const frame = document.createElement('iframe');
-      frame.src = block.url;
-      frame.title = block.title;
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'strict-origin-when-cross-origin';
-      frame.allow = 'encrypted-media; picture-in-picture; fullscreen';
-      frame.allowFullscreen = true;
-      frame.sandbox = 'allow-scripts allow-same-origin allow-presentation';
-      card.append(frame);
     } else {
-      const text = document.createElement('p');
-      text.textContent = block.content;
-      card.append(text);
+      card.append(renderCardBody(block, {
+        loadMedia: cardMedia,
+        onToggle: (index, done) => {
+          saveBlocks(toggleChecklistItem(loadBlocks(), block.id, index, done));
+          announce(done ? 'Passo marcado como feito.' : 'Passo desmarcado.');
+        },
+      }));
+    }
+    if (legacy && editing) {
+      const note = document.createElement('p');
+      note.className = 'card-legacy-note';
+      note.textContent = 'Formato antigo: continua no seu perfil, mas não pode mais ser editado. Use “Copiar como texto” no menu para reaproveitar o conteúdo.';
+      card.append(note);
     }
     const body=document.createElement('div');body.className='profile-card-body';
-    for(const child of [...card.children].filter(el=>el!==heading))body.append(child);
-    card.append(body);container.append(card);
+    if (block.type !== 'data') body.setAttribute('translate', 'no');
+    for(const child of [...card.children].filter(el=>el!==heading && !el.classList.contains('card-legacy-note')))body.append(child);
+    const legacyNote = card.querySelector(':scope > .card-legacy-note');
+    if (legacyNote) card.insertBefore(body, legacyNote);
+    if (!legacyNote) card.append(body);
+    container.append(card);
     cardCleanups.push(enhanceCard(card,block,{
       saveLayout(layout){const items=loadBlocks();const item=items.find(candidate=>candidate.id===block.id);if(item){item.layout=layout;saveBlocks(items);}},
       saveOrder(ids){const items=loadBlocks();saveBlocks(ids.map(id=>items.find(item=>item.id===id)).filter(Boolean));}
@@ -395,61 +376,6 @@ function moveBlock(index, direction) {
   [blocks[index], blocks[target]] = [blocks[target], blocks[index]];
   saveBlocks(blocks);
   renderProfileBlocks();
-}
-
-function openBlockEditor(block = null) {
-  editingBlockId = block?.id || null;
-  const dialog = document.querySelector('#block-dialog');
-  const title = dialog.querySelector('#block-title');
-  const kind = dialog.querySelector('#block-kind');
-  const content = dialog.querySelector('#block-content');
-  const url = dialog.querySelector('#block-url');
-  title.value = block?.title || '';
-  kind.value = block?.type || 'text';
-  content.value = block?.content || '';
-  dialog.querySelector('#block-css').value = block?.css || '';
-  url.value = block?.url || '';
-  dialog.querySelector('#block-dialog-title').textContent = block ? 'Editar bloco' : 'Adicionar ao perfil';
-  dialog.querySelector('[type="submit"]').textContent = block ? 'Salvar bloco' : 'Adicionar bloco';
-  const legacy = !block?.templateId && block ? Object.entries(blockTemplates).find(([,t]) => t.content === block.content && t.type === block.type)?.[0] : null;
-  activeTemplate = block?.templateId || legacy || (!block ? 'notes' : null);
-  blockMode = activeTemplate ? 'template' : block?.type === 'embed' ? 'embed' : 'raw';
-  renderTemplateFields(block?.templateValues || {});
-  syncBlockFields();
-  dialog.showModal();
-}
-
-function syncBlockFields() {
-  const type = document.querySelector('#block-kind').value;
-  const isTemplate = blockMode === 'template';
-  const isEmbed = type === 'embed';
-  document.querySelector('[data-block-content-label]').firstChild.textContent = type === 'widget' ? 'HTML' : 'Texto ou código';
-  document.querySelector('[data-block-content-label]').hidden = isEmbed || isTemplate;
-  document.querySelector('[data-block-url-label]').hidden = !isEmbed;
-  document.querySelector('[data-block-css-label]').hidden = type !== 'widget' || isTemplate;
-  document.querySelector('#block-content').required = !isEmbed && !isTemplate;
-  document.querySelector('#block-url').required = isEmbed;
-  document.querySelector('[data-widget-preview-button]').hidden = type !== 'widget';
-  document.querySelector('[data-widget-preview]').replaceChildren();
-  document.querySelector('.block-templates').hidden = !isTemplate;
-  document.querySelector('[data-template-fields]').hidden = !isTemplate;
-  document.querySelector('[data-block-kind-label]').hidden = blockMode !== 'raw';
-  // "Seus dados": choosing a source adds the block at once; the other fields do not apply.
-  const isData = blockMode === 'data';
-  document.querySelector('[data-block-data-sources]').hidden = !isData;
-  document.querySelector('#block-title').closest('label').hidden = isData;
-  document.querySelector('#block-title').required = !isData;
-  document.querySelector('#block-dialog .form-actions').hidden = isData;
-  if (isData) {
-    for (const selector of ['[data-block-content-label]', '[data-block-url-label]', '[data-block-css-label]', '[data-widget-preview-button]', '.block-templates', '[data-template-fields]', '[data-block-kind-label]']) document.querySelector(selector).hidden = true;
-    document.querySelector('#block-content').required = false;
-    document.querySelector('#block-url').required = false;
-  }
-  for (const button of document.querySelectorAll('[data-block-mode]')) button.setAttribute('aria-pressed', String(button.dataset.blockMode === blockMode));
-  for (const button of document.querySelectorAll('[data-template]')) button.setAttribute('aria-pressed', String(button.dataset.template === activeTemplate));
-  document.querySelector('#block-content').placeholder = type === 'widget'
-    ? 'Cole o HTML aqui'
-    : 'Escreva seu texto ou código';
 }
 
 function renderAchievements(materials, reviewed, answered, minutes = 0) {
@@ -665,51 +591,22 @@ form.addEventListener('submit', async (event) => {
   }
 });
 
-const blockForm = document.querySelector('[data-block-form]');
-document.querySelector('[data-widget-preview-button]').addEventListener('click', () => {
-  const frame = document.createElement('iframe');
-  frame.title = 'Prévia do widget';
-  frame.sandbox = '';
-  const compiled = blockMode === 'template' ? compileTemplate(activeTemplate, readTemplateFields()) : null;
-  frame.srcdoc = widgetDocument(compiled?.content ?? document.querySelector('#block-content').value, compiled?.css ?? document.querySelector('#block-css').value);
-  document.querySelector('[data-widget-preview]').replaceChildren(frame);
-});
-document.querySelector('#block-kind').addEventListener('change', syncBlockFields);
-blockForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const title = document.querySelector('#block-title').value.trim();
-  const type = document.querySelector('#block-kind').value;
-  const content = document.querySelector('#block-content').value.trim();
-  const status = document.querySelector('[data-block-message]');
-  try {
-    const blocks = loadBlocks();
-    const current = blocks.find((block) => block.id === editingBlockId);
-    const block = {
-      id: editingBlockId || crypto.randomUUID(),
-      title,
-      type,
-      content: type === 'embed' ? '' : content,
-      ...(type === 'widget' ? { css: document.querySelector('#block-css').value.slice(0, 50000) } : {}),
-      ...(blockMode === 'template' ? compileTemplate(activeTemplate, readTemplateFields()) : { templateId:null, templateValues:null }),
-      ...(type === 'embed' && blockMode !== 'template' ? { url: safeEmbedUrl(document.querySelector('#block-url').value) } : {}),
-    };
-    if (block.templateId === 'checklist' && current?.templateValues?.items !== block.templateValues?.items) block.checkedItems = {};
-    if (current) Object.assign(current, block);
-    else blocks.push(block);
-    saveBlocks(blocks);
+const cardEditor = createCardEditor({
+  loadBlocks,
+  saveBlocks,
+  loadMedia: cardMedia,
+  saveMedia: saveCardMedia,
+  afterSave(block, previous) {
+    if (previous?.media && previous.media !== block.media) releaseCardMedia(previous.media);
     renderProfileBlocks();
-    blockForm.reset();
-    syncBlockFields();
-    editingBlockId = null;
-    document.querySelector('#block-dialog').close();
-    setStatus(status, 'Bloco salvo.', 'success');
-  } catch (error) {
-    setStatus(status, error.message || 'Não foi possível salvar o bloco.', 'error');
-  }
+    announce(previous ? `${block.title} atualizado.` : `${block.title} adicionado ao perfil.`);
+    toast(previous ? 'Card salvo.' : 'Card adicionado ao perfil.', { type: 'success' });
+    document.querySelector(`[data-custom-block="${CSS.escape(block.id)}"] summary`)?.focus();
+  },
 });
 
-document.querySelector('.profile-content-section [data-block-open]').addEventListener('click', () => openBlockEditor());
-document.querySelector('[data-block-open-bar]')?.addEventListener('click', () => openBlockEditor());
+document.querySelector('.profile-content-section [data-block-open]').addEventListener('click', () => cardEditor.open());
+document.querySelector('[data-block-open-bar]')?.addEventListener('click', () => cardEditor.open());
 // Data sources for "Seus dados" (a tool switched off on this server is offered but disabled).
 void getFeatureFlags().catch(() => ({})).then((flags) => {
   const host = document.querySelector('[data-block-data-sources]');
@@ -749,47 +646,3 @@ new MutationObserver(() => {
   attributes: true,
   attributeFilter: ['data-reduced-motion', 'data-low-stimulation', 'data-focus-mode'],
 });
-
-function readTemplateFields() {
-  return Object.fromEntries([...document.querySelectorAll('[data-template-field]')].map(input => [input.dataset.templateField, input.value]));
-}
-function renderTemplateFields(values = {}) {
-  const container = document.querySelector('[data-template-fields]');
-  container.replaceChildren();
-  if (!activeTemplate) return;
-  for (const [key, title, fallback] of templateFields[activeTemplate]) {
-    const label = document.createElement('label');
-    label.textContent = title;
-    const input = document.createElement('textarea');
-    input.dataset.templateField = key;
-    input.rows = key === 'items' || key === 'text' ? 4 : 2;
-    input.maxLength = 2000;
-    input.value = values[key] ?? fallback;
-    label.append(input); container.append(label);
-  }
-}
-for (const button of document.querySelectorAll('[data-template]')) {
-  button.addEventListener('click', () => {
-    activeTemplate = button.dataset.template;
-    blockMode = 'template';
-    document.querySelector('#block-kind').value = blockTemplates[activeTemplate].type;
-    document.querySelector('#block-title').value = blockTemplates[activeTemplate].title;
-    renderTemplateFields(); syncBlockFields();
-  });
-}
-for (const button of document.querySelectorAll('[data-block-mode]')) {
-  button.addEventListener('click', () => {
-    const next = button.dataset.blockMode;
-    if (blockMode === 'template' && next === 'raw') {
-      const compiled = compileTemplate(activeTemplate || 'notes', readTemplateFields());
-      document.querySelector('#block-content').value = compiled.content;
-      document.querySelector('#block-css').value = compiled.css;
-      document.querySelector('#block-kind').value = compiled.type;
-    }
-    blockMode = next;
-    if (next === 'embed') document.querySelector('#block-kind').value = 'embed';
-    else if (next === 'raw' && document.querySelector('#block-kind').value === 'embed') document.querySelector('#block-kind').value = 'widget';
-    else if (next === 'template') { activeTemplate ||= 'notes'; document.querySelector('#block-kind').value = blockTemplates[activeTemplate].type; renderTemplateFields(); }
-    syncBlockFields();
-  });
-}
