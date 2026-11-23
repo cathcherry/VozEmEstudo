@@ -28,11 +28,11 @@ const $ = (selector, root = document) => root.querySelector(selector);
 const uuid = () => crypto.randomUUID();
 const DRAWERS = [
   { kind: 'stamp', label: 'Selos', about: 'Selos de primeiras vezes: a primeira evidência, a primeira explicação, a primeira ponte entre disciplinas.' },
-  { kind: 'object', label: 'Objetos de mesa', about: 'Objetos que aparecem com investigações repetidas.' },
+  { kind: 'object', label: 'Objetos', about: 'Objetos que aparecem com investigações repetidas.' },
   { kind: 'cover', label: 'Capas', about: 'Capas para o caderno de descobertas.' },
   { kind: 'specimen', label: 'Espécimes', about: 'As suas descobertas, como fichas que mudam com o que você acrescenta a elas.' },
 ];
-const KIND_NAME = { stamp: 'Selo', object: 'Objeto de mesa', cover: 'Capa', specimen: 'Espécime' };
+const KIND_NAME = { stamp: 'Selo', object: 'Objeto', cover: 'Capa', specimen: 'Espécime' };
 const SPECIMEN_LIMIT = 12;
 const DESK_ON_HOME = false;
 
