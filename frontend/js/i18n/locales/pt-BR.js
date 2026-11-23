@@ -14,6 +14,7 @@ export default {
   'nav.home': 'Início',
   'nav.library': 'Biblioteca',
   'nav.review': 'Revisar',
+  'nav.flashcards': 'Flashcards',
   'nav.plan': 'Planejar',
   'nav.settings': 'Configurações',
   'nav.myAccount': 'Minha conta',
@@ -142,6 +143,8 @@ export default {
   'widget.plan': 'Tarefas e flashcards',
 
   // Revisar e Planejar
+  'flashcards.intro': 'Revise os cartões de hoje, organize seus conjuntos e crie cartões novos: à mão, com IA ou importando.',
+  'flashcards.sections': 'Seções dos flashcards',
   'review.intro':
     'Revise flashcards, retome tentativas de questões e reencontre os trechos que você destacou nas aulas.',
   'review.sections': 'Seções da revisão',

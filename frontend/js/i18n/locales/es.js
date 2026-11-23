@@ -12,6 +12,7 @@ export default {
   'nav.home': 'Inicio',
   'nav.library': 'Biblioteca',
   'nav.review': 'Repasar',
+  'nav.flashcards': 'Tarjetas',
   'nav.plan': 'Planificar',
   'nav.settings': 'Configuración',
   'nav.myAccount': 'Mi cuenta',
@@ -138,6 +139,8 @@ export default {
   'widget.notes': 'Notas',
   'widget.plan': 'Tareas y tarjetas',
 
+  'flashcards.intro': 'Repasa las tarjetas de hoy, organiza tus conjuntos y crea tarjetas nuevas: a mano, con IA o importando.',
+  'flashcards.sections': 'Secciones de las tarjetas',
   'review.intro':
     'Repasa tarjetas, retoma intentos de preguntas y vuelve a encontrar los fragmentos que destacaste en las clases.',
   'review.sections': 'Secciones del repaso',
