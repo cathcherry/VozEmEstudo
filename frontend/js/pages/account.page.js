@@ -402,7 +402,7 @@ function renderAchievements(materials, reviewed, answered, minutes = 0) {
   const banner=document.createElement('div');banner.className='journey-banner';banner.append(emblem,copy);
   // Provisional: computed in this browser from local study data; the server does not verify it.
   const note = document.createElement('p'); note.className = 'journey-note';
-  note.textContent = 'Pontos e conquistas são calculados neste navegador a partir do seu uso e servem como incentivo; ainda não são verificados pelo servidor.';
+  note.textContent = 'Pontos e conquistas são só um incentivo, sem valor de registro.';
   level.append(banner,progress,hint,note);
 }
 function renderMilestoneCards() {

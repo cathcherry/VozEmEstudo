@@ -19,12 +19,6 @@
     "zh-CN": "保留的内容块：此内容无法在这里编辑，但仍保存在笔记本中。"
   },
   "Destaques da aula": { "en": "Lesson highlights", "es": "Destacados de la clase", "zh-CN": "课程标注" },
-  "Trechos que você destacou na transcrição. Use “Citar no caderno” para levar um trecho ao seu texto.": {
-    "en": "Passages you highlighted in the transcript. Use “Citar no caderno” to bring a passage into your text.",
-    "es": "Fragmentos que destacaste en la transcripción. Usa “Citar no caderno” para llevar un fragmento a tu texto.",
-    "zh-CN": "你在转写中标注的片段。使用“引用到笔记本”把片段放进你的文字。"
-  },
-  "Escrever uma anotação solta": { "en": "Write a standalone note", "es": "Escribir una nota suelta", "zh-CN": "写一条单独的笔记" },
   "Trecho citado no caderno da aula.": { "en": "Passage quoted in the lesson notebook.", "es": "Fragmento citado en el cuaderno de la clase.", "zh-CN": "已将片段引用到课程笔记本。" },
   "Item marcado.": { "en": "Item checked.", "es": "Elemento marcado.", "zh-CN": "已勾选。" },
   "Item desmarcado.": { "en": "Item unchecked.", "es": "Elemento desmarcado.", "zh-CN": "已取消勾选。" },

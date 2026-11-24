@@ -49,7 +49,7 @@ export function buildStudyDocument(material, options = {}) {
   }
   if (summary)
     sections.push({
-      heading: summary.label ? `Resumo — ${summary.label}` : 'Resumo',
+      heading: summary.label ? `Resumo: ${summary.label}` : 'Resumo',
       meta: `Versão ${summary.version} · fonte: revisão ${summary.source_transcription_revision}`,
       blocks: [{ type: 'markdown', text: summary.text || '' }],
     });
@@ -147,7 +147,7 @@ function questionMarkdown(item, number) {
     lines.push(
       '',
       `   *Resposta marcada:* ${item.selectedIndex === null ? 'não respondida' : optionLabel(item.selectedIndex)}` +
-        (item.correct === null ? '' : item.correct ? ' — correta' : ' — incorreta'),
+        (item.correct === null ? '' : item.correct ? ' (correta)' : ' (incorreta)'),
     );
   }
   if (Number.isInteger(item.correctIndex)) {
@@ -305,7 +305,7 @@ export function renderPrintable(doc, target) {
               make(
                 'p',
                 `Resposta marcada: ${item.selectedIndex === null ? 'não respondida' : optionLabel(item.selectedIndex)}` +
-                  (item.correct === null ? '' : item.correct ? ' — correta' : ' — incorreta'),
+                  (item.correct === null ? '' : item.correct ? ' (correta)' : ' (incorreta)'),
                 'result',
               ),
             );

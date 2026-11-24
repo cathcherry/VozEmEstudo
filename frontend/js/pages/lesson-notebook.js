@@ -41,7 +41,7 @@ const STATUS = {
   saving: 'Salvando…',
   retrying: 'Não foi possível salvar.',
   invalid: 'Não salvo',
-  conflict: 'Não salvo — outro aparelho alterou este caderno',
+  conflict: 'Não salvo: o caderno mudou em outro aparelho',
 };
 /** Toolbar: the line types, with a short visible name and a glyph (aria-hidden). */
 const TOOLS = [
@@ -77,7 +77,6 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   const title = make('h2', 'Caderno da aula');
   title.id = 'lesson-notebook-title';
   panel.setAttribute('aria-labelledby', title.id);
-  const privacy = make('p', 'Privado: só você vê este caderno.', 'notebook-privacy');
   const statusRow = make('div', undefined, 'notebook-status-row');
   const status = make('p', 'Carregando o caderno…', 'notebook-status');
   status.setAttribute('role', 'status');
@@ -85,7 +84,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   const retry = button('Tentar de novo', 'text-action notebook-retry');
   retry.hidden = true;
   statusRow.append(status, retry);
-  header.append(title, privacy);
+  header.append(title);
   const conflict = make('div', undefined, 'notebook-conflict');
   conflict.setAttribute('role', 'alert');
   conflict.hidden = true;
@@ -225,7 +224,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     img.width = 36;
     img.height = 48;
     img.loading = 'lazy';
-    input.addEventListener('change', () => input.checked && changeLook({ cover: id }, `Capa ${artTitle(id)}.`));
+    input.addEventListener('change', () => input.checked && changeLook({ cover: id }, `Capa escolhida: ${artTitle(id)}.`));
     option.append(input, img, make('span', artTitle(id), 'sr-only'));
     coverSet.append(option);
   }
@@ -241,7 +240,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     const sample = make('span', undefined, 'swatch-paper paper');
     sample.dataset.paper = id;
     sample.setAttribute('aria-hidden', 'true');
-    input.addEventListener('change', () => input.checked && changeLook({ paper: id }, `Papel ${name}.`));
+    input.addEventListener('change', () => input.checked && changeLook({ paper: id }, `Papel escolhido: ${name}.`));
     option.append(input, sample, make('span', name, 'swatch-name'));
     paperSet.append(option);
   }
@@ -270,7 +269,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   function changeLook(change, message) {
     look = { ...look, ...change };
     paintLook();
-    say(`${message} Salvo na sua conta.`);
+    say(message);
     void saveLook(owner, materialId, look);
   }
   function paintCoverTitle() {
@@ -450,7 +449,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       status.dataset.state = state;
       status.textContent =
         state === 'retrying' && info.offline
-          ? 'Sem conexão — guardado neste aparelho. Tentaremos de novo.'
+          ? 'Sem conexão. Guardado neste aparelho.'
           : state === 'invalid' && info.message
             ? `Não salvo: ${info.message}`
             : STATUS[state];
@@ -565,7 +564,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       make('h3', 'Este caderno mudou em outro aparelho'),
       make(
         'p',
-        'Suas alterações deste aparelho estão guardadas. Escolha como continuar; nada é apagado sem confirmação.',
+        'Suas alterações deste aparelho estão guardadas. Escolha como continuar.',
       ),
     );
     const actions = make('div', undefined, 'notebook-conflict-actions');

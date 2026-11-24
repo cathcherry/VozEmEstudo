@@ -113,7 +113,7 @@ export default {
 
   'customize.title': 'Customize Home',
   'customize.intro':
-    'Choose what appears and in which order. Changes show at once and are saved to your account.',
+    'Choose what appears and in which order.',
   'customize.density': 'Card spacing',
   'customize.comfortable': 'Comfortable',
   'customize.compact': 'Compact',
@@ -159,7 +159,7 @@ export default {
   'profile.customize': 'Customize profile',
   'profile.doneEditing': 'Finish editing',
   'profile.editBar':
-    'Editing mode. Use each block’s ⋯ menu to move it, change its width, hide or duplicate it. Everything is saved at once.',
+    'Editing mode. Use each block’s ⋯ menu to move it, change its width, hide or duplicate it.',
   'profile.addBlock': 'Add block',
   'profile.showAll': 'Show everything',
   'profile.done': 'Done',
@@ -171,7 +171,7 @@ export default {
   'appearance.title': 'Appearance',
   'presets.title': 'Study modes',
   'presets.intro':
-    'One click adjusts several preferences at once. Afterwards, fine-tune each one under Reading and focus. Modes never make text smaller or turn off accessibility options you enabled.',
+    'One click adjusts several preferences at once.',
   'presets.reading': 'Comfortable reading',
   'presets.readingText': 'Slightly larger text, shorter lines and more space between them.',
   'presets.focus': 'Deep focus',

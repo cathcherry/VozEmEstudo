@@ -56,7 +56,7 @@ export async function openUnitPlanDialog({ materials, opener }) {
   title.id = 'unit-plan-title';
   const hint = make(
     'p',
-    'Cria uma tarefa para cada aula da unidade, dentro de um objetivo. Se a unidade ganhar aulas novas, use de novo: só as que faltam entram.',
+    'Cria uma tarefa para cada aula da unidade, dentro de um objetivo.',
     'app-dialog-hint',
   );
   const field = (label, control) => {

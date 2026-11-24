@@ -78,7 +78,7 @@ test('Markdown keeps headings, lists, emphasis, timestamps and numbered question
   );
   assert.match(
     md,
-    /## Resumo — Para a prova\n\n\*Versão 2 · fonte: revisão 3\*\n\n### Independência/,
+    /## Resumo: Para a prova\n\n\*Versão 2 · fonte: revisão 3\*\n\n### Independência/,
   );
   assert.match(md, /- Item um\n- Item dois/);
   assert.match(md, /1\. Primeiro\n2\. Segundo/);
@@ -130,7 +130,7 @@ test('attempt report shows the marked answers and the score', () => {
     buildStudyDocument(material, { lists: [{ batch, name: 'L', attempt }], variant: 'attempt' }),
   );
   assert.match(md, /\*\*Resultado:\*\* 0 de 2 corretas/);
-  assert.match(md, /Resposta marcada:\* c\) — incorreta/);
+  assert.match(md, /Resposta marcada:\* c\) \(incorreta\)/);
   assert.match(md, /Resposta marcada:\* não respondida/);
 });
 
@@ -139,7 +139,7 @@ test('plain text keeps structure without Markdown markers', () => {
     buildStudyDocument(material, { summary, lists: [{ batch, name: 'Lista A' }] }),
   );
   assert.match(txt, /^História do Brasil\n=+/);
-  assert.match(txt, /RESUMO — PARA A PROVA\n-+/);
+  assert.match(txt, /RESUMO: PARA A PROVA\n-+/);
   assert.match(txt, /Texto com negrito e itálico\./);
   assert.match(txt, /- Item um/);
   assert.match(txt, /1\. Quando ocorreu/);

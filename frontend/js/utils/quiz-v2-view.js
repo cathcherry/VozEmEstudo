@@ -5,14 +5,14 @@
 export const letter = (index) => String.fromCharCode(65 + index);
 
 /**
- * "Sua resposta: C — 15". When older data has no text for the option, only the letter is shown
+ * "Sua resposta: C) 15". When older data has no text for the option, only the letter is shown
  * and the line says so, instead of inventing a text.
  */
 export function answerLine(prefix, index, text) {
   if (!Number.isInteger(index) || index < 0) return `${prefix}: não disponível`;
   const clean = typeof text === 'string' ? text.trim() : '';
   return clean
-    ? `${prefix}: ${letter(index)} — ${clean}`
+    ? `${prefix}: ${letter(index)}) ${clean}`
     : `${prefix}: ${letter(index)} (texto da alternativa não disponível)`;
 }
 

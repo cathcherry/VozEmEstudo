@@ -54,20 +54,10 @@
     "es": "Clases de demostración",
     "zh-CN": "示范课程"
   },
-  "Aulas completas, já transcritas, com resumo, questões e cartões prontos. Explore à vontade: elas não usam seu limite.": {
-    "en": "Complete lessons, already transcribed, with a summary, questions and cards ready. Explore freely: they don't use your limit.",
-    "es": "Clases completas, ya transcritas, con resumen, preguntas y tarjetas listas. Explora a gusto: no usan tu límite.",
-    "zh-CN": "完整课程，已完成转写，并备好摘要、题目和卡片。尽情探索：不占用你的额度。"
-  },
   "Com vídeo": {
     "en": "With video",
     "es": "Con video",
     "zh-CN": "含视频"
-  },
-  "Já processada — não usa seu limite": {
-    "en": "Already processed — doesn't use your limit",
-    "es": "Ya procesada — no usa tu límite",
-    "zh-CN": "已处理——不占用额度"
   },
   "Começar": {
     "en": "Start",
@@ -104,30 +94,10 @@
     "es": "Ver todas las clases de demostración",
     "zh-CN": "查看全部示范课程"
   },
-  "{0} aulas completas para explorar, já processadas: não usam seu limite.": {
-    "en": "{0} complete lessons to explore, already processed: they don't use your limit.",
-    "es": "{0} clases completas para explorar, ya procesadas: no usan tu límite.",
-    "zh-CN": "{0} 节完整课程可供探索，已处理完毕：不占用额度。"
-  },
-  "1 aula completa para explorar, já processada: não usa seu limite.": {
-    "en": "1 complete lesson to explore, already processed: it doesn't use your limit.",
-    "es": "1 clase completa para explorar, ya procesada: no usa tu límite.",
-    "zh-CN": "1 节完整课程可供探索，已处理完毕：不占用额度。"
-  },
   "Aula de demonstração": {
     "en": "Demo lesson",
     "es": "Clase de demostración",
     "zh-CN": "示范课程"
-  },
-  "já processada; não usa seu limite": {
-    "en": "already processed; doesn't use your limit",
-    "es": "ya procesada; no usa tu límite",
-    "zh-CN": "已处理；不占用额度"
-  },
-  "Esta é a sua cópia de uma aula preparada para o período de testes. Suas anotações, respostas e cartões ficam só com você.": {
-    "en": "This is your copy of a lesson prepared for the testing period. Your notes, answers and cards stay with you only.",
-    "es": "Esta es tu copia de una clase preparada para el período de pruebas. Tus notas, respuestas y tarjetas quedan solo contigo.",
-    "zh-CN": "这是为测试期准备的课程副本。你的笔记、答案和卡片只属于你。"
   },
   "Créditos:": {
     "en": "Credits:",
@@ -204,20 +174,10 @@
     "es": "{0} de {1} · quedan {2}",
     "zh-CN": "{0} / {1} · 剩余 {2}"
   },
-  "{0} de {1} usados — restam {2}": {
-    "en": "{0} of {1} used — {2} left",
-    "es": "{0} de {1} usados — quedan {2}",
-    "zh-CN": "已用 {0} / {1}——剩余 {2}"
-  },
   "Ver as aulas de demonstração ({0})": {
     "en": "See the demo lessons ({0})",
     "es": "Ver las clases de demostración ({0})",
     "zh-CN": "查看示范课程（{0}）"
-  },
-  "O que você já enviou e gerou continua disponível, mesmo depois de usar os limites.": {
-    "en": "What you have already uploaded and generated stays available, even after you use up your limits.",
-    "es": "Lo que ya enviaste y generaste sigue disponible, incluso después de usar los límites.",
-    "zh-CN": "即使额度用完，你已上传和生成的内容仍然可用。"
   },
   "Administração": {
     "en": "Administration",

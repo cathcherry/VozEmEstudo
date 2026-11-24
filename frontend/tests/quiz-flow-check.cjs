@@ -91,9 +91,9 @@ async function deferred(browser, base) {
     // Results: letter and text, icon and word, excerpt, one short line.
     await page.getByRole('heading', { name: 'Resultado da tentativa' }).waitFor();
     const results = page.locator('.quiz-v2-diagnostic');
-    await results.getByText('Sua resposta: D — 15').waitFor();
-    await results.getByText('Resposta correta: A — 2').waitFor();
-    await results.getByText('Sua resposta: A — Mitocôndria').waitFor();
+    await results.getByText('Sua resposta: D) 15').waitFor();
+    await results.getByText('Resposta correta: A) 2').waitFor();
+    await results.getByText('Sua resposta: A) Mitocôndria').waitFor();
     assert.equal(await results.locator('.quiz-review-mark', { hasText: 'Errou' }).count(), 2);
     assert.equal(await results.locator('.quiz-review-mark svg').count(), 2, 'icon + word');
     await results.getByText('Trecho da aula').first().waitFor();
@@ -120,8 +120,8 @@ async function immediate(browser, base) {
   assert.equal(await heading(page).textContent(), QUIZ_BATCH.questions[0].statement, 'stays to read the correction');
   await page.waitForFunction(() => document.activeElement?.classList.contains('quiz-feedback'));
   assert.match(await feedback.textContent(), /Resposta incorreta/);
-  assert.match(await feedback.textContent(), /Sua resposta: A — Mitocôndria/);
-  assert.match(await feedback.textContent(), /Resposta correta: B — Cloroplasto/);
+  assert.match(await feedback.textContent(), /Sua resposta: A\) Mitocôndria/);
+  assert.match(await feedback.textContent(), /Resposta correta: B\) Cloroplasto/);
   assert.match(await feedback.textContent(), /Trecho da aula/);
   await page.locator('.quiz-answer-card.is-correct', { hasText: 'Correta' }).waitFor();
   await page.locator('.quiz-answer-card.is-wrong', { hasText: 'Sua resposta · incorreta' }).waitFor();

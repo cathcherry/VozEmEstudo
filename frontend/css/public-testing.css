@@ -39,11 +39,6 @@
     font-weight: 600;
     line-height: 1.2;
   }
-  .demo-shelf__intro {
-    max-width: 44rem;
-    margin: var(--space-1) 0 0;
-    color: var(--ink-muted);
-  }
   .demo-shelf__row {
     position: relative;
     z-index: 1;
@@ -158,7 +153,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: var(--space-2) var(--space-3);
     margin-top: auto;
     padding-top: var(--space-3);
@@ -196,7 +191,6 @@
   @keyframes demo-pulse { to { opacity: 0.25; } }
 
   /* ---- Início: compact entry under "Continuar estudando" -------------------------------- */
-  .demo-home__intro { margin: 0 0 var(--space-3); color: var(--ink-muted); font-size: var(--step-ui); }
   .demo-home__list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
@@ -258,10 +252,10 @@
     cursor: pointer;
     list-style: none;
   }
+  p.demo-note__summary { margin: 0; cursor: default; }
   .demo-note__summary::-webkit-details-marker { display: none; }
   .demo-note__summary:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   .demo-note__label { color: var(--ink); font-weight: 650; }
-  .demo-note__label::after { content: ' ·'; color: var(--ink-muted); font-weight: 400; }
   .demo-note__body { margin-top: var(--space-2); padding: var(--space-3); border-left: 3px solid var(--matcha); border-radius: 0 var(--radius-control) var(--radius-control) 0; background: var(--paper-sunken); }
   .demo-note__body p { margin: 0; }
   .demo-note__body p + p { margin-top: var(--space-2); }
@@ -282,7 +276,6 @@
   }
   .testing-account__head h2 { margin: 0; }
   .testing-account__intro { max-width: 52rem; margin: var(--space-3) 0 var(--space-4); color: var(--ink-muted); }
-  .testing-account__note { margin: 0; color: var(--ink-muted); font-size: var(--step--1); }
   .testing-account__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin-top: var(--space-5); }
   .testing-account__demos { display: inline-flex; align-items: center; gap: 6px; }
   .testing-chip {

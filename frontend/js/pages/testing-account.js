@@ -59,7 +59,7 @@ export function usageMeters(status) {
     }
     const text =
       kind === 'transcription_seconds'
-        ? `${formatSeconds(left.used)} de ${formatSeconds(left.limit)} usados — restam ${formatSeconds(left.remaining)}`
+        ? `${formatSeconds(left.used)} de ${formatSeconds(left.limit)} usados · restam ${formatSeconds(left.remaining)}`
         : `${number(left.used)} de ${number(left.limit)} · restam ${number(left.remaining)}`;
     const item = meter({ label, text, ratio: left.used / left.limit, state: stateOf(left) });
     item.dataset.kind = kind;
@@ -68,7 +68,7 @@ export function usageMeters(status) {
   return list;
 }
 
-function explanation(status, demoCount) {
+function explanation(status) {
   const text = el('p', 'testing-account__intro');
   const limit = allowance(status, 'transcription_seconds')?.limit;
   if (status.policy === 'admin') {
@@ -87,17 +87,6 @@ function explanation(status, demoCount) {
       ),
     );
   }
-  if (status.demoAccess)
-    text.append(
-      ' ',
-      el(
-        'span',
-        '',
-        demoCount > 1
-          ? `Também preparamos ${demoCount} aulas completas para você explorar sem gastar seu limite!`
-          : 'Também preparamos aulas completas para você explorar sem gastar seu limite!',
-      ),
-    );
   return text;
 }
 
@@ -209,13 +198,13 @@ export async function mountTestingAccount(anchor) {
   const badge = el('span', 'testing-chip', status.policy === 'admin' ? 'Administradora' : 'Participante');
   badge.prepend(icon(status.policy === 'admin' ? 'star' : 'sparkle', { size: 16 }));
   head.append(copy, badge);
-  section.append(head, explanation(status, demos.length), usageMeters(status));
+  section.append(head, explanation(status), usageMeters(status));
   if (status.demoAccess && demos.length) {
     const link = el('a', 'secondary-action testing-account__demos');
     link.href = DEMO_HREF;
     link.append(icon('open', { size: 18 }), el('span', '', `Ver as aulas de demonstração (${demos.length})`));
     const foot = el('div', 'testing-account__foot');
-    foot.append(link, el('p', 'testing-account__note', 'O que você já enviou e gerou continua disponível, mesmo depois de usar os limites.'));
+    foot.append(link);
     section.append(foot);
   }
   anchor.after(section);

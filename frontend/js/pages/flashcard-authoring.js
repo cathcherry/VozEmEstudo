@@ -258,7 +258,7 @@ export function initFlashcardAuthoring({ material }) {
       generateButton.textContent = 'Gerar prévia';
       generateButton.className = 'primary-action';
       if (!form.elements.name.value)
-        form.elements.name.value = `${material().title} — flashcards`.slice(0, 160);
+        form.elements.name.value = `${material().title} · flashcards`.slice(0, 160);
       dialog.showModal();
       await loadTargets();
     },

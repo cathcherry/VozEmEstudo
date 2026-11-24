@@ -33,7 +33,7 @@ if (!sections.length) {
   unavailable.append(
     emptyState(
       'A revisão ainda não está ativa',
-      'Flashcards, tentativas de questões e anotações aparecem aqui quando forem ativados neste servidor.',
+      'Flashcards, questões e anotações aparecem aqui.',
       { href: './historico.html', action: 'Abrir a Biblioteca', mascot: 'rest' },
     ),
   );

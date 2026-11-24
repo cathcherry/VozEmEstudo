@@ -96,7 +96,7 @@ function renderSummary(summary) {
 const requestIds = { questions: crypto.randomUUID(), flashcards: crypto.randomUUID() };
 const EXPORT_TEXT = {
   questions: {
-    hint: 'Responda estas questões como uma lista comum, com placar e revisão dos erros. A lista fica guardada na primeira aula usada.',
+    hint: 'Responda estas questões como uma lista comum, com placar e revisão dos erros.',
     action: 'Transformar em lista de questões',
     busy: 'Criando a lista…',
     done: 'Lista de questões pronta.',
@@ -104,7 +104,7 @@ const EXPORT_TEXT = {
     gone: 'A lista criada antes não existe mais (a aula que a guardava foi excluída). Você pode criar outra.',
   },
   flashcards: {
-    hint: 'Revise estes cartões com a repetição espaçada, num conjunto pessoal em Flashcards › Conjuntos. Cada cartão mostra a aula de onde veio.',
+    hint: 'Revise estes cartões com a repetição espaçada, num conjunto pessoal em Flashcards › Conjuntos.',
     action: 'Salvar como conjunto de flashcards',
     busy: 'Salvando o conjunto…',
     done: 'Conjunto de flashcards salvo.',
@@ -247,7 +247,7 @@ async function showDetail(id) {
   if (record.excluded?.length) {
     const list = el('ul', { className: 'multi-lesson-excluded' });
     for (const item of record.excluded)
-      list.append(el('li', {}, own('span', item.title), document.createTextNode(' — '), el('span', { text: REASON[item.reason] || 'indisponível' })));
+      list.append(el('li', {}, own('span', item.title), document.createTextNode(': '), el('span', { text: REASON[item.reason] || 'indisponível' })));
     excluded.append(el('h4', { text: 'Ficaram de fora' }), list);
   }
   const content = $('[data-multi-lesson-content]');

@@ -73,7 +73,7 @@ export function buildStudySync({userId,api,storage,apply,uuid,readLocal=()=>null
           } else if(error.status===400||error.status===404) {
             pending.delete(id);persist();state('Um andamento não pôde ser enviado. O registro local foi mantido; confira se a aula ainda existe.');
           } else {
-            nextAttempt=now()+30000; state('Sem confirmação da conta. O andamento continua neste navegador e o envio será repetido com a mesma identificação.'); break;
+            nextAttempt=now()+30000; state('Sem confirmação da conta. O andamento continua neste navegador.'); break;
           }
         }
       }

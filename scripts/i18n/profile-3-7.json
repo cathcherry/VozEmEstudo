@@ -21,11 +21,6 @@
     "es": "Notas con títulos, listas, resaltados y color de fondo.",
     "zh-CN": "带标题、列表、高亮和背景色的笔记。"
   },
-  "Passos para marcar; fica salvo na conta.": {
-    "en": "Steps to tick off; saved to your account.",
-    "es": "Pasos para marcar; se guarda en la cuenta.",
-    "zh-CN": "可勾选的步骤；保存在账户中。"
-  },
   "Imagem": { "en": "Image", "es": "Imagen", "zh-CN": "图片" },
   "Uma foto ou ilustração sua, com legenda.": {
     "en": "A photo or illustration of yours, with a caption.",
@@ -120,11 +115,6 @@
   "Rosa": { "en": "Rose", "es": "Rosa", "zh-CN": "玫瑰" },
   "Areia": { "en": "Sand", "es": "Arena", "zh-CN": "沙色" },
   "Passos": { "en": "Steps", "es": "Pasos", "zh-CN": "步骤" },
-  "Um passo por linha (até 30). Marcar um passo no perfil fica salvo na sua conta.": {
-    "en": "One step per line (up to 30). Ticking a step on your profile is saved to your account.",
-    "es": "Un paso por línea (hasta 30). Marcar un paso en el perfil se guarda en tu cuenta.",
-    "zh-CN": "每行一个步骤（最多 30 个）。在个人资料中勾选会保存到账户。"
-  },
   "Arquivo GIF": { "en": "GIF file", "es": "Archivo GIF", "zh-CN": "GIF 文件" },
   "Descrição para leitores de tela (recomendado)": {
     "en": "Description for screen readers (recommended)",

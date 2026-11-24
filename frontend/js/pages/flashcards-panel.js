@@ -103,7 +103,7 @@ export async function initFlashcardsPanel({ materials }) {
   const drafts = make('div', null, 'flashcard-drafts');
   generateForm.append(generateLessonLabel, amountLabel, generateButton);
   generator.append(make('h3', 'Criar cartões com IA'),
-    make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.', 'flashcard-muted'),
+    make('p', 'Confira a resposta e o trecho de apoio antes de salvar.', 'flashcard-muted'),
     generateForm, generateMessage, drafts);
   (slot('generator') || createForm.parentElement).append(generator);
   // Re-rendering the review card replaces the focused control; keep keyboard users in place.
@@ -353,7 +353,7 @@ export async function initFlashcardsPanel({ materials }) {
       filtered: Boolean(lessonFilter.value || (setsEnabled && setFilter.value)),
     });
     if (dueTotal > dueCards.length) {
-      const note = make('p', `Mais cartões serão carregados à medida que você revisar. ${dueTotal} pendentes no filtro atual.`, 'flashcard-muted');
+      const note = make('p', `${dueTotal} pendentes no filtro atual.`, 'flashcard-muted');
       dueArea.append(note);
     }
     const card = dueCards[0];
@@ -489,7 +489,7 @@ export async function initFlashcardsPanel({ materials }) {
       const list = make('ol');
       for (const review of reviews) {
         const rating = FLASHCARD_RATINGS.find((item) => item.value === review.rating);
-        list.append(make('li', `${formatFlashcardDue(review.reviewed_at)} — ${rating?.label || 'Avaliação indisponível'}. Próxima revisão agendada: ${formatFlashcardDue(review.due_at)}.`));
+        list.append(make('li', `${formatFlashcardDue(review.reviewed_at)}: ${rating?.label || 'Avaliação indisponível'}. Próxima revisão agendada: ${formatFlashcardDue(review.due_at)}.`));
       }
       content.append(list);
     } catch (error) {

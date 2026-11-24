@@ -19,10 +19,10 @@ test('deferred feedback never guesses correctness before the server releases a k
   const wrong=feedbackForQuestion({selectedIndex:2,correctIndex:0,correct:false},['13','14','15','16']);
   assert.equal(wrong.title,'Resposta incorreta');
   assert.equal(wrong.icon,'close','not colour only');
-  assert.deepEqual(wrong.lines,['Sua resposta: C — 15','Resposta correta: A — 13']);
+  assert.deepEqual(wrong.lines,['Sua resposta: C) 15','Resposta correta: A) 13']);
   const right=feedbackForQuestion({selectedIndex:1,correctIndex:1,correct:true,evidence:'trecho'},['x','y']);
   assert.equal(right.title,'Você acertou');
-  assert.deepEqual(right.lines,['Sua resposta: B — y']);
+  assert.deepEqual(right.lines,['Sua resposta: B) y']);
   assert.equal(right.evidence,'trecho');
   assert.deepEqual(quizScore([
     {correct:true},{correct:false},{selectedIndex:0},
@@ -31,7 +31,7 @@ test('deferred feedback never guesses correctness before the server releases a k
 });
 
 test('letter and text, and honesty when older data has no option text',()=>{
-  assert.equal(answerLine('Sua resposta',2,'15'),'Sua resposta: C — 15');
+  assert.equal(answerLine('Sua resposta',2,'15'),'Sua resposta: C) 15');
   assert.equal(answerLine('Resposta correta',1,null),'Resposta correta: B (texto da alternativa não disponível)');
   assert.equal(answerLine('Resposta correta',1,'   '),'Resposta correta: B (texto da alternativa não disponível)');
   assert.equal(answerLine('Sua resposta',undefined,'x'),'Sua resposta: não disponível');

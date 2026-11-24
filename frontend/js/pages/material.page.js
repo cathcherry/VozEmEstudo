@@ -307,7 +307,7 @@ function updatePreparation(mode) {
     ? 'Confira o texto reconhecido, corrija o que estiver errado e confirme. Resumo, questões e flashcards usam a versão confirmada.'
     : reopened
       ? 'As etapas desta aula e o próximo passo sugerido.'
-      : 'Transcrição confirmada. Gere um resumo, questões ou flashcards — ou comece a estudar direto.';
+      : 'Transcrição confirmada. Gere um resumo, questões ou flashcards, ou comece a estudar.';
   $('[data-lesson-prep-close]').hidden = !reopened;
   $('[data-lesson-prep-footer]').hidden = !ready() || reopened;
   return true;
@@ -549,7 +549,7 @@ function renderSegments(transcription) {
   if (hasUnsavedEdits() && editingRevision !== transcription.current_revision) {
     setStatus(
       transcriptMessage,
-      'Há outra revisão no servidor. Suas alterações locais foram mantidas; salve para conferir o conflito ou recarregue explicitamente.',
+      'A transcrição mudou em outro aparelho. Suas alterações foram mantidas; salve para comparar ou recarregue a página.',
       'error',
     );
     return;
@@ -1074,7 +1074,7 @@ async function generate(kind, options) {
     pending.delete(operation);
     if (kind === 'summary') displayedSummary = null;
     await reload();
-    setStatus(message, joined ? 'Pronto: era a mesma geração já em andamento, sem custo extra.' : '', joined ? 'success' : undefined);
+    setStatus(message, joined ? 'Pronto.' : '', joined ? 'success' : undefined);
     completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');

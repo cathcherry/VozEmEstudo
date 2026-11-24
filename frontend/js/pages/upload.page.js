@@ -93,9 +93,9 @@ function sizeLabel(bytes) {
   return `${value.toLocaleString((globalThis.VOZ_LOCALE || 'pt-BR'), { maximumFractionDigits: value < 10 ? 1 : 0 })} ${units[unit]}`;
 }
 const STEP_STATE_LABELS = {
-  active: ' — em andamento',
-  done: ' — concluído',
-  error: ' — não concluído',
+  active: ': em andamento',
+  done: ': concluído',
+  error: ': não concluído',
 };
 /** Marks one real client-side upload step; earlier visible steps become complete. */
 const percent = (fraction) => `${Math.floor(Math.min(1, Math.max(0, fraction)) * 100)}%`;
