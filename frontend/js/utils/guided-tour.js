@@ -188,12 +188,21 @@ export function startTourFromAnywhere() {
   location.href = TOUR_START_URL;
 }
 
+/** Loads the tour stylesheet once; resolves when it applies (or after 3 s, so nothing hangs). */
 function ensureStyles(doc = document) {
-  if (doc.querySelector('link[href$="/css/guided-tour.css"]')) return;
-  const link = doc.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = '/css/guided-tour.css';
-  doc.head.append(link);
+  let link = doc.querySelector('link[href$="/css/guided-tour.css"]');
+  if (!link) {
+    link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/css/guided-tour.css';
+    doc.head.append(link);
+  }
+  if (link.sheet) return Promise.resolve();
+  return new Promise((resolve) => {
+    link.addEventListener('load', resolve, { once: true });
+    link.addEventListener('error', resolve, { once: true });
+    setTimeout(resolve, 3000);
+  });
 }
 
 const make = (tag, className, text) => {
@@ -242,7 +251,7 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   active?.close('replaced');
   const list = availableSteps(steps, (selector) => findVisible(selector, doc));
   if (!list.length) return null;
-  ensureStyles(doc);
+  const stylesReady = ensureStyles(doc);
   const reduced = prefersReducedMotion(doc);
   const returnFocus = doc.activeElement;
 
@@ -279,6 +288,10 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   head.append(counter, close);
   popover.append(head, title, text, actions);
   if (reduced) popover.dataset.reducedMotion = 'true';
+  // Invisible until the stylesheet applies: an unstyled popover would be measured and placed in
+  // the wrong spot (below or above the target instead of beside it) on a first visit.
+  popover.style.visibility = 'hidden';
+  ring.style.visibility = 'hidden';
   doc.body.append(ring, popover);
   doc.documentElement.dataset.tour = 'active';
 
@@ -376,6 +389,13 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   const resized = typeof ResizeObserver === 'function' ? new ResizeObserver(() => position()) : null;
   resized?.observe(popover);
   show(0);
+  void stylesReady.then(() => {
+    if (ended) return;
+    position();
+    popover.style.visibility = '';
+    ring.style.visibility = '';
+    title.focus({ preventScroll: true });
+  });
   active = {
     close: (status = 'dismissed') => end(status),
     next: () => show(index + 1),
