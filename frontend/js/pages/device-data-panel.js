@@ -29,6 +29,7 @@ const describe = (items) =>
               'notebook-looks': 'capas e papéis dos cadernos',
               'focus-history': 'blocos de foco',
               'question-reports': 'questões marcadas',
+              'guided-tour': 'tour guiado',
             }[item.key] || 'dados do perfil',
     )
     .join(', ');
