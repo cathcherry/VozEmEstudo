@@ -14,8 +14,10 @@ import { t, intlLocale } from '../i18n/i18n.js';
 import * as discoveryApi from '../api/discovery.api.js';
 import { initRailTabs } from './dashboard-rail-tabs.js';
 import { icon as uiIcon } from '../utils/icons.js';
+import { maybeOfferTour } from '../utils/guided-tour.js';
 
 const session=await initAuthenticatedShell();
+void maybeOfferTour({ user: session.user });
 // Investigations summary (only when discoveries are on and the adventure layer is visible).
 void (async () => {
   const box = document.querySelector('[data-desk-expedition]');
