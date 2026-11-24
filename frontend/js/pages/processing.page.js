@@ -2,6 +2,7 @@ import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { getMaterial } from '../api/material.api.js';
 import { pollJob } from '../api/job.api.js';
+import { isQuotaError, limitsLink } from '../utils/public-testing.js';
 await initAuthenticatedShell();
 const params = new URLSearchParams(location.search),
   id = params.get('id'),
@@ -95,6 +96,12 @@ function failed(error) {
     detail: error.message || 'Não foi possível concluir a transcrição.',
   });
   $('[data-wait-elapsed]').textContent = '';
+  // Public testing: a transcription refused for the participant's limit links to the account.
+  if (isQuotaError(error) && !$('[data-wait-error-actions] .testing-limits-link')) {
+    const link = limitsLink();
+    link.classList.add('text-action');
+    $('[data-wait-error-actions]').append(link);
+  }
   $('[data-wait-retry]').focus({ preventScroll: true });
 }
 $('[data-wait-retry]').addEventListener('click', () => location.reload());
@@ -114,10 +121,13 @@ async function run() {
   if (jobId) {
     const result = await pollJob(jobId, { onUpdate: update });
     if (result.status !== 'CONCLUIDA')
-      throw Error(
-        result.status === 'CANCELADA'
-          ? 'A transcrição foi cancelada.'
-          : result.error_message || 'A transcrição não foi concluída.',
+      throw Object.assign(
+        Error(
+          result.status === 'CANCELADA'
+            ? 'A transcrição foi cancelada.'
+            : result.error_message || 'A transcrição não foi concluída.',
+        ),
+        { code: result.error_code || undefined },
       );
   }
   const material = await getMaterial(id);

@@ -10,6 +10,7 @@ import { createCardEditor } from './profile-card-editor.js';
 import { toast } from '../utils/toast.js';
 import '../utils/preferences.js';
 import { initAuthenticatedShell, updateUserIdentity, setStatus } from '../utils/shell.js';
+import { publicTestingEnabled } from '../utils/public-testing.js';
 import { updateProfile } from '../api/auth.api.js';
 import { avatars, getAvatar } from '../utils/avatars.js';
 import { listMaterials } from '../api/material.api.js';
@@ -26,6 +27,12 @@ registerCloudMerge('milestones', mergeMilestoneStates);
 
 const session = await initAuthenticatedShell();
 const userId = session.user.id;
+// Public testing program (flag only): "Conta de participante" with the account's limits.
+void publicTestingEnabled().then(async (on) => {
+  if (!on) return;
+  const { mountTestingAccount } = await import('./testing-account.js');
+  await mountTestingAccount(document.querySelector('.account-profile-hero'));
+}).catch(() => { /* optional section */ });
 window.addEventListener('profile-sync-status', (event) => { const node=document.querySelector('[data-profile-sync]'); if(node) node.textContent=event.detail === 'Salvo na conta' ? '' : event.detail; });
 const syncedBlocks = await loadCloudState(userId,'profile-blocks',loadBlocks());
 if (Array.isArray(syncedBlocks)) localStorage.setItem(profileBlocksKey(userId),JSON.stringify(syncedBlocks));

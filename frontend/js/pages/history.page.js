@@ -5,6 +5,7 @@ import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
 import { getCatalog, getLibraryResources, createSubject, updateSubject, deleteSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { publicTestingEnabled } from '../utils/public-testing.js';
 import { studyFor, metadataTags, saveTags, listeningPercent } from '../utils/study-store.js';
 import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
@@ -45,6 +46,7 @@ let catalogEnabled = false;
 let catalog = { subjects: [], units: [] };
 let libraryViews;
 let treeResources = {};
+let demoShelf = null; // public testing: demo lessons shelf (see the end of this file)
 window.addEventListener('library-layout-changed',()=>{if(loaded)render();});
 const openSubjects = new Set();
 const openUnits = new Set();
@@ -737,6 +739,8 @@ function render() {
       : new Date(b.created_at) - new Date(a.created_at));
 
   const showingResources = libraryViews?.isResourceView() === true;
+  // Public testing: the demo shelf belongs to the library's front page only.
+  demoShelf?.setVisible(!showingResources && !hasFilters() && !new URLSearchParams(location.search).get('folder'));
   folderToolbar.hidden = !catalogEnabled || showingResources;
   newSubjectButton.hidden = !catalogEnabled;
   clearTimeout(announceTimer);
@@ -1115,3 +1119,11 @@ async function load() {
 }
 
 load();
+
+// Public testing program (flag only): the shelf of demonstration lessons above the folders.
+void publicTestingEnabled().then(async (on) => {
+  if (!on) return;
+  const { mountLibraryShelf } = await import('./demo-lessons.js');
+  demoShelf = await mountLibraryShelf(document.querySelector('.study-section'));
+  if (loaded) render();
+}).catch(() => { /* the library works without the shelf */ });

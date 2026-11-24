@@ -34,6 +34,7 @@ import { lessonProgress, renderLessonSteps, lessonMode } from '../utils/lesson-s
 import { listFlashcardSets } from '../api/flashcard.api.js';
 import { listQuizSessions } from '../api/quiz-session.api.js';
 import { iconMarkup } from '../utils/icons.js';
+import { appendLimitsLink } from '../utils/public-testing.js';
 
 await initAuthenticatedShell();
 const $ = (selector) => document.querySelector(selector);
@@ -830,6 +831,11 @@ function render(material) {
   $('[data-material-title]').removeAttribute('aria-busy');
   document.title = material.title + ' | Voz em Estudo';
   $('[data-material-meta]').textContent = material.subject || 'Sem disciplina';
+  // Public testing: a demo copy says so, discreetly (credits in a disclosure).
+  if (material.demo)
+    void import('./demo-lessons.js')
+      .then((module) => module.renderDemoNote($('.material-header-text'), material.demo))
+      .catch(() => {});
   const tagList = studyFor(materialId).tags;
   const tags = document.createElement('ul');
   tags.className = 'material-tags';
@@ -1072,6 +1078,7 @@ async function generate(kind, options) {
     completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');
+    appendLimitsLink(message, e);
   } finally {
     busy = false;
     generationFields.forEach((field, index) => {

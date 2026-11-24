@@ -19,7 +19,10 @@ const m = require('./mock-app.cjs');
     for (const t of targets) {
       const [, p, w = '1440', theme = ''] = t.match(/^([^@#]+)(?:@(\d+))?(?:#(.+))?$/);
       const data = m.state();
-      const { context, page } = await m.openApp(browser, base, flags, data, {
+      // `#tester` / `#admin`: the public testing program on, with that account policy.
+      const policy = theme.split(',').find((x) => x === 'tester' || x === 'admin');
+      if (policy) data.testing = require('./mock-testing.cjs').testingState(policy);
+      const { context, page } = await m.openApp(browser, base, { ...flags, public_testing: Boolean(policy) }, data, {
         width: +w,
         height: 900,
       });
@@ -27,6 +30,7 @@ const m = require('./mock-app.cjs');
       await context.addInitScript((o) => {
         try {
           for (const x of o) {
+            if (x === 'tester' || x === 'admin') continue;
             if (x === 'out') localStorage.setItem('mock-signed-out', '1');
             else if (x === 'big')
               localStorage.setItem(

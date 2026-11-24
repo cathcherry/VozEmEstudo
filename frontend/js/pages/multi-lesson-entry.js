@@ -4,6 +4,7 @@
 // The dialog shows which lessons go in (confirmed current revision) and which stay out and why,
 // before anything is generated. Lesson titles are user content and are never translated.
 import { createMultiLesson, previewMultiLesson } from '../api/multi-lesson.api.js';
+import { ensureTestingStyles, generationBlocked, limitsLink } from '../utils/public-testing.js';
 
 export const MULTI_LESSON_PAGE = './integrado.html';
 const REASON = {
@@ -111,6 +112,24 @@ export function openMultiLessonDialog(
 
   let resolved = null;
   let sequence = 0;
+  // Public testing: participants without this generation see why, and cannot start it (the
+  // server refuses it anyway).
+  let blocked = false;
+  void generationBlocked('multi_lesson').then((reason) => {
+    if (!reason || !dialog.isConnected) return;
+    blocked = true;
+    submit.disabled = true;
+    void ensureTestingStyles();
+    const note = el('p', {
+      className: 'multi-lesson-testing-note',
+      'data-testing-blocked': reason,
+      text: reason === 'unavailable'
+        ? 'Material integrado: indisponível durante os testes para contas de participante.'
+        : 'Você já usou as gerações de material integrado do período de testes.',
+    });
+    note.append(' ', limitsLink());
+    error.before(note);
+  });
   const currentSelection = () =>
     picking ? { kind: 'units', ids: [...unitPicker.querySelectorAll('input:checked')].map((input) => input.value) } : selection;
   const fail = (text) => {
@@ -170,7 +189,7 @@ export function openMultiLessonDialog(
           resolved = { ...result, selection: wanted };
           status.textContent = included.length === 1 ? '1 aula pronta para estudar.' : `${included.length} aulas prontas para estudar juntas.`;
           status.dataset.state = 'success';
-          submit.disabled = false;
+          submit.disabled = blocked;
         }
       })
       .catch((failure) => {
@@ -206,7 +225,7 @@ export function openMultiLessonDialog(
       outputs.querySelector('input').focus();
       return;
     }
-    if (!resolved) return;
+    if (!resolved || blocked) return;
     submit.disabled = true;
     try {
       const settings = {};
@@ -231,7 +250,7 @@ export function openMultiLessonDialog(
         return;
       }
       error.textContent = failure.message || 'Não foi possível pedir o material integrado.';
-      submit.disabled = false;
+      submit.disabled = blocked;
     }
   });
   dialog.showModal();

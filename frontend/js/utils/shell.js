@@ -129,6 +129,11 @@ export async function initAuthenticatedShell() {
     void initFocusIndicator({ materialId: lessonId }).catch(() => { /* optional tool */ });
   }
   await preferenceSync;
+  // Public testing program (flag only): loaded on demand, so pages without it pay nothing.
+  void getFeatureFlags()
+    .then((flags) => (flags.public_testing ? import('./testing-shell.js') : null))
+    .then((module) => module?.initTestingShell(session.user))
+    .catch(() => { /* optional notice */ });
   document.querySelectorAll('[data-logout]').forEach((el) => {
     el.addEventListener('click', async (event) => {
       event.preventDefault();

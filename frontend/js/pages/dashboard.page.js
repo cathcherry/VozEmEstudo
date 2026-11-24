@@ -15,6 +15,7 @@ import * as discoveryApi from '../api/discovery.api.js';
 import { initRailTabs } from './dashboard-rail-tabs.js';
 import { icon as uiIcon } from '../utils/icons.js';
 import { maybeOfferTour } from '../utils/guided-tour.js';
+import { publicTestingEnabled } from '../utils/public-testing.js';
 
 const session=await initAuthenticatedShell();
 void maybeOfferTour({ user: session.user });
@@ -183,4 +184,10 @@ async function load() {
   finally { container.setAttribute('aria-busy','false'); }
 }
 load();
+// Public testing program (flag only): demo lessons not opened yet, under "Continuar estudando".
+void publicTestingEnabled().then(async (on) => {
+  if (!on) return;
+  const { mountHomeEntry } = await import('./demo-lessons.js');
+  await mountHomeEntry(document.querySelector('.dash-continue'));
+}).catch(() => { /* optional entry */ });
 

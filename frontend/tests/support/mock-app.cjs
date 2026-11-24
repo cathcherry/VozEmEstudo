@@ -355,6 +355,9 @@ async function setup(context, base, flags, data, options = {}) {
         recordingLanguages: { options: ['pt'], default: 'pt' },
         oauthProviders: [],
       });
+    // Public testing program (./mock-testing.cjs): /api/testing/*, demo lessons, quota refusals.
+    const testingReply = require('./mock-testing.cjs').handleTesting({ request, p, method, json, data });
+    if (testingReply) return testingReply;
     if (p === '/api/materials' && method === 'GET') return json([...materials, ...(data.extraMaterials || [])]);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = [...materials, ...(data.extraMaterials || [])].find((item) => item.id === p.split('/')[3]);
@@ -992,6 +995,8 @@ const allFlags = {
   discoveries: false,
   // 3.6 Milestone D, off by default; journal-check.cjs turns it on.
   journal: false,
+  // Public testing program, off by default; public-testing-check.cjs turns it on.
+  public_testing: false,
 };
 
 /** Serves the static front end on a free local port. */
