@@ -15,7 +15,9 @@ concurrency:
 jobs:
   local-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    # Installing dependencies alone takes 5–18 min depending on the runner; the browser suite has
+    # 30 journeys. 35 min cut healthy runs mid-suite, so the budget leaves room without skipping anything.
+    timeout-minutes: 55
     env:
       FFMPEG_PATH: /usr/bin/ffmpeg
       FFPROBE_PATH: /usr/bin/ffprobe
