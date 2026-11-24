@@ -104,7 +104,7 @@ const EXPORT_TEXT = {
     gone: 'A lista criada antes não existe mais (a aula que a guardava foi excluída). Você pode criar outra.',
   },
   flashcards: {
-    hint: 'Revise estes cartões com a repetição espaçada, num conjunto pessoal em Revisar › Conjuntos. Cada cartão mostra a aula de onde veio.',
+    hint: 'Revise estes cartões com a repetição espaçada, num conjunto pessoal em Flashcards › Conjuntos. Cada cartão mostra a aula de onde veio.',
     action: 'Salvar como conjunto de flashcards',
     busy: 'Salvando o conjunto…',
     done: 'Conjunto de flashcards salvo.',

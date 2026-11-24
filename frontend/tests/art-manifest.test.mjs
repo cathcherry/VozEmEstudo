@@ -279,7 +279,7 @@ test('icons: every semantic icon is in the Phosphor sprite, with the MIT licence
   for (const page of [
     'painel.html',
     'historico.html',
-    'revisar.html',
+    'flashcards.html',
     'planejar.html',
     'focar.html',
   ]) {

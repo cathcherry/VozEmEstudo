@@ -92,7 +92,7 @@ function exportOf(data, record, kind, input) {
           itemCount: record.result.flashcards.length,
           available: true,
           skipped: 0,
-          links: { review: `./revisar.html?conjunto=${encodeURIComponent(`set-${record.id}`)}#flashcards` },
+          links: { review: `./flashcards.html?conjunto=${encodeURIComponent(`set-${record.id}`)}#revisar` },
         };
   data.multiLessonExports.push(item);
   data.multiLessonExportRequests.push({ kind, ...input });

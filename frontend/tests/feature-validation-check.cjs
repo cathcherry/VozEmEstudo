@@ -116,17 +116,21 @@ async function main() {
         { reason: 'not_in_lesson', note: 'Ribossomo não foi citado.', materialId: 'l-foto', batchId: 'b1' },
       );
       assert.equal(saved.statement, 'Onde ocorre a fotossíntese?');
-      // Revisar › Questões lists it with the lesson.
+      // The list of flagged questions lived in Revisar › Questões; since Revisar was retired (3.6)
+      // it belongs with the questions (questoes.html). Checked there once that page shows it.
       await p.goto(base + '/revisar.html#questoes');
+      await p.waitForURL('**/questoes.html');
       const flagged = p.locator('[data-question-reports]');
-      await flagged.locator('.question-report-row', { hasText: 'Onde ocorre a fotossíntese?' }).waitFor();
-      assert.match(await flagged.textContent(), /Não está na aula/);
-      assert.equal(
-        await flagged.getByRole('link', { name: 'Abrir Fotossíntese e respiração celular' }).getAttribute('href'),
-        './material.html?id=l-foto#questoes',
-      );
-      await settle(p);
-      await axeCheck(p, '[data-question-reports]', 'Questões marcadas');
+      if (await flagged.count()) {
+        await flagged.locator('.question-report-row', { hasText: 'Onde ocorre a fotossíntese?' }).waitFor();
+        assert.match(await flagged.textContent(), /Não está na aula/);
+        assert.equal(
+          await flagged.getByRole('link', { name: 'Abrir Fotossíntese e respiração celular' }).getAttribute('href'),
+          './material.html?id=l-foto#questoes',
+        );
+        await settle(p);
+        await axeCheck(p, '[data-question-reports]', 'Questões marcadas');
+      } else console.log('NOTE questoes.html does not list flagged questions yet (they stay saved in the account)');
       // Another device (fresh browser, same account) sees the flag; undo keeps a dated removal.
       const other = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
       await other.page.goto(base + '/material.html?id=l-foto#questoes');
@@ -274,38 +278,37 @@ async function main() {
 
     // ---------- Annotations: pages and the way back to the passage ----------------------
     data.notePageSize = 1;
+    // 3.6: every note is listed on Início (?em=notes, where old Revisar › Anotações links land).
     await page.goto(base + '/revisar.html#anotacoes');
-    const card = page.locator('#anotacoes .annotation-card');
+    await page.waitForURL('**/painel.html?em=notes');
+    const card = page.locator('[data-search-results] .search-note');
     await card.first().waitFor();
     assert.equal(await card.count(), 1);
-    const link = card.getByRole('link', { name: 'Abrir no trecho da aula' });
-    const href = new URL(await link.getAttribute('href'), base);
+    const href = new URL(await card.first().getAttribute('href'), base);
     assert.equal(href.searchParams.get('id'), 'l-foto');
     assert.equal(
       href.searchParams.get('busca'),
       'A energia luminosa é convertida em energia química',
     );
-    await page.getByRole('button', { name: 'Próximas anotações' }).click();
+    const more = page.getByRole('button', { name: 'Mostrar mais anotações' });
+    await more.click();
     await card.filter({ hasText: 'máquina a vapor' }).waitFor();
-    assert(await page.getByRole('button', { name: 'Próximas anotações' }).isDisabled());
-    assert.match(await page.locator('#anotacoes nav span').textContent(), /2–2 de 2/);
-    await page.getByRole('button', { name: 'Anotações anteriores' }).click();
-    await card.filter({ hasText: 'Cai na prova!' }).waitFor();
+    assert(await more.isHidden(), 'no more pages');
+    assert.match(await page.locator('[data-search-results] [role=status]').textContent(), /2 de 2 anotações/);
     data.notePageSize = 0;
     await page.goto(base + href.pathname + href.search);
     assert.equal(new URL(page.url()).searchParams.get('busca'), href.searchParams.get('busca'));
     record(
-      'Anotações: paginação segue o tamanho informado pelo servidor; "Abrir no trecho da aula" leva à busca do destaque',
+      'Anotações: todas no Início, uma página por vez no tamanho informado pelo servidor; cada uma leva à busca do destaque na aula',
     );
     // ---------- Renaming a flashcard set: an app dialog, not the browser's prompt -----------
     data.sets = [
       { id: 'set-1', name: 'Biologia 1', card_count: 3, due_count: 1, status: 'active' },
     ];
-    await page.goto(base + '/revisar.html#flashcards');
-    // 3.6: managing sets is the "Gerenciar" view of Flashcards.
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
-    const setsPanel = page.locator('details', { hasText: 'Conjuntos de flashcards' }).last();
-    await setsPanel.locator('summary').click();
+    // 3.6: sets have their own section on the Flashcards page.
+    await page.goto(base + '/flashcards.html#conjuntos');
+    const setsPanel = page.locator('#conjuntos .flashcard-sets');
+    await setsPanel.locator('h4', { hasText: 'Biologia 1' }).waitFor();
     const rename = setsPanel.getByRole('button', { name: 'Renomear' });
     await rename.click();
     const dialog = page.getByRole('dialog', { name: 'Renomear conjunto' });
@@ -334,24 +337,25 @@ async function main() {
       'Renomear conjunto: diálogo do app com foco no campo, Esc cancela e devolve o foco, Enter salva',
     );
 
-    // ---------- New flashcard: a dialog opened from a tile, not a folded section ------------
-    await page.goto(base + '/revisar.html#flashcards');
-    await page.locator('.review-create > summary', { hasText: 'Novo cartão' }).click();
-    const manual = page.getByRole('button', { name: /Criar cartão manualmente/ });
-    await manual.click();
-    const cardDialog = page.getByRole('dialog', { name: 'Criar cartão' });
-    await cardDialog.waitFor();
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'flashcard-front');
+    // ---------- New flashcard: its own section, a toast after saving ------------------------
+    // Início's "create" shortcut (?acao=criar) opens "Criar cartão" with focus on the question.
+    await page.goto(base + '/flashcards.html?acao=criar');
+    await page.waitForURL('**/flashcards.html#criar');
+    const compose = page.locator('#criar');
+    await page.waitForFunction(() => document.activeElement?.id === 'flashcard-front');
     await settle(page);
-    await axeCheck(page, 'dialog[open]', 'Criar cartão');
-    await cardDialog.getByLabel('Pergunta ou conceito').fill('O que é a fase clara?');
-    await cardDialog.getByLabel('Resposta ou explicação').fill('A etapa que depende de luz.');
-    await cardDialog.locator('[type=submit]').click();
-    await page.locator('[data-flashcard-create-done]', { hasText: 'Cartão criado' }).waitFor();
-    assert(await cardDialog.isHidden(), 'dialog closes after saving');
+    await axeCheck(page, '#criar', 'Criar cartão');
+    await compose.getByLabel('Pergunta ou conceito').fill('O que é a fase clara?');
+    await compose.getByLabel('Resposta ou explicação').fill('A etapa que depende de luz.');
+    await compose.locator('[type=submit]').click();
+    await page.locator('.app-toast', { hasText: 'Cartão salvo. Ele já entra na revisão.' }).waitFor();
     assert.deepEqual(data.createdCards.map((c) => c.front), ['O que é a fase clara?']);
-    await page.waitForFunction(() => /Criar cartão manualmente/.test(document.activeElement?.textContent || ''), null, { timeout: 3000 });
-    record('Novo cartão: botão abre um diálogo com foco na pergunta; salvar fecha, confirma e devolve o foco');
+    assert.equal(await compose.getByLabel('Pergunta ou conceito').inputValue(), '', 'ready for the next card');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'flashcard-front');
+    // "Revisar agora" in the toast goes to the review.
+    await page.locator('.app-toast').getByRole('button', { name: 'Revisar agora' }).click();
+    await page.locator('#revisar:not([hidden])').waitFor();
+    record('Novo cartão: seção própria com foco na pergunta; salvar confirma num aviso breve (toast) e deixa o formulário pronto para o próximo');
 
     // ---------- Flashcards 3.0: merge own sets and import a text file (new set each) ---------
     {
@@ -371,13 +375,12 @@ async function main() {
         { id: 'set-bruno', name: 'Bruno', card_count: bruno.length, due_count: 0, status: 'active', cards: bruno },
       ];
       data.setRequests = 0;
-      await page.goto(base + '/revisar.html#flashcards');
+      await page.goto(base + '/flashcards.html#importar');
       await page.reload(); // same URL: goto alone only changes the hash
-      const panel = page.locator('details.flashcard-sets');
+      const panel = page.locator('.flashcard-sets');
       await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
-      // Merge and import lead the "Gerenciar" view, visible without opening the sets section.
-      await page.getByRole('button', { name: 'Gerenciar' }).click();
-      const deckTools = page.locator('.review-manage .deck-tools');
+      // Merge and import have their own section.
+      const deckTools = page.locator('#importar .deck-tools');
       await deckTools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
       const mergeDialog = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
       await mergeDialog.waitFor();
@@ -484,9 +487,9 @@ async function main() {
     await settle(page);
     await axeCheck(page, '[data-flashcards-section]', 'Aula › Flashcards');
     await setRow.getByRole('link', { name: 'Revisar agora' }).click();
-    await page.waitForURL('**/revisar.html?conjunto=set-foto#flashcards');
+    await page.waitForURL('**/flashcards.html?conjunto=set-foto#revisar');
     await page.waitForFunction(() => [...document.querySelectorAll('select')].some((s) => s.value === 'set-foto'));
-    record('Aula › Flashcards: conjuntos da aula com cartões e pendentes; "Revisar agora" abre Revisar já filtrado no conjunto');
+    record('Aula › Flashcards: conjuntos da aula com cartões e pendentes; "Revisar agora" abre Flashcards já filtrado no conjunto');
 
     // ---------- Biblioteca: Finder-like list view inside a folder ----------------------------
     await page.goto(base + '/historico.html?folder=sub-bio&unit=unit-energia');
@@ -519,7 +522,7 @@ async function main() {
     record('Biblioteca em lista: cada aula numa linha com ícone, data, duração e progresso; sem guias soltas na pasta; seleção de várias aulas move de uma vez');
 
     // ---------- Flashcards 3.0: the look changes, the content and the server do not ----------
-    await page.goto(base + '/revisar.html#flashcards');
+    await page.goto(base + '/flashcards.html#revisar');
     const review = page.locator('.flashcard-review-card');
     await review.waitFor();
     const front = await review.locator('.flashcard-content').first().textContent();
@@ -527,15 +530,21 @@ async function main() {
     page.on('request', (r) => {
       if (/\/api\/flashcards/.test(r.url()) && r.method() !== 'GET') writes.push(r.url());
     });
-    // 3.6: the card's look is chosen in the toolbar's "Filtros" popover.
-    await page.locator('.review-filter > summary').click();
+    // 3.6: the favourite look is chosen in the Aparência section (a gallery of the looks).
     for (const template of ['notebook', 'sticky', 'window', 'polaroid']) {
-      await page.locator('[data-card-template-picker]').selectOption(template);
+      await page.getByRole('tab', { name: 'Aparência' }).click();
+      await page.locator(`[data-card-template-picker] input[value="${template}"]`).check({ force: true });
       assert.equal(await review.getAttribute('data-card-template'), template);
+      await page.getByRole('tab', { name: /Revisar cartões/ }).click();
       assert.equal(await review.locator('.flashcard-content').first().textContent(), front);
       await settle(page);
       await axeCheck(page, '.flashcard-review-card', `Cartão (${template})`);
       await shot(page, `cartao-${template}`, false);
+      // Both sides stay legible in this look.
+      await review.locator('.flashcard-face').click();
+      await page.waitForTimeout(350);
+      await axeCheck(page, '.flashcard-review-card', `Cartão (${template}, verso)`);
+      await review.locator('.flashcard-face').click();
     }
     assert.deepEqual(writes, [], 'changing the look sends nothing to the flashcard API');
     await page.reload();

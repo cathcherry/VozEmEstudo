@@ -21,13 +21,13 @@ test('without the exports migration the caller answers a scoped 503, not the mul
   await assert.rejects(anchor('x', {}), (error) => error.status === 409);
 });
 
-test('links lead to the usual quiz page and to Revisar; nothing for a deleted target', () => {
+test('links lead to the usual quiz page and to Flashcards; nothing for a deleted target', () => {
   assert.deepEqual(exportLinks({ kind: 'questions', available: true, materialId: 'm1', batchId: 'b1' }), {
     answer: './responder.html?material=m1&batch=b1',
     lesson: './material.html?id=m1#questoes',
   });
   assert.deepEqual(exportLinks({ kind: 'flashcards', available: true, setId: 's1' }), {
-    review: './revisar.html?conjunto=s1#flashcards',
+    review: './flashcards.html?conjunto=s1#revisar',
   });
   assert.equal(exportLinks({ kind: 'questions', available: false }), null);
 });

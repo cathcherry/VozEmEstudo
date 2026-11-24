@@ -48,7 +48,7 @@ r.post(
   exportLimit,
   action((q) => exportsService.questions(q.user, q.params.id, q.body)),
 );
-// The personal set lives in Revisar › Conjuntos (FEATURE_FLASHCARD_SETS).
+// The personal set lives in Flashcards › Conjuntos (FEATURE_FLASHCARD_SETS).
 if (isFeatureEnabled('flashcard_sets'))
   r.post(
     '/:id/flashcard-set',

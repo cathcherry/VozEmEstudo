@@ -2,8 +2,8 @@
 //   1. Biblioteca "Selecionar": a click or tap on a lesson or folder selects it and never opens
 //      it; Space/Enter toggle; Shift extends; Esc and "Concluir seleção" restore opening; a
 //      discipline's page has a band in its colour, counts and units as sub-folders.
-//   2. Revisar: today's work first (counts on the tabs, one review card), management tools in a
-//      compact toolbar and a "Gerenciar" view; no nested cards; 390 and 1440 without overflow.
+//   2. Flashcards (own page, revisar.html redirects): six sections; the card turns by click, tap,
+//      Space/Enter or its button; ratings below it; reduced motion; 390 and 1440 without overflow.
 //   3. One focus engine: the timer controls live only on Focar; Planejar shows history and
 //      analysis and links to Focar; other pages show a small topbar indicator while it runs.
 //   4. Arrumar a mesa: an object on the desk leaves the drawer list, moving swaps, storing
@@ -273,65 +273,82 @@ async function desk(browser, base) {
 
 async function review(browser, base) {
   for (const width of [1440, 390]) {
-    const { context, page } = await openApp(browser, base, { ...allFlags, flashcards_v3: true }, state(), { width, height: width < 700 ? 844 : 1000 });
-    const label = `Revisar ${width}`;
+    const data = state();
+    const { context, page } = await openApp(browser, base, { ...allFlags, flashcards_v3: true }, data, { width, height: width < 700 ? 844 : 1000 });
+    const label = `Flashcards ${width}`;
+    // The old Revisar address lands on the review of the Flashcards page.
     await page.goto(base + '/revisar.html');
-    await page.locator('.review-toolbar').waitFor();
-    await page.locator('.review-today-item').first().waitFor();
-    // Today's work first: one line of what is waiting, counts on the tabs, the tab with work open.
-    assert.deepEqual(await page.locator('.review-today-item').allTextContents(), ['5 cartões para revisar', '1 lista de questões para terminar']);
-    assert.equal(await page.locator('#tab-flashcards .tool-tab-count').textContent(), '5');
-    assert.equal(await page.locator('#tab-questoes .tool-tab-count').textContent(), '1');
-    assert.equal(await page.locator('#tab-flashcards').getAttribute('aria-selected'), 'true');
-    // One card on the page: the panel has no chrome of its own, management is out of sight.
-    const chrome = await page.locator('[data-flashcards-panel]').evaluate((node) => {
-      const style = getComputedStyle(node);
-      return `${style.borderTopWidth} ${style.backgroundColor} ${style.boxShadow}`;
-    });
-    assert.equal(chrome, '0px rgba(0, 0, 0, 0) none', 'no card around the review card');
-    assert.equal(await page.locator('.flashcard-review-card').count(), 1);
-    assert(await page.locator('.review-manage').isHidden(), 'managing is a second view');
-    assert(await page.locator('[data-flashcard-set-filter]').isHidden(), 'filters live in a popover');
-    assert.equal(await page.locator('.flashcard-create-tile:visible').count(), 0, 'creating lives in a popover');
+    await page.waitForURL('**/flashcards.html#revisar');
+    await page.locator('.flashcard-review-card').waitFor();
+    // Six labelled sections, the review first, today's count on its key.
+    assert.deepEqual(
+      (await page.locator('[data-tool-tabs] [role=tab]').allTextContents()).map((t) => t.trim()),
+      ['Revisar cartões5', 'Conjuntos', 'Criar cartão', 'Gerar com IA', 'Importar e mesclar', 'Aparência'],
+    );
+    assert.equal(await page.locator('#tab-revisar').getAttribute('aria-selected'), 'true');
+    assert.equal(await page.locator('#tab-revisar').getAttribute('aria-label'), 'Revisar cartões, 5 para hoje');
+    assert.equal(await page.locator('.primary-navigation a[aria-current=page] span').textContent(), 'Flashcards');
+    // Question attempts left open are one link away (they live with the questions).
+    assert.equal(await page.locator('[data-flashcards-quiz-link]').getAttribute('href'), './questoes.html');
+    await page.locator('[data-flashcards-quiz-link]', { hasText: '1 lista de questões em andamento' }).waitFor();
+    // One card, front labelled; the panel has no box of its own; no ratings before turning.
+    const card = page.locator('.flashcard-review-card');
+    assert.equal(await card.count(), 1);
+    assert.equal(await card.getAttribute('data-side'), 'front');
+    assert.equal(await card.locator('.flashcard-side-label').textContent(), 'Frente');
+    assert.equal(await page.locator('.flashcard-rating-buttons').count(), 0);
+    const chrome = await page.locator('[data-flashcards-panel]').evaluate((node) => getComputedStyle(node).borderTopWidth);
+    assert.equal(chrome, '0px', 'no card around the review card');
     await noHorizontalScroll(page, label);
     await settle(page);
     await axeCheck(page, 'main', label);
-    await shot(page, `revisar-${width}`);
-    // The popovers open, close with Esc and give focus back.
-    await page.locator('.review-filter > summary').click();
-    assert(await page.locator('[data-flashcard-set-filter]').isVisible());
-    await noHorizontalScroll(page, `${label} filtros`);
-    await axeCheck(page, '.review-toolbar', `${label} filtros`);
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('.review-filter').evaluate((node) => node.open), false);
-    await page.locator('.review-create > summary').click();
-    await page.getByRole('button', { name: /Gerar cartões com IA/ }).waitFor();
-    await page.locator('.review-stage').click({ position: { x: 5, y: 5 } });
-    assert.equal(await page.locator('.review-create').evaluate((node) => node.open), false, 'a click outside closes it');
-    // Gerenciar: merge/import, organize and sets, ruled; back to the review.
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
-    assert(await page.locator('.review-manage').isVisible());
-    assert(await page.locator('.review-stage').isHidden());
-    assert(await page.getByRole('button', { name: 'Mesclar conjuntos' }).isVisible());
-    assert.equal(await page.locator('.review-manage details.flashcard-management').count(), 2);
-    await noHorizontalScroll(page, `${label} gerenciar`);
-    await axeCheck(page, 'main', `${label} gerenciar`);
-    await page.getByRole('button', { name: 'Voltar à revisão' }).click();
-    assert(await page.locator('.review-stage').isVisible());
-    // The other tabs: ruled lists, no boxes.
-    await page.locator('#tab-questoes').click();
-    await page.locator('.quiz-history-list li').first().waitFor();
-    assert.equal(await page.locator('.quiz-history-list').first().evaluate((node) => getComputedStyle(node).borderLeftWidth), '0px');
-    await page.locator('#tab-anotacoes').click();
-    await page.locator('#anotacoes .annotation-card').first().waitFor();
-    assert.equal(await page.locator('#anotacoes .annotation-card').first().evaluate((node) => getComputedStyle(node).borderTopWidth), '0px');
-    await noHorizontalScroll(page, `${label} anotações`);
-    await axeCheck(page, 'main', `${label} anotações`);
+    await shot(page, `flashcards-${width}`);
+    // A click (or tap) on the card turns it; the back is labelled; ratings appear below it.
+    await card.locator('.flashcard-content').click();
+    assert.equal(await card.getAttribute('data-side'), 'back');
+    assert.equal(await card.locator('.flashcard-side-label').textContent(), 'Verso');
+    assert.equal(await page.locator('.flashcard-flip').getAttribute('aria-pressed'), 'true');
+    await page.locator('[data-flashcard-side-status]', { hasText: 'Verso do cartão' }).waitFor({ state: 'attached' });
+    assert.equal(await page.locator('.flashcard-rating-buttons button').count(), 4);
+    await page.waitForTimeout(400); // the quarter turn ends
+    await noHorizontalScroll(page, `${label} verso`);
+    await axeCheck(page, 'main', `${label} verso`);
+    await shot(page, `flashcards-verso-${width}`);
+    // Keyboard: Space and Enter on the focused card turn it; focus stays on the card.
+    await page.locator('.flashcard-face').focus();
+    await page.keyboard.press('Space');
+    assert.equal(await card.getAttribute('data-side'), 'front');
+    assert.equal(await page.evaluate(() => document.activeElement?.className), 'flashcard-face');
+    await page.keyboard.press('Enter');
+    assert.equal(await card.getAttribute('data-side'), 'back');
+    // Rating is not part of the turn: it records the review and shows the next card's front.
+    await page.locator('.flashcard-rating-buttons [data-rating="2"]').click();
+    await page.locator('[data-flashcard-review-status]', { hasText: 'Revisão registrada' }).waitFor();
+    await page.locator('.flashcard-review-card[data-side="front"]').waitFor();
+    assert.equal(await page.locator('.flashcard-rating-buttons').count(), 0, 'the next card starts on its front');
+    // Each section is reachable and clean.
+    for (const [tab, id] of [['Conjuntos', 'conjuntos'], ['Criar cartão', 'criar'], ['Gerar com IA', 'gerar'], ['Importar e mesclar', 'importar'], ['Aparência', 'aparencia']]) {
+      await page.getByRole('tab', { name: tab }).click();
+      await page.locator(`#${id}:not([hidden])`).waitFor();
+      assert(page.url().endsWith(`#${id}`), `${tab} has its own address`);
+      await noHorizontalScroll(page, `${label} ${tab}`);
+      await axeCheck(page, 'main', `${label} ${tab}`);
+    }
+    await shot(page, `flashcards-aparencia-${width}`);
     await context.close();
   }
-  record('Revisar: "Para hoje" e contagens nas abas; um cartão por vez sem caixa em volta; filtros e novo cartão em popovers; gerenciar (mesclar, importar, organizar, conjuntos) numa segunda vista; Questões e Anotações em linhas; 390 e 1440 sem rolagem lateral; axe');
+  // The person's reduced-motion choice: the card turns without the animation.
+  {
+    const { context, page } = await openApp(browser, base, { ...allFlags }, state(), { width: 1024, height: 900 });
+    await context.addInitScript(() => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify({ reducedMotion: true })));
+    await page.goto(base + '/flashcards.html');
+    await page.locator('.flashcard-face').click();
+    const animation = await page.locator('.flashcard-review-card').evaluate((node) => getComputedStyle(node).animationName);
+    assert.equal(animation, 'none');
+    await context.close();
+  }
+  record('Flashcards: página própria com seis seções (revisar, conjuntos, criar, gerar, importar e mesclar, aparência); revisar.html redireciona; cartão vira com clique, toque, Espaço ou Enter e com o botão (aria-pressed), frente e verso rotulados e anunciados; avaliar fica fora do cartão; sem animação com movimento reduzido; 390 e 1440 sem rolagem lateral; axe');
 }
-
 async function main() {
   const { server, base } = await startServer();
   const browser = await launchBrowser();

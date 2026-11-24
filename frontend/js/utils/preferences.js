@@ -154,7 +154,7 @@ const STUDIO_PAGES = [
   ['dashboard', 'Início'],
   ['library', 'Biblioteca'],
   ['material', 'Aula'],
-  ['review', 'Revisar'],
+  ['review', 'Flashcards'],
   ['plan', 'Planejar'],
   ['focus', 'Focar'],
 ];
@@ -431,7 +431,7 @@ function initializeFocusDock() {
     ['Início', './painel.html', 'dashboard'],
     ['Nova transcrição', './nova-transcricao.html', 'transcription'],
     ['Biblioteca', './historico.html', 'library'],
-    ['Revisar', './revisar.html', 'review'],
+    ['Flashcards', './flashcards.html', 'review'],
     ['Planejar', './planejar.html', 'plan'],
     ['Focar', './focar.html', 'plan'],
     ['Turmas', './turmas.html', 'classrooms'],

@@ -87,6 +87,7 @@
     'painel.html': 'dashboard',
     'historico.html': 'library',
     'material.html': 'material',
+    'flashcards.html': 'review',
     'revisar.html': 'review',
     'planejar.html': 'plan',
     'focar.html': 'focus',

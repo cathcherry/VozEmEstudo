@@ -13,7 +13,7 @@ const schemas = {
   flashcards: z.object({ requestId: uuid, name: z.string().trim().min(1).max(160).optional() }).strict(),
 };
 
-/** Where the student continues: the list in the usual quiz page, the set in Revisar. */
+/** Where the student continues: the list in the usual quiz page, the set in Flashcards. */
 export function exportLinks(item) {
   if (!item?.available) return null;
   if (item.kind === 'questions')
@@ -21,7 +21,7 @@ export function exportLinks(item) {
       answer: `./responder.html?material=${encodeURIComponent(item.materialId)}&batch=${encodeURIComponent(item.batchId)}`,
       lesson: `./material.html?id=${encodeURIComponent(item.materialId)}#questoes`,
     };
-  return { review: `./revisar.html?conjunto=${encodeURIComponent(item.setId)}#flashcards` };
+  return { review: `./flashcards.html?conjunto=${encodeURIComponent(item.setId)}#revisar` };
 }
 const withLinks = (item) => ({ ...item, links: exportLinks(item) });
 

@@ -81,8 +81,9 @@ Páginas: `login.html`, `cadastro.html`, `recuperar-senha.html`, `auth-callback.
   - **Nova transcrição** (botão no topo): enviar uma aula.
   - **Início**: o que estudar agora (visão geral).
   - **Biblioteca**: todas as aulas; cada aula é onde se estuda.
-  - **Revisar**: flashcards, tentativas de questões e anotações (aparece se ao menos um desses
-    recursos estiver ativo).
+  - **Flashcards**: revisar os cartões do dia, conjuntos, criar, gerar com IA, importar e mesclar
+    e a aparência dos cartões (aparece com os flashcards ativos). Desde a 3.6 substitui "Revisar":
+    as questões ficam em cada aula e na lista de questões; as anotações, na aula e na busca.
   - **Planejar**: objetivos e tarefas, calendário e tempo de estudo (aparece se ao menos um desses
     recursos estiver ativo).
   - **Configurações**, no rodapé do menu.
@@ -124,20 +125,30 @@ Visão geral em duas colunas que terminam juntas; nada é editado aqui.
 
 **Busca global** (`GET /api/search`): títulos, enunciados de questões e transcrição, sem diferenciar
 acentos, com sugestões enquanto se digita. Resultados em abas (Aulas, Questões, Transcrições e, com
-`annotations`, **Anotações**) que só aparecem quando têm resultados; o botão da aba Anotações abre
-Revisar › Anotações com a mesma busca. Gabaritos nunca entram na busca.
+`annotations`, **Anotações** — buscadas no servidor, só da própria conta) que só aparecem quando têm
+resultados; cada anotação abre a aula no trecho destacado. `painel.html?em=notes` lista todas as
+anotações, uma página por vez. Gabaritos nunca entram na busca.
 
-### Revisar (`revisar.html`)
+### Flashcards (`flashcards.html`)
 
-Uma aba por recurso ativo, com endereço próprio (`#flashcards`, `#questoes`, `#anotacoes`):
+Seis seções com endereço próprio:
 
-- **Flashcards** (`flashcards`): revisão do dia (De novo / Difícil / Bom / Fácil, com o foco
-  acompanhando a revisão pelo teclado); **Gerar cartões com IA** e **Criar cartão manualmente**
-  (recolhidos); **Organizar meus cartões** (filtros, edição, arquivar, excluir, histórico) e, com
-  `flashcard_sets`, **Conjuntos de flashcards** (renomear, arquivar, exportar CSV ou Markdown).
-- **Questões** (`quiz_v2`): todas as tentativas, em andamento (**Continuar tentativa**) e concluídas
-  (**Ver resultado e erros**, onde fica "Refazer apenas as questões erradas").
-- **Anotações** (`annotations`): busca e paginação em todas as anotações, com link para a aula.
+- **Revisar cartões** (`#revisar`, padrão): um cartão por vez, filtros por aula e conjunto. O cartão
+  vira com um clique ou toque, com Espaço/Enter quando focado, ou com o botão **Virar cartão**
+  (`aria-pressed`); frente e verso rotulados e anunciados; De novo / Difícil / Bom / Fácil ficam
+  abaixo do cartão. Sem animação com movimento reduzido.
+- **Conjuntos** (`#conjuntos`, com `flashcard_sets`): revisar, renomear, arquivar, exportar e
+  excluir conjuntos; **Organizar meus cartões** (edição, arquivar, excluir, histórico).
+- **Criar cartão** (`#criar`): frente e verso lado a lado, aula e conjunto; salvar confirma com um
+  aviso breve (toast).
+- **Gerar com IA** (`#gerar`): sugestões da transcrição confirmada de uma aula.
+- **Importar e mesclar** (`#importar`, com `flashcard_sets`): Anki/CSV e mesclar conjuntos.
+- **Aparência** (`#aparencia`): galeria de modelos (Clássico, Caderno, Post-it, Janela, Polaroid)
+  e a aparência de cada conjunto.
+
+`revisar.html` redireciona endereços antigos: `#flashcards` → `flashcards.html#revisar` (mantém
+`?conjunto=`; `?acao=criar` → `#criar`), `#questoes` → `questoes.html`, `#anotacoes` →
+`painel.html?em=notes` (com `?busca=`, a mesma busca nas anotações).
 
 ### Planejar (`planejar.html`)
 
@@ -152,8 +163,8 @@ Abas `#tarefas`, `#calendario`, `#tempo`:
   dia; **Meta semanal e fuso horário** e **Sincronização** recolhidos (abrem sozinhos num conflito).
 
 Links diretos usados pelo Início: `planejar.html?criar=objetivo|tarefa#tarefas`,
-`planejar.html?criar=horario#calendario`, `revisar.html?acao=revisar#flashcards`,
-`revisar.html?busca=…#anotacoes`. Com todas as flags de uma página desligadas, ela explica que o
+`planejar.html?criar=horario#calendario`, `flashcards.html?acao=revisar#revisar`,
+`painel.html?em=notes`. Com todas as flags de uma página desligadas, ela explica que o
 recurso não está ativo.
 
 ## 5. Nova transcrição (envio)
