@@ -55,6 +55,12 @@ export function buildPlanningService(store = repository) {
       const completed = validateTaskCompletion(body);
       return store.setOwnedTaskCompletion(userId, id, completed);
     },
+    // Deleting a goal removes its subgoals and tasks (database cascade); deleting a subgoal keeps
+    // its tasks in the goal (subgoal_id becomes null); a scheduled study keeps its time slot.
+    deleteGoal: (userId, goalId) => store.deleteOwnedGoal(userId, validatePlanningId(goalId)),
+    deleteSubgoal: (userId, subgoalId) =>
+      store.deleteOwnedSubgoal(userId, validatePlanningId(subgoalId)),
+    deleteTask: (userId, taskId) => store.deleteOwnedTask(userId, validatePlanningId(taskId)),
   };
 }
 

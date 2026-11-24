@@ -128,3 +128,16 @@ export async function setOwnedTaskCompletion(userId, taskId, completed) {
   if (!data) throw errors.notFound('Tarefa');
   return data;
 }
+
+async function deleteOwned(table, label, userId, id) {
+  const { data, error } = await getAdminSupabase().from(table)
+    .delete().eq('user_id', userId).eq('id', id).select('id').maybeSingle();
+  assertDb(error);
+  if (!data) throw errors.notFound(label);
+  return { id: data.id, deleted: true };
+}
+
+export const deleteOwnedGoal = (userId, goalId) => deleteOwned('study_goals', 'Objetivo', userId, goalId);
+export const deleteOwnedSubgoal = (userId, subgoalId) =>
+  deleteOwned('study_subgoals', 'Subobjetivo', userId, subgoalId);
+export const deleteOwnedTask = (userId, taskId) => deleteOwned('study_tasks', 'Tarefa', userId, taskId);
