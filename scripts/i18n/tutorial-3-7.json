@@ -1,0 +1,27 @@
+{
+  "Pular": { "en": "Skip", "es": "Omitir", "zh-CN": "跳过" },
+  "Fechar tutorial": { "en": "Close tutorial", "es": "Cerrar tutorial", "zh-CN": "关闭教程" },
+  "Tutorial": { "en": "Tutorial", "es": "Tutorial", "zh-CN": "教程" },
+  "Ver o tutorial": { "en": "See the tutorial", "es": "Ver el tutorial", "zh-CN": "查看教程" },
+  "Ver o tutorial de novo": { "en": "See the tutorial again", "es": "Ver el tutorial de nuevo", "zh-CN": "再看一遍教程" },
+  "As partes principais do app, passo a passo": {
+    "en": "The main parts of the app, step by step",
+    "es": "Las partes principales de la app, paso a paso",
+    "zh-CN": "逐步了解应用的主要部分"
+  },
+  "As partes principais do app, passo a passo.": {
+    "en": "The main parts of the app, step by step.",
+    "es": "Las partes principales de la app, paso a paso.",
+    "zh-CN": "逐步了解应用的主要部分。"
+  },
+  "Três aulas completas para explorar transcrição, resumo, questões e flashcards. Abrir uma delas não gasta o seu limite de transcrição.": {
+    "en": "Three complete lessons to explore the transcript, summary, questions and flashcards. Opening one does not use your transcription allowance.",
+    "es": "Tres clases completas para explorar la transcripción, el resumen, las preguntas y las tarjetas. Abrir una no gasta tu límite de transcripción.",
+    "zh-CN": "三节完整的课程，可体验转写、摘要、题目和抽认卡。打开它们不会占用你的转写额度。"
+  },
+  "Aparência, idioma, senha e a Ajuda ficam aqui. O tutorial pode ser visto de novo por lá.": {
+    "en": "Appearance, language, password and Help are here. You can see the tutorial again from there.",
+    "es": "Apariencia, idioma, contraseña y la Ayuda están aquí. Puedes volver a ver el tutorial desde allí.",
+    "zh-CN": "外观、语言、密码和帮助都在这里。也可以在这里再次查看教程。"
+  }
+}

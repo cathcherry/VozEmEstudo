@@ -10,6 +10,7 @@ import {
 } from './public-testing.js';
 import { toast } from './toast.js';
 import { icon } from './icons.js';
+import { afterTour } from './guided-tour.js';
 
 const WELCOME_KEY = 'voz-testing-welcome:';
 
@@ -104,6 +105,8 @@ async function showWelcome(user, status) {
   if (!left) return;
   const demos = status.demoAccess ? await getDemoLessons() : [];
   await ensureTestingStyles();
+  // On a first visit the tutorial runs first; the note comes right after it.
+  await afterTour();
   if (readFlag(key)) return;
   writeFlag(key);
   welcome = buildWelcome({ limitSeconds: left.limit, demoCount: demos.length, demoAccess: status.demoAccess });
