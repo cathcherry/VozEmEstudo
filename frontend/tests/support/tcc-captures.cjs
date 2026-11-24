@@ -414,6 +414,11 @@ const CAPTURES = {
     await page.goto(base + '/aparencia.html#reading-settings');
     await settle(page, 1000);
     await clean(page);
+    // The section is taller than the viewport: grow the viewport to fit it, then capture the element.
+    const height = await page.locator('#reading-settings').evaluate((el) => Math.ceil(el.getBoundingClientRect().height));
+    await page.setViewportSize({ width: 1440, height: Math.max(900, height + 200) });
+    await settle(page, 600);
+    await clean(page);
     await page.locator('#reading-settings').screenshot({ path: path.join(OUT, 'C09_acessibilidade.png') });
     console.log('captura docs/tcc-apendice-c/C09_acessibilidade.png');
   },

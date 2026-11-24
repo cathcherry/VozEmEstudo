@@ -562,3 +562,124 @@
     }
   }
 }
+
+/* ---- Leitura e foco: two balanced columns of titled groups; every row is label · control · help,
+   with controls of one width so the right edges line up. Preview and actions span the section. ---- */
+@layer pages {
+  body.app-page #reading-settings .personalization-settings {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--space-6);
+    columns: auto;
+  }
+  body.app-page #reading-settings .personalization-column {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+  }
+  body.app-page #reading-settings .personalization-group {
+    margin: 0;
+  }
+  body.app-page #reading-settings .personalization-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  body.app-page #reading-settings .setting-icon {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+  }
+  body.app-page #reading-settings .setting-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 3.5rem;
+    padding-block: var(--space-2);
+    border-bottom: 1px solid var(--line);
+  }
+  body.app-page #reading-settings .setting-item:last-child {
+    border-bottom: 0;
+  }
+  body.app-page #reading-settings :is(.segmented-setting, .setting-select-row) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--reading-control-width, 13rem);
+    align-items: center;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  body.app-page #reading-settings .segmented-setting > legend {
+    float: left;
+    padding: 0;
+    font-weight: 550;
+    font-size: var(--step-ui);
+  }
+  body.app-page #reading-settings .setting-select-row > span {
+    font-size: var(--step-ui);
+    font-weight: 550;
+  }
+  body.app-page #reading-settings .setting-select-row strong {
+    font-weight: inherit;
+  }
+  body.app-page #reading-settings .segmented-setting {
+    min-width: 0;
+  }
+  body.app-page #reading-settings .segmented-setting .segmented-control {
+    display: grid;
+    /* Two equal halves; with large text on a narrow screen they stack instead of overflowing. */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 5rem), 1fr));
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+  body.app-page #reading-settings .segmented-setting .segmented-control > label {
+    display: grid;
+    min-width: 0;
+  }
+  body.app-page #reading-settings .segmented-setting .segmented-control span {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding-inline: var(--space-2);
+    text-align: center;
+  }
+  body.app-page #reading-settings .setting-select-row select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+  body.app-page #reading-settings .reading-preview {
+    margin-top: var(--space-6);
+  }
+  body.app-page #reading-settings .personalization-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  @media (max-width: 1100px) {
+    body.app-page #reading-settings .personalization-settings {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    body.app-page #reading-settings :is(.segmented-setting, .setting-select-row) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-2);
+    }
+  }
+  [data-text-size='maximum'] body.app-page #reading-settings .personalization-settings,
+  body.app-page[data-text-size='maximum'] #reading-settings .personalization-settings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -136,7 +136,7 @@ com os botões de autoavaliação (De novo, Difícil, Bom, Fácil) usados na rep
   espaçada derivadas da aula. Se houver limite de figuras, basta C08b (contém frente e verso).
 
 ### C09_acessibilidade.png (recorte da seção)
-Seção “Leitura e foco” de Aparência: modo para leitores de tela, modo foco, navegação, menos
+Seção “Leitura e foco” de Aparência, em quatro grupos (Leitor de tela e navegação, Apoio ao foco, Leitura em voz alta e Conforto de leitura): modo para leitores de tela, modo foco, navegação, menos
 estímulos visuais, movimento reduzido, contraste reforçado, fonte de leitura (incl. Atkinson
 Hyperlegible, Lexend, OpenDyslexic), tamanho do texto (90% a 200%), espaçamento, guia de leitura,
 comprimento das linhas, prévia e leitura em voz alta com velocidade da voz.
