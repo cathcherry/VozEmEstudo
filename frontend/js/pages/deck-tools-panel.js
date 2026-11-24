@@ -66,7 +66,15 @@ function dialogShell(title, hint) {
   confirm.disabled = true;
   actions.append(cancel, confirm);
   form.append(heading, help, body, preview, extra, alert, actions);
-  dialog.append(form);
+  // Dialog contract: a visible close control in the title bar (it follows Cancel while saving).
+  const close = make('button', '×', 'dialog-close');
+  close.type = 'button';
+  close.dataset.dialogClose = '';
+  close.setAttribute('aria-label', 'Fechar');
+  close.addEventListener('click', () => {
+    if (!cancel.disabled) dialog.close();
+  });
+  dialog.append(close, form);
   document.body.append(dialog);
   cancel.addEventListener('click', () => dialog.close());
   return { id, dialog, form, body, preview, extra, alert, confirm, cancel };

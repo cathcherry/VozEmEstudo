@@ -1,0 +1,362 @@
+{
+  "Estamos em fase de testes!": {
+    "en": "We're in a testing phase!",
+    "es": "¡Estamos en fase de pruebas!",
+    "zh-CN": "我们正处于测试阶段！"
+  },
+  "Ver meus limites": {
+    "en": "See my limits",
+    "es": "Ver mis límites",
+    "zh-CN": "查看我的额度"
+  },
+  "Fechar aviso": {
+    "en": "Close notice",
+    "es": "Cerrar aviso",
+    "zh-CN": "关闭提示"
+  },
+  "Para que mais pessoas possam experimentar o Voz em Estudo gratuitamente, reduzimos temporariamente o limite de transcrição para {0} minutos por participante.": {
+    "en": "So that more people can try Voz em Estudo for free, we have temporarily reduced the transcription limit to {0} minutes per participant.",
+    "es": "Para que más personas puedan probar Voz em Estudo gratis, redujimos temporalmente el límite de transcripción a {0} minutos por participante.",
+    "zh-CN": "为了让更多人免费体验 Voz em Estudo，我们暂时将每位参与者的转写额度降至 {0} 分钟。"
+  },
+  "Para que mais pessoas possam experimentar o Voz em Estudo gratuitamente, reduzimos temporariamente o limite de transcrição para {0} minuto por participante.": {
+    "en": "So that more people can try Voz em Estudo for free, we have temporarily reduced the transcription limit to {0} minute per participant.",
+    "es": "Para que más personas puedan probar Voz em Estudo gratis, redujimos temporalmente el límite de transcripción a {0} minuto por participante.",
+    "zh-CN": "为了让更多人免费体验 Voz em Estudo，我们暂时将每位参与者的转写额度降至 {0} 分钟。"
+  },
+  "Para que mais pessoas possam experimentar o Voz em Estudo gratuitamente, reduzimos temporariamente o limite de transcrição para {0} segundos por participante.": {
+    "en": "So that more people can try Voz em Estudo for free, we have temporarily reduced the transcription limit to {0} seconds per participant.",
+    "es": "Para que más personas puedan probar Voz em Estudo gratis, redujimos temporalmente el límite de transcripción a {0} segundos por participante.",
+    "zh-CN": "为了让更多人免费体验 Voz em Estudo，我们暂时将每位参与者的转写额度降至 {0} 秒。"
+  },
+  "Também preparamos {0} aulas completas para você explorar sem gastar seu limite!": {
+    "en": "We have also prepared {0} complete lessons for you to explore without using your limit!",
+    "es": "¡También preparamos {0} clases completas para que explores sin gastar tu límite!",
+    "zh-CN": "我们还准备了 {0} 节完整课程，供你探索且不占用额度！"
+  },
+  "Também preparamos 1 aula completa para você explorar sem gastar seu limite!": {
+    "en": "We have also prepared 1 complete lesson for you to explore without using your limit!",
+    "es": "¡También preparamos 1 clase completa para que explores sin gastar tu límite!",
+    "zh-CN": "我们还准备了 1 节完整课程，供你探索且不占用额度！"
+  },
+  "Também preparamos aulas completas para você explorar sem gastar seu limite!": {
+    "en": "We have also prepared complete lessons for you to explore without using your limit!",
+    "es": "¡También preparamos clases completas para que explores sin gastar tu límite!",
+    "zh-CN": "我们还准备了完整课程，供你探索且不占用额度！"
+  },
+  "Período de testes": {
+    "en": "Testing period",
+    "es": "Período de pruebas",
+    "zh-CN": "测试期"
+  },
+  "Aulas de demonstração": {
+    "en": "Demo lessons",
+    "es": "Clases de demostración",
+    "zh-CN": "示范课程"
+  },
+  "Aulas completas, já transcritas, com resumo, questões e cartões prontos. Explore à vontade: elas não usam seu limite.": {
+    "en": "Complete lessons, already transcribed, with a summary, questions and cards ready. Explore freely: they don't use your limit.",
+    "es": "Clases completas, ya transcritas, con resumen, preguntas y tarjetas listas. Explora a gusto: no usan tu límite.",
+    "zh-CN": "完整课程，已完成转写，并备好摘要、题目和卡片。尽情探索：不占用你的额度。"
+  },
+  "Com vídeo": {
+    "en": "With video",
+    "es": "Con video",
+    "zh-CN": "含视频"
+  },
+  "Já processada — não usa seu limite": {
+    "en": "Already processed — doesn't use your limit",
+    "es": "Ya procesada — no usa tu límite",
+    "zh-CN": "已处理——不占用额度"
+  },
+  "Começar": {
+    "en": "Start",
+    "es": "Empezar",
+    "zh-CN": "开始"
+  },
+  "Abrir": {
+    "en": "Open",
+    "es": "Abrir",
+    "zh-CN": "打开"
+  },
+  "Abrindo…": {
+    "en": "Opening…",
+    "es": "Abriendo…",
+    "zh-CN": "正在打开…"
+  },
+  "Preparando…": {
+    "en": "Preparing…",
+    "es": "Preparando…",
+    "zh-CN": "正在准备…"
+  },
+  "{0} min de aula": {
+    "en": "{0} min lesson",
+    "es": "{0} min de clase",
+    "zh-CN": "{0} 分钟课程"
+  },
+  "Resumo · {0} questões · {1} cartões": {
+    "en": "Summary · {0} questions · {1} cards",
+    "es": "Resumen · {0} preguntas · {1} tarjetas",
+    "zh-CN": "摘要 · {0} 道题 · {1} 张卡片"
+  },
+  "Ver todas as aulas de demonstração": {
+    "en": "See all demo lessons",
+    "es": "Ver todas las clases de demostración",
+    "zh-CN": "查看全部示范课程"
+  },
+  "{0} aulas completas para explorar, já processadas: não usam seu limite.": {
+    "en": "{0} complete lessons to explore, already processed: they don't use your limit.",
+    "es": "{0} clases completas para explorar, ya procesadas: no usan tu límite.",
+    "zh-CN": "{0} 节完整课程可供探索，已处理完毕：不占用额度。"
+  },
+  "1 aula completa para explorar, já processada: não usa seu limite.": {
+    "en": "1 complete lesson to explore, already processed: it doesn't use your limit.",
+    "es": "1 clase completa para explorar, ya procesada: no usa tu límite.",
+    "zh-CN": "1 节完整课程可供探索，已处理完毕：不占用额度。"
+  },
+  "Aula de demonstração": {
+    "en": "Demo lesson",
+    "es": "Clase de demostración",
+    "zh-CN": "示范课程"
+  },
+  "já processada; não usa seu limite": {
+    "en": "already processed; doesn't use your limit",
+    "es": "ya procesada; no usa tu límite",
+    "zh-CN": "已处理；不占用额度"
+  },
+  "Esta é a sua cópia de uma aula preparada para o período de testes. Suas anotações, respostas e cartões ficam só com você.": {
+    "en": "This is your copy of a lesson prepared for the testing period. Your notes, answers and cards stay with you only.",
+    "es": "Esta es tu copia de una clase preparada para el período de pruebas. Tus notas, respuestas y tarjetas quedan solo contigo.",
+    "zh-CN": "这是为测试期准备的课程副本。你的笔记、答案和卡片只属于你。"
+  },
+  "Créditos:": {
+    "en": "Credits:",
+    "es": "Créditos:",
+    "zh-CN": "致谢："
+  },
+  "Conta de participante": {
+    "en": "Participant account",
+    "es": "Cuenta de participante",
+    "zh-CN": "参与者账户"
+  },
+  "Conta de administradora": {
+    "en": "Administrator account",
+    "es": "Cuenta de administradora",
+    "zh-CN": "管理员账户"
+  },
+  "Participante": {
+    "en": "Participant",
+    "es": "Participante",
+    "zh-CN": "参与者"
+  },
+  "Administradora": {
+    "en": "Administrator",
+    "es": "Administradora",
+    "zh-CN": "管理员"
+  },
+  "Sua conta administra o programa de testes. Abaixo estão os limites da sua conta e, no painel seguinte, os números de todo o programa.": {
+    "en": "Your account administers the testing program. Below are your account's limits and, in the next panel, the figures for the whole program.",
+    "es": "Tu cuenta administra el programa de pruebas. Abajo están los límites de tu cuenta y, en el panel siguiente, las cifras de todo el programa.",
+    "zh-CN": "你的账户负责管理测试计划。下方是你账户的额度，下一面板是整个计划的数据。"
+  },
+  "Uso no período de testes": {
+    "en": "Use in the testing period",
+    "es": "Uso en el período de pruebas",
+    "zh-CN": "测试期用量"
+  },
+  "Gravações processadas": {
+    "en": "Processed recordings",
+    "es": "Grabaciones procesadas",
+    "zh-CN": "已处理的录音"
+  },
+  "Resumos": {
+    "en": "Summaries",
+    "es": "Resúmenes",
+    "zh-CN": "摘要"
+  },
+  "Listas de questões": {
+    "en": "Question lists",
+    "es": "Listas de preguntas",
+    "zh-CN": "题目列表"
+  },
+  "Gerações de flashcards": {
+    "en": "Flashcard generations",
+    "es": "Generaciones de tarjetas",
+    "zh-CN": "记忆卡片生成"
+  },
+  "Novas sugestões de cartão": {
+    "en": "New card suggestions",
+    "es": "Nuevas sugerencias de tarjeta",
+    "zh-CN": "新卡片建议"
+  },
+  "Novas análises de avisos": {
+    "en": "New warning reviews",
+    "es": "Nuevos análisis de avisos",
+    "zh-CN": "新的提示分析"
+  },
+  "Material integrado: indisponível durante os testes": {
+    "en": "Integrated material: unavailable during testing",
+    "es": "Material integrado: no disponible durante las pruebas",
+    "zh-CN": "综合材料：测试期间不可用"
+  },
+  "{0} de {1} · restam {2}": {
+    "en": "{0} of {1} · {2} left",
+    "es": "{0} de {1} · quedan {2}",
+    "zh-CN": "{0} / {1} · 剩余 {2}"
+  },
+  "{0} de {1} usados — restam {2}": {
+    "en": "{0} of {1} used — {2} left",
+    "es": "{0} de {1} usados — quedan {2}",
+    "zh-CN": "已用 {0} / {1}——剩余 {2}"
+  },
+  "Ver as aulas de demonstração ({0})": {
+    "en": "See the demo lessons ({0})",
+    "es": "Ver las clases de demostración ({0})",
+    "zh-CN": "查看示范课程（{0}）"
+  },
+  "O que você já enviou e gerou continua disponível, mesmo depois de usar os limites.": {
+    "en": "What you have already uploaded and generated stays available, even after you use up your limits.",
+    "es": "Lo que ya enviaste y generaste sigue disponible, incluso después de usar los límites.",
+    "zh-CN": "即使额度用完，你已上传和生成的内容仍然可用。"
+  },
+  "Administração": {
+    "en": "Administration",
+    "es": "Administración",
+    "zh-CN": "管理"
+  },
+  "Programa de testes": {
+    "en": "Testing program",
+    "es": "Programa de pruebas",
+    "zh-CN": "测试计划"
+  },
+  "Programa ativo": {
+    "en": "Program active",
+    "es": "Programa activo",
+    "zh-CN": "计划进行中"
+  },
+  "Programa pausado": {
+    "en": "Program paused",
+    "es": "Programa en pausa",
+    "zh-CN": "计划已暂停"
+  },
+  "Participação": {
+    "en": "Participation",
+    "es": "Participación",
+    "zh-CN": "参与情况"
+  },
+  "participantes": {
+    "en": "participants",
+    "es": "participantes",
+    "zh-CN": "参与者"
+  },
+  "administradoras": {
+    "en": "administrators",
+    "es": "administradoras",
+    "zh-CN": "管理员"
+  },
+  "cópias de demonstração": {
+    "en": "demo copies",
+    "es": "copias de demostración",
+    "zh-CN": "示范副本"
+  },
+  "na fila": {
+    "en": "queued",
+    "es": "en cola",
+    "zh-CN": "排队中"
+  },
+  "em execução": {
+    "en": "running",
+    "es": "en ejecución",
+    "zh-CN": "运行中"
+  },
+  "aguardando nova tentativa": {
+    "en": "waiting to retry",
+    "es": "esperando reintento",
+    "zh-CN": "等待重试"
+  },
+  "Pedidos à IA de texto": {
+    "en": "Text AI requests",
+    "es": "Solicitudes a la IA de texto",
+    "zh-CN": "文本 AI 请求"
+  },
+  "Tokens": {
+    "en": "Tokens",
+    "es": "Tokens",
+    "zh-CN": "令牌"
+  },
+  "Última hora": {
+    "en": "Last hour",
+    "es": "Última hora",
+    "zh-CN": "最近一小时"
+  },
+  "Hoje": {
+    "en": "Today",
+    "es": "Hoy",
+    "zh-CN": "今天"
+  },
+  "Total": {
+    "en": "Total",
+    "es": "Total",
+    "zh-CN": "总计"
+  },
+  "Fila de processamento": {
+    "en": "Processing queue",
+    "es": "Cola de procesamiento",
+    "zh-CN": "处理队列"
+  },
+  "Os números não identificam ninguém.": {
+    "en": "The figures identify no one.",
+    "es": "Las cifras no identifican a nadie.",
+    "zh-CN": "这些数据不涉及任何个人身份。"
+  },
+  "Inscrições até {0}. Os números não identificam ninguém.": {
+    "en": "Sign-ups until {0}. The figures identify no one.",
+    "es": "Inscripciones hasta {0}. Las cifras no identifican a nadie.",
+    "zh-CN": "报名截止至 {0}。这些数据不涉及任何个人身份。"
+  },
+  "Restam {0} de transcrição no período de testes.": {
+    "en": "{0} of transcription left in the testing period.",
+    "es": "Quedan {0} de transcripción en el período de pruebas.",
+    "zh-CN": "测试期剩余转写时长 {0}。"
+  },
+  "Você já usou os {0} de transcrição do período de testes.": {
+    "en": "You have used the {0} of transcription of the testing period.",
+    "es": "Ya usaste los {0} de transcripción del período de pruebas.",
+    "zh-CN": "你已用完测试期的 {0} 转写时长。"
+  },
+  "O trecho passa do que resta de transcrição no período de testes ({0}). Recorte um trecho menor.": {
+    "en": "The selection is longer than the transcription you have left in the testing period ({0}). Trim a shorter part.",
+    "es": "El fragmento supera lo que queda de transcripción en el período de pruebas ({0}). Recorta un fragmento menor.",
+    "zh-CN": "所选片段超过测试期剩余的转写时长（{0}）。请剪取更短的片段。"
+  },
+  "Você já usou todo o tempo de transcrição do período de testes.": {
+    "en": "You have used all the transcription time of the testing period.",
+    "es": "Ya usaste todo el tiempo de transcripción del período de pruebas.",
+    "zh-CN": "你已用完测试期的全部转写时长。"
+  },
+  "Material integrado: indisponível durante os testes para contas de participante.": {
+    "en": "Integrated material: unavailable during testing for participant accounts.",
+    "es": "Material integrado: no disponible durante las pruebas para cuentas de participante.",
+    "zh-CN": "综合材料：测试期间参与者账户不可用。"
+  },
+  "Você já usou as gerações de material integrado do período de testes.": {
+    "en": "You have used the integrated material generations of the testing period.",
+    "es": "Ya usaste las generaciones de material integrado del período de pruebas.",
+    "zh-CN": "你已用完测试期的综合材料生成次数。"
+  },
+  "Não foi possível abrir a aula de demonstração. Tente novamente.": {
+    "en": "Couldn't open the demo lesson. Try again.",
+    "es": "No se pudo abrir la clase de demostración. Inténtalo de nuevo.",
+    "zh-CN": "无法打开示范课程。请重试。"
+  },
+  "Abrindo a aula de demonstração…": {
+    "en": "Opening the demo lesson…",
+    "es": "Abriendo la clase de demostración…",
+    "zh-CN": "正在打开示范课程…"
+  },
+  "Preparando sua cópia da aula de demonstração…": {
+    "en": "Preparing your copy of the demo lesson…",
+    "es": "Preparando tu copia de la clase de demostración…",
+    "zh-CN": "正在准备你的示范课程副本…"
+  }
+}

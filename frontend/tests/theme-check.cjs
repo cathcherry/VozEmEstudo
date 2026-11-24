@@ -16,7 +16,7 @@ const PAGES = [
   'painel.html',
   'historico.html',
   'material.html?id=l-foto',
-  'revisar.html#flashcards',
+  'flashcards.html#revisar',
   'planejar.html#calendario',
   'configuracoes.html',
   'conta.html',

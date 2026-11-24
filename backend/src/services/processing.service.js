@@ -16,7 +16,8 @@ import {
   getReviewState,
   requirePermission,
 } from '../repositories/review.repository.js';
-import { convertMedia } from './media.service.js';
+import { convertMedia, probeDurationSeconds } from './media.service.js';
+import * as testing from './testing.service.js';
 import { downloadAudioBuffer, finalizeAudioStorage } from './audio.service.js';
 import { transcribeMaterial } from './transcription.service.js';
 import { createAsyncTranscriptionRunner } from './async-transcription.service.js';
@@ -104,6 +105,10 @@ async function transcribeWithProvider(job, material, audio) {
   }
   if (!execution) throw schemaRequired();
   const firstStep = ['pending', 'uploaded'].includes(execution.state);
+  if (firstStep && !(await testing.transcriptionSlotAvailable())) {
+    await releaseForPolling(job, 60_000, 'Muitas transcrições em andamento no programa de testes. A sua começa em instantes.');
+    return 'waiting';
+  }
   if (firstStep)
     await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Enviando o áudio para transcrição.');
   const { asr } = getAiRegistry().config;
@@ -153,6 +158,53 @@ async function transcribeWithFallback(job, material, audio) {
     const bytes = await loadProviderAudio(audio, { wavOnly: true });
     await transcribeMaterial(material.id, bytes, { durationMs: audio.duration_ms || 0, snapshot });
     return 'completed';
+  }
+}
+
+const transcriptionRef = (job, material) =>
+  job.type === JOB_TYPE.INITIAL ? `initial:${material.id}` : `job:${job.id}`;
+
+/**
+ * Public testing: before the first provider call, measure the real duration on the server and
+ * reserve it from the account's allowance (atomic, once per lesson). The browser's duration is
+ * never used for accounting; the stored duration is corrected to the measured one.
+ */
+async function reserveTranscription(job, material, audio) {
+  if (!testing.publicTestingEnabled()) return;
+  const ref = transcriptionRef(job, material);
+  if (await testing.hasReservation(material.user_id, testing.USAGE_KIND.TRANSCRIPTION, ref)) return;
+  const bytes = await downloadAudioBuffer(audio.storage_path);
+  const seconds = await probeDurationSeconds(bytes, String(audio.extension || '').toLowerCase());
+  const measuredMs = Math.round(seconds * 1000);
+  if (Math.abs(measuredMs - Number(audio.duration_ms || 0)) > 1000) {
+    await getAdminSupabase().from('audio_files').update({ duration_ms: measuredMs }).eq('id', audio.id);
+    audio.duration_ms = measuredMs;
+  }
+  // Each recording also runs the warning analysis (three LLM calls): counted per recording.
+  await testing.reserve(material.user_id, testing.USAGE_KIND.PROCESSING_LLM, ref, 1, material.id);
+  try {
+    await testing.reserve(material.user_id, testing.USAGE_KIND.TRANSCRIPTION, ref, Math.ceil(seconds), material.id);
+  } catch (error) {
+    await testing.release(material.user_id, testing.USAGE_KIND.PROCESSING_LLM, ref);
+    throw error;
+  }
+}
+
+/**
+ * Called on a job's final failure: an initial transcription that never reached the provider (no
+ * transcript, nothing submitted) gives its seconds back. Anything submitted stays counted.
+ */
+export async function releaseUnstartedTranscription(job) {
+  if (!testing.publicTestingEnabled() || job.type !== JOB_TYPE.INITIAL) return;
+  try {
+    const material = await getMaterialForWorker(job.material_id);
+    if (await getTranscription(material.id)) return;
+    const execution = await executionFor(job, 'transcription').catch(() => null);
+    if (execution?.external_job_id || (execution && !['pending', 'uploaded'].includes(execution.state))) return;
+    await testing.release(material.user_id, testing.USAGE_KIND.TRANSCRIPTION, transcriptionRef(job, material));
+    await testing.release(material.user_id, testing.USAGE_KIND.PROCESSING_LLM, transcriptionRef(job, material));
+  } catch (error) {
+    logger.error('USAGE_RELEASE_CHECK_FAILED', { jobId: job.id, code: error?.code || 'unknown' });
   }
 }
 
@@ -227,6 +279,7 @@ async function runInitial(job) {
   const transcription = await getTranscription(material.id);
   if (!transcription) {
     if (!audio?.storage_path) throw new Error('Arquivo de áudio temporário não encontrado.');
+    await reserveTranscription(job, material, audio);
     // Source media stays untouched until the transcript is durable (retention runs below).
     if ((await transcribeWithFallback(job, material, audio)) === 'waiting') return;
   }

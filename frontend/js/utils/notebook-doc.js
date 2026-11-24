@@ -48,6 +48,31 @@ export function hasMarkup(content) {
   return strings.some((text) => TAG.test(text));
 }
 
+/**
+ * The server's size limits (notebook.validator.js), checked before saving so the person gets a
+ * message about what to change instead of a refused save. Nothing is cut: text is never truncated.
+ */
+export function limitProblem(content) {
+  const blocks = content?.doc?.blocks || [];
+  if ((content?.title || '').length > 160) return 'o título do caderno passou de 160 caracteres.';
+  if (blocks.length > NOTEBOOK_MAX_BLOCKS) return `o caderno passou de ${NOTEBOOK_MAX_BLOCKS} blocos (parágrafos, títulos e listas). Junte alguns parágrafos.`;
+  for (const block of blocks) {
+    const max = { heading: 300, paragraph: 5000, quote: 2000 }[block.type];
+    if (max && block.text.length > max) {
+      const name = { heading: 'um título', paragraph: 'um parágrafo', quote: 'uma citação' }[block.type];
+      return `${name} passou de ${max.toLocaleString('pt-BR')} caracteres. Divida o texto com Enter.`;
+    }
+    if (Array.isArray(block.items)) {
+      if (block.items.length > 100) return 'uma lista passou de 100 itens. Comece uma nova lista.';
+      if (block.items.some((item) => (typeof item === 'string' ? item : item?.text || '').length > 1000))
+        return 'um item de lista passou de 1.000 caracteres.';
+    }
+  }
+  if (new TextEncoder().encode(JSON.stringify(content?.doc ?? null)).length > 160000)
+    return 'o caderno passou do limite de tamanho. Remova ou divida trechos.';
+  return null;
+}
+
 export const sameContent = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const clone = (value) => JSON.parse(JSON.stringify(value));
 

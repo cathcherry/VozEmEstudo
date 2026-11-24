@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { validateRecordingLanguage } from '../validators/recording-language.validator.js';
 import { getAiRegistry } from '../ai/provider-registry.js';
 import { JOB_TYPE } from '../config/constants.js';
@@ -16,6 +17,8 @@ import { generationReuseEnabled, beginGeneration, attachGenerationJob } from './
 import { createAudioSignedUrl } from './audio.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { videoService } from './video.service.js';
+import * as testing from './testing.service.js';
+import * as demo from './demo.service.js';
 
 function assertStorageOwnership(storagePath, userId, materialId) {
   assertSafeStoragePath(storagePath);
@@ -45,14 +48,21 @@ export async function get(userId, materialId) {
   const audio = Array.isArray(material.audio_files)
     ? material.audio_files[0]
     : material.audio_files;
-  const signedAudioUrl =
-    audio?.retain_original && audio?.storage_path
+  // Public testing: a demo copy plays the single canonical media served by the app.
+  const demoCopy = await demo.copyOf(userId, materialId);
+  const demoMedia = demoCopy ? demo.demoPlayback(demoCopy, audio?.duration_ms) : null;
+  const signedAudioUrl = demoMedia
+    ? demoMedia.signedAudioUrl
+    : audio?.retain_original && audio?.storage_path
       ? await createAudioSignedUrl(audio.storage_path)
       : null;
   const currentRevision = transcription?.current_revision || 0;
   return {
     ...material,
-    ...(isFeatureEnabled('mp4_retention') ? await videoService.playback(userId, materialId) : {}),
+    ...(demoCopy ? { demo: { slug: demoCopy.slug, credits: demoCopy.credits || null } } : {}),
+    ...(demoMedia
+      ? { video: demoMedia.video, signedVideoUrl: demoMedia.signedVideoUrl }
+      : isFeatureEnabled('mp4_retention') ? await videoService.playback(userId, materialId) : {}),
     audio,
     signedAudioUrl,
     transcription,
@@ -94,6 +104,10 @@ export async function remove(userId, materialId) {
 
 export async function enqueueInitial(userId, materialId, input = {}) {
   const material = await materials.getOwnedMaterial(userId, materialId);
+  // Public testing: refuse early when the allowance is used up. The binding check happens in the
+  // worker with the duration measured on the server (the browser's number is only a hint here).
+  const declaredAudio = Array.isArray(material.audio_files) ? material.audio_files[0] : material.audio_files;
+  await testing.assertTranscriptionAvailable(userId, declaredAudio?.duration_ms);
   const recordingLanguage = validateRecordingLanguage(
     input.recordingLanguage,
     getAiRegistry().config,
@@ -109,27 +123,35 @@ export async function enqueueSummary(userId, materialId, rawInput) {
   // `reuse` (3.3) accepts an equivalent finished result instead of a new AI call.
   const { reuse, classroomId, ...input } = rawInput || {};
   const { selection, options } = validateSummaryGeneration(input);
+  // The reservation and the job share one key, so a retried request is recognised by both.
+  selection.idempotencyKey ||= randomUUID();
   // Preserve params for legacy callers (including retries of already queued jobs).
   const params = input.options === undefined ? {} : { summaryOptions: options };
+  // Public testing: one unit per NEW generation, keyed by the request's idempotency key (a retried
+  // request or a reuse/join of an equivalent result never counts); released if queueing fails.
+  const reserved = (makeJob) => (p) =>
+    testing.withReservation(userId, testing.USAGE_KIND.SUMMARY, selection.idempotencyKey, () => makeJob(p), { materialId });
   if (generationReuseEnabled())
-    return queueGeneration(userId, materialId, 'summary', params, selection, { allowReuse: reuse === true, classroomId }, (p) =>
-      createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, p, selection));
-  return createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, params, selection);
+    return queueGeneration(userId, materialId, 'summary', params, selection, { allowReuse: reuse === true, classroomId }, reserved((p) =>
+      createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, p, selection)));
+  return reserved((p) => createJob(userId, materialId, JOB_TYPE.REGENERATE_SUMMARY, p, selection))(params);
 }
 export async function enqueueQuestions(userId, materialId, count, rawInput, config) {
   await materials.getOwnedMaterial(userId, materialId);
+  await testing.assertTesterRequestSize(userId, 'questions', count);
   const { reuse, classroomId, ...input } = rawInput || {};
   const selection = validateGeneration(input);
+  selection.idempotencyKey ||= randomUUID();
   // Without a config the request keeps its legacy params shape (and idempotency comparison).
   const params = config === undefined ? { count } : { count, config };
-  if (generationReuseEnabled())
-    return queueGeneration(userId, materialId, 'questions', params, selection, { allowReuse: reuse === true, classroomId }, (p) =>
+  const queue = (p) =>
+    testing.withReservation(userId, testing.USAGE_KIND.QUESTIONS, selection.idempotencyKey, () =>
       isFeatureEnabled('study_authoring')
         ? createQuestionListJob(userId, materialId, p, selection)
-        : createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, p, selection));
-  if (isFeatureEnabled('study_authoring'))
-    return createQuestionListJob(userId, materialId, params, selection);
-  return createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, params, selection);
+        : createJob(userId, materialId, JOB_TYPE.GENERATE_QUESTIONS, p, selection), { materialId });
+  if (generationReuseEnabled())
+    return queueGeneration(userId, materialId, 'questions', params, selection, { allowReuse: reuse === true, classroomId }, queue);
+  return queue(params);
 }
 
 /**

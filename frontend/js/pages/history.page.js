@@ -5,6 +5,7 @@ import { initAuthenticatedShell, setStatus } from '../utils/shell.js';
 import { listMaterials, deleteMaterial, updateMaterial } from '../api/material.api.js';
 import { getCatalog, getLibraryResources, createSubject, updateSubject, deleteSubject, createUnit, assignMaterial } from '../api/catalog.api.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { publicTestingEnabled } from '../utils/public-testing.js';
 import { studyFor, metadataTags, saveTags, listeningPercent } from '../utils/study-store.js';
 import { formatDate, formatDuration } from '../utils/format.js';
 import { materialRow, materialHref } from '../utils/library-ui.js';
@@ -45,6 +46,7 @@ let catalogEnabled = false;
 let catalog = { subjects: [], units: [] };
 let libraryViews;
 let treeResources = {};
+let demoShelf = null; // public testing: demo lessons shelf (see the end of this file)
 window.addEventListener('library-layout-changed',()=>{if(loaded)render();});
 const openSubjects = new Set();
 const openUnits = new Set();
@@ -592,10 +594,8 @@ function renderFolderGroups(visible, _needle) {
     if (catalogEnabled && group.id && selected && !selectedUnit) {
       createUnitButton = document.createElement('button');
       createUnitButton.type = 'button';
-      createUnitButton.className = 'catalog-add-unit';
-      createUnitButton.textContent = '+';
-      createUnitButton.title = 'Nova unidade';
-      createUnitButton.setAttribute('aria-label','Nova unidade');
+      createUnitButton.className = 'catalog-add-unit secondary-action';
+      createUnitButton.textContent = '+ Nova unidade';
       createUnitButton.dataset.createUnitShortcut='';
       createUnitButton.addEventListener('click', () => openUnitDialog({ id: group.id, name: group.name }));
     }
@@ -637,7 +637,7 @@ function renderFolderGroups(visible, _needle) {
       if (unitMaterials.length) {
         for (const material of unitMaterials) unitContent.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name }));
       } else {
-        const empty=emptyState('Espaço para novas aulas', 'Suas aulas vão aparecer aqui.', { href: null, mascot: true });
+        const empty=emptyState('Nenhuma aula nesta unidade.', 'Para trazer aulas, use Selecionar e depois Mover para…', { href: null, mascot: false });
         empty.classList.add('library-folder-empty');unitContent.append(empty);
       }
       if (!unitMaterials.length && hasFilters()) continue;
@@ -658,7 +658,7 @@ function renderFolderGroups(visible, _needle) {
       for (const material of standalone) list.append(document.body.dataset.libraryLayout==='list'?treeFiles(material):row(material, { folderName: group.name, standalone: true }));
       content.append(list);
     } else if (!group.materials.length) {
-      content.append(emptyState('Nenhuma aula nesta disciplina.', '', { href: null, mascot: 'rest' }));
+      content.append(Object.assign(emptyState('Nenhuma aula nesta disciplina.', 'Para trazer aulas, use Selecionar e depois Mover para…', { href: null, mascot: false }), { className: 'empty-state-card library-folder-empty' }));
     }
 
     if(createUnitButton)folderToolbar.append(createUnitButton);
@@ -666,7 +666,9 @@ function renderFolderGroups(visible, _needle) {
     const subjectActions = catalogEnabled && group.id ? subjectMenu(group) : null;
     if (subjectActions && selected) folderToolbar.append(subjectActions);
     // Milestone C: study the whole unit or subject as one integrated material.
-    if (multiLessonEnabled && group.id && selected)
+    // Only when the folder has lessons: an empty unit has nothing to study together (3.7).
+    const folderLessons = currentUnit ? group.materials.filter((material) => material.unit_id === currentUnit.id).length : group.materials.length;
+    if (multiLessonEnabled && group.id && selected && folderLessons)
       folderToolbar.append(multiLessonFolderButton({ subjectId: group.id, unitId: currentUnit?.id || null, name: currentUnit?.title || group.name }));
     folder.append(content);
     if (group.id) enableDrop(folder, group.id, null);
@@ -737,6 +739,8 @@ function render() {
       : new Date(b.created_at) - new Date(a.created_at));
 
   const showingResources = libraryViews?.isResourceView() === true;
+  // Public testing: the demo shelf belongs to the library's front page only.
+  demoShelf?.setVisible(!showingResources && !hasFilters() && !new URLSearchParams(location.search).get('folder'));
   folderToolbar.hidden = !catalogEnabled || showingResources;
   newSubjectButton.hidden = !catalogEnabled;
   clearTimeout(announceTimer);
@@ -801,13 +805,18 @@ moveSelected.className = 'primary-action';
 moveSelected.textContent = 'Mover para…';
 const cancelSelection = document.createElement('button');
 cancelSelection.type = 'button';
-cancelSelection.className = 'secondary-action';
-cancelSelection.textContent = 'Cancelar';
+cancelSelection.className = 'library-selection-close';
+cancelSelection.setAttribute('aria-label', 'Cancelar seleção');
+cancelSelection.title = 'Cancelar seleção';
+cancelSelection.textContent = '×';
 // Milestone C: several selected lessons become one integrated material (flag multi_lesson).
 let multiLessonEnabled = false;
 const integrateSelected = multiLessonSelectionButton(() => materials.filter((material) => selected.has(material.id)).map((material) => material.id));
 integrateSelected.hidden = true;
-selectionBar.append(selectionCount, moveSelected, integrateSelected, cancelSelection);
+const selectionActions = document.createElement('div');
+selectionActions.className = 'library-selection-actions';
+selectionActions.append(moveSelected, integrateSelected);
+selectionBar.append(selectionCount, selectionActions, cancelSelection);
 document.body.append(selectionBar);
 const selectToggle = document.createElement('button');
 selectToggle.type = 'button';
@@ -973,7 +982,7 @@ function openSubjectDialog(subject = null) {
   if (subject) subjectForm.dataset.editId = subject.id;
   else delete subjectForm.dataset.editId;
   subjectDialog.querySelector('#subject-dialog-title').textContent = subject ? 'Editar disciplina' : 'Nova disciplina';
-  subjectForm.querySelector('[type="submit"]').textContent = subject ? 'Salvar' : 'Criar pasta';
+  subjectForm.querySelector('[type="submit"]').textContent = subject ? 'Salvar' : 'Criar disciplina';
   subjectForm.querySelector('[name="name"]').value = subject?.name || '';
   subjectIconPicker.select(subject?.id, subject?.name);
   subjectDialog.showModal();
@@ -1110,3 +1119,11 @@ async function load() {
 }
 
 load();
+
+// Public testing program (flag only): the shelf of demonstration lessons above the folders.
+void publicTestingEnabled().then(async (on) => {
+  if (!on) return;
+  const { mountLibraryShelf } = await import('./demo-lessons.js');
+  demoShelf = await mountLibraryShelf(document.querySelector('.study-section'));
+  if (loaded) render();
+}).catch(() => { /* the library works without the shelf */ });

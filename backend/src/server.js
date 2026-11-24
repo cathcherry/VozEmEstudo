@@ -1,10 +1,14 @@
 import { app } from './app.js';
-import { env, missingRuntimeSecrets } from './config/env.js';
+import { env, missingRuntimeSecrets, productionConfigWarnings } from './config/env.js';
 import { logger } from './utils/logger.js';
+import { autoseedDemoLessons } from './services/demo-seed.service.js';
 
 const server = app.listen(env.port, () => {
   const missing = missingRuntimeSecrets();
   logger.info('API_STARTED', { port: env.port, origin: env.appOrigin, missingConfiguration: missing });
+  const unsafe = productionConfigWarnings();
+  if (unsafe.length) logger.warn('UNSAFE_PRODUCTION_CONFIG', { warnings: unsafe });
+  if (!missing.length) void autoseedDemoLessons();
 });
 
 function shutdown() {

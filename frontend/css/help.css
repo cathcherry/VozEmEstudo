@@ -1,0 +1,250 @@
+/* Ajuda 3.7: a search over short topics. Desktop: the topic index stays beside the topics;
+ * phone: the index is a compact list above them. Each topic has its own anchor. */
+@layer pages {
+  body.app-page .help-page {
+    display: grid;
+    grid-template-columns: minmax(13rem, 16rem) minmax(0, 46rem);
+    grid-template-areas:
+      'crumb crumb'
+      'head head'
+      'tools tools'
+      'index topics'
+      'index empty';
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+  body.app-page .help-page > .settings-breadcrumb {
+    grid-area: crumb;
+  }
+  body.app-page .help-heading {
+    grid-area: head;
+    display: block;
+  }
+  body.app-page .help-heading p {
+    max-width: 60ch;
+    margin: var(--space-2) 0 0;
+    color: var(--ink-muted);
+  }
+  body.app-page .help-tools {
+    grid-area: tools;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    gap: var(--space-4);
+    align-items: stretch;
+    margin-bottom: var(--space-5);
+  }
+  body.app-page .help-search label {
+    display: block;
+    margin-bottom: var(--space-1);
+    font-size: var(--step-ui);
+    font-weight: 650;
+  }
+  body.app-page .help-search-field {
+    position: relative;
+  }
+  body.app-page .help-search-field .ui-icon {
+    position: absolute;
+    top: 50%;
+    left: var(--space-3);
+    color: var(--ink-muted);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+  body.app-page .help-search input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 3rem;
+    padding-left: 2.6rem;
+    font-size: var(--step-0);
+  }
+  body.app-page .help-filter-status {
+    min-height: 1.25rem;
+    margin: var(--space-1) 0 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .help-tour-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+    padding: var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--brand-wash);
+  }
+  body.app-page .help-tour-card > .ui-icon {
+    color: var(--brand-ink);
+  }
+  body.app-page .help-tour-card h2 {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  body.app-page .help-tour-card p {
+    margin: var(--space-1) 0 0;
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+  body.app-page .help-tour-card button {
+    grid-column: 2;
+    justify-self: start;
+  }
+  body.app-page .help-index {
+    grid-area: index;
+    position: sticky;
+    top: calc(var(--topbar-height, 3.75rem) + var(--space-4));
+    max-height: calc(100dvh - var(--topbar-height, 3.75rem) - var(--space-6));
+    overflow: auto;
+  }
+  body.app-page .help-index-title {
+    margin: 0 0 var(--space-2);
+    color: var(--ink-muted);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  body.app-page .help-index ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  body.app-page .help-index a {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control);
+    color: var(--ink);
+    font-size: var(--step-ui);
+    text-decoration: none;
+  }
+  body.app-page .help-index a:hover {
+    background: var(--paper-sunken);
+    color: var(--brand-ink);
+  }
+  body.app-page .help-topics {
+    grid-area: topics;
+    display: grid;
+    gap: var(--space-4);
+  }
+  body.app-page .help-empty {
+    grid-area: empty;
+    margin: 0;
+    padding: var(--space-5);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius-panel);
+    color: var(--ink-muted);
+  }
+  body.app-page .help-topic {
+    scroll-margin-top: calc(var(--topbar-height, 3.75rem) + var(--space-4));
+    padding: var(--space-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .help-topic:focus {
+    outline: none;
+  }
+  body.app-page .help-topic:target,
+  body.app-page .help-topic:focus-visible {
+    box-shadow: 0 0 0 2px var(--brand-ink);
+  }
+  body.app-page .help-topic > h2 {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-display);
+    font-variation-settings: var(--display-axes);
+    font-size: var(--step-1);
+    font-weight: 480;
+  }
+  body.app-page .help-topic p,
+  body.app-page .help-topic li {
+    max-width: 66ch;
+    font-size: var(--step-ui);
+    line-height: 1.6;
+  }
+  body.app-page .help-topic p {
+    margin: 0 0 var(--space-2);
+  }
+  body.app-page .help-topic .help-procedure {
+    margin: 0 0 var(--space-2);
+    padding-left: 1.3rem;
+  }
+  body.app-page .help-topic .help-note {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .help-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin: var(--space-3) 0 0;
+  }
+  body.app-page .help-links a,
+  body.app-page .help-links button {
+    font-weight: 600;
+  }
+  body.app-page .help-topic .help-locations {
+    display: grid;
+    gap: 0;
+    margin: 0 0 var(--space-2);
+  }
+  body.app-page .help-topic .help-locations > div {
+    display: grid;
+    grid-template-columns: 9.5rem minmax(0, 1fr);
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .help-topic .help-locations dt {
+    font-weight: 650;
+  }
+  body.app-page .help-topic .help-locations dd {
+    margin: 0;
+    color: var(--ink-muted);
+  }
+  body.app-page .help-topic details {
+    border-top: 1px solid var(--line);
+    padding: var(--space-2) 0;
+  }
+  body.app-page .help-topic summary {
+    min-height: 2.25rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  body.app-page .help-topic .storage-notice {
+    margin-bottom: var(--space-3);
+  }
+  @media (max-width: 900px) {
+    body.app-page .help-page {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'crumb' 'head' 'tools' 'index' 'topics' 'empty';
+    }
+    body.app-page .help-tools {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.app-page .help-index {
+      position: static;
+      max-height: none;
+      margin-bottom: var(--space-5);
+    }
+    body.app-page .help-index ul {
+      columns: 2 11rem;
+      column-gap: var(--space-3);
+    }
+    body.app-page .help-index li {
+      break-inside: avoid;
+    }
+  }
+  @media (max-width: 520px) {
+    body.app-page .help-topic {
+      padding: var(--space-4);
+    }
+    body.app-page .help-topic .help-locations > div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-1);
+    }
+  }
+}

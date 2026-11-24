@@ -1,3 +1,4 @@
+import * as demo from '../services/demo.service.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { getOwnedMaterial } from '../repositories/material.repository.js';
 import { createAudioSignedUrl } from '../services/audio.service.js';
@@ -8,6 +9,11 @@ export async function playback(req, res, next) {
   try {
     const material = await getOwnedMaterial(req.user.id, req.params.materialId);
     const audio = Array.isArray(material.audio_files) ? material.audio_files[0] : material.audio_files;
+    const copy = await demo.copyOf(req.user.id, req.params.materialId);
+    if (copy) {
+      res.set('Cache-Control', 'no-store');
+      return res.json({ ...demo.demoPlayback(copy, audio?.duration_ms), expiresInSeconds: 600 });
+    }
     const signedAudioUrl = audio?.retain_original && audio?.storage_path
       ? await createAudioSignedUrl(audio.storage_path) : null;
     const video = isFeatureEnabled('mp4_retention')

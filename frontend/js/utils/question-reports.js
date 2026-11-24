@@ -1,4 +1,5 @@
-// "Reportar problema" for generated questions, without new tables: the student's own flags
+// "Sinalizar para revisar" on generated questions, without new tables: the student's own marks.
+// Nobody else receives them (there is no moderation queue); the flags
 // (wrong answer, unclear statement, not in the lesson, repeated, other) live in the account's
 // `profile_state` under `question-reports`, merged per question across devices (newest wins;
 // removing a flag is kept as a dated tombstone so another device cannot bring it back).

@@ -43,3 +43,18 @@ export async function updateCompletion(req, res, next) {
   try { res.json(await planningService.setTaskCompletion(req.user.id, req.params.taskId, req.body)); }
   catch (error) { next(error); }
 }
+
+export async function deleteGoal(req, res, next) {
+  try { res.json(await planningService.deleteGoal(req.user.id, req.params.goalId)); }
+  catch (error) { next(error); }
+}
+
+export async function deleteSubgoal(req, res, next) {
+  try { res.json(await planningService.deleteSubgoal(req.user.id, req.params.subgoalId)); }
+  catch (error) { next(error); }
+}
+
+export async function deleteTask(req, res, next) {
+  try { res.json(await planningService.deleteTask(req.user.id, req.params.taskId)); }
+  catch (error) { next(error); }
+}

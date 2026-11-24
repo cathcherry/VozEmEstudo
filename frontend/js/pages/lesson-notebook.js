@@ -1,25 +1,28 @@
-// "Caderno da aula" (Notes 3.0): one private, structured notebook per lesson, in the Anotações tab
-// above the list of highlights. Blocks are edited in plain form fields (no contenteditable, no
-// HTML); text is rendered with textContent only. Saves automatically with versions, retries and a
+// "Caderno da aula" (Notes 3.0): one private notebook per lesson, in the Anotações tab above the
+// lesson's highlights. First of all a place to WRITE: one writing area (notebook-editor.js) where
+// you click and type, Enter starts a new paragraph, and a small toolbar or a markdown-like start
+// ("# ", "- ", "1. ", "[ ] ", "> ") makes a line a title, a list, a checklist or a quote. The
+// stored format is unchanged (the block document of notebook-doc.js), so old notebooks open as
+// they were. Plain text only, never innerHTML. Saves automatically with versions, retries and a
 // copy kept in this browser until the account has it.
 import { getNotebook, saveNotebook } from '../api/notebook.api.js';
 import { getSession } from '../api/auth.api.js';
 import { focusReadingAnnotation, isMultiSegment } from '../utils/annotation-anchor.js';
 import {
-  ADDABLE_BLOCKS,
-  BLOCK_LABELS,
   NOTEBOOK_MAX_BLOCKS,
   createAutosave,
   emptyContent,
   hasMarkup,
   keepBoth,
-  newBlock,
+  limitProblem,
   referenceBlock,
   sameContent,
 } from '../utils/notebook-doc.js';
+import { KIND_LABELS, createNotebookEditor } from '../utils/notebook-editor.js';
 import { cachedLook, loadLook, saveLook } from '../utils/notebook-look.js';
 import { COVER_CHOICES, PAPERS, artSrc, artTitle, motionReduced, spineColor } from '../utils/scrapbook.js';
 import { isFeatureEnabled } from '../utils/feature-flags.js';
+import { toast } from '../utils/toast.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -32,24 +35,33 @@ const button = (text, className = 'secondary-action') => {
   node.type = 'button';
   return node;
 };
-const field = (labelText, control) => {
-  const label = make('label', labelText, 'notebook-field');
-  label.append(control);
-  return label;
-};
 const STATUS = {
   saved: 'Salvo',
-  dirty: 'Alterações não salvas',
+  dirty: 'Salvando…',
   saving: 'Salvando…',
-  retrying: 'Não salvo — tentar de novo',
+  retrying: 'Não foi possível salvar.',
   invalid: 'Não salvo',
   conflict: 'Não salvo — outro aparelho alterou este caderno',
 };
+/** Toolbar: the line types, with a short visible name and a glyph (aria-hidden). */
+const TOOLS = [
+  ['p', '¶'],
+  ['h2', 'T'],
+  ['h3', 't'],
+  ['bullet', '•'],
+  ['ordered', '1.'],
+  ['check', '☐'],
+  ['quote', '❝'],
+];
+const SHORT = { p: 'Texto', h2: 'Título', h3: 'Subtítulo', bullet: 'Lista', ordered: 'Numerada', check: 'Checklist', quote: 'Citação' };
 /** This tab remembers an opened notebook, so a reload does not close it again. */
 const openKey = (materialId) => `voz-notebook-open:${materialId}`;
-const SECTION_DIVIDER = 'divider.sprig';
 /** Browser key of the copy not yet saved (namespaced by account; see local-account-data.js). */
 export const notebookPendingKey = (owner, materialId) => `voz-notebook-pending-v1:${owner}:${materialId}`;
+const clock = (ms) => {
+  const at = Math.floor(Number(ms) / 1000);
+  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`;
+};
 
 export async function initLessonNotebook({ panel, materialId, context, segments }) {
   const owner = (await getSession().catch(() => null))?.user?.id || 'anon';
@@ -70,38 +82,96 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   const status = make('p', 'Carregando o caderno…', 'notebook-status');
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
-  const retry = button('Tentar de novo');
+  const retry = button('Tentar de novo', 'text-action notebook-retry');
   retry.hidden = true;
   statusRow.append(status, retry);
-  header.append(title, privacy, statusRow);
+  header.append(title, privacy);
   const conflict = make('div', undefined, 'notebook-conflict');
   conflict.setAttribute('role', 'alert');
   conflict.hidden = true;
+
+  // ---- The writing page: title, compact toolbar, the writing area -----------------------------
   const titleInput = make('input');
   titleInput.type = 'text';
   titleInput.maxLength = 160;
   titleInput.id = 'lesson-notebook-name';
   titleInput.autocomplete = 'off';
-  const titleField = field('Título do caderno (opcional)', titleInput);
-  const list = make('ol', undefined, 'notebook-blocks');
-  list.setAttribute('aria-label', 'Blocos do caderno');
-  const empty = make(
+  titleInput.placeholder = 'Sem título';
+  titleInput.className = 'notebook-name';
+  titleInput.setAttribute('aria-label', 'Título do caderno (opcional)');
+  const editorId = `lesson-notebook-text-${materialId}`.replace(/[^A-Za-z0-9_-]/g, '');
+  const toolbar = make('div', undefined, 'notebook-toolbar');
+  toolbar.setAttribute('role', 'toolbar');
+  toolbar.setAttribute('aria-label', 'Formatar o texto do caderno');
+  toolbar.setAttribute('aria-controls', editorId);
+  const kindButtons = new Map();
+  for (const [kind, glyph] of TOOLS) {
+    const tool = button('', 'notebook-tool-button');
+    tool.dataset.kind = kind;
+    tool.setAttribute('aria-pressed', 'false');
+    tool.setAttribute('aria-label', KIND_LABELS[kind]);
+    tool.title = KIND_LABELS[kind];
+    const mark = make('span', glyph, 'notebook-tool-glyph');
+    mark.setAttribute('aria-hidden', 'true');
+    const label = make('span', SHORT[kind], 'notebook-tool-label');
+    label.setAttribute('aria-hidden', 'true');
+    tool.append(mark, label);
+    tool.tabIndex = kindButtons.size ? -1 : 0;
+    // Keep the caret in the text when the toolbar is clicked.
+    tool.addEventListener('mousedown', (event) => event.preventDefault());
+    tool.addEventListener('click', () => editor.setLineKind(kind));
+    kindButtons.set(kind, tool);
+    toolbar.append(tool);
+  }
+  const citeTool = button('', 'notebook-tool-button notebook-cite-tool');
+  citeTool.dataset.citeLesson = '';
+  citeTool.tabIndex = -1;
+  const citeGlyph = make('span', '❞', 'notebook-tool-glyph');
+  citeGlyph.setAttribute('aria-hidden', 'true');
+  citeTool.append(citeGlyph, make('span', 'Citar trecho da aula', 'notebook-tool-label'));
+  citeTool.addEventListener('mousedown', (event) => event.preventDefault());
+  citeTool.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('voz:open-transcript', { detail: {} }));
+    toast('Selecione um trecho na transcrição e escolha “Citar no caderno”. Ele entra aqui com o tempo e a revisão.', { duration: 8000 });
+  });
+  toolbar.append(make('span', undefined, 'notebook-toolbar-gap'), citeTool);
+  // One tab stop for the whole toolbar; arrows move between its buttons.
+  toolbar.addEventListener('keydown', (event) => {
+    const tools = [...toolbar.querySelectorAll('button')];
+    const at = tools.indexOf(document.activeElement);
+    if (at < 0) return;
+    const next = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: tools.length - 1 }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    const target = tools[(next + tools.length) % tools.length];
+    for (const tool of tools) tool.tabIndex = tool === target ? 0 : -1;
+    target.focus();
+  });
+
+  const writing = make('div', undefined, 'notebook-writing');
+  const area = make('div', undefined, 'nb-editor');
+  area.id = editorId;
+  area.setAttribute('aria-label', 'Texto do caderno');
+  const hint = make(
     'p',
-    'Comece seu caderno: adicione um título, um parágrafo ou uma lista, ou cite um destaque da lista abaixo.',
-    'notebook-empty',
+    'Escreva à vontade: Enter começa um novo parágrafo. Comece a linha com # para título, - para lista, 1. para lista numerada, [ ] para checklist ou > para citação.',
+    'notebook-hint',
   );
-  const tools = make('div', undefined, 'notebook-add');
-  tools.setAttribute('role', 'group');
-  tools.setAttribute('aria-labelledby', 'lesson-notebook-add-label');
-  const toolsLabel = make('span', 'Adicionar ao caderno:', 'notebook-add-label');
-  toolsLabel.id = 'lesson-notebook-add-label';
-  tools.append(toolsLabel);
+  hint.id = `${editorId}-hint`;
+  area.setAttribute('aria-describedby', hint.id);
+  const placeholder = make('p', 'Comece a escrever aqui…', 'nb-editor-placeholder');
+  placeholder.setAttribute('aria-hidden', 'true');
+  writing.append(placeholder, area);
   const announce = make('p', '', 'sr-only');
   announce.setAttribute('aria-live', 'polite');
+  const say = (text) => {
+    announce.textContent = '';
+    announce.textContent = text;
+  };
 
-  // ---- The notebook as an object (3.6): a cover that opens, a spine, a stacked page with a
-  // ribbon, paper tabs for its sections and dividers between them. Cover and paper per lesson
-  // live in the account's synced preferences (notebook-look.js), never in the notebook body.
+  // ---- The notebook as an object (3.6): a cover that opens, a spine, a page with a ribbon and
+  // paper tabs for its sections. Cover and paper per lesson live in the account's synced
+  // preferences (notebook-look.js), never in the notebook body.
   let look = cachedLook(owner, materialId);
   const bookId = `lesson-notebook-book-${materialId}`.replace(/[^A-Za-z0-9_-]/g, '');
   const coverButton = make('button', undefined, 'nb-cover');
@@ -132,7 +202,9 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   const sections = make('nav', undefined, 'nb-tabs tab-strip');
   sections.setAttribute('aria-label', 'Seções do caderno');
   sections.hidden = true;
-  sheet.append(ribbon, titleField, empty, list, tools);
+  const pageTop = make('div', undefined, 'notebook-page-top');
+  pageTop.append(titleInput, statusRow);
+  sheet.append(ribbon, pageTop, toolbar, writing, hint);
   const binding = make('div', undefined, 'nb-binding');
   binding.append(spine, sheet);
 
@@ -198,7 +270,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   function changeLook(change, message) {
     look = { ...look, ...change };
     paintLook();
-    announce.textContent = `${message} Salvo na sua conta.`;
+    say(`${message} Salvo na sua conta.`);
     void saveLook(owner, materialId, look);
   }
   function paintCoverTitle() {
@@ -225,7 +297,11 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       flap.addEventListener('animationend', () => flap.remove(), { once: true });
       setTimeout(() => flap.remove(), 1000);
     }
-    if (focus) (open ? titleInput : coverButton).focus();
+    // Opening puts the caret in the text: you can type at once.
+    if (focus) {
+      if (open) editor.focus();
+      else coverButton.focus();
+    }
   }
   coverButton.addEventListener('click', () => setOpen(true));
   closeBook.addEventListener('click', () => setOpen(false));
@@ -235,13 +311,6 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     look = saved;
     paintLook();
   });
-  let reopen = false;
-  try {
-    reopen = sessionStorage.getItem(openKey(materialId)) === '1';
-  } catch {
-    /* this tab only */
-  }
-  if (reopen) setOpen(true, { focus: false });
 
   // From the notebook only: the personal study journal (FEATURE_JOURNAL).
   const diary = make('a', 'Abrir meu Diário de estudo', 'nb-diary-link');
@@ -264,13 +333,117 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     for (const item of payload?.references || []) references.set(item.id, item);
   };
 
+  // ---- Read-only blocks inside the text: a cited highlight, or a block kept as it was ---------
+  function referenceView(block, figure) {
+    figure.classList.add('notebook-reference');
+    figure.setAttribute('role', 'group');
+    figure.setAttribute('aria-label', 'Trecho citado da aula');
+    const ref = references.get(block.annotationId);
+    const remove = button('Remover citação', 'notebook-tool');
+    remove.addEventListener('click', () => {
+      if (editor.removeAtom(block.id)) say('Citação removida do caderno. Ctrl+Z desfaz.');
+    });
+    if (!ref) {
+      figure.append(make('p', 'Destaque indisponível nesta aula.', 'notebook-ref-notice'));
+      const tools = make('div', undefined, 'notebook-ref-tools');
+      tools.append(remove);
+      figure.append(tools);
+      return;
+    }
+    const quote = make('blockquote', undefined, `notebook-ref-quote annotation-${ref.color || 'yellow'}`);
+    quote.setAttribute('translate', 'no');
+    quote.append(make('span', ref.quote || ref.note_text || '', 'notebook-ref-mark'));
+    const revision = ref.source_revision ?? block.sourceRevision;
+    const now = revisionNow();
+    const older = Number.isInteger(now) && Number.isInteger(revision) && revision !== now;
+    // Where the passage is in the lesson: its time (current revision only) and revision.
+    const segment = context?.()?.transcription?.transcription_segments?.find((item) => item.position === ref.segment_position);
+    const when = segment && !older && Number.isFinite(Number(segment.start_ms)) ? ` · ${clock(segment.start_ms)}` : '';
+    figure.append(quote, make('p', `Destaque da revisão ${revision}${when}`, 'notebook-ref-meta'));
+    if (ref.note_text && ref.quote) {
+      const note = make('p', undefined, 'notebook-ref-comment');
+      const label = make('span', 'Comentário:');
+      const value = make('span', ` ${ref.note_text}`);
+      value.setAttribute('translate', 'no');
+      note.append(label, value);
+      figure.append(note);
+    }
+    if (ref.deleted)
+      figure.append(make('p', 'O destaque original foi excluído; o trecho citado continua guardado aqui.', 'notebook-ref-notice'));
+    if (older)
+      figure.append(
+        make(
+          'p',
+          `Revisão anterior: esta referência aponta para a revisão ${revision}; a aula está na revisão ${now}. O trecho citado continua legível aqui.`,
+          'notebook-ref-notice notebook-ref-older',
+        ),
+      );
+    if (isMultiSegment(ref))
+      figure.append(make('p', `Abrange ${ref.end_segment_position - ref.segment_position + 1} trechos da transcrição`, 'notebook-ref-meta'));
+    const tools = make('div', undefined, 'notebook-ref-tools');
+    if (!older && !ref.deleted && ref.quote && segments) {
+      const go = button('Ir ao destaque', 'notebook-tool');
+      go.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('voz:open-transcript', { detail: {} }));
+        const found = focusReadingAnnotation(ref, segments, revisionNow());
+        if (!found) say('O trecho não foi encontrado no texto atual. A citação continua guardada aqui.');
+      });
+      tools.append(go);
+      const stamp = [...segments.querySelectorAll('.transcription-segment')]
+        .find((item) => Number(item.dataset.segmentPosition) === ref.segment_position)
+        ?.querySelector('.segment-timestamp');
+      if (segment && stamp) {
+        const listen = button(`Ouvir ${clock(segment.start_ms)}`, 'notebook-tool');
+        listen.disabled = stamp.disabled;
+        listen.addEventListener('click', () => stamp.click());
+        tools.append(listen);
+      }
+    }
+    tools.append(remove);
+    figure.append(tools);
+  }
+  function renderAtom(block, figure) {
+    if (block?.type === 'annotation_ref') return referenceView(block, figure);
+    // A block this editor does not edit (another version of the app): kept and saved as it is.
+    figure.classList.add('notebook-preserved');
+    figure.setAttribute('role', 'group');
+    figure.setAttribute('aria-label', 'Bloco preservado');
+    figure.append(make('p', 'Bloco preservado: este conteúdo não pode ser editado aqui, mas continua salvo no caderno.', 'notebook-ref-notice'));
+    const texts = [];
+    const walk = (value) => {
+      if (typeof value === 'string') texts.push(value);
+      else if (Array.isArray(value)) value.forEach(walk);
+      else if (value && typeof value === 'object') for (const [key, inner] of Object.entries(value)) if (!['id', 'type'].includes(key)) walk(inner);
+    };
+    walk(block);
+    if (texts.length) {
+      const text = make('p', texts.join(' · '), 'notebook-preserved-text');
+      text.setAttribute('translate', 'no');
+      figure.append(text);
+    }
+  }
+
+  const editor = createNotebookEditor({
+    root: area,
+    renderAtom,
+    announce: say,
+    onCaret: (kind) => {
+      for (const [name, tool] of kindButtons) tool.setAttribute('aria-pressed', String(name === kind));
+    },
+    onChange: (blocks) => {
+      content.doc = { ...content.doc, blocks };
+      changed();
+      renderSections();
+    },
+  });
+
   const autosave = createAutosave({
     send: (body) => saveNotebook(materialId, body),
     storage,
     key: notebookPendingKey(owner, materialId),
     onSaved: (result) => {
       absorb(result);
-      renderReferences();
+      editor.refreshAtoms();
     },
     onState: (state, info = {}) => {
       panel.dataset.saveState = state;
@@ -296,10 +469,22 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
 
   let blocked = false;
   function changed() {
-    blocked = hasMarkup(content);
+    const problem = hasMarkup(content)
+      ? 'use apenas texto, sem marcações HTML (como <b>).'
+      : limitProblem(content);
+    blocked = Boolean(problem);
     if (blocked) {
+      // Kept in this browser until it can be saved (nothing is cut or lost).
+      try {
+        storage?.setItem(
+          notebookPendingKey(owner, materialId),
+          JSON.stringify({ baseVersion: autosave.version, content, at: Date.now() }),
+        );
+      } catch {
+        /* optional */
+      }
       status.dataset.state = 'invalid';
-      status.textContent = 'Não salvo: use apenas texto, sem marcações HTML (como <b>).';
+      status.textContent = `Não salvo: ${problem}`;
       retry.hidden = true;
       return;
     }
@@ -310,235 +495,29 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     paintCoverTitle();
     changed();
   });
-
-  for (const type of ADDABLE_BLOCKS) {
-    const add = button(BLOCK_LABELS[type], 'secondary-action notebook-add-button');
-    add.dataset.blockType = type;
-    add.addEventListener('click', () => {
-      if (content.doc.blocks.length >= NOTEBOOK_MAX_BLOCKS) {
-        announce.textContent = 'O caderno chegou ao limite de 300 blocos.';
-        return;
-      }
-      const block = newBlock(type);
-      content.doc.blocks.push(block);
-      changed();
-      renderBlocks();
-      focusBlock(block.id);
-      announce.textContent = `${BLOCK_LABELS[type]} adicionado ao caderno.`;
-    });
-    tools.append(add);
-  }
-
-  // Focuses the first enabled match of the first selector that has one.
-  function focusBlock(id, ...selectors) {
-    const target = list.querySelector(`[data-block-id="${CSS.escape(id)}"]`);
-    for (const selector of selectors.length ? selectors : ['input, textarea, select, button']) {
-      const found = [...(target?.querySelectorAll(selector) || [])].find((node) => !node.disabled);
-      if (found) return found.focus();
+  // Enter or ↓ in the title goes on to the text.
+  titleInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      editor.focus({ line: 0, offset: 0 });
     }
-  }
-
-  function move(index, delta) {
-    const blocks = content.doc.blocks;
-    const to = index + delta;
-    if (to < 0 || to >= blocks.length) return;
-    [blocks[index], blocks[to]] = [blocks[to], blocks[index]];
-    changed();
-    renderBlocks();
-    const keep = delta < 0 ? '[data-move="up"]' : '[data-move="down"]';
-    focusBlock(blocks[to].id, keep, '[data-move]');
-    announce.textContent = `Bloco movido para a posição ${to + 1}.`;
-  }
-
-  function remove(index) {
-    const [removed] = content.doc.blocks.splice(index, 1);
-    changed();
-    renderBlocks();
-    const next = content.doc.blocks[Math.min(index, content.doc.blocks.length - 1)];
-    if (next) focusBlock(next.id);
-    else tools.querySelector('button')?.focus();
-    announce.textContent = `${BLOCK_LABELS[removed.type]} removido do caderno.`;
-  }
-
-  function textArea(labelText, value, onInput, rows = 3) {
-    const area = make('textarea');
-    area.rows = rows;
-    area.value = value;
-    area.addEventListener('input', () => {
-      onInput(area.value);
-      changed();
-    });
-    return field(labelText, area);
-  }
-
-  function checklistEditor(block, number) {
-    const wrap = make('div', undefined, 'notebook-checklist');
-    const items = make('ul');
-    block.items.forEach((item, index) => {
-      const row = make('li');
-      const check = make('input');
-      check.type = 'checkbox';
-      check.checked = item.checked;
-      check.setAttribute('aria-label', `Concluído: item ${index + 1}`);
-      check.addEventListener('change', () => {
-        item.checked = check.checked;
-        changed();
-      });
-      const text = make('input');
-      text.type = 'text';
-      text.maxLength = 1000;
-      text.value = item.text;
-      text.setAttribute('aria-label', `Item ${index + 1} da checklist`);
-      text.addEventListener('input', () => {
-        item.text = text.value;
-        changed();
-      });
-      const drop = button('Remover item', 'notebook-tool');
-      drop.setAttribute('aria-label', `Remover item ${index + 1}`);
-      drop.addEventListener('click', () => {
-        block.items.splice(index, 1);
-        changed();
-        renderBlocks();
-        focusBlock(block.id, '.notebook-checklist input[type=text], [data-add-item]');
-      });
-      row.append(check, text, drop);
-      items.append(row);
-    });
-    const add = button('Adicionar item');
-    add.dataset.addItem = '';
-    add.disabled = block.items.length >= 100;
-    add.addEventListener('click', () => {
-      block.items.push({ text: '', checked: false });
-      changed();
-      renderBlocks();
-      const rows = list.querySelectorAll(`[data-block-id="${CSS.escape(block.id)}"] .notebook-checklist input[type=text]`);
-      rows[rows.length - 1]?.focus();
-    });
-    wrap.append(items, add);
-    wrap.setAttribute('aria-label', `Checklist do bloco ${number}`);
-    wrap.setAttribute('role', 'group');
-    return wrap;
-  }
-
-  function referenceView(block) {
-    const wrap = make('div', undefined, 'notebook-reference');
-    const ref = references.get(block.annotationId);
-    if (!ref) {
-      wrap.append(make('p', 'Destaque indisponível nesta aula.', 'notebook-ref-notice'));
-      return wrap;
+  });
+  // Clicking the empty paper below the text puts the caret at the end.
+  writing.addEventListener('mousedown', (event) => {
+    if (event.target === writing) {
+      event.preventDefault();
+      editor.focus();
     }
-    const quote = make('blockquote', ref.quote || ref.note_text || '', `notebook-ref-quote annotation-${ref.color || 'yellow'}`);
-    quote.setAttribute('translate', 'no');
-    const revision = ref.source_revision ?? block.sourceRevision;
-    wrap.append(quote, make('p', `Destaque da revisão ${revision}`, 'notebook-ref-meta'));
-    if (ref.note_text && ref.quote) {
-      const note = make('p', undefined, 'notebook-ref-comment');
-      const label = make('span', 'Comentário:');
-      const value = make('span', ` ${ref.note_text}`);
-      value.setAttribute('translate', 'no');
-      note.append(label, value);
-      wrap.append(note);
-    }
-    const now = revisionNow();
-    const older = Number.isInteger(now) && Number.isInteger(revision) && revision !== now;
-    if (ref.deleted)
-      wrap.append(make('p', 'O destaque original foi excluído; o trecho citado continua guardado aqui.', 'notebook-ref-notice'));
-    if (older)
-      wrap.append(
-        make(
-          'p',
-          `Revisão anterior: esta referência aponta para a revisão ${revision}; a aula está na revisão ${now}. O trecho citado continua legível aqui.`,
-          'notebook-ref-notice notebook-ref-older',
-        ),
-      );
-    if (!older && !ref.deleted && ref.quote && segments) {
-      const go = button('Ir ao destaque', 'notebook-tool');
-      go.addEventListener('click', () => {
-        document.dispatchEvent(new CustomEvent('voz:open-transcript', { detail: {} }));
-        const found = focusReadingAnnotation(ref, segments, revisionNow());
-        if (!found) announce.textContent = 'O trecho não foi encontrado no texto atual. A citação continua guardada aqui.';
-      });
-      wrap.append(go);
-    }
-    if (isMultiSegment(ref))
-      wrap.append(make('p', `Abrange ${ref.end_segment_position - ref.segment_position + 1} trechos da transcrição`, 'notebook-ref-meta'));
-    return wrap;
-  }
+  });
 
-  function blockEditor(block, index) {
-    const number = index + 1;
-    const item = make('li', undefined, `notebook-block notebook-block-${block.type}`);
-    item.dataset.blockId = block.id;
-    const set = make('fieldset');
-    const legend = make('legend', `Bloco ${number} · ${BLOCK_LABELS[block.type]}`);
-    const bar = make('div', undefined, 'notebook-block-tools');
-    const up = button('Subir', 'notebook-tool');
-    up.dataset.move = 'up';
-    up.setAttribute('aria-label', `Mover bloco ${number} para cima`);
-    up.disabled = index === 0;
-    up.addEventListener('click', () => move(index, -1));
-    const down = button('Descer', 'notebook-tool');
-    down.dataset.move = 'down';
-    down.setAttribute('aria-label', `Mover bloco ${number} para baixo`);
-    down.disabled = index === content.doc.blocks.length - 1;
-    down.addEventListener('click', () => move(index, 1));
-    const drop = button('Remover', 'notebook-tool');
-    drop.setAttribute('aria-label', `Remover bloco ${number}`);
-    drop.addEventListener('click', () => remove(index));
-    bar.append(up, down, drop);
-    set.append(legend);
-    if (block.type === 'heading') {
-      const input = make('input');
-      input.type = 'text';
-      input.maxLength = 300;
-      input.value = block.text;
-      input.addEventListener('input', () => {
-        block.text = input.value;
-        changed();
-        renderSections();
-      });
-      const level = make('select');
-      level.append(new Option('Título', '2'), new Option('Subtítulo', '3'));
-      level.value = String(block.level);
-      level.addEventListener('change', () => {
-        block.level = Number(level.value);
-        changed();
-        renderSections();
-      });
-      set.append(field('Texto do título', input), field('Nível', level));
-    } else if (block.type === 'paragraph')
-      set.append(textArea('Texto do parágrafo', block.text, (value) => (block.text = value), 4));
-    else if (block.type === 'quote')
-      set.append(textArea('Texto da citação', block.text, (value) => (block.text = value)));
-    else if (block.type === 'bullet_list' || block.type === 'ordered_list')
-      set.append(
-        textArea('Itens, um por linha', block.items.join('\n'), (value) => {
-          block.items = value.split('\n').slice(0, 100);
-        }),
-      );
-    else if (block.type === 'checklist') set.append(checklistEditor(block, number));
-    else if (block.type === 'annotation_ref') set.append(referenceView(block));
-    set.append(bar);
-    if (block.type === 'heading' && index > 0) {
-      // A hand-drawn divider opens each new section (decorative).
-      const divider = make('img', undefined, 'nb-divider');
-      divider.src = artSrc(SECTION_DIVIDER);
-      divider.alt = '';
-      item.append(divider);
-    }
-    item.append(set);
-    return item;
-  }
-
-  function renderBlocks() {
-    list.replaceChildren(...content.doc.blocks.map(blockEditor));
-    empty.hidden = content.doc.blocks.length > 0;
-    renderSections();
-  }
   // Paper tabs for the notebook's sections (its main headings): a quick way to jump to one.
   const TINTS = ['lavender', 'matcha', 'honey', 'rose', 'mist'];
+  let sectionKey = '';
   function renderSections() {
     const headings = content.doc.blocks.filter((block) => block.type === 'heading' && block.level === 2);
+    const key = JSON.stringify(headings.map((block) => [block.id, block.text]));
+    if (key === sectionKey) return;
+    sectionKey = key;
     sections.hidden = headings.length === 0;
     sections.replaceChildren(
       ...headings.slice(0, 8).map((block, index) => {
@@ -546,25 +525,21 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
         tab.dataset.tint = TINTS[index % TINTS.length];
         tab.setAttribute('translate', 'no');
         tab.addEventListener('click', () => {
-          const target = list.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
+          const line = editor.lineOfBlock(block.id);
+          const target = area.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
           target?.scrollIntoView?.({ block: 'start', behavior: motionReduced() ? 'auto' : 'smooth' });
-          focusBlock(block.id, 'input[type=text]');
+          if (line >= 0) editor.focus({ line, offset: 0 });
         });
         return tab;
       }),
     );
   }
-  function renderReferences() {
-    for (const [index, block] of content.doc.blocks.entries()) {
-      if (block.type !== 'annotation_ref') continue;
-      const item = list.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
-      item?.replaceWith(blockEditor(block, index));
-    }
-  }
   function renderAll() {
     titleInput.value = content.title;
     paintCoverTitle();
-    renderBlocks();
+    editor.setBlocks(content.doc.blocks);
+    sectionKey = '';
+    renderSections();
   }
 
   // Another device saved first: the person chooses; nothing is discarded without confirmation.
@@ -603,8 +578,8 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
       conflict.replaceChildren();
       renderAll();
       void autosave.adopt({ version: theirVersion, content }, { save });
-      announce.textContent = message;
-      titleInput.focus();
+      say(message);
+      editor.focus();
     };
     both.addEventListener('click', () =>
       finish(
@@ -626,24 +601,22 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
     both.focus();
   }
 
-  // Cite a highlight from the list below (annotations-panel.js → voz:notebook-cite).
+  // Cite a highlight (Destaques da aula, or "Citar no caderno" over a selection in the
+  // transcription; annotations-panel.js → voz:notebook-cite): goes in at the caret.
   document.addEventListener('voz:notebook-cite', (event) => {
     const note = event.detail?.note;
     if (!note || note.material_id !== materialId || !note.source_revision_id) return;
     if (content.doc.blocks.length >= NOTEBOOK_MAX_BLOCKS) {
-      announce.textContent = 'O caderno chegou ao limite de 300 blocos.';
+      say('O caderno chegou ao limite de 300 blocos.');
       return;
     }
     if (book.hidden) setOpen(true, { focus: false });
     references.set(note.id, { ...note, deleted: false });
     const block = referenceBlock(note);
-    content.doc.blocks.push(block);
-    changed();
-    renderBlocks();
-    const item = list.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
-    item?.scrollIntoView?.({ block: 'center' });
-    focusBlock(block.id, 'button');
-    announce.textContent = 'Destaque citado no caderno.';
+    editor.insertAtom(block);
+    const figure = area.querySelector(`[data-block-id="${CSS.escape(block.id)}"]`);
+    figure?.scrollIntoView?.({ block: 'center' });
+    say('Destaque citado no caderno.');
   });
 
   let loaded;
@@ -652,7 +625,7 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   } catch (error) {
     status.textContent = `Caderno indisponível: ${error.message || 'tente novamente mais tarde.'}`;
     status.dataset.state = 'invalid';
-    titleField.hidden = list.hidden = tools.hidden = empty.hidden = true;
+    titleInput.hidden = toolbar.hidden = writing.hidden = hint.hidden = true;
     return { autosave: null };
   }
   absorb(loaded);
@@ -662,15 +635,22 @@ export async function initLessonNotebook({ panel, materialId, context, segments 
   const serverVersion = loaded.notebook?.version ?? 0;
   autosave.start({ version: serverVersion, content: server });
   content = JSON.parse(JSON.stringify(server));
+  let reopen = false;
+  try {
+    reopen = sessionStorage.getItem(openKey(materialId)) === '1';
+  } catch {
+    /* this tab only */
+  }
+  if (reopen) setOpen(true, { focus: false });
   const local = autosave.localCopy();
   if (local && !sameContent(local.content, server)) {
     if (local.baseVersion === serverVersion) {
       // Edits that never reached the account (closed tab, offline): restore and save them now.
       content = local.content;
       renderAll();
-      autosave.edit(content);
-      void autosave.flush();
-      announce.textContent = 'Recuperamos alterações deste aparelho que ainda não estavam salvas.';
+      changed();
+      if (!blocked) void autosave.flush();
+      say('Recuperamos alterações deste aparelho que ainda não estavam salvas.');
       return { autosave };
     }
     // The account moved on since this copy was made: show this device's copy and ask.

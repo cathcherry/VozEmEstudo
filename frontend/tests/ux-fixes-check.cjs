@@ -2,12 +2,13 @@
 //   1. Biblioteca "Selecionar": a click or tap on a lesson or folder selects it and never opens
 //      it; Space/Enter toggle; Shift extends; Esc and "Concluir seleção" restore opening; a
 //      discipline's page has a band in its colour, counts and units as sub-folders.
-//   2. Revisar: today's work first (counts on the tabs, one review card), management tools in a
-//      compact toolbar and a "Gerenciar" view; no nested cards; 390 and 1440 without overflow.
+//   2. Flashcards (own page, revisar.html redirects): six sections; the card turns by click, tap,
+//      Space/Enter or its button; ratings below it; reduced motion; 390 and 1440 without overflow.
 //   3. One focus engine: the timer controls live only on Focar; Planejar shows history and
 //      analysis and links to Focar; other pages show a small topbar indicator while it runs.
-//   4. Arrumar a mesa: an object on the desk leaves the drawer list, moving swaps, storing
-//      returns it, "Desfazer" undoes the last move; with discoveries on (server layout) and off.
+//   4. 3.7, no desk on Início: the Gabinete's museum label of a found object no longer offers
+//      "Colocar na mesa", and neither the Gabinete nor Início touches the saved desk data
+//      (server layout, deskStarters in the preferences).
 // Nothing here calls a real backend, AI provider or Supabase project.
 const path = require('node:path');
 const fs = require('node:fs');
@@ -100,7 +101,7 @@ async function library(browser, base) {
     assert.equal(await barText(page), '1 aula selecionada');
     // A click on an empty part of the row toggles it off again.
     await loose.locator('.material-meta').click();
-    assert.equal(await barText(page), 'Toque nas aulas ou pastas para selecionar');
+    assert.equal(await barText(page), 'Nenhuma aula selecionada');
     await page.locator('.library-unit-folder > summary', { hasText: 'Célula' }).click();
     assert.match(page.url(), /folder=sub-bio$/);
     assert.equal(await barText(page), '1 aula selecionada');
@@ -144,194 +145,128 @@ async function library(browser, base) {
 }
 
 const prefs = (page) => page.evaluate(() => JSON.parse(localStorage.getItem('audioestudo-ui-preferences') || '{}'));
-const drawer = (page) => page.locator('[data-desk-object]').evaluateAll((nodes) => nodes.map((node) => node.dataset.deskObject));
-const onDesk = (page) =>
-  page.evaluate(() =>
-    Object.fromEntries(
-      [...document.querySelectorAll('[data-desk-slot]')]
-        .map((slot) => [slot.dataset.deskSlot, slot.querySelector('.desk-slot-object')?.dataset.objectId || ''])
-        .filter(([, id]) => id),
-    ),
-  );
-const slotTarget = (page, slot) => page.locator(`[data-desk-slot="${slot}"] .desk-slot-target`);
-async function dragTo(page, from, to) {
-  const a = await from.boundingBox();
-  const b = await to.boundingBox();
-  await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(a.x + a.width / 2 + 20, a.y + a.height / 2 + 20, { steps: 3 });
-  await page.mouse.move(b.x + b.width / 2, b.y + Math.min(40, b.height / 2), { steps: 8 });
-  return async () => page.mouse.up();
-}
-
 async function desk(browser, base) {
-  // ---- Discoveries off: starter objects in the appearance preferences ----------------------
-  {
-    const { context, page } = await openApp(browser, base, allFlags, state());
-    await page.goto(base + '/painel.html');
-    await page.locator('[data-desk-scene][data-ready="true"]').waitFor({ state: 'attached' });
-    await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-    // Teacup, inkwell and cactus are on the desk: the drawer holds only the hourglass.
-    assert.deepEqual(await drawer(page), ['object.hourglass']);
-    assert.equal(await page.getByRole('button', { name: 'Desfazer' }).isDisabled(), true);
-    await page.locator('[data-desk-object="object.hourglass"]').click();
-    await slotTarget(page, 'desk-center').click();
-    await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
-    assert.deepEqual(await drawer(page), [], 'placed: the hourglass left the drawer');
-    await page.locator('.desk-tray-empty').waitFor();
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.hourglass');
-    // Choose the hourglass on the desk: it is lifted and can be stored.
-    await slotTarget(page, 'desk-center').click();
-    assert.equal(await page.locator('[data-desk-slot="desk-center"]').getAttribute('data-picked'), 'true');
-    await page.getByRole('button', { name: 'Guardar ampulheta na gaveta' }).click();
-    await page.locator('[data-desk-object="object.hourglass"]').waitFor();
-    assert.equal((await prefs(page)).deskStarters['desk-center'], undefined, 'stored: back in the drawer');
-    // Undo the last move: the hourglass is back where it was, in the screen and the preferences.
-    await page.getByRole('button', { name: 'Desfazer' }).click();
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    assert.deepEqual(await drawer(page), []);
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.hourglass');
-    // Drag a placed object onto another: they swap places; nothing is ever in two places.
-    await settle(page); // the page below the desk has finished loading: nothing moves under the pointer
-    await slotTarget(page, 'desk-center').scrollIntoViewIfNeeded();
-    const release = await dragTo(page, slotTarget(page, 'desk-center'), slotTarget(page, 'desk-right'));
-    assert.equal(await page.locator('[data-desk-slot="desk-center"]').getAttribute('data-lifting'), 'true', 'carried: faded at its place');
-    assert.equal(await page.locator('[data-desk-tray]').getAttribute('data-dropzone'), 'true', 'the drawer takes it back');
-    await release();
-    await page.locator('[data-desk-slot="desk-right"] [data-object-id="object.hourglass"]').waitFor();
-    const placed = await onDesk(page);
-    assert.equal(placed['desk-center'], 'object.teacup');
-    assert.equal(new Set(Object.values(placed)).size, Object.values(placed).length, 'each object once');
-    // Ctrl+Z undoes the swap.
-    await page.keyboard.press('Control+z');
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    await axeCheck(page, 'body', 'Arrumar a mesa (sem descobertas)');
-    await page.getByRole('button', { name: 'Concluir' }).click();
-    await page.reload();
-    await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.hourglass"]').waitFor();
-    await context.close();
-  }
-  // ---- Discoveries on: collectibles saved with PUT /api/collection/layout ------------------
-  {
-    const data = state();
-    data.seedUnlocks = [
-      { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
-      { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
-    ];
-    for (const width of [1440, 390]) {
-      const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data, { width, height: width < 700 ? 844 : 1000 });
-      await page.goto(base + '/painel.html');
-      await page.locator('[data-desk-scene][data-ready="true"]').waitFor({ state: 'attached' });
-      await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-      if (width > 700) {
-        await page.locator('[data-desk-object="object.globe"]').waitFor();
-        assert.deepEqual(await drawer(page), ['object.hourglass', 'object.globe'], 'one globe, even if unlocked twice');
-        // From the drawer onto the teacup: the globe takes the place, the teacup goes to the drawer.
-        await page.locator('[data-desk-object="object.globe"]').click();
-        await slotTarget(page, 'desk-right').click();
-        await page.locator('[data-desk-status]', { hasText: 'Mesa salva' }).waitFor();
-        assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'desk-right', objectId: 'object.globe' }]);
-        assert.deepEqual(await drawer(page), ['object.teacup', 'object.hourglass']);
-        assert.equal((await prefs(page)).deskStarters['desk-right'], undefined);
-        // Undo: the teacup is back and the server layout is empty again.
-        await page.getByRole('button', { name: 'Desfazer' }).click();
-        await page.locator('[data-desk-slot="desk-right"] [data-object-id="object.teacup"]').waitFor();
-        await page.waitForFunction(() => document.querySelector('[data-desk-status]').textContent.includes('Desfeito'));
-        assert.deepEqual(data.discoveryState.layout.items, []);
-        assert.deepEqual(await drawer(page), ['object.hourglass', 'object.globe']);
-        await shot(page, `mesa-${width}`, false);
-      } else {
-        // Phone: tap the globe, tap the free middle place.
-        await page.locator('[data-desk-object="object.globe"]').click();
-        await slotTarget(page, 'desk-center').click();
-        await page.locator('[data-desk-slot="desk-center"] [data-object-id="object.globe"]').waitFor();
-        assert(!(await drawer(page)).includes('object.globe'));
-        await noHorizontalScroll(page, 'Arrumar a mesa 390');
-        await shot(page, `mesa-${width}`, false);
-      }
-      await context.close();
-    }
-    // The Gabinete's "Colocar na mesa" (museum label of an object) follows the same desk
-    // (starters included) and swaps.
-    const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
-    await page.goto(base + '/gabinete.html?gaveta=object');
-    await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
-    const label = page.locator('[data-specimen-dialog]');
-    await label.locator('.specimen-desk-now', { hasText: 'Na mesa: Mesa, ao centro.' }).waitFor();
-    const place = label.getByLabel('Lugar na mesa');
-    assert.equal(await place.inputValue(), 'desk-center');
-    await place.selectOption({ label: 'Mesa, à direita (troca com xícara de chá)' });
-    await label.getByRole('button', { name: 'Mudar de lugar' }).click();
-    await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa: Mesa, à direita.' }).waitFor();
-    assert.deepEqual(data.discoveryState.layout.items, [{ slot: 'desk-right', objectId: 'object.globe' }]);
-    assert.equal((await prefs(page)).deskStarters['desk-center'], 'object.teacup', 'the teacup took the globe’s place');
-    await axeCheck(page, '[data-specimen-dialog]', 'Gabinete, Colocar na mesa');
-    await context.close();
-  }
-  record('Arrumar a mesa: objeto colocado sai da gaveta; mover troca de lugar; guardar devolve; Desfazer e Ctrl+Z; arrastar mostra destinos; com descobertas (layout no servidor) e sem (preferências); Gabinete usa a mesma mesa');
+  const data = state();
+  data.seedUnlocks = [
+    { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString(), lessonTitle: 'Fotossíntese e respiração celular' },
+    { id: 'object.globe', kind: 'object', occurredAt: new Date().toISOString() },
+  ];
+  // A desk arranged before 3.7: the globe in the middle on the server, the starters in the preferences.
+  const savedLayout = { items: [{ slot: 'desk-center', objectId: 'object.globe' }], version: 1 };
+  data.discoveryState = {
+    investigations: new Map(),
+    unlocks: data.seedUnlocks.map((u) => ({ unlockedAt: u.occurredAt, ...u })),
+    layout: structuredClone(savedLayout),
+    requests: [],
+  };
+  const { context, page } = await openApp(browser, base, { ...allFlags, discoveries: true }, data);
+  await page.goto(base + '/gabinete.html?gaveta=object');
+  const starters = { 'desk-left': 'object.inkwell', 'desk-right': 'object.teacup', window: 'object.hourglass' };
+  await page.evaluate(async (value) => (await import('/js/utils/preferences.js')).setUiPreference('deskStarters', value), starters);
+  await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
+  const label = page.locator('[data-specimen-dialog]');
+  await label.locator('[data-specimen-title]', { hasText: 'Globo' }).waitFor();
+  // The museum label stays (facts), but there is no desk to send the object to.
+  assert.match(await label.locator('[data-specimen-facts]').textContent(), /Quando.*Como apareceu/);
+  assert.equal(await label.getByRole('button', { name: 'Colocar na mesa' }).count(), 0, 'no "Colocar na mesa"');
+  assert.equal(await label.getByRole('button', { name: 'Mudar de lugar' }).count(), 0);
+  assert.equal(await label.getByRole('button', { name: 'Guardar no gabinete' }).count(), 0);
+  assert.equal(await label.locator('[data-specimen-desk], #specimen-desk-slot').count(), 0, 'no desk place picker');
+  assert.doesNotMatch(await label.textContent(), /Colocar na mesa|Lugar na mesa|Na mesa:/);
+  await settle(page);
+  await axeCheck(page, '[data-specimen-dialog]', 'Gabinete, etiqueta sem mesa');
+  await label.getByRole('button', { name: 'Fechar' }).click();
+  // Início neither shows nor rewrites the desk.
+  await page.goto(base + '/painel.html');
+  await page.waitForFunction(() => document.querySelector('[data-dashboard-data]')?.getAttribute('aria-busy') === 'false');
+  assert.equal(await page.locator('[data-desk-scene], [data-desk-arrange], [data-desk-tray]').count(), 0, 'no desk on Início');
+  await settle(page);
+  // The saved desk data is exactly as it was.
+  assert.deepEqual(data.discoveryState.layout, savedLayout, 'server layout untouched');
+  assert.equal(data.discoveryState.requests.filter((r) => r.kind === 'layout').length, 0, 'no PUT /api/collection/layout');
+  assert.deepEqual((await prefs(page)).deskStarters, starters, 'deskStarters untouched');
+  await context.close();
+  record('Sem mesa no Início (3.7): a etiqueta de um objeto no Gabinete não oferece "Colocar na mesa" nem escolha de lugar; Gabinete e Início não alteram o layout do servidor nem os deskStarters das preferências; axe');
 }
 
 async function review(browser, base) {
   for (const width of [1440, 390]) {
-    const { context, page } = await openApp(browser, base, { ...allFlags, flashcards_v3: true }, state(), { width, height: width < 700 ? 844 : 1000 });
-    const label = `Revisar ${width}`;
+    const data = state();
+    const { context, page } = await openApp(browser, base, { ...allFlags, flashcards_v3: true }, data, { width, height: width < 700 ? 844 : 1000 });
+    const label = `Flashcards ${width}`;
+    // The old Revisar address lands on the review of the Flashcards page.
     await page.goto(base + '/revisar.html');
-    await page.locator('.review-toolbar').waitFor();
-    await page.locator('.review-today-item').first().waitFor();
-    // Today's work first: one line of what is waiting, counts on the tabs, the tab with work open.
-    assert.deepEqual(await page.locator('.review-today-item').allTextContents(), ['5 cartões para revisar', '1 lista de questões para terminar']);
-    assert.equal(await page.locator('#tab-flashcards .tool-tab-count').textContent(), '5');
-    assert.equal(await page.locator('#tab-questoes .tool-tab-count').textContent(), '1');
-    assert.equal(await page.locator('#tab-flashcards').getAttribute('aria-selected'), 'true');
-    // One card on the page: the panel has no chrome of its own, management is out of sight.
-    const chrome = await page.locator('[data-flashcards-panel]').evaluate((node) => {
-      const style = getComputedStyle(node);
-      return `${style.borderTopWidth} ${style.backgroundColor} ${style.boxShadow}`;
-    });
-    assert.equal(chrome, '0px rgba(0, 0, 0, 0) none', 'no card around the review card');
-    assert.equal(await page.locator('.flashcard-review-card').count(), 1);
-    assert(await page.locator('.review-manage').isHidden(), 'managing is a second view');
-    assert(await page.locator('[data-flashcard-set-filter]').isHidden(), 'filters live in a popover');
-    assert.equal(await page.locator('.flashcard-create-tile:visible').count(), 0, 'creating lives in a popover');
+    await page.waitForURL('**/flashcards.html#revisar');
+    await page.locator('.flashcard-review-card').waitFor();
+    // Six labelled sections, the review first, today's count on its key.
+    assert.deepEqual(
+      (await page.locator('[data-tool-tabs] [role=tab]').allTextContents()).map((t) => t.trim()),
+      ['Revisar cartões5', 'Conjuntos', 'Criar cartão', 'Gerar com IA', 'Importar e mesclar', 'Aparência'],
+    );
+    assert.equal(await page.locator('#tab-revisar').getAttribute('aria-selected'), 'true');
+    assert.equal(await page.locator('#tab-revisar').getAttribute('aria-label'), 'Revisar cartões, 5 para hoje');
+    assert.equal(await page.locator('.primary-navigation a[aria-current=page] span').textContent(), 'Flashcards');
+    // Question attempts left open are one link away (they live with the questions).
+    assert.equal(await page.locator('[data-flashcards-quiz-link]').getAttribute('href'), './questoes.html');
+    await page.locator('[data-flashcards-quiz-link]', { hasText: '1 lista de questões em andamento' }).waitFor();
+    // One card, front labelled; the panel has no box of its own; no ratings before turning.
+    const card = page.locator('.flashcard-review-card');
+    assert.equal(await card.count(), 1);
+    assert.equal(await card.getAttribute('data-side'), 'front');
+    assert.equal(await card.locator('.flashcard-side-label').textContent(), 'Frente');
+    assert.equal(await page.locator('.flashcard-rating-buttons').count(), 0);
+    const chrome = await page.locator('[data-flashcards-panel]').evaluate((node) => getComputedStyle(node).borderTopWidth);
+    assert.equal(chrome, '0px', 'no card around the review card');
     await noHorizontalScroll(page, label);
     await settle(page);
     await axeCheck(page, 'main', label);
-    await shot(page, `revisar-${width}`);
-    // The popovers open, close with Esc and give focus back.
-    await page.locator('.review-filter > summary').click();
-    assert(await page.locator('[data-flashcard-set-filter]').isVisible());
-    await noHorizontalScroll(page, `${label} filtros`);
-    await axeCheck(page, '.review-toolbar', `${label} filtros`);
-    await page.keyboard.press('Escape');
-    assert.equal(await page.locator('.review-filter').evaluate((node) => node.open), false);
-    await page.locator('.review-create > summary').click();
-    await page.getByRole('button', { name: /Gerar cartões com IA/ }).waitFor();
-    await page.locator('.review-stage').click({ position: { x: 5, y: 5 } });
-    assert.equal(await page.locator('.review-create').evaluate((node) => node.open), false, 'a click outside closes it');
-    // Gerenciar: merge/import, organize and sets, ruled; back to the review.
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
-    assert(await page.locator('.review-manage').isVisible());
-    assert(await page.locator('.review-stage').isHidden());
-    assert(await page.getByRole('button', { name: 'Mesclar conjuntos' }).isVisible());
-    assert.equal(await page.locator('.review-manage details.flashcard-management').count(), 2);
-    await noHorizontalScroll(page, `${label} gerenciar`);
-    await axeCheck(page, 'main', `${label} gerenciar`);
-    await page.getByRole('button', { name: 'Voltar à revisão' }).click();
-    assert(await page.locator('.review-stage').isVisible());
-    // The other tabs: ruled lists, no boxes.
-    await page.locator('#tab-questoes').click();
-    await page.locator('.quiz-history-list li').first().waitFor();
-    assert.equal(await page.locator('.quiz-history-list').first().evaluate((node) => getComputedStyle(node).borderLeftWidth), '0px');
-    await page.locator('#tab-anotacoes').click();
-    await page.locator('#anotacoes .annotation-card').first().waitFor();
-    assert.equal(await page.locator('#anotacoes .annotation-card').first().evaluate((node) => getComputedStyle(node).borderTopWidth), '0px');
-    await noHorizontalScroll(page, `${label} anotações`);
-    await axeCheck(page, 'main', `${label} anotações`);
+    await shot(page, `flashcards-${width}`);
+    // A click (or tap) on the card turns it; the back is labelled; ratings appear below it.
+    await card.locator('.flashcard-content').click();
+    assert.equal(await card.getAttribute('data-side'), 'back');
+    assert.equal(await card.locator('.flashcard-side-label').textContent(), 'Verso');
+    assert.equal(await page.locator('.flashcard-flip').getAttribute('aria-pressed'), 'true');
+    await page.locator('[data-flashcard-side-status]', { hasText: 'Verso do cartão' }).waitFor({ state: 'attached' });
+    assert.equal(await page.locator('.flashcard-rating-buttons button').count(), 4);
+    await page.waitForTimeout(400); // the quarter turn ends
+    await noHorizontalScroll(page, `${label} verso`);
+    await axeCheck(page, 'main', `${label} verso`);
+    await shot(page, `flashcards-verso-${width}`);
+    // Keyboard: Space and Enter on the focused card turn it; focus stays on the card.
+    await page.locator('.flashcard-face').focus();
+    await page.keyboard.press('Space');
+    assert.equal(await card.getAttribute('data-side'), 'front');
+    assert.equal(await page.evaluate(() => document.activeElement?.className), 'flashcard-face');
+    await page.keyboard.press('Enter');
+    assert.equal(await card.getAttribute('data-side'), 'back');
+    // Rating is not part of the turn: it records the review and shows the next card's front.
+    await page.locator('.flashcard-rating-buttons [data-rating="2"]').click();
+    await page.locator('[data-flashcard-review-status]', { hasText: 'Revisão registrada' }).waitFor();
+    await page.locator('.flashcard-review-card[data-side="front"]').waitFor();
+    assert.equal(await page.locator('.flashcard-rating-buttons').count(), 0, 'the next card starts on its front');
+    // Each section is reachable and clean.
+    for (const [tab, id] of [['Conjuntos', 'conjuntos'], ['Criar cartão', 'criar'], ['Gerar com IA', 'gerar'], ['Importar e mesclar', 'importar'], ['Aparência', 'aparencia']]) {
+      await page.getByRole('tab', { name: tab }).click();
+      await page.locator(`#${id}:not([hidden])`).waitFor();
+      assert(page.url().endsWith(`#${id}`), `${tab} has its own address`);
+      await noHorizontalScroll(page, `${label} ${tab}`);
+      await axeCheck(page, 'main', `${label} ${tab}`);
+    }
+    await shot(page, `flashcards-aparencia-${width}`);
     await context.close();
   }
-  record('Revisar: "Para hoje" e contagens nas abas; um cartão por vez sem caixa em volta; filtros e novo cartão em popovers; gerenciar (mesclar, importar, organizar, conjuntos) numa segunda vista; Questões e Anotações em linhas; 390 e 1440 sem rolagem lateral; axe');
+  // The person's reduced-motion choice: the card turns without the animation.
+  {
+    const { context, page } = await openApp(browser, base, { ...allFlags }, state(), { width: 1024, height: 900 });
+    await context.addInitScript(() => localStorage.setItem('audioestudo-ui-preferences', JSON.stringify({ reducedMotion: true })));
+    await page.goto(base + '/flashcards.html');
+    await page.locator('.flashcard-face').click();
+    const animation = await page.locator('.flashcard-review-card').evaluate((node) => getComputedStyle(node).animationName);
+    assert.equal(animation, 'none');
+    await context.close();
+  }
+  record('Flashcards: página própria com seis seções (revisar, conjuntos, criar, gerar, importar e mesclar, aparência); revisar.html redireciona; cartão vira com clique, toque, Espaço ou Enter e com o botão (aria-pressed), frente e verso rotulados e anunciados; avaliar fica fora do cartão; sem animação com movimento reduzido; 390 e 1440 sem rolagem lateral; axe');
 }
-
 async function main() {
   const { server, base } = await startServer();
   const browser = await launchBrowser();

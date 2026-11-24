@@ -1,0 +1,101 @@
+{
+  "slug": "vacinas",
+  "voice": "br1",
+  "rate": 140,
+  "pitch": 50,
+  "notes": "Cada parágrafo é uma lista de segmentos; cada segmento é uma lista de frases. Uma frase é um texto (falado e transcrito igual) ou {\"text\": transcrição, \"say\": texto enviado ao sintetizador}.",
+  "paragraphs": [
+    [
+      ["Bom dia, pessoal.", "Hoje vamos entender como uma vacina funciona por dentro."],
+      [
+        "A ideia central é simples: a vacina é um treino para o sistema imunológico, feito antes que a doença de verdade apareça."
+      ]
+    ],
+    [
+      [
+        "O sistema imunológico é o conjunto de células e moléculas que defende o corpo contra agentes que causam doenças, como vírus e bactérias."
+      ],
+      [
+        "Esses agentes são chamados de patógenos.",
+        "Para reconhecer um patógeno, o corpo identifica certas moléculas da superfície dele, que funcionam como uma espécie de assinatura."
+      ],
+      ["Essas moléculas que o sistema imunológico reconhece são os antígenos."]
+    ],
+    [
+      [
+        "Quando o corpo encontra um antígeno pela primeira vez, ele monta a chamada resposta primária.",
+        "Os linfócitos B, um tipo de glóbulo branco, produzem anticorpos."
+      ],
+      [
+        "Anticorpos são proteínas em forma de Y que se encaixam em um antígeno específico, mais ou menos como uma chave se encaixa em uma fechadura."
+      ],
+      [
+        "Ao se ligar ao patógeno, o anticorpo pode impedir que ele entre nas células e também o marca para ser destruído por outras células de defesa."
+      ],
+      [
+        "Ao mesmo tempo, os linfócitos T ajudam a coordenar a resposta e eliminam células que já foram infectadas."
+      ],
+      [
+        "Só que essa primeira resposta é lenta: pode levar uma ou duas semanas para atingir a força máxima.",
+        "Nesse intervalo, o patógeno tem tempo de se multiplicar, e a pessoa pode ficar doente."
+      ]
+    ],
+    [
+      [
+        "Depois que a infecção passa, a maior parte dessas células de defesa desaparece, mas algumas permanecem: são as células de memória."
+      ],
+      [
+        "Elas guardam a informação sobre aquele antígeno, às vezes por muitos anos.",
+        "Se o mesmo patógeno aparecer de novo, as células de memória reconhecem o antígeno rapidamente."
+      ],
+      [
+        "A resposta secundária é mais rápida e mais forte, e muitas vezes elimina o invasor antes que surjam sintomas.",
+        "Isso é a memória imunológica."
+      ]
+    ],
+    [
+      [
+        "E é exatamente aqui que entra a vacina.",
+        "Ela apresenta ao corpo os antígenos de um patógeno sem causar a doença."
+      ],
+      [
+        "Isso pode ser feito com o patógeno enfraquecido ou inativado, ou com apenas uma parte dele, como uma proteína."
+      ],
+      [
+        "Também pode ser feito com instruções genéticas para que as próprias células produzam essa proteína por um tempo, como nas vacinas de RNA mensageiro."
+      ],
+      [
+        "O sistema imunológico responde a esses antígenos como se fosse uma infecção: produz anticorpos e, principalmente, forma células de memória."
+      ],
+      [
+        "Assim, quando a pessoa encontra o patógeno de verdade, o corpo já está preparado.",
+        "Algumas vacinas precisam de mais de uma dose ou de reforços, porque cada nova exposição fortalece e prolonga essa memória."
+      ],
+      [
+        "É comum sentir dor no braço ou um pouco de febre depois da vacina.",
+        "Isso é sinal de que o sistema imunológico está trabalhando, e normalmente passa em poucos dias."
+      ]
+    ],
+    [
+      ["Por fim, vamos falar de imunidade coletiva, também chamada de imunidade de rebanho."],
+      [
+        "Quando uma grande parte da população está imunizada, o patógeno encontra poucas pessoas em quem possa se multiplicar, e a cadeia de transmissão se interrompe."
+      ],
+      [
+        "Isso protege também quem não pode ser vacinado, como bebês muito pequenos ou pessoas com o sistema imunológico enfraquecido."
+      ],
+      [
+        "A proporção de pessoas vacinadas necessária varia de doença para doença: quanto mais contagiosa ela é, maior precisa ser a cobertura."
+      ]
+    ],
+    [
+      [
+        "Resumindo a cadeia: a vacina apresenta o antígeno, o corpo produz anticorpos e forma células de memória, e essa memória garante uma resposta rápida no futuro."
+      ],
+      [
+        "Com muita gente vacinada, a transmissão diminui e toda a comunidade fica protegida.",
+        "Até a próxima!"
+      ]
+    ]
+  ]
+}

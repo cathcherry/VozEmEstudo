@@ -1,4 +1,4 @@
-// Revisar › Questões › "Questões marcadas": the questions this account flagged, newest first,
+// Questões (questoes.html) › "Questões sinalizadas": the questions this account flagged, newest first,
 // with the lesson, the reason and a way back to the lesson's questions. Hidden when empty.
 import { activeReports, clearReport, onReportsChange, questionReportsReady, reasonLabel } from '../utils/question-reports.js';
 

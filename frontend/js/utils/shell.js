@@ -14,6 +14,8 @@ import { initPreferenceCloud, releaseAccountPreferences } from './preference-clo
 import { getFeatureFlags } from './feature-flags.js';
 import { t } from '../i18n/i18n.js';
 import { icon as uiIcon } from './icons.js';
+import './dialog-enhance.js';
+import './floating-menu.js';
 // The art system (Lume, stamps, objects, covers): fills every [data-art-slot] on signed-in pages.
 import '../art/art.js';
 
@@ -22,7 +24,8 @@ export async function revealStudyNavigation() {
   try {
     const flags = await getFeatureFlags();
     const root = document.documentElement;
-    root.dataset.navReview = String(Boolean(flags.flashcards || flags.annotations || flags.quiz_v2));
+    // 3.7: the entry is "Flashcards" (Revisar was retired); questions live in the lesson and questoes.html.
+    root.dataset.navReview = String(Boolean(flags.flashcards));
     root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
     root.dataset.navClassrooms = String(Boolean(flags.classrooms));
@@ -126,6 +129,11 @@ export async function initAuthenticatedShell() {
     void initFocusIndicator({ materialId: lessonId }).catch(() => { /* optional tool */ });
   }
   await preferenceSync;
+  // Public testing program (flag only): loaded on demand, so pages without it pay nothing.
+  void getFeatureFlags()
+    .then((flags) => (flags.public_testing ? import('./testing-shell.js') : null))
+    .then((module) => module?.initTestingShell(session.user))
+    .catch(() => { /* optional notice */ });
   document.querySelectorAll('[data-logout]').forEach((el) => {
     el.addEventListener('click', async (event) => {
       event.preventDefault();

@@ -36,6 +36,14 @@ export function errorMiddleware(error, req, res, _next) {
   const code = error instanceof AppError ? error.code : 'INTERNAL_ERROR';
   const message = error instanceof AppError ? error.message : 'Ocorreu um erro interno.';
 
-  logger.error('HTTP_ERROR', { requestId: req.requestId, code, status, message });
+  // Unexpected errors keep only their class and code in the log (never the raw message, which can
+  // carry SQL fragments or user content); the client always gets the generic message.
+  logger.error('HTTP_ERROR', {
+    requestId: req.requestId,
+    code,
+    status,
+    message,
+    ...(error instanceof AppError ? {} : { cause: { name: error?.name, code: error?.code } }),
+  });
   return res.status(status).json({ error: { code, message }, requestId: req.requestId });
 }

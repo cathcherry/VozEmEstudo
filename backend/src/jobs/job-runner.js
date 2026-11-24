@@ -7,7 +7,7 @@ import { env } from '../config/env.js';
 import { setMaterialState } from '../repositories/material.repository.js';
 import { getByMaterial as getTranscription } from '../repositories/transcription.repository.js';
 import { nextRetryDelayMs, shouldRetry } from './retry-policy.js';
-import { runJob } from '../services/processing.service.js';
+import { runJob, releaseUnstartedTranscription } from '../services/processing.service.js';
 import { failGeneration } from '../services/generation-reuse.service.js';
 
 /** Renews the lease while the job runs, at a third of the stale window (at most every minute). */
@@ -56,7 +56,10 @@ async function recordFailure(job, error) {
   });
 
   if (retry) {
-    const nextAt = new Date(Date.now() + nextRetryDelayMs(job.attempt_count)).toISOString();
+    // Provider rate limits: wait at least what the provider asked for (capped at one hour).
+    const hinted = Number(error?.details?.retryAfterSeconds) * 1000;
+    const delay = Math.min(Math.max(nextRetryDelayMs(job.attempt_count), Number.isFinite(hinted) ? hinted : 0), 3600000);
+    const nextAt = new Date(Date.now() + delay).toISOString();
     await updateJob(job.id, {
       status: JOB_STATUS.WAITING_RETRY,
       current_stage: null,
@@ -75,6 +78,8 @@ async function recordFailure(job, error) {
 
   // 3.3: a final failure frees the generation key, so the next equivalent request starts again.
   await failGeneration(job, safeCode);
+  // Public testing: a transcription that never reached the provider gives its seconds back.
+  await releaseUnstartedTranscription(job);
   await updateJob(job.id, {
     status: JOB_STATUS.FAILED,
     current_stage: null,

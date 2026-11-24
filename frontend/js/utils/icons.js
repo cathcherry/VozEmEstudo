@@ -101,6 +101,15 @@ export const ICON_MAP = Object.freeze({
   rotate: 'arrow-clockwise',
   journal: 'book-open-text',
   sticker: 'sticker',
+  // Configurações, Ajuda and the guided tour (3.7)
+  account: 'user-circle',
+  lock: 'lock-key',
+  language: 'translate',
+  privacy: 'shield-check',
+  storage: 'hard-drives',
+  help: 'lifebuoy',
+  tour: 'signpost',
+  'sign-out': 'sign-out',
 });
 
 export const ICON_NAMES = Object.freeze(Object.keys(ICON_MAP));

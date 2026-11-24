@@ -8,7 +8,9 @@ import { PERMISSION_DECLARATION } from './config/permission-declaration.js';
 import { featureFlags, isFeatureEnabled } from './config/feature-flags.js';
 import { assertPublicSupabaseKey } from './validators/public-config.validator.js';
 import { requestIdMiddleware } from './middleware/request-id.middleware.js';
+import { testingRouter, demoLessonRouter } from './routes/testing.routes.js';
 import { requireAuth } from './middleware/auth.middleware.js';
+import { limitPerAddress } from './middleware/public-rate-limit.middleware.js';
 import { notFoundMiddleware, errorMiddleware } from './middleware/error.middleware.js';
 import { materialRouter } from './routes/material.routes.js';
 import { catalogRouter } from './routes/catalog.routes.js';
@@ -35,11 +37,14 @@ const processingDisclosure = () => disclosureLabels(getAiRegistry().config);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const app = express();
+app.disable('x-powered-by');
+if (env.trustProxy) app.set('trust proxy', env.trustProxy);
 
 // Policy for the static front end (scripts are local files; styles use inline attributes;
 // Supabase API, storage uploads and realtime; blob/data media; YouTube/Spotify embeds of the
 // profile and of the soundscape music player — see docs/AUDIO_E_MUSICA.md).
-// Off by default until checked against the real project: see docs/HOSPEDAGEM.md.
+// Enforced by default when NODE_ENV=production (CONTENT_SECURITY_POLICY overrides): see
+// docs/HOSPEDAGEM.md. The password check queries the HIBP range API (k-anonymity) from the page.
 export function contentSecurityDirectives(supabaseUrl) {
   const supabase = supabaseUrl ? [supabaseUrl, supabaseUrl.replace(/^http/, 'ws')] : [];
   return {
@@ -48,7 +53,7 @@ export function contentSecurityDirectives(supabaseUrl) {
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", 'data:', 'blob:', ...supabase],
     mediaSrc: ["'self'", 'blob:', ...supabase],
-    connectSrc: ["'self'", ...supabase],
+    connectSrc: ["'self'", ...supabase, 'https://api.pwnedpasswords.com'],
     fontSrc: ["'self'", 'data:'],
     frameSrc: ["'self'", 'https://www.youtube-nocookie.com', 'https://www.youtube.com', 'https://open.spotify.com'],
     objectSrc: ["'none'"],
@@ -105,8 +110,11 @@ if (isFeatureEnabled('notebooks')) app.use('/api/notebooks', requireAuth, notebo
 if(isFeatureEnabled('calendar'))app.use('/api/calendar',requireAuth,calendarRouter);
 if(isFeatureEnabled('sharing')){
   app.use('/api/sharing',requireAuth,sharingRouter);
-  app.post('/api/shared-material',publicShare);
-  if (isFeatureEnabled('study_authoring')) app.post('/api/shared-question-list', publicQuestionList);
+  // Unauthenticated: capped per address (the token itself has 256 bits).
+  const publicLimit = limitPerAddress({ max: env.rateLimitPublicSharesPerMinute, windowMs: 60000 });
+  app.post('/api/shared-material', publicLimit, publicShare);
+  if (isFeatureEnabled('study_authoring'))
+    app.post('/api/shared-question-list', publicLimit, publicQuestionList);
 }
 if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);
@@ -125,6 +133,10 @@ if (isFeatureEnabled('discoveries')) {
 }
 // 3.6 Milestone D: the Diário de estudo (personal scrapbook journals; private).
 if (isFeatureEnabled('journal')) app.use('/api/journals', requireAuth, journalRouter);
+if (isFeatureEnabled('public_testing')) {
+  app.use('/api/testing', requireAuth, testingRouter);
+  app.use('/api/demo-lessons', requireAuth, demoLessonRouter);
+}
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {
@@ -147,7 +159,24 @@ if (env.serveFrontend) {
     res.sendFile('favicon.png', { root: path.join(frontendRoot, 'assets/brand') }),
   );
   app.use(express.static(path.join(frontendRoot, 'pages')));
+  // Public testing: the canonical demo media (original, openly licensed; one file per lesson).
+  // Only <slug>/audio.mp3 and <slug>/video.mp4 are served; Range requests work for seeking.
+  const demoRoot = path.resolve(__dirname, '../../database/demo-lessons');
+  app.use('/demo-media', (req, res, next) => {
+    if (!/^\/[a-z0-9-]+\/(audio\.mp3|video\.mp4)$/.test(req.path)) return res.status(404).end();
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.set('X-Content-Type-Options', 'nosniff');
+    return next();
+  }, express.static(demoRoot, { index: false, dotfiles: 'deny' }), (_req, res) => res.status(404).end());
   app.get('/', (_req, res) => res.redirect('/index.html'));
+  // A page address that does not exist gets a friendly page; API and asset requests keep JSON 404s.
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path.startsWith('/api/') || !req.accepts('html')) return next();
+    // Only page-like addresses (.html or no extension) and never hidden segments (/.env…).
+    const looksLikePage = /(^|\/)[^./]+(\.html)?$/i.test(req.path) && !/\/\./.test(req.path);
+    if (!looksLikePage) return next();
+    res.status(404).sendFile('404.html', { root: path.join(frontendRoot, 'pages') });
+  });
 }
 
 app.use(notFoundMiddleware);

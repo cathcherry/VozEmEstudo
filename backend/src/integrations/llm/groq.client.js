@@ -17,13 +17,16 @@ function mapGroqError(error) {
     });
   }
   const retryable = status === 429 || status >= 500 || status === 408 || status === 0;
+  // Rate limits: keep the provider's hint so the job runner waits at least that long.
+  const header = error?.headers?.get?.('retry-after') ?? error?.headers?.['retry-after'];
+  const retryAfterSeconds = Number(header) || null;
   return new AppError(
     retryable ? 'LLM_TEMPORARY_ERROR' : 'LLM_FAILED',
     retryable
       ? 'O serviço de geração textual está temporariamente indisponível.'
       : 'Não foi possível gerar o material textual.',
     502,
-    { retryable, cause: error },
+    { retryable, cause: error, details: { status, retryAfterSeconds } },
   );
 }
 
@@ -35,7 +38,9 @@ function groqErrorCode(error) {
 export function createGroqProvider({
   apiKey,
   mock = false,
-  createClient = (key) => new Groq({ apiKey: key }),
+  // One SDK retry at most (the SDK otherwise waits the full retry-after with no cap and can hold the
+// single worker); longer waits are rescheduled by the job runner with the provider's hint.
+  createClient = (key) => new Groq({ apiKey: key, maxRetries: 1, timeout: 120000 }),
   log = logger,
   reasoningEffort = 'low',
 }) {

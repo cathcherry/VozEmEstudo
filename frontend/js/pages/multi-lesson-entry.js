@@ -4,6 +4,7 @@
 // The dialog shows which lessons go in (confirmed current revision) and which stay out and why,
 // before anything is generated. Lesson titles are user content and are never translated.
 import { createMultiLesson, previewMultiLesson } from '../api/multi-lesson.api.js';
+import { ensureTestingStyles, generationBlocked, limitsLink } from '../utils/public-testing.js';
 
 export const MULTI_LESSON_PAGE = './integrado.html';
 const REASON = {
@@ -40,12 +41,12 @@ export function openMultiLessonDialog(
 ) {
   const id = `multi-lesson-dialog-${++counter}`;
   const picking = Array.isArray(unitChoices);
-  const dialog = el('dialog', { className: 'app-dialog multi-lesson-dialog', 'aria-labelledby': `${id}-title` });
-  const form = el('form', { method: 'dialog', novalidate: true });
+  const dialog = el('dialog', { className: 'app-dialog multi-lesson-dialog', 'aria-labelledby': `${id}-title`, 'data-wide': true });
+  const form = el('form', { method: 'dialog', novalidate: true, className: 'multi-lesson-form' });
   const heading = el('h2', { id: `${id}-title`, text: 'Material integrado' });
   const intro = el('p', {
     className: 'app-dialog-hint',
-    text: 'Um resumo e questões que relacionam as aulas escolhidas. Só entram aulas com a transcrição atual conferida e confirmada; cada item cita o trecho da aula que o sustenta.',
+    text: 'Um resumo e questões que ligam as aulas escolhidas. Entram as aulas com a transcrição confirmada.',
   });
   const status = el('p', { className: 'multi-lesson-status', role: 'status', 'aria-live': 'polite', text: picking ? 'Escolha as unidades que vão entrar no material.' : 'Conferindo as aulas…' });
   // Unit picker (3.4): one group per subject; subject and unit names are user content.
@@ -81,15 +82,24 @@ export function openMultiLessonDialog(
   const count = el('input', { id: `${id}-count`, name: 'questionCount', type: 'number', min: '1', max: '20', value: '8', inputmode: 'numeric' });
   questions.addEventListener('change', () => {
     count.disabled = !questions.checked;
+    countLabel.hidden = !questions.checked;
   });
   const reuseInput = el('input', { type: 'checkbox', name: 'reuse', id: `${id}-reuse` });
   reuseInput.checked = true;
-  const reuse = el('label', { for: `${id}-reuse`, className: 'multi-lesson-reuse' }, reuseInput, document.createTextNode(' Reaproveitar um material igual que já exista (não gasta uma nova geração)'));
+  const reuse = el('label', { for: `${id}-reuse`, className: 'multi-lesson-reuse' }, reuseInput, document.createTextNode(' Reaproveitar se já existir um material igual'));
   const error = el('p', { className: 'multi-lesson-error', role: 'alert' });
   const cancel = el('button', { type: 'button', className: 'secondary-action', text: 'Cancelar' });
   const submit = el('button', { type: 'submit', className: 'primary-action', text: 'Gerar material integrado' });
   submit.disabled = true;
-  form.append(heading, intro, ...(unitPicker ? [unitPicker] : []), status, preview, nameLabel, outputs, countLabel, reuse, error, el('div', { className: 'form-actions' }, cancel, submit));
+  // Header, a body in two columns (what goes in | what to make) that scrolls, and the actions
+  // always visible at the bottom (3.7: the dialog was narrow and long, its top could scroll away).
+  const pick = el('section', { className: 'multi-lesson-pick', 'aria-label': 'Aulas' }, ...(unitPicker ? [unitPicker] : []), status, preview);
+  const options = el('section', { className: 'multi-lesson-options', 'aria-label': 'Material' }, nameLabel, outputs, countLabel, reuse);
+  form.append(
+    el('header', { className: 'multi-lesson-head' }, heading, intro),
+    el('div', { className: 'multi-lesson-body' }, pick, options),
+    el('footer', { className: 'multi-lesson-foot' }, error, el('div', { className: 'form-actions' }, cancel, submit)),
+  );
   nameLabel.append(name);
   countLabel.append(count);
   dialog.append(form);
@@ -102,6 +112,24 @@ export function openMultiLessonDialog(
 
   let resolved = null;
   let sequence = 0;
+  // Public testing: participants without this generation see why, and cannot start it (the
+  // server refuses it anyway).
+  let blocked = false;
+  void generationBlocked('multi_lesson').then((reason) => {
+    if (!reason || !dialog.isConnected) return;
+    blocked = true;
+    submit.disabled = true;
+    void ensureTestingStyles();
+    const note = el('p', {
+      className: 'multi-lesson-testing-note',
+      'data-testing-blocked': reason,
+      text: reason === 'unavailable'
+        ? 'Material integrado: indisponível durante os testes para contas de participante.'
+        : 'Você já usou as gerações de material integrado do período de testes.',
+    });
+    note.append(' ', limitsLink());
+    error.before(note);
+  });
   const currentSelection = () =>
     picking ? { kind: 'units', ids: [...unitPicker.querySelectorAll('input:checked')].map((input) => input.value) } : selection;
   const fail = (text) => {
@@ -161,7 +189,7 @@ export function openMultiLessonDialog(
           resolved = { ...result, selection: wanted };
           status.textContent = included.length === 1 ? '1 aula pronta para estudar.' : `${included.length} aulas prontas para estudar juntas.`;
           status.dataset.state = 'success';
-          submit.disabled = false;
+          submit.disabled = blocked;
         }
       })
       .catch((failure) => {
@@ -197,7 +225,7 @@ export function openMultiLessonDialog(
       outputs.querySelector('input').focus();
       return;
     }
-    if (!resolved) return;
+    if (!resolved || blocked) return;
     submit.disabled = true;
     try {
       const settings = {};
@@ -222,7 +250,7 @@ export function openMultiLessonDialog(
         return;
       }
       error.textContent = failure.message || 'Não foi possível pedir o material integrado.';
-      submit.disabled = false;
+      submit.disabled = blocked;
     }
   });
   dialog.showModal();

@@ -34,7 +34,7 @@ const EXPECT = {
     { 'pt-BR': 'Biblioteca', en: 'Library', es: 'Biblioteca', 'zh-CN': '资料库' },
   ],
   'material.html?id=l-foto': ['[data-material-title]', null],
-  'revisar.html': ['h1', { 'pt-BR': 'Revisar', en: 'Review', es: 'Repasar', 'zh-CN': '复习' }],
+  'flashcards.html': ['h1', { 'pt-BR': 'Flashcards', en: 'Flashcards', es: 'Tarjetas', 'zh-CN': '记忆卡片' }],
   'planejar.html': ['h1', { 'pt-BR': 'Planejar', en: 'Plan', es: 'Planificar', 'zh-CN': '计划' }],
   'conta.html': [
     'h1',

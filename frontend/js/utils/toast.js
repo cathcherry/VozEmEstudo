@@ -27,6 +27,15 @@ export function dismissToast() {
  */
 export function toast(text, { type = 'info', duration, action } = {}) {
   const element = ensure();
+  // The same message is already on screen with an action (e.g. "Ver meus limites" added for a
+  // program limit): keep that richer toast instead of replacing it with a plain copy.
+  const current = element.querySelector('.app-toast__action');
+  if (!action && !element.hidden && !current.hidden && element.querySelector('.app-toast__text').textContent === text) {
+    clearTimeout(timer);
+    const keep = duration ?? (type === 'error' ? 9000 : 5000);
+    if (keep > 0) timer = setTimeout(dismissToast, keep);
+    return element;
+  }
   clearTimeout(timer);
   element.dataset.type = type;
   element.setAttribute('role', type === 'error' ? 'alert' : 'status');

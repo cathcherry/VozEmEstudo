@@ -55,6 +55,24 @@ test('question prompts ask for exam-style statements that never mention the tran
   const { MULTI_LESSON_PROMPT_VERSION } = await import('../src/prompts/multi-lesson.v1.js');
   const system = buildPlannedQuestionMessages([{ position: 0, text: 'x' }], { slots: [{ id: 's1', skill: 'recall', difficulty: 'easy', concept: { label: 'fotossíntese', evidence: null } }] })[0].content;
   assert.match(system, /nunca mencione "a transcrição"/);
-  assert.equal(QUESTIONS_V2_PROMPT_VERSION, 'questions-v2.3', 'a new prompt version invalidates reuse of older lists');
-  assert.equal(MULTI_LESSON_PROMPT_VERSION, 'multi-lesson-v2');
+  assert.equal(QUESTIONS_V2_PROMPT_VERSION, 'questions-v2.4', 'a new prompt version invalidates reuse of older lists');
+  assert.equal(MULTI_LESSON_PROMPT_VERSION, 'multi-lesson-v3');
+});
+
+test('explanations are asked to be direct, without citing the source in every sentence', async () => {
+  const { buildPlannedQuestionMessages } = await import('../src/prompts/questions.v2.js');
+  const { buildQuestionMessages } = await import('../src/prompts/questions.v1.js');
+  const { buildSynthesisMessages } = await import('../src/prompts/multi-lesson.v1.js');
+  const v2 = buildPlannedQuestionMessages([{ position: 0, text: 'x' }], { slots: [{ id: 's1', skill: 'recall', difficulty: 'basic', concept: { label: 'fotossíntese', evidence: null } }] })[0].content;
+  const v1 = buildQuestionMessages('x', 3)[0].content;
+  const multi = buildSynthesisMessages({ lessons: [], outputs: ['questions'] })[0].content;
+  for (const system of [v2, v1, multi]) {
+    assert.match(system, /direta e natural/);
+    assert.match(system, /"a transcrição afirma"/, 'the repeated opening is named as something to avoid');
+  }
+  // Still grounded: the excerpt that supports the answer is still requested and shown apart.
+  assert.match(v2, /Copie em evidence a frase da transcrição/);
+  assert.match(v2, /explicação breve sustentada pela aula/);
+  assert.match(v2, /já é mostrado ao aluno separadamente/);
+  assert.match(v1, /sustentada exclusivamente pela transcrição/);
 });

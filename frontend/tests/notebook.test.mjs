@@ -15,7 +15,26 @@ import {
   newBlock,
   referenceBlock,
   ADDABLE_BLOCKS,
+  limitProblem,
 } from '../js/utils/notebook-doc.js';
+import {
+  blocksToLines,
+  linesToBlocks,
+  renderLines,
+  readLines,
+  splitLine,
+  joinBackward,
+  deleteRange,
+  removeAtom,
+  setKind,
+  toggleChecked,
+  insertText,
+  insertLines,
+  insertAtom,
+  shortcutFor,
+  htmlToLines,
+  textToLines,
+} from '../js/utils/notebook-editor.js';
 
 const SEGMENTS = ['Energia é conservada.', 'Uma afirmação citada pode ser refutada.', 'Calor é energia em trânsito.'];
 function transcript() {
@@ -224,4 +243,164 @@ test('document helpers: keep both versions, plain text only, references carry th
     { ...referenceBlock({ id: 'n1', source_revision_id: 'r1', source_revision: 2 }, 'b1') },
     { id: 'b1', type: 'annotation_ref', annotationId: 'n1', sourceRevisionId: 'r1', sourceRevision: 2 },
   );
+});
+
+// ---- Writing area (notebook-editor.js): the stored block format round-trips losslessly --------
+const OLD_NOTEBOOK = [
+  { id: 'h1', type: 'heading', level: 2, text: 'Fase clara' },
+  { id: 'p1', type: 'paragraph', text: 'A luz vira energia química.\nATP e NADPH.' },
+  { id: 'p0', type: 'paragraph', text: '' },
+  { id: 'p3', type: 'paragraph', text: 'termina com quebra\n' },
+  { id: 'p4', type: 'paragraph', text: 'espaços  duplos e a < b' },
+  { id: 'l1', type: 'bullet_list', items: ['Clorofila', '', 'Tilacoide'] },
+  { id: 'l2', type: 'bullet_list', items: ['outra lista colada à primeira'] },
+  { id: 'o1', type: 'ordered_list', items: ['Luz', 'Água', 'Oxigênio'] },
+  { id: 'c1', type: 'checklist', items: [{ text: 'Revisar ciclo', checked: true }, { text: 'Fazer resumo', checked: false }] },
+  { id: 'c2', type: 'checklist', items: [] },
+  { id: 'e1', type: 'bullet_list', items: [] },
+  { id: 'h2', type: 'heading', level: 3, text: 'Citações' },
+  { id: 'q1', type: 'quote', text: 'O carbono é fixado\nno ciclo de Calvin.' },
+  { id: 'r1', type: 'annotation_ref', annotationId: 'a1', sourceRevisionId: 'r-1', sourceRevision: 2 },
+  { id: 'r2', type: 'annotation_ref', annotationId: 'a2', sourceRevisionId: 'r-2' },
+  { id: 'x1', type: 'future_block', payload: { text: 'de outra versão' } },
+  { id: 'p2', type: 'paragraph', text: 'Fim.' },
+];
+const counter = () => {
+  let n = 0;
+  return () => `new${++n}`;
+};
+
+test('editor: blocks → lines → blocks keeps every old block exactly (ids, lists, checklist state, quotes, references)', () => {
+  const lines = blocksToLines(OLD_NOTEBOOK);
+  assert.deepEqual(linesToBlocks(lines, counter()), OLD_NOTEBOOK);
+  assert.equal(lines.filter((line) => line.kind === 'atom').length, 3, 'references and the unknown block are kept as atoms');
+  // A block with an unexpected shape is never trimmed into an editable one: it is kept whole.
+  const odd = [{ id: 'z', type: 'paragraph', text: 'x', extra: true }];
+  assert.deepEqual(linesToBlocks(blocksToLines(odd)), odd);
+});
+
+test('editor: blocks → editor DOM → blocks round trip (what reopening and saving does)', () => {
+  const dom = new JSDOM('<div id="root"></div>');
+  try {
+    const root = dom.window.document.querySelector('#root');
+    const lines = blocksToLines(OLD_NOTEBOOK);
+    const atoms = new Map(lines.filter((l) => l.kind === 'atom').map((l) => [l.id, l.block]));
+    renderLines(root, lines, { renderAtom: (block, figure) => figure.append(`cited ${block.id}`) });
+    assert.equal(root.querySelector('h3').textContent, 'Fase clara');
+    assert.equal(root.querySelector('h4').textContent, 'Citações');
+    assert.equal(root.querySelectorAll('ol > li').length, 3);
+    assert.deepEqual([...root.querySelectorAll('ul[data-type=checklist] input')].map((i) => i.checked), [true, false, false]);
+    assert.equal(root.querySelectorAll('figure[contenteditable=false]').length, 3);
+    assert.equal(root.querySelectorAll('script, [style]').length, 0);
+    const read = readLines(root, atoms);
+    assert.equal(read.irregular, false, 'the drawn markup reads back cleanly');
+    assert.deepEqual(linesToBlocks(read.lines, counter()), OLD_NOTEBOOK);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('editor: Enter, Backspace, list exit, type changes and checklist work on lines', () => {
+  const make = counter();
+  let state = { lines: blocksToLines([{ id: 'p', type: 'paragraph', text: 'abcdef' }]) };
+  state = splitLine(state.lines, { line: 0, offset: 3 }, make);
+  assert.deepEqual(linesToBlocks(state.lines, make), [
+    { id: 'p', type: 'paragraph', text: 'abc' },
+    { id: 'new1', type: 'paragraph', text: 'def' },
+  ]);
+  assert.deepEqual(state.caret, { line: 1, offset: 0 });
+  state = joinBackward(state.lines, { line: 1, offset: 0 }, make);
+  assert.deepEqual(linesToBlocks(state.lines, make), [{ id: 'p', type: 'paragraph', text: 'abcdef' }]);
+  assert.deepEqual(state.caret, { line: 0, offset: 3 });
+  // A list: Enter adds an item; Enter on an empty item leaves the list.
+  let list = { lines: blocksToLines([{ id: 'l', type: 'bullet_list', items: ['um', 'dois', 'três'] }]) };
+  list = splitLine(list.lines, { line: 0, offset: 2 }, make);
+  assert.deepEqual(linesToBlocks(list.lines, make), [{ id: 'l', type: 'bullet_list', items: ['um', '', 'dois', 'três'] }]);
+  list = splitLine(list.lines, { line: 1, offset: 0 }, make);
+  const split = linesToBlocks(list.lines, make);
+  assert.deepEqual(split.map((b) => b.type), ['bullet_list', 'paragraph', 'bullet_list'], 'the list is split around the new paragraph');
+  assert.deepEqual([split[0].items, split[2].items], [['um'], ['dois', 'três']]);
+  assert.equal(new Set(split.map((b) => b.id)).size, 3);
+  // Backspace at the start of a heading makes it a paragraph (text kept).
+  const heading = joinBackward(blocksToLines([{ id: 'h', type: 'heading', level: 2, text: 'T' }]), { line: 0, offset: 0 }, make);
+  assert.deepEqual(linesToBlocks(heading.lines, make), [{ id: 'h', type: 'paragraph', text: 'T' }]);
+  // A cited highlight is never removed by the keyboard.
+  const withRef = blocksToLines([{ id: 'r', type: 'annotation_ref', annotationId: 'a', sourceRevisionId: 's' }, { id: 'p', type: 'paragraph', text: 'x' }]);
+  assert.deepEqual(joinBackward(withRef, { line: 1, offset: 0 }, make), { blocked: 'atom' });
+  assert.deepEqual(deleteRange(withRef, { line: 0, offset: 0 }, { line: 1, offset: 1 }), { blocked: 'atom' });
+  assert.equal(linesToBlocks(removeAtom(withRef, 'r').lines, make).length, 1, 'only the explicit button removes it');
+  // Type changes: paragraph → checklist (keeps its id as the list id) and back.
+  const paragraphs = blocksToLines([
+    { id: 'a', type: 'paragraph', text: 'um' },
+    { id: 'b', type: 'paragraph', text: 'dois' },
+  ]);
+  const checked = setKind(paragraphs, 0, 1, 'check', make);
+  assert.deepEqual(linesToBlocks(checked.lines, make), [
+    { id: 'a', type: 'checklist', items: [{ text: 'um', checked: false }, { text: 'dois', checked: false }] },
+  ]);
+  const ticked = toggleChecked(checked.lines, 1);
+  assert.equal(linesToBlocks(ticked.lines, make)[0].items[1].checked, true);
+  const back = setKind(ticked.lines, 0, 1, 'check', make);
+  assert.deepEqual(linesToBlocks(back.lines, make).map((b) => b.type), ['paragraph', 'paragraph'], 'same list type again toggles back');
+  const ordered = setKind(paragraphs, 0, 0, 'ordered', make);
+  assert.deepEqual(linesToBlocks(ordered.lines, make).map((b) => b.type), ['ordered_list', 'paragraph']);
+  // Shift+Enter: a line break inside the paragraph.
+  assert.equal(linesToBlocks(insertText(paragraphs, { line: 0, offset: 2 }, '\n').lines, make)[0].text, 'um\n');
+  // Markdown-like starts.
+  assert.deepEqual(['#', '##', '-', '1.', '[ ]', '[x]', '>', 'x'].map((m) => shortcutFor(m)?.kind ?? null), ['h2', 'h3', 'bullet', 'ordered', 'check', 'check', 'quote', null]);
+  // Citing goes in below the caret's line, with a line after it to keep writing.
+  const cited = insertAtom(paragraphs, { id: 'r', type: 'annotation_ref', annotationId: 'a', sourceRevisionId: 's' }, { line: 1, offset: 0 }, make);
+  assert.deepEqual(cited.lines.map((l) => l.kind), ['p', 'p', 'atom', 'p']);
+  assert.deepEqual(linesToBlocks(cited.lines, make).map((b) => b.type), ['paragraph', 'paragraph', 'annotation_ref'], 'the blank line is not stored');
+});
+
+test('editor: pasted HTML becomes plain text in the supported types; nothing executable survives', () => {
+  const dom = new JSDOM('');
+  try {
+    const parser = new dom.window.DOMParser();
+    const lines = htmlToLines(
+      '<h1 onclick="x()">Título</h1><p style="color:red">Um <b>dois</b><br>três</p><script>alert(1)</script><style>p{}</style>' +
+        '<img src=x onerror="alert(2)"><iframe src="javascript:alert(3)"></iframe><ul><li>a</li><li><input type="checkbox" checked> feito</li></ul>' +
+        '<ol><li>primeiro</li></ol><blockquote>citado</blockquote><a href="javascript:alert(4)">link</a>',
+      counter(),
+      parser,
+    );
+    const blocks = linesToBlocks(lines, counter());
+    assert.deepEqual(
+      blocks.map(({ id: _id, ...rest }) => rest),
+      [
+        { type: 'heading', level: 2, text: 'Título' },
+        { type: 'paragraph', text: 'Um dois\ntrês' },
+        { type: 'bullet_list', items: ['a'] },
+        { type: 'checklist', items: [{ text: 'feito', checked: true }] },
+        { type: 'ordered_list', items: ['primeiro'] },
+        { type: 'quote', text: 'citado' },
+        { type: 'paragraph', text: 'link' },
+      ],
+    );
+    assert(!JSON.stringify(blocks).includes('alert'), 'no script text');
+    // Plain text: markdown-like lines keep their meaning; one line stays inline.
+    assert.deepEqual(
+      linesToBlocks(textToLines('# Tema\n- um\n- dois\n[x] feito\n\nTexto', counter()), counter()).map(({ id: _id, ...rest }) => rest),
+      [
+        { type: 'heading', level: 2, text: 'Tema' },
+        { type: 'bullet_list', items: ['um', 'dois'] },
+        { type: 'checklist', items: [{ text: 'feito', checked: true }] },
+        { type: 'paragraph', text: 'Texto' },
+      ],
+    );
+    const inline = insertLines(blocksToLines([{ id: 'p', type: 'paragraph', text: 'ab' }]), { line: 0, offset: 1 }, textToLines('X', counter()));
+    assert.equal(inline.lines[0].text, 'aXb');
+    const several = insertLines(blocksToLines([{ id: 'p', type: 'paragraph', text: 'ab' }]), { line: 0, offset: 1 }, textToLines('X\nY', counter()), counter());
+    assert.deepEqual(several.lines.map((l) => l.text), ['a', 'X', 'Y', 'b']);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('size limits are reported before saving, never by cutting text', () => {
+  const long = (text) => ({ title: '', doc: { type: 'doc', schemaVersion: 1, blocks: [{ id: 'h', type: 'heading', level: 2, text }] } });
+  assert.equal(limitProblem(long('x'.repeat(300))), null);
+  assert.match(limitProblem(long('x'.repeat(301))), /título passou de 300/);
+  assert.equal(limitProblem({ title: '', doc: { type: 'doc', schemaVersion: 1, blocks: OLD_NOTEBOOK } }), null);
 });

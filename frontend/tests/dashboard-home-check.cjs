@@ -63,7 +63,7 @@ async function main() {
       await page.locator('.primary-navigation a[aria-current="page"] span').textContent(),
       'Início',
     );
-    for (const name of ['Nova transcrição', 'Início', 'Biblioteca', 'Revisar', 'Planejar'])
+    for (const name of ['Nova transcrição', 'Início', 'Biblioteca', 'Flashcards', 'Planejar'])
       assert(
         await page.locator('.primary-navigation a', { hasText: name }).isVisible(),
         `${name} in the navigation`,
@@ -111,7 +111,7 @@ async function main() {
     await axeCheck(page, 'body', 'Início');
     await shot(page, 'inicio-1440');
     record(
-      'Início: resumo real, cada cartão leva a uma página (no máximo uma ação principal), menu com Revisar e Planejar, sem painéis escondidos, hover estável, axe sem violações',
+      'Início: resumo real, cada cartão leva a uma página (no máximo uma ação principal), menu com Flashcards e Planejar, sem painéis escondidos, hover estável, axe sem violações',
     );
 
     // ---------- Planning journey: task → schedule → time ---------------------------------
@@ -123,7 +123,7 @@ async function main() {
     await page.locator('#planning-task-goal').selectOption('g2');
     await page.locator('#planning-task-title').fill('Resumir o capítulo 5');
     await page.locator('[data-planning-task-form] [type=submit]').click();
-    await page.locator('[data-planning-status]', { hasText: 'Tarefa criada' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Tarefa criada' }).waitFor();
     assert(data.tasks.some((t) => t.title === 'Resumir o capítulo 5'));
     assert.equal(new URL(page.url()).search, '', 'the creation request is not repeated on reload');
     await settle(page);
@@ -140,16 +140,24 @@ async function main() {
     await page
       .locator('#calendario .calendar-event-form input[type=text]')
       .fill('Estudar capítulo 5');
-    await page
-      .locator('#calendario input[type=datetime-local]')
-      .nth(0)
-      .fill(`${day(2)}T10:00`);
-    await page
-      .locator('#calendario input[type=datetime-local]')
-      .nth(1)
-      .fill(`${day(2)}T11:00`);
+    // Day, start and duration; the slot is repeated in words before saving.
+    const compose = page.getByRole('dialog', { name: 'Agendar estudo' });
+    await compose.getByLabel('Dia', { exact: true }).fill(day(2));
+    await compose.getByLabel('Horário', { exact: true }).fill('10:00');
+    await compose.getByLabel('Duração').selectOption('90');
+    await compose.locator('.calendar-when-summary', { hasText: 'das 10:00 às 11:30' }).waitFor();
+    await compose.getByLabel('Aula vinculada (opcional)').selectOption('l-foto');
+    await compose.getByLabel('Anotações (opcional)').fill('Levar o caderno');
     await page.locator('#calendario .calendar-event-form [type=submit]').click();
-    await page.locator('#calendario [role=status]', { hasText: 'Horário salvo' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Estudo agendado para' }).waitFor();
+    const saved = data.savedEvents.at(-1).body;
+    assert.equal(Date.parse(saved.endsAt) - Date.parse(saved.startsAt), 90 * 60000, '1 h 30 min');
+    assert.equal(new Date(saved.startsAt).getHours(), 10);
+    assert.equal(saved.materialId, 'l-foto');
+    assert.equal(saved.description, 'Levar o caderno');
+    // No fixed confirmation stays in the calendar.
+    assert.equal(await page.locator('#calendario .calendar-status').textContent(), '');
+    await page.locator('#calendario .calendar-entry', { hasText: 'Estudar capítulo 5' }).waitFor();
     await settle(page);
     await axeCheck(page, 'main', 'Planejar › calendário');
     await shot(page, 'planejar-calendario-1440');
@@ -178,36 +186,31 @@ async function main() {
     await page.goto(base + '/painel.html');
     await ready(page);
     await page.locator('[data-cards-actions] a', { hasText: 'Revisar 5 cartões' }).click();
-    await page.waitForURL('**/revisar.html#flashcards');
-    await page
-      .locator('[data-flashcard-due-area] button', { hasText: 'Revelar resposta' })
-      .waitFor();
-    await page.waitForFunction(() =>
-      document.activeElement?.textContent?.includes('Revelar resposta'),
-    );
+    await page.waitForURL('**/flashcards.html#revisar');
+    // The review opens with focus on the card's turn key; Enter turns it.
+    await page.locator('[data-flashcard-due-area] .flashcard-flip').waitFor();
+    await page.waitForFunction(() => document.activeElement?.classList?.contains('flashcard-flip'));
     await page.keyboard.press('Enter');
-    assert.match(await focusedText(page), /De novo|Difícil|Bom|Fácil/);
-    await page.getByRole('button', { name: 'Bom', exact: true }).click();
+    assert.equal(await page.locator('.flashcard-review-card').getAttribute('data-side'), 'back');
+    assert.equal(await page.locator('.flashcard-flip').getAttribute('aria-pressed'), 'true');
+    // The ratings follow the card in the reading order.
+    await page.keyboard.press('Tab');
+    assert.match(await focusedText(page), /De novo/);
+    await page.getByRole('button', { name: /^Bom/ }).click();
     await page
       .locator('[data-flashcard-review-status]', { hasText: 'Revisão registrada' })
       .waitFor();
     assert.equal(data.reviews, 1);
     await settle(page);
-    await axeCheck(page, 'main', 'Revisar › flashcards');
-    await shot(page, 'revisar-flashcards-1440');
-    await page.locator('#tab-questoes').click();
-    await page.locator('.quiz-history-list a', { hasText: 'Continuar tentativa' }).waitFor();
-    assert.match(await page.locator('.quiz-history-list').first().textContent(), /Fotossíntese/);
-    assert.match(
-      await page
-        .locator('.quiz-history-list a', { hasText: 'Ver resultado e erros' })
-        .getAttribute('href'),
-      /responder\.html\?material=l-rev&batch=b2&session=qs2/,
-    );
-    await axeCheck(page, 'main', 'Revisar › questões');
-    await shot(page, 'revisar-questoes-1440');
+    await axeCheck(page, 'main', 'Flashcards › revisar');
+    await shot(page, 'flashcards-revisar-1440');
+    // Attempts left open live with the questions: one quiet link there from Flashcards.
+    const quizLink = page.locator('[data-flashcards-quiz-link]');
+    await quizLink.waitFor();
+    assert.equal(await quizLink.getAttribute('href'), './questoes.html');
+    assert.match(await quizLink.textContent(), /em andamento/);
     record(
-      'Jornada de revisão: Início › Revisar 5 cartões abre a revisão com foco; Questões lista tentativas com Continuar / Ver resultado e erros',
+      'Jornada de revisão: Início › Revisar 5 cartões abre Flashcards com foco no cartão; Enter vira, avaliar registra; questões em andamento a um link',
     );
 
     // ---------- Finding information: annotations through the global search ---------------
@@ -216,16 +219,22 @@ async function main() {
     await page.locator('.topbar-search input').fill('energia');
     await page.locator('.topbar-search input').press('Enter');
     await page.getByRole('tab', { name: /Anotações/ }).click();
-    await page.locator('.search-note', { hasText: 'Cai na prova!' }).waitFor();
-    await page.locator('#search-panel-notes button', { hasText: 'em Revisar' }).click();
-    await page.waitForURL('**/revisar.html#anotacoes');
-    await page.locator('#anotacoes .annotation-card').first().waitFor();
-    assert.equal(await page.locator('#anotacoes input[type=search]').inputValue(), 'energia');
+    const found = page.locator('.search-note', { hasText: 'Cai na prova!' });
+    await found.waitFor();
+    // Each note opens its lesson on the highlighted passage.
+    assert.match(await found.getAttribute('href'), /material\.html\?id=l-foto&busca=/);
+    // "Ver todas" on the notes card lists every note on Início (old Revisar › Anotações links too).
+    await page.goto(base + '/painel.html');
+    await ready(page);
+    await page.locator('[data-notes-link]').click();
+    await page.waitForURL('**/painel.html?em=notes');
+    await page.getByRole('heading', { name: 'Suas anotações' }).waitFor();
+    await page.locator('[data-search-results] .search-note').first().waitFor();
     await settle(page);
-    await axeCheck(page, 'main', 'Revisar › anotações');
-    await shot(page, 'revisar-anotacoes-1440');
+    await axeCheck(page, 'main', 'Início › suas anotações');
+    await shot(page, 'inicio-anotacoes-1440');
     record(
-      'Encontrar informação: a busca global mostra a aba Anotações e leva a Revisar com a mesma busca',
+      'Encontrar informação: a busca global encontra anotações (no servidor, só da conta) e abre a aula no trecho; "Ver todas" lista as anotações no Início',
     );
 
     // ---------- Question practice from the lesson: steps and the next action -------------
@@ -287,7 +296,7 @@ async function main() {
     );
 
     // ---------- Widths, zoom, themes, screen-reader mode ---------------------------------
-    for (const route of ['painel.html', 'planejar.html#tarefas', 'revisar.html#flashcards']) {
+    for (const route of ['painel.html', 'planejar.html#tarefas', 'flashcards.html#revisar']) {
       await page.goto(`${base}/${route}`);
       await settle(page);
       for (const [width, height] of [
@@ -306,7 +315,7 @@ async function main() {
       await page.setViewportSize({ width: 1440, height: 1000 });
     }
     record(
-      'Sem rolagem horizontal em Início, Planejar e Revisar de 320 a 1920 px (640 px = zoom 200%)',
+      'Sem rolagem horizontal em Início, Planejar e Flashcards de 320 a 1920 px (640 px = zoom 200%)',
     );
     await page.goto(base + '/painel.html');
     await ready(page);
@@ -353,10 +362,10 @@ async function main() {
     await ready(page);
     await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).waitFor();
     await page
-      .locator('[data-cards-preview]', { hasText: 'Crie cartões a partir do resumo' })
+      .locator('[data-cards-preview]', { hasText: 'Nenhum cartão.' })
       .waitFor();
-    await page.locator('[data-events-preview]', { hasText: 'Planeje quando' }).waitFor();
-    await page.locator('[data-week-body]', { hasText: 'Use o cronômetro' }).waitFor();
+    await page.locator('[data-events-preview]', { hasText: 'Nenhum estudo agendado.' }).waitFor();
+    await page.locator('[data-week-body]', { hasText: 'Nenhum tempo registrado' }).waitFor();
     await settle(page);
     assert.equal(await page.locator('.dash-day-bar').count(), 0, 'no empty chart');
     assert(await page.locator('[data-tasks-count]').isHidden(), 'no zero counters');
@@ -366,11 +375,12 @@ async function main() {
     await page.locator('[data-tasks-actions] a', { hasText: 'Criar primeiro objetivo' }).click();
     await page.waitForURL('**/planejar.html#tarefas');
     await page.locator('#planning-goal-title:focus').waitFor();
-    await page.goto(base + '/revisar.html#questoes');
+    await page.goto(base + '/flashcards.html');
     await page
-      .locator('#questoes', { hasText: 'Você ainda não respondeu nenhuma lista' })
+      .locator('#revisar', { hasText: 'Nenhum cartão pendente' })
       .waitFor();
-    await shot(page, 'revisar-questoes-vazio-1440');
+    assert(await page.locator('[data-flashcards-quiz-link]').isHidden(), 'no attempts in progress, no link');
+    await shot(page, 'flashcards-vazio-1440');
     record(
       'Conta nova: cada cartão explica o recurso e oferece uma ação; sem gráficos ou contadores zerados; "Criar primeiro objetivo" abre o formulário',
     );
@@ -381,7 +391,7 @@ async function main() {
     await page.goto(base + '/painel.html');
     await ready(page);
     await page.waitForTimeout(600);
-    assert(await page.locator('.primary-navigation a', { hasText: 'Revisar' }).isHidden());
+    assert(await page.locator('.primary-navigation a', { hasText: 'Flashcards' }).isHidden());
     assert(await page.locator('.primary-navigation a', { hasText: 'Planejar' }).isHidden());
     assert(await page.locator('[data-plan-section]').isHidden());
     assert(await page.locator('[data-week-widget]').isHidden());
@@ -393,7 +403,7 @@ async function main() {
       .locator('[data-tool-unavailable]', { hasText: 'O planejamento ainda não está ativo' })
       .waitFor();
     record(
-      'Flags desligadas: menu sem Revisar/Planejar, Início só com aula e Biblioteca, página direta explica que o recurso não está ativo',
+      'Flags desligadas: menu sem Flashcards/Planejar, Início só com aula e Biblioteca, página direta explica que o recurso não está ativo',
     );
     await context.close();
   } finally {

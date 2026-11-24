@@ -150,7 +150,7 @@ async function main() {
     await cardsBox.getByRole('button', { name: 'Salvar como conjunto de flashcards' }).click();
     await cardsBox.locator('.multi-lesson-export-status', { hasText: 'Conjunto de flashcards salvo.' }).waitFor();
     assert.equal(await cardsBox.locator('[role="alert"]').textContent(), '');
-    assert.match(await cardsBox.getByRole('link', { name: 'Abrir o conjunto' }).getAttribute('href'), /^\.\/revisar\.html\?conjunto=set-.+#flashcards$/);
+    assert.match(await cardsBox.getByRole('link', { name: 'Abrir o conjunto' }).getAttribute('href'), /^\.\/flashcards\.html\?conjunto=set-.+#revisar$/);
     await settle(page);
     await axeCheck(page, 'main', 'Material integrado com lista e conjunto salvos');
     await noHorizontalScroll(page, 'material integrado salvo 1280');

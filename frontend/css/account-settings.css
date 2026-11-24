@@ -1,185 +1,380 @@
-/* Legacy layer (see system.css): retired piece by piece in the 3.5 redesign. */
-@layer legacy {
-.settings-hub { max-width:1180px; }
-.settings-hub-card { min-width:0; padding:clamp(18px,2.5vw,26px); border:1px solid var(--border-light); border-radius:16px; background:var(--surface); box-shadow:0 5px 22px color-mix(in srgb,var(--text) 4%,transparent); }
-.settings-account-card { margin:0 0 18px; }
-.settings-card-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:12px; }
-.settings-card-heading h2 { margin:0; font-size:1.18rem; }
-.settings-card-heading .eyebrow { display:block; margin:0 0 4px; }
-.settings-hub-card > p { max-width:58ch; margin:0 0 16px; color:var(--muted); font-size:.86rem; line-height:1.55; }
-.settings-hub-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
-.settings-card-icon { display:grid; flex:0 0 38px; width:38px; height:38px; place-items:center; border-radius:11px; color:var(--accent-strong); background:var(--accent-soft); font-size:1.15rem; }
-.settings-card-link { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:40px; padding:9px 0; border-top:1px solid var(--border-light); color:var(--accent-strong); font-size:.84rem; font-weight:600; text-decoration:none; }
-.settings-card-link:hover { text-decoration:underline; }
-.settings-card-links { display:grid; }
-.account-facts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:0; }
-.account-facts > div { min-width:0; padding:12px; border-radius:10px; background:var(--surface-alt); }
-.account-facts dt { margin-bottom:5px; color:var(--muted); font-size:.72rem; }
-.account-facts dd { margin:0; overflow-wrap:anywhere; color:var(--text); font-size:.83rem; font-weight:600; }
-.password-reset-form { display:grid; gap:12px; }
-.password-reset-form label { display:grid; gap:6px; font-size:.78rem; font-weight:600; }
-.password-reset-form input[readonly] { width:100%; min-width:0; }
-.password-reset-form .secondary-action { justify-self:start; font-size:.8rem; }
-.password-reset-form .form-status { min-height:0; margin:0; font-size:.78rem; }
-@media(max-width:780px) { .settings-hub-grid { grid-template-columns:1fr; } .account-facts { grid-template-columns:1fr; } }
-
-.settings-category-nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
-.settings-category-nav a { padding:8px 14px; border:1px solid var(--border-light); border-radius:999px; background:var(--surface); color:var(--text); font-size:.8rem; text-decoration:none; }
-.settings-category-nav a:hover { background:var(--surface-alt); }
-.settings-details-card { margin-top:20px; }
-.settings-details-card details { border-top:1px solid var(--border-light); padding:14px 0; }
-.settings-details-card summary { cursor:pointer; font-size:.85rem; font-weight:600; }
-.settings-details-card p { color:var(--muted); font-size:.8rem; line-height:1.6; max-width:80ch; }
-.settings-hub [id] { scroll-margin-top:110px; }
-}
-
-/* ==== Configurações 3.5: a settings window — the account on top, a jump bar, then sections as
- * panels whose content is rows (never boxes in boxes). */
+/* ==== Configurações 3.7: one direct list ===================================================
+ * Grouped rows, like a system settings window: a small caption per group, then a panel of ruled
+ * rows. Each row is one link or button that opens its page, dialog or action at once. On wide
+ * screens the groups flow in two balanced columns (reading order = DOM order, top to bottom).
+ * "Dados neste navegador" is a sub-view of the same page (#dados-neste-navegador). */
 @layer pages {
   body.app-page .settings-hub {
     --hub-gap: var(--space-5);
   }
+  body.app-page .settings-heading h1 {
+    margin-bottom: 0;
+  }
+  body.app-page .settings-list {
+    columns: 2 26rem;
+    column-gap: var(--space-6);
+  }
+  body.app-page .settings-group {
+    break-inside: avoid;
+    margin: 0 0 var(--space-5);
+  }
+  body.app-page .settings-group-title {
+    margin: 0 0 var(--space-2);
+    padding-inline: var(--space-4);
+    color: var(--ink-muted);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  body.app-page .settings-rows {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+    box-shadow: var(--elev-1);
+  }
+  body.app-page .settings-rows > li + li {
+    border-top: 1px solid var(--line);
+  }
+  body.app-page .settings-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 3.25rem;
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border: 0;
+    border-radius: 0;
+    color: var(--ink);
+    background: none;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  body.app-page .settings-row.is-info {
+    cursor: default;
+  }
+  body.app-page :is(a, button, label).settings-row:hover {
+    background: var(--paper-sunken);
+  }
+  body.app-page :is(a, button).settings-row:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--brand-ink);
+  }
+  body.app-page .settings-row:focus-within:has(select:focus-visible) {
+    box-shadow: inset 0 0 0 2px var(--brand-ink);
+  }
+  body.app-page .settings-row-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-control);
+    color: var(--brand-ink);
+    background: var(--brand-wash);
+  }
+  body.app-page .settings-row-text {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 2px;
+    min-width: 0;
+  }
+  body.app-page .settings-row-label {
+    font-size: var(--step-ui);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  body.app-page .settings-row-hint {
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  body.app-page .settings-row-value {
+    flex: 0 1 auto;
+    min-width: 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
+  body.app-page .settings-row-value:empty {
+    display: none;
+  }
+  body.app-page .settings-row-value[data-state='pending'],
+  body.app-page .settings-row-value[data-state='offline'] {
+    color: var(--honey-ink);
+    font-weight: 600;
+  }
+  body.app-page .settings-row-chevron {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    color: var(--ink-muted);
+    --icon-tint-opacity: 0;
+  }
+  body.app-page .settings-row select {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: 55%;
+    min-height: 2.25rem;
+    font-size: var(--step-ui);
+  }
+  body.app-page .settings-row.is-danger {
+    color: var(--error);
+  }
+  body.app-page .settings-row.is-danger .settings-row-icon {
+    color: var(--error);
+    background: color-mix(in srgb, var(--error) 10%, transparent);
+  }
+  body.app-page .settings-row:disabled {
+    cursor: progress;
+    opacity: 0.7;
+  }
+  /* The account row: avatar, name and e-mail. */
+  body.app-page .settings-profile-row {
+    min-height: 4.25rem;
+  }
+  body.app-page .settings-avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--paper-sunken);
+  }
+  body.app-page .settings-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  body.app-page .settings-profile-row .settings-row-label {
+    font-size: var(--step-0);
+  }
+  body.app-page .settings-group-note {
+    margin: var(--space-2) 0 0;
+    padding-inline: var(--space-4);
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+    line-height: 1.45;
+  }
+  body.app-page .settings-group-session .form-status:empty {
+    display: none;
+  }
+  @media (max-width: 520px) {
+    body.app-page .settings-row {
+      padding-inline: var(--space-3);
+    }
+    body.app-page .settings-row.is-control {
+      flex-wrap: wrap;
+    }
+    body.app-page .settings-row.is-control select {
+      max-width: 100%;
+      flex: 1 1 100%;
+      margin-left: calc(2rem + var(--space-3));
+    }
+    body.app-page .settings-profile-row .settings-row-value {
+      display: none;
+    }
+  }
+
+  /* ---- Sub-view: Dados neste navegador -------------------------------------------------- */
+  body.app-page .settings-subview {
+    max-width: 46rem;
+  }
+  body.app-page .settings-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 2.75rem;
+    margin-left: calc(var(--space-2) * -1);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-control);
+    color: var(--brand-ink);
+    font-size: var(--step-ui);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  body.app-page .settings-back:hover {
+    background: var(--brand-wash);
+  }
+  body.app-page .settings-subview h1:focus {
+    outline: none;
+  }
   body.app-page .settings-hub-card {
+    margin: 0 0 var(--hub-gap);
     padding: var(--space-5);
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
     background: var(--paper-raised);
     box-shadow: var(--elev-2);
   }
-  body.app-page .settings-hub-card + .settings-hub-card,
-  body.app-page .settings-hub > .settings-hub-card {
-    margin-top: 0;
-    margin-bottom: var(--hub-gap);
-  }
-  body.app-page .settings-hub-grid {
-    gap: var(--hub-gap);
-    margin-bottom: var(--hub-gap);
-  }
-  body.app-page .settings-hub-grid > .settings-hub-card {
-    margin: 0;
-  }
-  body.app-page .settings-card-heading {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-3);
-    margin-bottom: var(--space-3);
-  }
-  body.app-page .settings-card-heading :is(h2, h3) {
-    margin: 0;
+  body.app-page .settings-hub-card h2 {
+    margin: 0 0 var(--space-3);
     font-family: var(--font-display);
     font-variation-settings: var(--display-axes);
-    font-size: var(--step-2);
+    font-size: var(--step-1);
     font-weight: 480;
-    letter-spacing: -0.01em;
   }
-  body.app-page .settings-card-heading .eyebrow {
-    margin: 0 0 var(--space-1);
-  }
-  body.app-page .settings-hub-card > p {
+  body.app-page .device-data-facts ul {
+    display: grid;
+    gap: var(--space-2);
     margin: 0 0 var(--space-4);
-    color: var(--ink-muted);
-    font-size: var(--step-ui);
-  }
-  /* The decorative icon chip goes quiet: a glyph, not a button-looking tile. */
-  body.app-page .settings-card-icon {
-    width: 2rem;
-    height: 2rem;
-    flex-basis: 2rem;
-    border-radius: var(--radius-control);
-    background: none;
-    color: var(--ink-muted);
-  }
-  body.app-page .settings-card-link {
-    min-height: 2.75rem;
-    padding: var(--space-2) 0;
-    border-top: 1px solid var(--line);
+    padding-left: 1.2rem;
     color: var(--ink);
     font-size: var(--step-ui);
-    font-weight: 550;
-    text-decoration: none;
+    line-height: 1.55;
   }
-  body.app-page .settings-card-link:hover {
-    color: var(--brand-ink);
-    text-decoration: none;
+
+  /* "Apagar e sair" (primary-action + danger-action): the text takes the page colour, so it reads
+   * on the dark red of light themes and on the light red of dark themes; hover stays red. */
+  body.app-page .danger-action,
+  body.app-page .danger-action:hover {
+    color: var(--paper);
   }
-  /* Account facts: three labelled values on one ruled line. */
-  body.app-page .account-facts {
-    gap: 0;
-    border-top: 1px solid var(--line);
+  body.app-page .danger-action:hover {
+    background-color: color-mix(in srgb, var(--error) 88%, var(--ink));
   }
-  body.app-page .account-facts > div {
-    padding: var(--space-3) var(--space-4) 0 0;
-    border-radius: 0;
-    background: none;
-  }
-  body.app-page .account-facts > div + div {
-    padding-left: var(--space-4);
-    border-left: 1px solid var(--line);
-  }
-  body.app-page .account-facts dt {
-    color: var(--ink-muted);
-    font-size: var(--step--1);
-  }
-  body.app-page .account-facts dd {
-    font-size: var(--step-ui);
-  }
-  /* Jump bar */
-  body.app-page .settings-category-nav {
-    gap: var(--space-1);
-    margin: 0 0 var(--hub-gap);
-    padding: 3px;
-    width: fit-content;
-    max-width: 100%;
+
+  /* ---- Trocar senha --------------------------------------------------------------------- */
+  body.app-page .account-dialog {
+    box-sizing: border-box;
+    width: min(32rem, calc(100vw - 24px));
+    max-width: none;
+    max-height: min(92dvh, 900px);
+    padding: var(--space-5);
+    overflow: auto;
     border: 1px solid var(--line);
-    border-radius: calc(var(--radius-control) + 2px);
-    background: var(--paper-sunken);
-    box-shadow: var(--recessed);
-  }
-  body.app-page .settings-category-nav a {
-    padding: 0.35rem 0.8rem;
-    border: 0;
-    border-radius: var(--radius-control);
-    background: none;
+    border-radius: var(--radius-window);
     color: var(--ink);
-    font-size: var(--step-ui);
-    font-weight: 550;
-    text-decoration: none;
-  }
-  body.app-page .settings-category-nav a:hover {
     background: var(--paper-raised);
-    box-shadow: var(--elev-1);
+    box-shadow: var(--elev-3);
   }
-  /* Disclosures inside settings cards (Conta e dispositivo). */
-  body.app-page .settings-hub-card details > summary {
+  body.app-page .account-dialog::backdrop {
+    background: rgb(18 27 42 / 45%);
+  }
+  body.app-page .account-dialog-head {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--space-3);
-    min-height: 2.75rem;
-    list-style: none;
+    margin-bottom: var(--space-4);
+  }
+  body.app-page .account-dialog-head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 480;
+  }
+  body.app-page .account-dialog h3 {
+    margin: 0 0 var(--space-3);
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 650;
+  }
+  body.app-page .password-update-form {
+    display: grid;
+    gap: var(--space-3);
+  }
+  body.app-page .password-update-form label {
+    display: grid;
+    gap: var(--space-1);
     font-size: var(--step-ui);
     font-weight: 600;
   }
-  body.app-page .settings-hub-card details > summary::-webkit-details-marker {
+  body.app-page .password-update-form input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  body.app-page .password-update-form input[aria-invalid='true'] {
+    border-color: var(--error);
+  }
+  body.app-page :is(.password-update-form, .password-link-option) > button {
+    justify-self: start;
+  }
+  body.app-page .account-dialog .form-status {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+  body.app-page .account-dialog .form-status:empty {
     display: none;
   }
-  body.app-page .settings-hub-card details > summary::before {
+  body.app-page .account-dialog .form-status[data-state='error'] {
+    color: var(--error);
+    font-weight: 600;
+  }
+  body.app-page .password-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin: var(--space-5) 0;
+    color: var(--ink-muted);
+    font-size: var(--step--1);
+  }
+  body.app-page .password-divider::before,
+  body.app-page .password-divider::after {
     content: '';
-    flex: none;
-    width: 0.45rem;
-    height: 0.45rem;
-    border-right: 1.5px solid var(--ink-muted);
-    border-bottom: 1.5px solid var(--ink-muted);
-    transform: rotate(-45deg);
+    flex: 1;
+    border-top: 1px solid var(--line);
   }
-  body.app-page .settings-hub-card details[open] > summary::before {
-    transform: rotate(45deg);
+  body.app-page .password-link-option {
+    display: grid;
+    gap: var(--space-2);
   }
-  @media (max-width: 780px) {
-    body.app-page .account-facts > div + div {
-      padding-left: 0;
-      border-left: 0;
-      border-top: 1px solid var(--line);
-    }
+  body.app-page .password-link-option p {
+    margin: 0;
+    font-size: var(--step-ui);
+  }
+  body.app-page .password-link-text {
+    color: var(--ink-muted);
+  }
+  body.app-page .password-link-email {
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  body.app-page .password-done {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2);
+  }
+  body.app-page .password-done[hidden],
+  body.app-page .password-choose[hidden],
+  body.app-page .password-update-form[hidden],
+  body.app-page .password-divider[hidden] {
+    display: none;
+  }
+  body.app-page .password-done-icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    color: var(--matcha-ink);
+    background: color-mix(in srgb, var(--matcha) 18%, transparent);
+  }
+  body.app-page .password-done h3 {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+  body.app-page .password-done h3:focus {
+    outline: none;
+  }
+  body.app-page .password-done p {
+    margin: 0 0 var(--space-3);
+    font-size: var(--step-ui);
+    line-height: 1.5;
   }
 }

@@ -11,7 +11,7 @@ const completed = {
   session: { id:sessionId, material_id:user, status:'completed', feedback_mode:'deferred' },
   questions: [
     { id:first, position:0, statement:'Questão A' },
-    { id:second, position:1, statement:'Questão B' },
+    { id:second, position:1, statement:'Questão B', options:['10','13','14','15'] },
   ],
   answers: [
     { questionId:first, selectedIndex:0, correctIndex:0, explanation:'Explicação A' },
@@ -24,9 +24,23 @@ test('diagnóstico é calculado apenas das respostas corrigidas existentes',()=>
   assert.deepEqual([d.correct,d.incorrect,d.percent,d.total],[1,1,50,2]);
   assert.deepEqual(d.toReview,[{
     questionId:second,position:1,statement:'Questão B',
-    selectedIndex:1,correctIndex:3,explanation:'Explicação B',
+    selectedIndex:1,correctIndex:3,selectedText:'13',correctText:'15',
+    explanation:'Explicação B',evidence:null,
   }]);
   assert.match(d.interpretation,/gabarito gerado/);
+  assert(d.interpretation.length < 80, 'one short line, not a long disclaimer');
+});
+
+test('option text missing in older data stays null instead of being invented',()=>{
+  const old={...completed,questions:completed.questions.map((q)=>({...q,options:undefined})),
+    answers:completed.answers.map((a)=>({...a,evidence:'trecho'}))};
+  const [item]=buildQuizDiagnostic(old).toReview;
+  assert.equal(item.selectedText,null);
+  assert.equal(item.correctText,null);
+  assert.equal(item.evidence,'trecho');
+  const short={...completed,questions:[completed.questions[0],{...completed.questions[1],options:['a','b']}]};
+  assert.equal(buildQuizDiagnostic(short).toReview[0].correctText,null,'index outside the stored options');
+  assert.equal(buildQuizDiagnostic(short).toReview[0].selectedText,'b');
 });
 
 test('resultado é bloqueado antes de concluir, nos dois modos de feedback',()=>{

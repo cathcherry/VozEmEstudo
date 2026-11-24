@@ -6,6 +6,7 @@ import {
   addFlashcardSetCards,
 } from '../api/flashcard.api.js';
 import { toFlashcardCsv } from '../utils/flashcard-csv.js';
+import { toast } from '../utils/toast.js';
 
 const el = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -191,6 +192,9 @@ export function initFlashcardAuthoring({ material }) {
     const target = form.elements.target.value;
     // A stable id makes a retried save return the same set instead of creating a second one.
     pendingSetId ||= crypto.randomUUID();
+    const setId = target === 'new' ? pendingSetId : target;
+    const setName =
+      target === 'new' ? form.elements.name.value.trim() : form.elements.target.selectedOptions[0]?.textContent || '';
     const action =
       target === 'new'
         ? createFlashcardSet({
@@ -207,7 +211,21 @@ export function initFlashcardAuthoring({ material }) {
         pendingSetId = null;
         proposals = [];
         renderProposals();
-        message.textContent = `${added} ${added === 1 ? 'cartão salvo' : 'cartões salvos'}${added < cards.length ? ' (repetidos foram ignorados)' : ''}. Eles entram na revisão do Painel.`;
+        message.textContent = '';
+        // A brief confirmation outside the dialog, with the way to review the set right away.
+        dialog.close();
+        toast(
+          `${added} ${added === 1 ? 'cartão salvo' : 'cartões salvos'}${target === 'new' ? ` em “${setName}”` : ''}${added < cards.length ? ' (repetidos ficaram de fora)' : ''}.`,
+          {
+            type: 'success',
+            action: {
+              label: 'Revisar agora',
+              onClick: () => {
+                location.href = `./flashcards.html?conjunto=${encodeURIComponent(setId)}#revisar`;
+              },
+            },
+          },
+        );
         return loadTargets();
       })
       .catch((error) => {

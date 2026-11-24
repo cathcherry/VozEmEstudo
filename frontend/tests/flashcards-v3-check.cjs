@@ -42,21 +42,22 @@ async function main() {
     const { context, page } = await openApp(browser, base, flags, data, { width: 1280, height: 900 });
 
     // ---------- Review card: type, origin and image; one look per set (server) --------------
-    await page.goto(base + '/revisar.html#flashcards');
+    await page.goto(base + '/flashcards.html#revisar');
     const review = page.locator('.flashcard-review-card');
     await review.locator('.flashcard-type-badge', { hasText: 'Lacunas (cloze)' }).waitFor();
     assert.match(await review.locator('.flashcard-origin').textContent(), /De: Bruno/);
     assert.equal(await review.locator('.flashcard-media img').getAttribute('alt'), 'Imagem do cartão: folha.png');
-    // 3.6: the set and its look are chosen in the "Filtros" popover of the toolbar.
-    await page.locator('.review-filter > summary').click();
+    // 3.6 (Flashcards page): the set is chosen above the card; its look in the Aparência section,
+    // which starts on the set being reviewed.
     await page.locator('[data-flashcard-set-filter]').selectOption('set-ana');
+    await page.getByRole('tab', { name: 'Aparência' }).click();
     const look = page.locator('[data-set-look]');
     await look.waitFor();
     await look.selectOption('base:sticky');
     await page.locator('.flashcard-set-look [role=status]', { hasText: 'Aparência aplicada ao conjunto inteiro' }).waitFor();
     assert.equal(data.sets[0].template_base, 'sticky');
     assert.deepEqual(data.sets[0].cards.map((c) => c.back_text), ['Moeda de energia', 'No cloroplasto'], 'content untouched');
-    await page.locator('.flashcard-review-card[data-card-template="sticky"]').waitFor();
+    await page.locator('.flashcard-review-card[data-card-template="sticky"]').waitFor({ state: 'attached' });
     // Own template: editor with contrast warning, saved, applied to the whole set.
     await page.getByRole('button', { name: 'Novo modelo' }).click();
     const editor = page.getByRole('dialog', { name: 'Novo modelo de cartão' });
@@ -92,30 +93,31 @@ async function main() {
     record('Revisar: cartão mostra tipo, origem e imagem; uma aparência por conjunto (base ou modelo próprio) sem mudar o conteúdo; editor avisa contraste baixo');
 
     // ---------- Typed card creation ---------------------------------------------------------
-    await page.locator('.review-create > summary').click();
-    await page.getByRole('button', { name: /Criar cartão manualmente/ }).click();
-    const create = page.getByRole('dialog', { name: 'Criar cartão' });
+    // 3.6: "Criar cartão" is a section of the page, not a dialog; saving confirms with a toast.
+    await page.getByRole('tab', { name: 'Criar cartão' }).click();
+    const create = page.locator('#criar');
     await create.waitFor();
     await create.getByLabel('Tipo de cartão').selectOption('cloze');
     await create.getByLabel('Texto com lacunas: {{c1::resposta}}').fill('O {{c1::NADPH}} leva elétrons.');
     await create.getByLabel('Conjunto (opcional)').selectOption('set-ana');
     await settle(page);
-    await axeCheck(page, 'dialog[open]', 'Criar cartão com tipo');
+    await axeCheck(page, '#criar', 'Criar cartão com tipo');
     await create.locator('[type=submit]').click();
-    await create.waitFor({ state: 'hidden' });
+    await page.locator('.app-toast', { hasText: 'Cartão salvo. Ele já entra na revisão.' }).waitFor();
     assert.deepEqual(data.typedNotes.at(-1), { noteType: 'cloze', fields: { text: 'O {{c1::NADPH}} leva elétrons.' } });
-    record('Criar cartão com tipo (lacunas): campos próprios, salvo no conjunto escolhido e renderizado pelo servidor');
+    assert.equal(await create.getByLabel('Conjunto (opcional)').inputValue(), 'set-ana', 'the set stays chosen for the next card');
+    assert.equal(await create.locator('[data-flashcard-create-status]').textContent(), '', 'no message left in the form');
+    record('Criar cartão com tipo (lacunas): seção própria, salvo no conjunto escolhido, confirmação em aviso breve (toast)');
 
     // ---------- Merge with decisions ----------------------------------------------------------
     // An older template with the same name (saved before names were checked) must stay distinguishable.
     data.cardTemplates.push({ id: 'tpl-old', name: 'Matcha', base: 'sticky', tokens: {}, variants: {}, version: 1 });
     await page.reload();
-    const panel = page.locator('details.flashcard-sets');
+    const panel = page.locator('#conjuntos .flashcard-sets');
     await panel.locator('h4', { hasText: 'Bruno' }).waitFor({ state: 'attached' });
-    // Merge and import lead the "Gerenciar" view, without opening any section.
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
-    const tools = page.locator('.review-manage .deck-tools');
-    assert.equal(await panel.evaluate((n) => n.open), false);
+    // Merge and import have their own section.
+    await page.getByRole('tab', { name: 'Importar e mesclar' }).click();
+    const tools = page.locator('#importar .deck-tools');
     assert(await tools.getByRole('button', { name: 'Mesclar conjuntos' }).isVisible(), 'merge is discoverable');
     assert(await tools.getByRole('button', { name: 'Importar cartões' }).isVisible(), 'import is discoverable');
     await tools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
@@ -175,9 +177,9 @@ async function main() {
     await done.getByRole('button', { name: 'Abrir o conjunto novo' }).click();
     assert.equal(await page.locator('[data-flashcard-set-filter]').inputValue(), merged.id, 'the new set opens');
     // …and is reviewed right away: the review view is back, with the filter marked on its key.
-    await page.locator('.review-stage:not([hidden])').waitFor();
-    assert.equal(await page.locator('.review-filter > summary').textContent(), 'Filtros (1)');
-    record('Mesclar no servidor: visível em Gerenciar; passos claros; prévia ao vivo só com contagens; sem conexão e 409 explicados; escolha por conflito; um modelo para o conjunto novo (nomes iguais diferenciados); confirmação com link para o conjunto novo');
+    await page.locator('#revisar:not([hidden])').waitFor();
+    assert.equal(await page.locator('#tab-revisar').getAttribute('aria-selected'), 'true');
+    record('Mesclar no servidor: seção Importar e mesclar; passos claros; prévia ao vivo só com contagens; sem conexão e 409 explicados; escolha por conflito; um modelo para o conjunto novo (nomes iguais diferenciados); confirmação com link para o conjunto novo');
 
     // ---------- Merge with a classmate's deck shared in a class (Turmas) ---------------------
     {
@@ -200,11 +202,13 @@ async function main() {
         }],
       };
       const view = await openApp(browser, base, { ...flags, classrooms: true }, cls, { width: 390, height: 844 });
+      // An old Revisar link still works: it lands on the Flashcards page.
       await view.page.goto(base + '/revisar.html#flashcards');
-      const sets = view.page.locator('details.flashcard-sets');
+      await view.page.waitForURL('**/flashcards.html#revisar');
+      const sets = view.page.locator('.flashcard-sets');
       await sets.locator('h4', { hasText: 'Meu' }).waitFor({ state: 'attached' });
-      await view.page.getByRole('button', { name: 'Gerenciar' }).click();
-      const classTools = view.page.locator('.deck-tools');
+      await view.page.getByRole('tab', { name: 'Importar e mesclar' }).click();
+      const classTools = view.page.locator('#importar .deck-tools');
       await classTools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
       const dialog = view.page.getByRole('dialog', { name: 'Mesclar conjuntos' });
       // Own sets and classmates' shared decks are grouped; the shared one names author and class.
@@ -227,7 +231,7 @@ async function main() {
     }
 
     // ---------- Anki package ------------------------------------------------------------------
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
+    await page.getByRole('tab', { name: 'Importar e mesclar' }).click();
     await tools.getByRole('button', { name: 'Importar cartões' }).click();
     const importer = page.getByRole('dialog', { name: 'Importar cartões' });
     await importer.getByLabel('Arquivo').setInputFiles({ name: 'quimica.apkg', mimeType: 'application/octet-stream', buffer: Buffer.from('PK\u0003\u0004 synthetic') });
@@ -274,7 +278,7 @@ async function main() {
     await page.waitForFunction(() => document.querySelector('[data-set-look]')?.value.startsWith('template:'));
     assert.equal(await page.locator('[data-set-look]').inputValue(), `template:${template.id}`);
     // A broken package is explained.
-    await page.getByRole('button', { name: 'Gerenciar' }).click();
+    await page.getByRole('tab', { name: 'Importar e mesclar' }).click();
     await tools.getByRole('button', { name: 'Importar cartões' }).click();
     await importer.getByLabel('Arquivo').setInputFiles({ name: 'ruim.apkg', mimeType: 'application/octet-stream', buffer: Buffer.from('nada') });
     await importer.locator('.deck-error', { hasText: 'não é um pacote do Anki' }).waitFor();

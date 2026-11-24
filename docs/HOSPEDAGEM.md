@@ -22,7 +22,7 @@ flowchart LR
 - **Um serviço de worker** com o mesmo código, sem porta HTTP. Busca tarefas na fila do banco e
   chama os provedores de IA. Pode ter mais de uma instância (reservas com renovação evitam
   execução dupla), mas uma basta.
-- **Supabase** existente (Postgres, Auth, Storage). Nenhuma migration nova é necessária para esta
+- **Supabase** existente (Postgres, Auth, Storage). O teste público usa as migrações de 25/11 (já aplicadas; ver [LANCAMENTO_TESTE_PUBLICO.md](LANCAMENTO_TESTE_PUBLICO.md)). Nenhuma outra é necessária para esta
   versão.
 - FFmpeg/ffprobe vêm dos pacotes npm (`ffmpeg-static`, `ffprobe-static`); não é preciso instalar
   nada no sistema.
@@ -68,7 +68,8 @@ Use `backend/.env.example` como referência completa. Mínimo para produção:
 | `JOB_MAX_ATTEMPTS=3`                  |     | ✓      | Orçamento de novas tentativas                                  |
 | `FEATURE_*`                           | ✓   | ✓      | Os mesmos valores nos dois serviços                            |
 | `RATE_LIMIT_*`                        | ✓   |        | Limites por conta (ver abaixo)                                 |
-| `CONTENT_SECURITY_POLICY`             | ✓   |        | `off` (padrão), `report-only`, `enforce`                       |
+| `CONTENT_SECURITY_POLICY`             | ✓   |        | Vazio: `enforce` em produção; `off`, `report-only`, `enforce`  |
+| `TRUST_PROXY`                         | ✓   |        | Saltos de proxy confiáveis (limite dos links públicos)         |
 | `MOCK_EXTERNAL_SERVICES`              |     |        | **Não** definir em produção                                    |
 
 ## Domínio, HTTPS e Supabase Auth
@@ -112,9 +113,10 @@ Use `backend/.env.example` como referência completa. Mínimo para produção:
   **Limitação honesta**: a contagem fica na memória de cada processo da API. Com uma instância é um
   teto real; com várias, cada uma conta à parte; reiniciar zera a contagem. Um limite global
   exigiria Redis ou uma tabela no banco (não feito: pediria migration e aprovação).
-- **CSP** pronta, desligada por padrão: ligue `CONTENT_SECURITY_POLICY=report-only`, use o app
-  (entrar, enviar, perfil com vídeo do YouTube, compartilhar) e veja o console; sem avisos, mude
-  para `enforce`. Testado aqui só nas páginas públicas (sem violações em `enforce`).
+- **CSP** aplicada (`enforce`) por padrão quando `NODE_ENV=production`; `report-only` ou `off`
+  continuam disponíveis por `CONTENT_SECURITY_POLICY`. `frontend/tests/csp-enforce-check.cjs`
+  abre as 33 páginas sem sessão com a política aplicada (sem violações). Ver
+  `docs/SECURITY_AUDIT_PUBLIC_TESTING.md`.
 - Dados por dono: todas as rotas filtram por usuário; RLS no Supabase. Links públicos usam token de
   256 bits, guardam só o hash e expiram.
 - Erros devolvem mensagem higienizada e `x-request-id`; detalhes ficam no log do servidor.

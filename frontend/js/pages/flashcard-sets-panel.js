@@ -24,10 +24,11 @@ const make = (tag, text, className) => {
  * Painel → Flashcards → "Conjuntos": named sets organized by lesson, with review counts, rename,
  * archive/restore, delete (confirmed) and export. Reviewing stays in the existing queue.
  */
-export function initFlashcardSetsPanel({ container, materials, onChange, onSelect, toolsSlot = null }) {
+export function initFlashcardSetsPanel({ container, materials, onChange, onSelect, toolsSlot = null, listSlot = null }) {
   const lessons = new Map(materials.map((m) => [m.id, m.title]));
-  const section = make('details', null, 'flashcard-management flashcard-sets');
-  const summary = make('summary', 'Conjuntos de flashcards');
+  // On the Flashcards page the list is the "Conjuntos" section itself (listSlot), not a fold.
+  const section = listSlot ? make('div', null, 'flashcard-sets') : make('details', null, 'flashcard-management flashcard-sets');
+  const summary = listSlot ? null : make('summary', 'Conjuntos de flashcards');
   const status = make('p', null, 'flashcard-muted');
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
@@ -47,11 +48,32 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   const importButton = make('button', 'Importar cartões', 'secondary-action');
   importButton.type = 'button';
   importButton.setAttribute('aria-haspopup', 'dialog');
-  buttons.append(mergeButton, importButton);
   const result = make('div', null, 'deck-tools-result');
   result.setAttribute('role', 'status');
   result.setAttribute('aria-live', 'polite');
-  tools.append(toolsTitle, toolsHint, buttons, result);
+  if (listSlot) {
+    // Flashcards page, "Importar e mesclar": each tool says what it takes and what it makes.
+    const tool = (title, text, button, id) => {
+      const box = make('div', null, 'deck-tool');
+      const heading = make('h3', title, 'deck-tool-title');
+      const hint = make('p', text, 'flashcard-muted');
+      hint.id = id;
+      button.setAttribute('aria-describedby', id);
+      box.append(heading, hint, button);
+      return box;
+    };
+    importButton.className = mergeButton.className = 'primary-action';
+    buttons.className = 'deck-tools-grid';
+    buttons.append(
+      tool('Importar cartões', 'Do Anki (pacote .apkg ou notas em texto), de uma planilha CSV ou de uma lista com pergunta e resposta.', importButton, 'deck-tool-import-hint'),
+      tool('Mesclar conjuntos', 'Junta dois ou mais conjuntos num novo, sem cartões repetidos. Também vale para baralhos compartilhados nas turmas.', mergeButton, 'deck-tool-merge-hint'),
+    );
+    toolsTitle.className = 'sr-only';
+    tools.append(toolsTitle, buttons, result);
+  } else {
+    buttons.append(mergeButton, importButton);
+    tools.append(toolsTitle, toolsHint, buttons, result);
+  }
   async function afterTool(done) {
     if (!done) return;
     const open = make('button', 'Abrir o conjunto novo', 'text-action');
@@ -133,19 +155,20 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
       await afterTool(await openImportDialog({ opener: importButton, v3: typed }));
     }),
   );
-  section.append(
-    summary,
-    make(
-      'p',
-      'Crie conjuntos na aba Flashcards de cada aula. Para mesclar conjuntos ou importar cartões, use “Juntar ou trazer conjuntos”, em Novos cartões. Aqui você organiza, revisa por conjunto e exporta.',
-      'flashcard-muted',
-    ),
-    list,
-    status,
-  );
+  if (summary)
+    section.append(
+      summary,
+      make(
+        'p',
+        'Crie conjuntos na aba Flashcards de cada aula. Para mesclar conjuntos ou importar cartões, use “Juntar ou trazer conjuntos”, em Novos cartões. Aqui você organiza, revisa por conjunto e exporta.',
+        'flashcard-muted',
+      ),
+    );
+  section.append(list, status);
   if (toolsSlot) toolsSlot.append(tools);
   else section.insertBefore(tools, list);
-  container.after(section);
+  if (listSlot) listSlot.replaceWith(section);
+  else container.after(section);
   let sets = [];
 
   async function exportSet(set, format) {
@@ -173,7 +196,14 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
   function render() {
     list.replaceChildren();
     if (!sets.length)
-      list.append(ninoNote('Ainda não há conjuntos. Crie um na aba Resumo de uma aula.', 'rest'));
+      list.append(
+        ninoNote(
+          listSlot
+            ? 'Ainda não há conjuntos. Gere um na aba Flashcards de uma aula ou traga um em “Importar e mesclar”.'
+            : 'Ainda não há conjuntos. Crie um na aba Resumo de uma aula.',
+          'rest',
+        ),
+      );
     for (const set of sets) {
       const row = make('article', null, 'flashcard-set-row');
       row.dataset.setId = set.id;
@@ -203,7 +233,7 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
         });
         actions.append(b);
       };
-      button('Ver cartões', async () => onSelect(set.id));
+      button(listSlot ? 'Revisar este conjunto' : 'Ver cartões', async () => onSelect(set.id));
       button('Renomear', async (opener) => {
         const name = await askText({
           title: 'Renomear conjunto',

@@ -2309,7 +2309,10 @@ async function main() {
     await page.locator('[data-flashcard-advanced] > summary').click();
     await auditDialog('[data-flashcard-dialog]', 'flashcard dialog');
     await page.locator('[data-flashcard-save]').click();
-    await page.getByText(/2 cartões salvos\. Eles entram na revisão do Painel\./).waitFor();
+    // 3.6: the dialog closes and a brief toast confirms (with a way to review the set).
+    await page.locator('.app-toast', { hasText: '2 cartões salvos em “Carros elétricos — termos”.' }).waitFor();
+    await page.locator('[data-flashcard-dialog]').waitFor({ state: 'hidden' });
+    assert(await page.locator('.app-toast').getByRole('button', { name: 'Revisar agora' }).isVisible());
     const savedSet = flashcardSets.at(-1).body;
     assert.equal(savedSet.name, 'Carros elétricos — termos');
     assert.equal(savedSet.materialId, 'aula-real');

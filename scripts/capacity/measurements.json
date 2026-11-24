@@ -1,0 +1,693 @@
+{
+  "generatedBy": "scripts/capacity/measure-prompts.mjs",
+  "tokenizer": "o200k_base (js-tiktoken, offline)",
+  "harmonyOverheadTokens": 67,
+  "outputItemTokens": {
+    "concept": 50,
+    "question": 186,
+    "flashcard": 101,
+    "warning": 60,
+    "summaryStandard5min": 462
+  },
+  "maxModelCallsPerQuestionList": 3,
+  "results": [
+    {
+      "minutes": 1,
+      "words": 157,
+      "chars": 843,
+      "segments": 8,
+      "transcriptTokens": 206,
+      "segmentsJsonTokens": 524,
+      "summary": {
+        "short": {
+          "input": 545,
+          "maxTokens": 900,
+          "visible": 150
+        },
+        "standard": {
+          "input": 545,
+          "maxTokens": 1800,
+          "visible": 150
+        },
+        "detailed": {
+          "input": 553,
+          "maxTokens": 3500,
+          "visible": 170
+        }
+      },
+      "warning": {
+        "input": 1037,
+        "maxTokens": 1200,
+        "visible": 60
+      },
+      "questionsV2": {
+        "5": {
+          "concepts": {
+            "input": 611,
+            "maxTokens": 2480,
+            "visible": 210,
+            "items": 4
+          },
+          "questions": {
+            "input": 1254,
+            "maxTokens": 3600,
+            "visible": 754,
+            "items": 4
+          },
+          "replacement": {
+            "input": 1181,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "10": {
+          "concepts": {
+            "input": 611,
+            "maxTokens": 3600,
+            "visible": 210,
+            "items": 4
+          },
+          "questions": {
+            "input": 1254,
+            "maxTokens": 3600,
+            "visible": 754,
+            "items": 4
+          },
+          "replacement": {
+            "input": 1181,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "20": {
+          "concepts": {
+            "input": 611,
+            "maxTokens": 6000,
+            "visible": 210,
+            "items": 4
+          },
+          "questions": {
+            "input": 1254,
+            "maxTokens": 3600,
+            "visible": 754,
+            "items": 4
+          },
+          "replacement": {
+            "input": 1181,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        }
+      },
+      "legacy10": {
+        "input": 438,
+        "maxTokens": 5500,
+        "visible": 1500
+      },
+      "flashcards": {
+        "1": {
+          "input": 647,
+          "maxTokens": 1050,
+          "visible": 111,
+          "items": 1
+        },
+        "10": {
+          "input": 513,
+          "maxTokens": 6000,
+          "visible": 313,
+          "items": 3
+        },
+        "20": {
+          "input": 513,
+          "maxTokens": 11500,
+          "visible": 313,
+          "items": 3
+        },
+        "50": {
+          "input": 513,
+          "maxTokens": 12000,
+          "visible": 313,
+          "items": 3
+        }
+      },
+      "flashcardsV1": {
+        "input": 437,
+        "maxTokens": 6000,
+        "visible": 277
+      },
+      "knowledgeMap": {
+        "input": 571,
+        "maxTokens": 4000,
+        "visible": 580
+      }
+    },
+    {
+      "minutes": 2,
+      "words": 293,
+      "chars": 1613,
+      "segments": 14,
+      "transcriptTokens": 403,
+      "segmentsJsonTokens": 958,
+      "summary": {
+        "short": {
+          "input": 742,
+          "maxTokens": 900,
+          "visible": 150
+        },
+        "standard": {
+          "input": 742,
+          "maxTokens": 1800,
+          "visible": 185
+        },
+        "detailed": {
+          "input": 750,
+          "maxTokens": 3500,
+          "visible": 332
+        }
+      },
+      "warning": {
+        "input": 1667,
+        "maxTokens": 1200,
+        "visible": 60
+      },
+      "questionsV2": {
+        "5": {
+          "concepts": {
+            "input": 808,
+            "maxTokens": 2480,
+            "visible": 260,
+            "items": 5
+          },
+          "questions": {
+            "input": 1502,
+            "maxTokens": 4200,
+            "visible": 940,
+            "items": 5
+          },
+          "replacement": {
+            "input": 1452,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "10": {
+          "concepts": {
+            "input": 808,
+            "maxTokens": 3600,
+            "visible": 260,
+            "items": 5
+          },
+          "questions": {
+            "input": 1502,
+            "maxTokens": 4200,
+            "visible": 940,
+            "items": 5
+          },
+          "replacement": {
+            "input": 1452,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "20": {
+          "concepts": {
+            "input": 808,
+            "maxTokens": 6000,
+            "visible": 260,
+            "items": 5
+          },
+          "questions": {
+            "input": 1502,
+            "maxTokens": 4200,
+            "visible": 940,
+            "items": 5
+          },
+          "replacement": {
+            "input": 1452,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        }
+      },
+      "legacy10": {
+        "input": 635,
+        "maxTokens": 5500,
+        "visible": 1500
+      },
+      "flashcards": {
+        "1": {
+          "input": 844,
+          "maxTokens": 1050,
+          "visible": 111,
+          "items": 1
+        },
+        "10": {
+          "input": 710,
+          "maxTokens": 6000,
+          "visible": 616,
+          "items": 6
+        },
+        "20": {
+          "input": 710,
+          "maxTokens": 11500,
+          "visible": 616,
+          "items": 6
+        },
+        "50": {
+          "input": 710,
+          "maxTokens": 12000,
+          "visible": 616,
+          "items": 6
+        }
+      },
+      "flashcardsV1": {
+        "input": 634,
+        "maxTokens": 6000,
+        "visible": 544
+      },
+      "knowledgeMap": {
+        "input": 791,
+        "maxTokens": 4000,
+        "visible": 650
+      }
+    },
+    {
+      "minutes": 3,
+      "words": 445,
+      "chars": 2453,
+      "segments": 21,
+      "transcriptTokens": 613,
+      "segmentsJsonTokens": 1443,
+      "summary": {
+        "short": {
+          "input": 952,
+          "maxTokens": 900,
+          "visible": 150
+        },
+        "standard": {
+          "input": 952,
+          "maxTokens": 1800,
+          "visible": 281
+        },
+        "detailed": {
+          "input": 960,
+          "maxTokens": 3500,
+          "visible": 505
+        }
+      },
+      "warning": {
+        "input": 2362,
+        "maxTokens": 1200,
+        "visible": 60
+      },
+      "questionsV2": {
+        "5": {
+          "concepts": {
+            "input": 1018,
+            "maxTokens": 2480,
+            "visible": 360,
+            "items": 7
+          },
+          "questions": {
+            "input": 1842,
+            "maxTokens": 5400,
+            "visible": 1312,
+            "items": 7
+          },
+          "replacement": {
+            "input": 1726,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "10": {
+          "concepts": {
+            "input": 1018,
+            "maxTokens": 3600,
+            "visible": 360,
+            "items": 7
+          },
+          "questions": {
+            "input": 1842,
+            "maxTokens": 5400,
+            "visible": 1312,
+            "items": 7
+          },
+          "replacement": {
+            "input": 1680,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "20": {
+          "concepts": {
+            "input": 1018,
+            "maxTokens": 6000,
+            "visible": 360,
+            "items": 7
+          },
+          "questions": {
+            "input": 1842,
+            "maxTokens": 5400,
+            "visible": 1312,
+            "items": 7
+          },
+          "replacement": {
+            "input": 1680,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        }
+      },
+      "legacy10": {
+        "input": 845,
+        "maxTokens": 5500,
+        "visible": 1500
+      },
+      "flashcards": {
+        "1": {
+          "input": 1054,
+          "maxTokens": 1050,
+          "visible": 111,
+          "items": 1
+        },
+        "10": {
+          "input": 920,
+          "maxTokens": 6000,
+          "visible": 919,
+          "items": 9
+        },
+        "20": {
+          "input": 920,
+          "maxTokens": 11500,
+          "visible": 919,
+          "items": 9
+        },
+        "50": {
+          "input": 920,
+          "maxTokens": 12000,
+          "visible": 919,
+          "items": 9
+        }
+      },
+      "flashcardsV1": {
+        "input": 844,
+        "maxTokens": 6000,
+        "visible": 811
+      },
+      "knowledgeMap": {
+        "input": 1029,
+        "maxTokens": 4000,
+        "visible": 790
+      }
+    },
+    {
+      "minutes": 5,
+      "words": 739,
+      "chars": 4035,
+      "segments": 34,
+      "transcriptTokens": 1009,
+      "segmentsJsonTokens": 2349,
+      "summary": {
+        "short": {
+          "input": 1348,
+          "maxTokens": 900,
+          "visible": 231
+        },
+        "standard": {
+          "input": 1348,
+          "maxTokens": 1800,
+          "visible": 462
+        },
+        "detailed": {
+          "input": 1356,
+          "maxTokens": 3500,
+          "visible": 832
+        }
+      },
+      "warning": {
+        "input": 3664,
+        "maxTokens": 1200,
+        "visible": 60
+      },
+      "questionsV2": {
+        "5": {
+          "concepts": {
+            "input": 1414,
+            "maxTokens": 2480,
+            "visible": 410,
+            "items": 8
+          },
+          "questions": {
+            "input": 2239,
+            "maxTokens": 5400,
+            "visible": 1312,
+            "items": 7
+          },
+          "replacement": {
+            "input": 2095,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "10": {
+          "concepts": {
+            "input": 1414,
+            "maxTokens": 3600,
+            "visible": 610,
+            "items": 12
+          },
+          "questions": {
+            "input": 2500,
+            "maxTokens": 8400,
+            "visible": 2242,
+            "items": 12
+          },
+          "replacement": {
+            "input": 2273,
+            "maxTokens": 3000,
+            "visible": 568,
+            "items": 3
+          }
+        },
+        "20": {
+          "concepts": {
+            "input": 1414,
+            "maxTokens": 6000,
+            "visible": 610,
+            "items": 12
+          },
+          "questions": {
+            "input": 2500,
+            "maxTokens": 8400,
+            "visible": 2242,
+            "items": 12
+          },
+          "replacement": {
+            "input": 2309,
+            "maxTokens": 3000,
+            "visible": 568,
+            "items": 3
+          }
+        }
+      },
+      "legacy10": {
+        "input": 1241,
+        "maxTokens": 5500,
+        "visible": 1500
+      },
+      "flashcards": {
+        "1": {
+          "input": 1450,
+          "maxTokens": 1050,
+          "visible": 111,
+          "items": 1
+        },
+        "10": {
+          "input": 1316,
+          "maxTokens": 6000,
+          "visible": 1020,
+          "items": 10
+        },
+        "20": {
+          "input": 1316,
+          "maxTokens": 11500,
+          "visible": 1525,
+          "items": 15
+        },
+        "50": {
+          "input": 1316,
+          "maxTokens": 12000,
+          "visible": 1525,
+          "items": 15
+        }
+      },
+      "flashcardsV1": {
+        "input": 1240,
+        "maxTokens": 6000,
+        "visible": 900
+      },
+      "knowledgeMap": {
+        "input": 1474,
+        "maxTokens": 4000,
+        "visible": 1140
+      }
+    },
+    {
+      "minutes": 7,
+      "words": 1022,
+      "chars": 5635,
+      "segments": 47,
+      "transcriptTokens": 1412,
+      "segmentsJsonTokens": 3261,
+      "summary": {
+        "short": {
+          "input": 1751,
+          "maxTokens": 900,
+          "visible": 323
+        },
+        "standard": {
+          "input": 1751,
+          "maxTokens": 1800,
+          "visible": 647
+        },
+        "detailed": {
+          "input": 1759,
+          "maxTokens": 3500,
+          "visible": 1164
+        }
+      },
+      "warning": {
+        "input": 4979,
+        "maxTokens": 1200,
+        "visible": 60
+      },
+      "questionsV2": {
+        "5": {
+          "concepts": {
+            "input": 1817,
+            "maxTokens": 2480,
+            "visible": 410,
+            "items": 8
+          },
+          "questions": {
+            "input": 2614,
+            "maxTokens": 5400,
+            "visible": 1312,
+            "items": 7
+          },
+          "replacement": {
+            "input": 2515,
+            "maxTokens": 2400,
+            "visible": 382,
+            "items": 2
+          }
+        },
+        "10": {
+          "concepts": {
+            "input": 1817,
+            "maxTokens": 3600,
+            "visible": 760,
+            "items": 15
+          },
+          "questions": {
+            "input": 2993,
+            "maxTokens": 9000,
+            "visible": 2428,
+            "items": 13
+          },
+          "replacement": {
+            "input": 2759,
+            "maxTokens": 3600,
+            "visible": 754,
+            "items": 4
+          }
+        },
+        "20": {
+          "concepts": {
+            "input": 1817,
+            "maxTokens": 6000,
+            "visible": 860,
+            "items": 17
+          },
+          "questions": {
+            "input": 3171,
+            "maxTokens": 11400,
+            "visible": 3172,
+            "items": 17
+          },
+          "replacement": {
+            "input": 2890,
+            "maxTokens": 4200,
+            "visible": 940,
+            "items": 5
+          }
+        }
+      },
+      "legacy10": {
+        "input": 1644,
+        "maxTokens": 5500,
+        "visible": 1500
+      },
+      "flashcards": {
+        "1": {
+          "input": 1853,
+          "maxTokens": 1050,
+          "visible": 111,
+          "items": 1
+        },
+        "10": {
+          "input": 1719,
+          "maxTokens": 6000,
+          "visible": 1020,
+          "items": 10
+        },
+        "20": {
+          "input": 1719,
+          "maxTokens": 11500,
+          "visible": 2030,
+          "items": 20
+        },
+        "50": {
+          "input": 1719,
+          "maxTokens": 12000,
+          "visible": 2030,
+          "items": 20
+        }
+      },
+      "flashcardsV1": {
+        "input": 1643,
+        "maxTokens": 6000,
+        "visible": 900
+      },
+      "knowledgeMap": {
+        "input": 1929,
+        "maxTokens": 4000,
+        "visible": 1490
+      }
+    }
+  ],
+  "synthesis4": {
+    "input": 6496,
+    "maxTokens": 6000,
+    "visible": 4500
+  },
+  "perMinute": {
+    "transcriptTokens": 199.75,
+    "warningInput": 654.25,
+    "summaryInput": 199.75,
+    "conceptsInput": 199.75,
+    "questionsInputPerTranscript": 1,
+    "flashcardInput": 199.75
+  }
+}

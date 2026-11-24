@@ -12,9 +12,9 @@ import {
 import { CARD_TEMPLATES, templateFor } from '../js/utils/card-templates.js';
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(resolve(frontend, 'pages/revisar.html'), 'utf8');
+const html = readFileSync(resolve(frontend, 'pages/flashcards.html'), 'utf8');
 const code = readFileSync(resolve(frontend, 'js/pages/flashcards-panel.js'), 'utf8');
-const dashboard = readFileSync(resolve(frontend, 'js/pages/review.page.js'), 'utf8');
+const dashboard = readFileSync(resolve(frontend, 'js/pages/flashcards.page.js'), 'utf8');
 const css = readFileSync(resolve(frontend, 'css/flashcards.css'), 'utf8');
 
 test('flashcards are hidden until the feature is explicitly enabled', () => {
@@ -22,7 +22,7 @@ test('flashcards are hidden until the feature is explicitly enabled', () => {
   assert.match(code, /isFeatureEnabled\('flashcards'\)/);
   assert.match(dashboard, /initFlashcardsPanel/);
   assert.match(html, /\/css\/flashcards\.css/);
-  assert.match(css, /data-page='review'/);
+  assert.match(css, /data-page='flashcards'/);
 });
 
 test('create, reveal, rate, edit, and archive controls have labels and statuses', () => {
@@ -35,7 +35,7 @@ test('create, reveal, rate, edit, and archive controls have labels and statuses'
     'data-flashcard-due-area',
   ])
     assert(html.includes(marker), marker);
-  assert.match(code, /Revelar resposta/);
+  assert.match(code, /Virar cartão/);
   assert.match(code, /reviewFlashcard/);
   assert.match(code, /crypto\.randomUUID\(\)/);
   assert.match(code, /pendingReview/);
@@ -98,6 +98,7 @@ async function harness(overrides = {}) {
     flashcardSummary,
     CARD_TEMPLATES,
     templateFor,
+    toast: () => {},
     ...overrides,
   };
   // Evaluate the real page module against an isolated DOM and controlled API responses.
@@ -254,7 +255,10 @@ test('manager reaches card 101 and resets pagination when filtering by lesson or
     assert(next.disabled);
     assert(!previous.disabled);
     assert.match(nav.textContent, /101–101 de 101/);
-    const [lesson, status] = ui.document.querySelectorAll('.flashcard-filters select');
+    // The lesson filter sits above the review; which cards the manager lists sits in the manager.
+    const lesson = ui.document.querySelector('.flashcard-filters select');
+    const status = ui.document.querySelector('.flashcard-manage-status-filter select');
+    assert(status.closest('[data-flashcard-manage-form]'), 'the archive filter belongs to the manager');
     ui.change(lesson, 'lesson-a');
     await until(() => !lesson.disabled);
     assert.equal(select.options[1].value, 'card-1');
@@ -324,8 +328,8 @@ test('a confirmed review is removed even if refreshing the queue fails', async (
   });
   try {
     const area = ui.document.querySelector('[data-flashcard-due-area]');
-    area.querySelector('button').click();
-    area.querySelectorAll('button')[2].click();
+    area.querySelector('.flashcard-flip').click();
+    area.querySelectorAll('.flashcard-rating-buttons button')[2].click();
     await until(() =>
       ui.document
         .querySelector('[data-flashcard-review-status]')
@@ -359,8 +363,8 @@ test('an uncertain review locks filters and retries the same request ID and rati
   try {
     const area = ui.document.querySelector('[data-flashcard-due-area]');
     const status = ui.document.querySelector('[data-flashcard-review-status]');
-    area.querySelector('button').click();
-    area.querySelectorAll('button')[2].click();
+    area.querySelector('.flashcard-flip').click();
+    area.querySelectorAll('.flashcard-rating-buttons button')[2].click();
     await until(() => status.textContent.includes('Repita'));
     assert(
       [...ui.document.querySelectorAll('.flashcard-filters select')].every(
@@ -368,7 +372,7 @@ test('an uncertain review locks filters and retries the same request ID and rati
       ),
     );
     assert(ui.document.querySelector('[data-flashcard-create-form] button').disabled);
-    const buttons = area.querySelectorAll('button');
+    const buttons = area.querySelectorAll('.flashcard-rating-buttons button');
     assert(buttons[0].disabled);
     assert(!buttons[2].disabled);
     buttons[2].click();
@@ -464,7 +468,153 @@ test('card templates are appearance only: chosen per account and per set, never 
   // The panel sets only a data attribute: no request, no change to the card's text.
   assert.match(code, /article\.dataset\.cardTemplate = templateFor/);
   assert.doesNotMatch(
-    code.split('Flashcards 3.0: card appearance')[1].split('fillSetOptions')[0],
+    code.split('Aparência (Flashcards 3.0)')[1].split('fillSetOptions')[0],
     /createFlashcard|updateFlashcard|previewFlashcards/,
   );
+});
+
+test('the card turns over with a click or tap on it; ratings stay out of the way', async () => {
+  const reviews = [];
+  const ui = await harness({
+    listFlashcards: async (filter) =>
+      filter === 'due' ? { cards: [sampleCard('one')], total: 1, limit: 100 } : { cards: [], total: 0, limit: 100 },
+    reviewFlashcard: async (id, rating) => {
+      reviews.push({ id, rating });
+      return { dueAt: '2026-11-06T12:00:00Z' };
+    },
+  });
+  try {
+    const area = ui.document.querySelector('[data-flashcard-due-area]');
+    const side = ui.document.querySelector('[data-flashcard-side-status]');
+    const card = () => area.querySelector('.flashcard-review-card');
+    const face = () => area.querySelector('.flashcard-face');
+    // Front: labelled, the question, a visible turn key, no ratings yet.
+    assert.equal(card().dataset.side, 'front');
+    assert.equal(face().getAttribute('aria-label'), 'Frente do cartão');
+    assert.equal(face().querySelector('.flashcard-side-label').textContent, 'Frente');
+    assert.match(face().textContent, /Pergunta one/);
+    assert.doesNotMatch(face().textContent, /Resposta/);
+    assert.equal(area.querySelector('.flashcard-flip').getAttribute('aria-pressed'), 'false');
+    assert.equal(area.querySelector('.flashcard-rating-buttons'), null);
+    // A click anywhere on the face turns it: the back is labelled and announced.
+    face().querySelector('.flashcard-content').click();
+    assert.equal(card().dataset.side, 'back');
+    assert.equal(card().dataset.turning, 'true', 'the turn is animated (CSS drops it with reduced motion)');
+    assert.equal(face().getAttribute('aria-label'), 'Verso do cartão');
+    assert.equal(face().querySelector('.flashcard-side-label').textContent, 'Verso');
+    assert.match(face().querySelector('.flashcard-answer').textContent, /Resposta/);
+    assert.equal(area.querySelector('.flashcard-flip').getAttribute('aria-pressed'), 'true');
+    assert.equal(side.textContent, 'Verso do cartão');
+    // The ratings are not inside the part that turns: rating never turns the card.
+    const rate = area.querySelector('.flashcard-rate');
+    assert(rate && !face().contains(rate) && !card().contains(rate));
+    assert.deepEqual(
+      [...rate.querySelectorAll('button .flashcard-rating-label')].map((n) => n.textContent),
+      ['De novo', 'Difícil', 'Bom', 'Fácil'],
+    );
+    // Turning back to the front keeps the ratings (the back was seen).
+    face().click();
+    assert.equal(card().dataset.side, 'front');
+    assert.equal(side.textContent, 'Frente do cartão');
+    assert(area.querySelector('.flashcard-rating-buttons'));
+    area.querySelector('.flashcard-rating-buttons [data-rating="2"]').click();
+    await until(() => reviews.length === 1);
+    assert.deepEqual(reviews, [{ id: 'one', rating: 2 }]);
+  } finally {
+    ui.close();
+  }
+});
+
+test('keyboard: Space or Enter on the focused card turns it; the button works too', async () => {
+  const ui = await harness({
+    listFlashcards: async (filter) =>
+      filter === 'due' ? { cards: [sampleCard('one')], total: 1, limit: 100 } : { cards: [], total: 0, limit: 100 },
+  });
+  try {
+    const view = ui.document.defaultView;
+    const area = ui.document.querySelector('[data-flashcard-due-area]');
+    const face = () => area.querySelector('.flashcard-face');
+    assert.equal(face().tabIndex, 0, 'the card itself takes focus');
+    assert.equal(face().getAttribute('aria-describedby'), 'flashcard-turn-hint');
+    assert.match(ui.document.getElementById('flashcard-turn-hint').textContent, /Espaço ou Enter/);
+    face().focus();
+    const space = new view.KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+    face().dispatchEvent(space);
+    assert.equal(space.defaultPrevented, true, 'Space does not scroll the page');
+    assert.equal(area.querySelector('.flashcard-review-card').dataset.side, 'back');
+    assert.equal(ui.document.activeElement, face(), 'focus stays on the card after it turns');
+    face().dispatchEvent(new view.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    assert.equal(area.querySelector('.flashcard-review-card').dataset.side, 'front');
+    // Other keys do nothing; the visible button turns it and keeps focus on itself.
+    face().dispatchEvent(new view.KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true }));
+    assert.equal(area.querySelector('.flashcard-review-card').dataset.side, 'front');
+    area.querySelector('.flashcard-flip').focus();
+    area.querySelector('.flashcard-flip').click();
+    assert.equal(area.querySelector('.flashcard-review-card').dataset.side, 'back');
+    assert(ui.document.activeElement.classList.contains('flashcard-flip'));
+  } finally {
+    ui.close();
+  }
+});
+
+test('saving a card shows a brief toast; nothing stays written in the form', async () => {
+  const toasts = [];
+  const created = [];
+  const ui = await harness({
+    createFlashcard: async (input) => {
+      created.push(input);
+    },
+    toast: (text, options) => toasts.push({ text, type: options?.type, action: options?.action?.label }),
+  });
+  try {
+    const form = ui.document.querySelector('[data-flashcard-create-form]');
+    await until(() => !form.querySelector('[type="submit"]').disabled);
+    form.querySelector('[name="front"]').value = 'Frente';
+    form.querySelector('[name="back"]').value = 'Verso';
+    form.querySelector('[name="materialId"]').value = 'lesson-a';
+    form.dispatchEvent(new ui.document.defaultView.Event('submit', { bubbles: true, cancelable: true }));
+    await until(() => toasts.length === 1);
+    assert.deepEqual(created, [{ front: 'Frente', back: 'Verso', materialId: 'lesson-a' }]);
+    assert.deepEqual(toasts, [{ text: 'Cartão salvo. Ele já entra na revisão.', type: 'success', action: 'Revisar agora' }]);
+    assert.equal(ui.document.querySelector('[data-flashcard-create-status]').textContent, '');
+    assert.equal(form.querySelector('[name="front"]').value, '', 'ready for the next card');
+    assert.equal(form.querySelector('[name="materialId"]').value, 'lesson-a', 'the lesson stays chosen');
+  } finally {
+    ui.close();
+  }
+});
+
+test('the Flashcards page: six sections, the review first, no dialogs for creating', () => {
+  const { document } = new JSDOM(html).window;
+  assert.deepEqual(
+    [...document.querySelectorAll('[data-tool-tabs] [role="tab"]')].map((tab) => tab.textContent.trim()),
+    ['Revisar cartões', 'Conjuntos', 'Criar cartão', 'Gerar com IA', 'Importar e mesclar', 'Aparência'],
+  );
+  for (const tab of document.querySelectorAll('[data-tool-tabs] [role="tab"]'))
+    assert(document.getElementById(tab.getAttribute('aria-controls')), tab.id);
+  assert.equal(document.querySelectorAll('dialog').length, 0);
+  assert.equal(document.querySelector('.primary-navigation a[aria-current="page"]').getAttribute('href'), './flashcards.html');
+  assert.match(document.querySelector('.primary-navigation a[aria-current="page"]').textContent, /Flashcards/);
+  assert.match(dashboard, /FLASHCARD_SECTIONS = \['revisar', 'conjuntos', 'criar', 'gerar', 'importar', 'aparencia'\]/);
+});
+
+test('old Revisar addresses land where each part lives now', async () => {
+  const { reviewRedirectTarget } = await import('../js/utils/review-redirect.js');
+  assert.equal(reviewRedirectTarget('', ''), './flashcards.html#revisar');
+  assert.equal(reviewRedirectTarget('', '#flashcards'), './flashcards.html#revisar');
+  assert.equal(reviewRedirectTarget('?acao=revisar', '#flashcards'), './flashcards.html#revisar');
+  assert.equal(reviewRedirectTarget('?acao=criar', '#flashcards'), './flashcards.html#criar');
+  // A lesson's "Revisar agora" and the multi-lesson export keep the set.
+  assert.equal(reviewRedirectTarget('?conjunto=set-1', '#flashcards'), './flashcards.html?conjunto=set-1#revisar');
+  assert.equal(reviewRedirectTarget('?conjunto=a%26b', ''), './flashcards.html?conjunto=a%26b#revisar');
+  // Question attempts live with the questions; notes in the global search.
+  assert.equal(reviewRedirectTarget('', '#questoes'), './questoes.html');
+  assert.equal(reviewRedirectTarget('', '#anotacoes'), './painel.html?em=notes');
+  assert.equal(reviewRedirectTarget('?busca=clorofila', '#anotacoes'), './painel.html?busca=clorofila&em=notes');
+  assert.equal(reviewRedirectTarget('?busca=a', '#anotacoes'), './painel.html?em=notes', 'too short to search');
+  assert.equal(reviewRedirectTarget('', '#inexistente'), './flashcards.html#revisar');
+  const page = readFileSync(resolve(frontend, 'pages/revisar.html'), 'utf8');
+  assert.match(page, /review-redirect\.page\.js/);
+  assert.match(page, /<noscript><meta http-equiv="refresh" content="0; url=\.\/flashcards\.html"><\/noscript>/);
+  assert.match(page, /data-review-redirect/);
 });

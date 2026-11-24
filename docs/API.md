@@ -116,9 +116,12 @@ Status: `PENDENTE`, `EM_EXECUCAO`, `AGUARDANDO_REPETICAO`, `CONCLUIDA`, `FALHOU`
 
 ## Busca 🔒 — `/api/search`
 
-`GET ?q=` (2–100 caracteres) `&scope=all|lessons|questions|transcripts`. Sem diferenciar acentos;
-procura títulos, enunciados e trechos da transcrição da própria conta (nunca gabaritos). Até 50 aulas,
-50 questões, 60 trechos (5 por aula).
+`GET ?q=` (2–100 caracteres) `&scope=all|lessons|questions|transcripts|notes`. Sem diferenciar
+acentos; procura títulos, enunciados e trechos da transcrição da própria conta (nunca gabaritos). Até
+50 aulas, 50 questões, 60 trechos (5 por aula). Com `annotations`, também as anotações da conta (texto
+e trecho destacado; nunca excluídas nem de aulas de outra pessoa): `notes` (até 50,
+`{noteId, materialId, lessonTitle, sourceRevision, segmentPosition, quote, noteText, color, createdAt}`)
+e `notesTotal`; sem a flag, a resposta não traz `notes`.
 
 ## Questões avulsas 🔒 — `/api/questions`
 
@@ -313,7 +316,7 @@ aulas, `unit` e `subject` exatamente 1 id, `units` até 20.
 | `DELETE /api/multi-lesson/:id` | — | `200 {id, deleted:true}`; se ainda estava na fila, a chave da geração é liberada |
 | `GET /api/multi-lesson/:id/exports` | — | `200 [{id, kind:'questions'\|'flashcards', multiLessonId, materialId, batchId, setId, itemCount, available, createdAt, updatedAt, links}]` |
 | `POST /api/multi-lesson/:id/question-list` | `{requestId, title?≤160}` | `200 {..., kind:'questions', materialId, batchId, replayed, links:{answer, lesson}}` — lista comum da primeira aula de origem utilizável, respondida em `responder.html` |
-| `POST /api/multi-lesson/:id/flashcard-set` (com `flashcard_sets`) | `{requestId, name?≤160}` | `200 {..., kind:'flashcards', setId, skipped, replayed, links:{review}}` — conjunto pessoal em Revisar › Conjuntos |
+| `POST /api/multi-lesson/:id/flashcard-set` (com `flashcard_sets`) | `{requestId, name?≤160}` | `200 {..., kind:'flashcards', setId, skipped, replayed, links:{review}}` — conjunto pessoal em Flashcards › Conjuntos |
 
 `result` (quando `ready`): `summary.sections[{heading, text, citations}]`, `questions[{statement,
 options[4], correctIndex, explanation, citations}]`, `flashcards[{front, back, citations}]`,

@@ -44,9 +44,9 @@ const shots = [
   ['material-pendente', '/material.html?id=l-rev', KEY, { data: (d) => ((d.lessonStage = { 'l-rev': 'pending' }), d) }],
   ['nova-transcricao', '/nova-transcricao.html', KEY],
   ['processando', '/processando.html?id=l-foto&job=job-1', KEY],
-  ['revisar', '/revisar.html#flashcards', KEY],
-  ['revisar-questoes', '/revisar.html#questoes', KEY],
-  ['revisar-anotacoes', '/revisar.html#anotacoes', KEY],
+  ['revisar', '/flashcards.html#revisar', KEY],
+  ['flashcards-aparencia', '/flashcards.html#aparencia', KEY],
+  ['flashcards-criar', '/flashcards.html#criar', KEY],
   ['planejar', '/planejar.html#tarefas', KEY],
   ['planejar-calendario', '/planejar.html#calendario', KEY],
   ['focar', '/focar.html', KEY],
@@ -62,31 +62,22 @@ const shots = [
   ['inicio-noturno', '/painel.html', KEY, { theme: 'night' }],
   ['material-noturno', '/material.html?id=l-foto#resumo', [1440], { theme: 'night' }],
   ['inicio-contraste', '/painel.html', [1440], { theme: 'contrast-light' }],
-  // 3.5 M5 (Personalization): the escrivaninha, the Creative Studio and the atmospheres.
-  ['escrivaninha', '/painel.html', KEY, { full: false }],
-  ['escrivaninha-biblioteca-chuvosa', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'rainy-library' } }],
-  ['escrivaninha-inverno', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'cozy-winter', decoration: 'abundant' } }],
-  ['escrivaninha-jardim-noturno', '/painel.html', KEY, { full: false, theme: 'night', prefs: { atmosphere: 'night-garden' } }],
-  ['escrivaninha-caderno-antigo', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'old-notebook' } }],
-  ['escrivaninha-pastel', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'dreamy-pastel' } }],
-  ['escrivaninha-beira-mar', '/painel.html', [1440], { full: false, prefs: { atmosphere: 'seaside' } }],
-  ['escrivaninha-matcha-aventura', '/painel.html', [1440], { full: false, discoveries: true, prefs: { atmosphere: 'matcha-afternoon', experience: 'adventure' } }],
-  ['escrivaninha-silencioso', '/painel.html', KEY, { full: false, prefs: { experience: 'quiet' } }],
-  ['escrivaninha-arrumando', '/painel.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'lavender-desk', decoration: 'abundant' },
-    act: async (p) => { await p.getByRole('button', { name: 'Arrumar a mesa' }).click(); await p.locator('[data-desk-object="object.globe"]').click(); } }],
-  ['escrivaninha-inicio-completo', '/painel.html', KEY, { prefs: { atmosphere: 'rainy-library' } }],
+  // 3.5 M5 (Personalization), since 3.7 without the escrivaninha: Início (a dashboard) under the
+  // atmospheres and the experience modes; the Creative Studio and the atmospheres.
+  ['3-7-inicio-biblioteca-chuvosa', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'rainy-library' } }],
+  ['3-7-inicio-inverno', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'cozy-winter', decoration: 'abundant' } }],
+  ['3-7-inicio-jardim-noturno', '/painel.html', KEY, { full: false, theme: 'night', prefs: { atmosphere: 'night-garden' } }],
+  ['3-7-inicio-matcha-aventura', '/painel.html', [1440], { full: false, discoveries: true, prefs: { atmosphere: 'matcha-afternoon', experience: 'adventure' } }],
+  ['3-7-inicio-silencioso', '/painel.html', KEY, { full: false, prefs: { experience: 'quiet' } }],
+  ['3-7-inicio-completo', '/painel.html', KEY, { prefs: { atmosphere: 'rainy-library' } }],
   ['estudio-simples', '/aparencia.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'lavender-desk' },
     act: (p) => p.locator('[data-creative-studio]').scrollIntoViewIfNeeded() }],
   ['estudio-detalhes', '/aparencia.html', KEY, { full: false, discoveries: true, prefs: { atmosphere: 'cozy-winter' },
     act: async (p) => { await p.locator('input[name="studio-view"][value="studio"]').check(); await p.locator('[data-studio-detail]').scrollIntoViewIfNeeded(); } }],
   ['biblioteca-pastas-coloridas', '/historico.html', KEY],
-  // 3.5 M8 (Refinement): the art-directed desk, Planejar/Focar/Turmas, the selection toolbar,
-  // Descobertas and Gabinete. `before` was taken from feat/3.5-experience with this same list.
-  ['m8-escrivaninha', '/painel.html', KEY, { full: false }],
-  ['m8-escrivaninha-jardim-noturno', '/painel.html', KEY, { full: false, theme: 'night', prefs: { atmosphere: 'night-garden' } }],
-  ['m8-escrivaninha-biblioteca-chuvosa', '/painel.html', KEY, { full: false, prefs: { atmosphere: 'rainy-library', decoration: 'abundant' } }],
-  ['m8-escrivaninha-luminaria', '/painel.html', KEY, { full: false, discoveries: true, act: placeLamp }],
-  ['m8-escrivaninha-luminaria-noite', '/painel.html', KEY, { full: false, discoveries: true, theme: 'night', prefs: { atmosphere: 'night-garden' }, act: placeLamp }],
+  // 3.5 M8 (Refinement): Planejar/Focar/Turmas, the selection toolbar, Descobertas and Gabinete
+  // (the art-directed desk captures left with the desk in 3.7). `before` was taken from
+  // feat/3.5-experience with this same list.
   ['m8-planejar', '/planejar.html#tarefas', KEY],
   ['m8-planejar-calendario', '/planejar.html#calendario', KEY],
   ['m8-planejar-vazio', '/planejar.html#tarefas', KEY, { data: (d) => Object.assign(d, { goals: [], subgoals: [], tasks: [] }) }],
@@ -99,18 +90,17 @@ const shots = [
   ['m8-descobertas-vazio', '/descobertas.html', KEY, { discoveries: 'none' }],
   ['m8-gabinete', '/gabinete.html', KEY, { discoveries: true }],
   // 3.6 (UX fixes): selection in the Biblioteca, discipline interiors, Revisar, Planejar vs
-  // Focar, arranging the desk. `before` was taken from feat/3.6-scrapbook with this same list.
+  // Focar (arranging the desk left with the desk in 3.7). `before` was taken from feat/3.6-scrapbook with this same list.
   ['3-6-biblioteca-selecao', '/historico.html', KEY, { data: richLibrary, act: selectFolder }],
   ['3-6-biblioteca-disciplina', '/historico.html?folder=sub-bio', KEY, { data: richLibrary }],
   ['3-6-biblioteca-unidade-selecao', '/historico.html?folder=sub-bio&unit=unit-energia', KEY, { data: richLibrary, act: selectLesson }],
   ['3-6-biblioteca-disciplina-vazia', '/historico.html?folder=sub-geo', KEY, { data: (d) => ((d.catalog = { ...CATALOG_WITH_EMPTY }), d) }],
-  ['3-6-revisar', '/revisar.html#flashcards', KEY],
-  ['3-6-revisar-questoes', '/revisar.html#questoes', KEY],
-  ['3-6-revisar-anotacoes', '/revisar.html#anotacoes', KEY],
+  ['3-6-revisar', '/flashcards.html#revisar', KEY],
+  ['3-6-flashcards-conjuntos', '/flashcards.html#conjuntos', KEY],
+  ['3-6-flashcards-importar', '/flashcards.html#importar', KEY],
   ['3-6-planejar-tempo', '/planejar.html#tempo', KEY],
   ['3-6-focar', '/focar.html', KEY],
   ['3-6-foco-em-andamento', '/focar.html', KEY, { full: false, act: runFocusThenLibrary }],
-  ['3-6-escrivaninha-arrumando', '/painel.html', KEY, { full: false, discoveries: true, act: arrangeDesk }],
   // 3.6 Milestone E: the cabinet of curiosities, the archive of evolving cards, the investigation.
   ['3-6-gabinete', '/gabinete.html?gaveta=stamp', KEY, { discoveries: 'rich', data: populated }],
   ['3-6-gabinete-especimes', '/gabinete.html?gaveta=specimen', KEY, { discoveries: 'rich', data: populated }],
@@ -166,24 +156,6 @@ async function runFocusThenLibrary(page) {
   await page.goto(page.url().replace(/focar\.html.*/, 'historico.html'));
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(800);
-}
-async function arrangeDesk(page) {
-  await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-  await page.locator('[data-desk-object="object.globe"]').click();
-  await page.locator('[data-desk-slot="desk-center"] .desk-slot-target').click();
-  await page.waitForTimeout(500);
-  await page.locator('[data-desk-slot="desk-right"] .desk-slot-target').click();
-  await page.waitForTimeout(300);
-}
-
-async function placeLamp(page) {
-  await page.getByRole('button', { name: 'Arrumar a mesa' }).click();
-  await page.locator('[data-desk-object="object.desk-lamp"]').click();
-  await page.locator('[data-desk-slot="lamp-corner"] .desk-slot-target').click();
-  await page.locator('[data-desk-object="object.globe"]').click();
-  await page.locator('[data-desk-slot="desk-center"] .desk-slot-target').click();
-  await page.waitForTimeout(300);
-  await page.getByRole('button', { name: 'Concluir' }).click();
 }
 async function selectPassage(page) {
   const paragraph = page.locator('.transcription-segment .segment-text').first();

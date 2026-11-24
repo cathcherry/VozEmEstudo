@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
+import { isFeatureEnabled } from '../config/feature-flags.js';
 
 /**
  * Search across the signed-in person's own lessons: titles/disciplines, question statements and
- * transcript segments. Accent- and case-insensitive. Answer keys, explanations and other people's
+ * transcript segments, plus (with FEATURE_ANNOTATIONS) the person's own notes and highlights.
+ * Accent- and case-insensitive. Answer keys, explanations and other people's
  * materials are never read. No migration is needed: the database pre-filters with ILIKE and the
  * service confirms every hit (and its ownership) in JavaScript.
  */
@@ -34,7 +36,7 @@ export const validateSearch = (query) =>
   z
     .object({
       q: z.string().trim().min(2).max(100),
-      scope: z.enum(['all', 'lessons', 'questions', 'transcripts']).default('all'),
+      scope: z.enum(['all', 'lessons', 'questions', 'transcripts', 'notes']).default('all'),
     })
     .strict()
     .parse(query);
@@ -53,9 +55,14 @@ export async function inChunks(ids, build, size = 100) {
   return rows;
 }
 
-const LIMITS = { lessons: 50, questions: 50, transcripts: 60, perLesson: 5, scan: 600 };
+const LIMITS = { lessons: 50, questions: 50, transcripts: 60, notes: 50, perLesson: 5, scan: 600 };
 
-export function buildSearchService(db = getAdminSupabase) {
+/**
+ * @param {Function} db admin client factory
+ * @param {{ notes?: () => boolean }} options `notes` says whether annotations are on
+ *   (FEATURE_ANNOTATIONS); when off, results carry no `notes` key at all.
+ */
+export function buildSearchService(db = getAdminSupabase, { notes = () => isFeatureEnabled('annotations') } = {}) {
   return async function search(userId, input) {
     const { q, scope } = validateSearch(input);
     const needle = fold(q);
@@ -68,8 +75,49 @@ export function buildSearchService(db = getAdminSupabase) {
     if (error) throw error;
     const owned = new Map((materials || []).map((m) => [m.id, m]));
     const ids = [...owned.keys()];
-    const result = { query: q, lessons: [], questions: [], transcripts: [] };
+    const withNotes = notes();
+    const result = { query: q, lessons: [], questions: [], transcripts: [], ...(withNotes ? { notes: [], notesTotal: 0 } : {}) };
     if (!ids.length) return result;
+
+    // The person's own annotations (notes and highlighted quotes), newest first. Only rows of
+    // this account on lessons it owns, never deleted ones; the same accent-insensitive check.
+    if (withNotes && (scope === 'all' || scope === 'notes')) {
+      // One pre-filtered read per column (no `or=` string to escape), merged by id.
+      const byId = new Map();
+      for (const column of ['note_text', 'quote']) {
+        const { data: rows, error: notesError } = await client
+          .from('study_annotations')
+          .select('id,user_id,material_id,source_revision,segment_position,quote,note_text,color,created_at,deleted_at')
+          .eq('user_id', userId)
+          .is('deleted_at', null)
+          .ilike(column, likePattern(q))
+          .order('created_at', { ascending: false })
+          .limit(LIMITS.scan);
+        if (notesError) throw notesError;
+        for (const row of rows || []) byId.set(row.id, row);
+      }
+      const found = [...byId.values()]
+        .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+        .filter(
+        (note) =>
+          note.user_id === userId &&
+          !note.deleted_at &&
+          owned.has(note.material_id) &&
+          (includes(note.note_text) || includes(note.quote)),
+      );
+      result.notesTotal = found.length;
+      result.notes = found.slice(0, LIMITS.notes).map((note) => ({
+        noteId: note.id,
+        materialId: note.material_id,
+        lessonTitle: owned.get(note.material_id).title,
+        sourceRevision: note.source_revision,
+        segmentPosition: note.segment_position,
+        quote: note.quote || '',
+        noteText: note.note_text || '',
+        color: note.color,
+        createdAt: note.created_at,
+      }));
+    }
 
     if (scope === 'all' || scope === 'lessons')
       result.lessons = [...owned.values()]

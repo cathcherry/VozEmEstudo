@@ -12,6 +12,7 @@ export default {
   'nav.home': 'Inicio',
   'nav.library': 'Biblioteca',
   'nav.review': 'Repasar',
+  'nav.flashcards': 'Tarjetas',
   'nav.plan': 'Planificar',
   'nav.settings': 'Configuración',
   'nav.myAccount': 'Mi cuenta',
@@ -73,12 +74,12 @@ export default {
   'home.addTask': 'Añadir tarea',
   'home.scheduleStudy': 'Programar estudio',
   'home.firstGoal': 'Crear el primer objetivo',
-  'home.planningIntro': 'Organiza tus estudios: define un objetivo y divídelo en tareas.',
-  'home.noPendingTasks': 'No hay tareas pendientes. Añade el siguiente paso de un objetivo.',
+  'home.planningIntro': 'Ningún objetivo.',
+  'home.noPendingTasks': 'Ninguna tarea.',
   'home.moreTasks': { one: 'Y {count} tarea más.', other: 'Y {count} tareas más.' },
   'home.overdue': 'Atrasada · {date}',
   'home.dueBy': 'Hasta {date}',
-  'home.cardsIntro': 'Crea tarjetas a partir del resumen de una clase para empezar a repasar.',
+  'home.cardsIntro': 'Ninguna tarjeta.',
   'home.chooseLesson': 'Elegir una clase',
   'home.firstInQueue': 'La siguiente',
   'home.reviewCards': { one: 'Repasar {count} tarjeta', other: 'Repasar {count} tarjetas' },
@@ -88,7 +89,7 @@ export default {
     other:
       'Todo repasado por hoy. Los próximos repasos de tus {count} tarjetas aparecerán aquí el día indicado.',
   },
-  'home.planWhen': 'Planifica cuándo piensas estudiar.',
+  'home.planWhen': 'Ningún estudio programado.',
   'home.nothingScheduled': 'Nada programado hasta fin de mes.',
   'home.markedDays': {
     one: '{count} día con estudio o plazo hasta fin de mes.',
@@ -96,13 +97,12 @@ export default {
   },
   'home.taskDeadline': 'Plazo de tarea',
   'home.weekUnavailable': 'El tiempo de estudio no está disponible.',
-  'home.weekIntro': 'Usa el cronómetro de la clase mientras estudias para registrar tu tiempo.',
+  'home.weekIntro': 'Ningún tiempo registrado esta semana.',
   'home.weekOf': ' de {goal} min',
   'home.weekMinutes': ' min esta semana',
   'home.weekGoalLabel': 'Meta semanal: {minutes} de {goal} minutos',
   'home.minutesPerDay': 'Minutos de estudio por día',
-  'home.notesIntro':
-    'Destaca fragmentos de la transcripción de una clase; tus notas se reúnen aquí.',
+  'home.notesIntro': 'Ninguna nota.',
   'home.howToNote': 'Cómo tomar notas',
   'home.notesSaved': {
     one: '{count} nota guardada en tus clases.',
@@ -138,6 +138,8 @@ export default {
   'widget.notes': 'Notas',
   'widget.plan': 'Tareas y tarjetas',
 
+  'flashcards.intro': 'Repasa las tarjetas de hoy, organiza tus conjuntos y crea tarjetas nuevas: a mano, con IA o importando.',
+  'flashcards.sections': 'Secciones de las tarjetas',
   'review.intro':
     'Repasa tarjetas, retoma intentos de preguntas y vuelve a encontrar los fragmentos que destacaste en las clases.',
   'review.sections': 'Secciones del repaso',

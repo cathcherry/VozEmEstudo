@@ -21,6 +21,7 @@ import {
   fillLookOptions,
   templateNameTaken,
 } from '../utils/card-looks.js';
+import { toast } from '../utils/toast.js';
 
 const make = (tag, text, className) => {
   const node = document.createElement(tag);
@@ -71,7 +72,7 @@ function enhanceCreateForm(form, status) {
   const front = form.querySelector('[name="front"]');
   const back = form.querySelector('[name="back"]');
   const setSelect = form.querySelector('select[name="setId"], [data-flashcard-create-set] select') || null;
-  const typeLabel = make('label', 'Tipo de cartão');
+  const typeLabel = make('label', 'Tipo de cartão', 'flashcard-type-choice');
   const type = make('select');
   type.name = 'noteType';
   for (const [value, label] of NOTE_TYPES) type.append(new Option(label, value));
@@ -79,12 +80,15 @@ function enhanceCreateForm(form, status) {
   const typed = make('div', null, 'flashcard-typed-fields');
   typed.hidden = true;
   form.prepend(typeLabel);
+  // The faces of a basic card give way to the fields of the chosen type.
+  const faces = form.querySelector('.flashcard-compose-faces');
   front.closest('label').before(typed);
   const fields = new Map();
   const render = () => {
     const spec = NOTE_TYPES.find(([key]) => key === type.value);
     const basic = type.value === 'basic';
     front.closest('label').hidden = back.closest('label').hidden = !basic;
+    if (faces) faces.dataset.typed = String(!basic);
     front.required = back.required = basic;
     typed.hidden = basic;
     typed.replaceChildren();
@@ -129,11 +133,24 @@ function enhanceCreateForm(form, status) {
       submit.disabled = true;
       void addFlashcardNote(setId, { noteType: type.value, fields: values })
         .then(() => {
+          // Same as a basic card: the lesson and set stay chosen, only the text is cleared.
+          const keepType = type.value;
+          const keepSet = setSelect?.value || '';
           form.reset();
+          type.value = keepType;
+          if (setSelect) setSelect.value = keepSet;
           render();
-          status.textContent = 'Cartão criado e disponível para a primeira revisão.';
-          status.dataset.state = 'success';
-          form.closest('dialog')?.close();
+          status.textContent = '';
+          delete status.dataset.state;
+          toast('Cartão salvo. Ele já entra na revisão.', {
+            type: 'success',
+            action: {
+              label: 'Revisar agora',
+              onClick: () =>
+                document.dispatchEvent(new CustomEvent('voz:flashcards-section', { detail: { section: 'revisar' } })),
+            },
+          });
+          typed.querySelector('input, textarea')?.focus();
           refreshPanel();
         })
         .catch((error) => {
@@ -226,7 +243,13 @@ export function openTemplateEditor({ template = null, opener } = {}) {
   save.type = 'submit';
   actions.append(cancel, save);
   form.append(title, hint, grid, preview, warning, error, actions);
-  dialog.append(form);
+  // Dialog contract: a visible close control in the title bar.
+  const close = make('button', '×', 'dialog-close');
+  close.type = 'button';
+  close.dataset.dialogClose = '';
+  close.setAttribute('aria-label', 'Fechar');
+  close.addEventListener('click', () => dialog.close());
+  dialog.append(close, form);
   document.body.append(dialog);
   const body = () => ({
     name: name.value.trim(),
@@ -292,7 +315,7 @@ export function openTemplateEditor({ template = null, opener } = {}) {
 // ---- one look per set ---------------------------------------------------------------------------
 function setLookControl(panel, setFilter) {
   // The 2.0 per-browser choice is replaced by the server choice stored on the set.
-  panel.querySelector('[data-set-template-picker]')?.closest('label')?.setAttribute('hidden', '');
+  panel.querySelector('[data-set-template-picker]')?.closest('label')?.remove();
   const wrap = make('div', null, 'flashcard-set-look');
   const label = make('label', 'Aparência deste conjunto');
   const select = make('select');
@@ -350,8 +373,9 @@ export async function initFlashcardsV3({ panel }) {
   const form = panel.querySelector('[data-flashcard-create-form]');
   const status = panel.querySelector('[data-flashcard-create-status]');
   if (form && status) enhanceCreateForm(form, status);
-  const setFilter = panel.querySelector('[data-flashcard-set-filter]');
-  const looks = panel.querySelector('.flashcard-looks');
+  // Aparência › "Aparência de um conjunto": its own set chooser (the review's set filter before 3.6).
+  const setFilter = panel.querySelector('[data-look-set]') || panel.querySelector('[data-flashcard-set-filter]');
+  const looks = panel.querySelector('.flashcard-set-looks') || panel.querySelector('.flashcard-looks');
   if (setFilter && looks) {
     const control = setLookControl(panel, setFilter);
     looks.append(control.wrap);

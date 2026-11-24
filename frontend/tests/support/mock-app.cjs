@@ -274,8 +274,9 @@ const sdk = (user, withDb = false) =>
   `${withDb ? dbClient : ''}export function createClient(){const user=${JSON.stringify(user)};return {auth:{
 getSession:async()=>({data:{session:localStorage.getItem('mock-signed-out')?null:{user,access_token:'mock-token'}},error:null}),
 getUser:async()=>({data:{user},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
-signInWithPassword:async()=>{localStorage.removeItem('mock-signed-out');return {data:{user,session:{user,access_token:'mock-token'}},error:null}},
-signOut:async()=>{localStorage.setItem('mock-signed-out','1');return {error:null}},updateUser:async()=>({data:{user},error:null})},
+signInWithPassword:async(c)=>{if(c?.password==='senha-errada')return {data:{user:null,session:null},error:{message:'Invalid login credentials',status:400}};localStorage.removeItem('mock-signed-out');return {data:{user,session:{user,access_token:'mock-token'}},error:null}},
+signOut:async()=>{localStorage.setItem('mock-signed-out','1');return {error:null}},updateUser:async()=>({data:{user},error:null}),
+resetPasswordForEmail:async()=>{await new Promise((r)=>setTimeout(r,150));return {data:{},error:localStorage.getItem('mock-reset-error')?{message:'For security purposes, you can only request this after 60 seconds.',status:429}:null}}},
 ${withDb ? 'from:db,' : ''}storage:{from:()=>({upload:async()=>({error:null}),remove:async()=>({error:null}),createSignedUrl:async()=>({data:{signedUrl:''},error:null})})}}}`;
 
 /**
@@ -354,6 +355,9 @@ async function setup(context, base, flags, data, options = {}) {
         recordingLanguages: { options: ['pt'], default: 'pt' },
         oauthProviders: [],
       });
+    // Public testing program (./mock-testing.cjs): /api/testing/*, demo lessons, quota refusals.
+    const testingReply = require('./mock-testing.cjs').handleTesting({ request, p, method, json, data });
+    if (testingReply) return testingReply;
     if (p === '/api/materials' && method === 'GET') return json([...materials, ...(data.extraMaterials || [])]);
     if (/^\/api\/materials\/[^/]+$/.test(p) && method === 'GET') {
       const m = [...materials, ...(data.extraMaterials || [])].find((item) => item.id === p.split('/')[3]);
@@ -371,6 +375,9 @@ async function setup(context, base, flags, data, options = {}) {
         }));
         detail.audio = { ...detail.audio, duration_ms: data.longLesson * 5000 };
       }
+      // `data.summaryText = { [id]: markdown }`: a longer summary (read-aloud-check.cjs).
+      if (data.summaryText?.[m.id])
+        detail.summaries = detail.summaries.map((s) => ({ ...s, text: data.summaryText[m.id] }));
       // Notes 3.0 journeys: a lesson with several segments, or moved to a later revision.
       if (data.segmentsFor?.[m.id]) detail.transcription.transcription_segments = data.segmentsFor[m.id];
       if (data.lessonRevision?.[m.id]) detail.transcription.current_revision = data.lessonRevision[m.id];
@@ -393,18 +400,20 @@ async function setup(context, base, flags, data, options = {}) {
     if (p === '/api/planning/goals' && method === 'POST') {
       const body = request.postDataJSON();
       const goal = {
-        id: `g${data.goals.length + 1}`,
+        id: `g${data.goals.length + data.createdGoals.length + 1}`,
         title: body.title,
         status: 'active',
         target_date: body.targetDate,
+        created_at: new Date().toISOString(),
       };
       data.createdGoals.push(goal);
+      data.goals.unshift(goal);
       return json(goal, 201);
     }
     if (/^\/api\/planning\/goals\/[^/]+\/tasks$/.test(p) && method === 'POST') {
       const body = request.postDataJSON();
       const task = {
-        id: `t${data.tasks.length + 1}`,
+        id: `t${(data.taskSeq = (data.taskSeq || data.tasks.length) + 1)}`,
         goal_id: p.split('/')[4],
         subgoal_id: body.subgoalId || null,
         title: body.title,
@@ -417,6 +426,40 @@ async function setup(context, base, flags, data, options = {}) {
       };
       data.tasks.push(task);
       return json(task, 201);
+    }
+    // Planejar 3.7: subgoals, edits and deletions (deleting a goal takes its subgoals and tasks).
+    if (/^\/api\/planning\/goals\/[^/]+\/subgoals$/.test(p) && method === 'POST') {
+      const body = request.postDataJSON();
+      const subgoal = {
+        id: `s${data.subgoals.length + 1}-${Date.now() % 1000}`,
+        goal_id: p.split('/')[4],
+        title: body.title,
+        due_date: body.dueDate || null,
+        created_at: new Date().toISOString(),
+      };
+      data.subgoals.push(subgoal);
+      return json(subgoal, 201);
+    }
+    const planningItem = p.match(/^\/api\/planning\/(goals|subgoals|tasks)\/([^/]+)$/);
+    if (planningItem && (method === 'PATCH' || method === 'DELETE')) {
+      const [, kind, id] = planningItem;
+      const item = data[kind].find((entry) => entry.id === id);
+      if (!item) return json({ error: { message: 'Não encontrado.' } }, 404);
+      if (method === 'DELETE') {
+        data[kind] = data[kind].filter((entry) => entry.id !== id);
+        if (kind === 'goals') {
+          data.subgoals = data.subgoals.filter((entry) => entry.goal_id !== id);
+          data.tasks = data.tasks.filter((entry) => entry.goal_id !== id);
+        }
+        if (kind === 'subgoals')
+          for (const task of data.tasks) if (task.subgoal_id === id) task.subgoal_id = null;
+        data.planningDeletes = [...(data.planningDeletes || []), `${kind}/${id}`];
+        return json({ id, deleted: true });
+      }
+      const body = request.postDataJSON();
+      const fields = { title: 'title', status: 'status', targetDate: 'target_date', dueDate: 'due_date', subgoalId: 'subgoal_id', materialId: 'material_id', referenceUrl: 'reference_url' };
+      for (const [from, to] of Object.entries(fields)) if (from in body) item[to] = body[from];
+      return json(item);
     }
     // ---- Flashcards 3.0 (FEATURE_FLASHCARDS_V3) ------------------------------------------------
     const renderNote = (n) => {
@@ -775,7 +818,9 @@ async function setup(context, base, flags, data, options = {}) {
       });
     }
     if (p === '/api/study/settings') return json({ ok: true });
-    if (p === '/api/quiz-sessions' && method === 'GET') return json(data.quizSessions);
+    // Question attempts (list, answering, results): stateful simulation in ./mock-quiz.cjs.
+    if (/^\/api\/quiz-sessions(\/|$)/.test(p))
+      return require('./mock-quiz.cjs').handleQuiz({ request, p, method, json, data });
     if (p === '/api/study/sessions' && method === 'POST') {
       data.sessions++;
       const body = request.postDataJSON();
@@ -797,19 +842,36 @@ async function setup(context, base, flags, data, options = {}) {
         ended_at: body.close ? new Date().toISOString() : null,
       });
     }
-    if (p === '/api/search')
+    if (p === '/api/search') {
+      // 3.6: the server also searches the account's own notes (when annotations are on).
+      const q = (url.searchParams.get('q') || '').toLowerCase();
+      const scope = url.searchParams.get('scope') || 'all';
+      const titles = new Map(materials.map((m) => [m.id, m.title]));
+      const notes = flags.annotations
+        ? data.notes
+            .filter((n) => `${n.quote} ${n.note_text}`.toLowerCase().includes(q))
+            .map((n) => ({
+              noteId: n.id,
+              materialId: n.material_id,
+              lessonTitle: titles.get(n.material_id) || 'Aula',
+              sourceRevision: n.source_revision,
+              segmentPosition: n.segment_position ?? null,
+              quote: n.quote || '',
+              noteText: n.note_text || '',
+              color: n.color || 'yellow',
+              createdAt: n.created_at,
+            }))
+        : null;
       return json({
-        lessons: [
-          {
-            materialId: 'l-foto',
-            title: 'Fotossíntese e respiração celular',
-            subject: 'Biologia',
-            createdAt: materials[0].created_at,
-          },
-        ],
+        lessons:
+          scope === 'all' || scope === 'lessons'
+            ? [{ materialId: 'l-foto', title: 'Fotossíntese e respiração celular', subject: 'Biologia', createdAt: materials[0].created_at }]
+            : [],
         questions: [],
         transcripts: [],
+        ...(notes ? { notes: scope === 'all' || scope === 'notes' ? notes : [], notesTotal: notes.length } : {}),
       });
+    }
     // Private classrooms (Turmas): stateful simulation in ./mock-classrooms.cjs.
     if (p.startsWith('/api/classrooms'))
       return require('./mock-classrooms.cjs').handleClassrooms({
@@ -933,6 +995,8 @@ const allFlags = {
   discoveries: false,
   // 3.6 Milestone D, off by default; journal-check.cjs turns it on.
   journal: false,
+  // Public testing program, off by default; public-testing-check.cjs turns it on.
+  public_testing: false,
 };
 
 /** Serves the static front end on a free local port. */

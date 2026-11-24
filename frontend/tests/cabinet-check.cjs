@@ -38,8 +38,7 @@ async function main() {
       assert.equal(await page.locator('[data-drawer="cover"]').getAttribute('data-fill'), 'empty');
       assert.match(await page.locator('[data-drawer="specimen"]').textContent(), /4 descobertas/);
       assert(await page.locator('[data-cabinet-guide]').isHidden(), 'the guide is for an empty cabinet');
-      assert.equal(await page.locator('[data-desk-section], [data-desk-form]').count(), 0, 'no leftover desk form');
-      assert.equal(await page.locator('a[href="./painel.html"]', { hasText: 'Arrumar a mesa no Início' }).count(), 1);
+      assert.equal(await page.locator('[data-desk-section], [data-desk-form], .cabinet-desk-note').count(), 0, 'no leftover desk form or note');
       // Mouse: open, close.
       await stamps.click();
       await page.locator('#curio-tray[data-tray="stamp"]').waitFor();
@@ -80,7 +79,8 @@ async function main() {
       await page.keyboard.press('Escape');
       assert.equal(await page.locator('#curio-tray').count(), 0);
       assert.equal(await focused(page), 'object', 'Esc closes the drawer and focuses it');
-      // Inspect a found object: museum label with date, lesson, discovery and "Colocar na mesa".
+      // Inspect a found object: museum label with date, lesson and discovery (3.7: no desk on
+      // Início, so no "Colocar na mesa" and the saved layout is left alone).
       await page.keyboard.press('Enter');
       await page.locator('.cabinet-item[data-collectible="object.globe"]').click();
       await dialog.locator('[data-specimen-title]', { hasText: 'Globo' }).waitFor();
@@ -92,9 +92,9 @@ async function main() {
       await settle(page);
       await axeCheck(page, '[data-specimen-dialog]', 'Gabinete: etiqueta');
       await shot(page, 'etiqueta-1440', false);
-      await dialog.getByRole('button', { name: 'Colocar na mesa' }).click();
-      await page.locator('[data-cabinet-status]', { hasText: 'Colocado na mesa' }).waitFor();
-      assert.equal(data.discoveryState.layout.items.length, 1);
+      assert.equal(await dialog.getByRole('button', { name: 'Colocar na mesa' }).count(), 0, 'no "Colocar na mesa"');
+      assert.equal(await dialog.locator('[data-specimen-desk]').count(), 0, 'no desk place picker');
+      assert.equal(data.discoveryState.requests.filter((r) => r.kind === 'layout').length, 0, 'the layout is not written');
       await dialog.getByRole('button', { name: 'Fechar' }).click();
       // Specimens: discoveries as cards whose state is said in words.
       await page.locator('[data-drawer="specimen"]').click();
@@ -107,7 +107,7 @@ async function main() {
       await settle(page);
       await axeCheck(page, 'main', 'Gabinete 1440');
       await shot(page, 'gabinete-1440');
-      record('Gabinete (API simulada): prateleiras mostram o que as gavetas guardam e contornos do que falta; gaveta abre com mouse e com Enter; setas entre gavetas e compartimentos; Esc fecha e devolve o foco; etiqueta de museu com data, aula e descoberta; "Colocar na mesa"; espécimes com estado em palavras; axe');
+      record('Gabinete (API simulada): prateleiras mostram o que as gavetas guardam e contornos do que falta; gaveta abre com mouse e com Enter; setas entre gavetas e compartimentos; Esc fecha e devolve o foco; etiqueta de museu com data, aula e descoberta, sem "Colocar na mesa" (3.7) e sem gravar o layout; espécimes com estado em palavras; axe');
 
       // Reduced motion: the drawer opens instantly.
       await page.emulateMedia({ reducedMotion: 'reduce' });

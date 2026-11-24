@@ -1,6 +1,6 @@
 // Preferences and local data on a shared browser, with a simulated API and an in-memory
 // profile_state: one account's theme and language never reach another account or the sign-in
-// page, they come back for their owner, the Configurações sync indicator reports the real state,
+// page, they come back for their owner, the sync indicator (Configurações › Dados neste navegador) reports the real state,
 // and "Apagar dados desta conta neste navegador" removes only that account's copies (asking
 // first when changes are not synchronized). No real backend or Supabase project.
 const path = require('node:path');
@@ -44,6 +44,15 @@ async function until(check, label) {
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
   assert.fail(`timed out: ${label}`);
+}
+
+// Configurações › Dados neste navegador is a sub-view (#dados-neste-navegador): going to the same
+// address again is only a hash change, so reload to read the changed storage like a new visit.
+async function openDeviceData(page, base) {
+  const url = base + '/configuracoes.html#dados-neste-navegador';
+  const same = page.url() === url;
+  await page.goto(url);
+  if (same) await page.reload();
 }
 
 async function main() {
@@ -125,14 +134,14 @@ async function main() {
     record('A conta original recupera o próprio tema e idioma ao entrar de novo');
 
     // ---------- Configurações: honest synchronization state ----------------------------------
-    await page.goto(base + '/configuracoes.html');
+    await openDeviceData(page, base);
     const panel = page.locator('[data-sync-panel]');
     await panel.waitFor();
     await until(async () => (await panel.getAttribute('data-state')) === 'saved', 'saved state');
     assert(await panel.locator('[data-sync-now]').isHidden(), 'no retry without pending changes');
     data.dbDown = true;
     await page.evaluate(() => window.VozAppearance.storage.set('audioestudo-theme', 'forest'));
-    await page.goto(base + '/configuracoes.html');
+    await openDeviceData(page, base);
     await until(
       async () => (await panel.getAttribute('data-state')) === 'pending',
       'pending state',
@@ -163,7 +172,7 @@ async function main() {
     // The simulated app seeds sample study history on each load; stop that to see real leftovers.
     await page.evaluate(() => localStorage.setItem('mock-no-seed', '1'));
     await page.evaluate(() => window.VozAppearance.storage.set('audioestudo-theme', 'wine'));
-    await page.goto(base + '/configuracoes.html');
+    await openDeviceData(page, base);
     await until(
       async () => (await panel.getAttribute('data-state')) === 'pending',
       'pending again',

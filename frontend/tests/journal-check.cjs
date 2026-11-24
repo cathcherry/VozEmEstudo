@@ -219,19 +219,16 @@ async function main() {
     await axeCheck(page, '[data-notes-section]', 'caderno fechado');
     await capture(page, '3-6-caderno-capa-1440');
     await notebook.getByRole('button', { name: 'Abrir o caderno' }).click();
-    assert.equal(await page.evaluate(() => document.activeElement?.id), 'lesson-notebook-name', 'focus moves into the open notebook');
+    assert.equal(await page.evaluate(() => document.activeElement?.classList.contains('nb-editor')), true, 'focus moves into the text of the open notebook');
     await page.locator('#lesson-notebook-name').fill('Fotossíntese');
-    for (const [label, text] of [
-      ['Título', 'Fase clara'],
-      ['Parágrafo', 'A luz vira energia química: ATP e NADPH.'],
-      ['Título', 'Fase escura'],
-      ['Citação', 'O carbono é fixado no ciclo de Calvin.'],
-    ]) {
-      await notebook.locator('.notebook-add').getByRole('button', { name: label, exact: true }).click();
-      await page.keyboard.type(text);
+    // A place to write: click the text and type; "# " starts a section, "> " a quote.
+    await notebook.locator('.nb-editor').click();
+    for (const line of ['# Fase clara', 'A luz vira energia química: ATP e NADPH.', '# Fase escura', '> O carbono é fixado no ciclo de Calvin.']) {
+      await page.keyboard.type(line);
+      await page.keyboard.press('Enter');
     }
     await notebook.locator('.nb-tabs .paper-tab', { hasText: 'Fase escura' }).waitFor();
-    assert.equal(await notebook.locator('.nb-divider').count(), 1, 'a divider opens the second section');
+    assert.equal(await notebook.locator('.nb-editor h3').count(), 2, 'two sections');
     await notebook.locator('.nb-look > summary').click();
     await notebook.getByRole('radio', { name: 'Constelação' }).check();
     assert.match(await notebook.locator('.nb-look-preview img').getAttribute('src'), /constellation/);

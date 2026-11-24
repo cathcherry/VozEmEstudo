@@ -88,6 +88,7 @@ function emblemGrid(kind) {
   const hint = document.createElement('p');
   hint.className = 'emblem-picker-hint';
   hint.id = `${kind}-emblem-hint`;
+  hint.classList.add('sr-only');
   hint.textContent = 'Use as setas para percorrer os desenhos.';
   const grid = document.createElement('div');
   grid.className = 'emblem-grid';
@@ -195,7 +196,14 @@ export function createFolderIcons(owner) {
     const details = document.createElement('details');
     details.className = 'folder-icon-options';
     const summary = document.createElement('summary');
-    summary.textContent = 'Ícone da pasta';
+    summary.textContent = 'Ícone';
+    // Always open: the summary is the field's label, not a dropdown (3.7).
+    summary.tabIndex = -1;
+    summary.addEventListener('click', (event) => event.preventDefault());
+    details.addEventListener('toggle', () => {
+      if (!details.open) details.open = true;
+    });
+    details.open = true;
     const emblems = emblemGrid(kind);
     const custom = document.createElement('p');
     custom.className = 'emblem-custom-heading';
@@ -225,7 +233,8 @@ export function createFolderIcons(owner) {
     controls.className = 'folder-icon-controls';
     controls.append(pngPreview, label, input, reset, message);
     details.append(summary, emblems, custom, controls);
-    form.querySelector('[type="submit"]').before(details);
+    const submit = form.querySelector('[type="submit"]');
+    (submit.closest('.form-actions') || submit).before(details);
     const nameField = form.querySelector('[name="name"], [name="title"]');
     const radios = () => [...emblems.querySelectorAll('input[type="radio"]')];
     let draftUrl = null,

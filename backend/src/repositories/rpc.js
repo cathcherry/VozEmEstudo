@@ -33,6 +33,9 @@ const failures = {
   AUTHORING_INVALID_INPUT: [400, 'Confira os dados enviados.'],
   AUTHORING_REQUEST_CONFLICT: [409, 'Este envio já foi usado com outros dados. Atualize a lista.'],
   AUTHORING_SHARE_LIMIT: [409, 'Revogue links antigos antes de criar novos.'],
+  DEMO_NOT_AVAILABLE: [404, 'Aula de demonstração não encontrada.'],
+  DEMO_NOT_FOUND: [404, 'Aula de demonstração não encontrada.'],
+  USAGE_INVALID: [400, 'Pedido inválido.'],
 };
 export async function rpc(name, parameters) {
   const { data, error, status } = await getAdminSupabase().rpc(name, parameters);

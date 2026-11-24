@@ -9,7 +9,15 @@ import { MediaPlayer, timeLabel } from '../utils/media-player.js';
 import { retainOriginalVideo } from '../api/playback.api.js';
 import { describeProcessing } from '../utils/processing-disclosure.js';
 import { toast, dismissToast } from '../utils/toast.js';
-import { iconMarkup } from '../utils/icons.js';
+import { iconMarkup, icon as uiIcon } from '../utils/icons.js';
+import {
+  DEMO_HREF,
+  allowance,
+  ensureTestingStyles,
+  formatSeconds,
+  getTestingStatus,
+  limitsLink,
+} from '../utils/public-testing.js';
 
 await initAuthenticatedShell();
 const form = document.querySelector('.transcription-form'),
@@ -31,6 +39,32 @@ const permissionInput = document.querySelector('#permission-declaration');
 const reviewPanel = document.querySelector('[data-upload-review]');
 const tags = tagInput(document.querySelector('#upload-tags'));
 let tooLong = false;
+// Public testing: seconds of transcription a participant has left (null: no program limit).
+// Only a hint: the server measures the real duration and enforces the limit.
+let testingRemaining = null;
+void getTestingStatus().then(async (status) => {
+  if (status?.policy !== 'tester') return;
+  const left = allowance(status, 'transcription_seconds');
+  if (!left) return;
+  testingRemaining = left.remaining;
+  await ensureTestingStyles();
+  const note = document.createElement('p');
+  note.className = 'testing-allowance';
+  note.dataset.testingAllowance = left.remaining > 0 ? 'available' : 'used';
+  note.id = 'testing-allowance';
+  const text = document.createElement('span');
+  text.textContent = left.remaining > 0
+    ? `Restam ${formatSeconds(left.remaining)} de transcrição no período de testes.`
+    : `Você já usou os ${formatSeconds(left.limit)} de transcrição do período de testes.`;
+  const demos = document.createElement('a');
+  demos.className = 'testing-limits-link';
+  demos.href = DEMO_HREF;
+  demos.textContent = 'Aulas de demonstração';
+  note.append(uiIcon('clock', { size: 18 }), text, ' ', limitsLink());
+  if (status.demoAccess) note.append(' · ', demos);
+  document.querySelector('[data-wizard-panel="1"] [data-dropzone]')?.before(note);
+  if (info) updateRange();
+}).catch(() => { /* no hint */ });
 function shortName(name) {
   return name.length > 55 ? name.slice(0, 32) + '…' + name.slice(-19) : name;
 }
@@ -288,13 +322,24 @@ function updateRange() {
     document.querySelector('[data-review-upload]').hidden = false;
   }
   const ready = info && range.end > range.start;
-  nextButton.disabled = !ready || range.end - range.start > (info?.maxTranscriptionSeconds || 3276);
+  const serverMax = info?.maxTranscriptionSeconds || 3276;
+  const max = testingRemaining === null ? serverMax : Math.min(serverMax, testingRemaining);
+  nextButton.disabled = !ready || range.end - range.start > max;
   downloadButton.disabled = !ready || exporting;
   document.querySelector('[data-selected-range]').textContent = ready
     ? `Trecho ${timeLabel(range.start)} – ${timeLabel(range.end)} · ${durationLabel(range.end - range.start)}`
     : '';
   const exceeds = Boolean(ready && nextButton.disabled);
-  if (exceeds && !tooLong) toast('O trecho pode ter até 54 minutos.', { type: 'error' });
+  if (exceeds && !tooLong) {
+    if (max < serverMax)
+      toast(
+        testingRemaining > 0
+          ? `O trecho passa do que resta de transcrição no período de testes (${formatSeconds(testingRemaining)}). Recorte um trecho menor.`
+          : 'Você já usou todo o tempo de transcrição do período de testes.',
+        { type: 'error', action: { label: 'Ver meus limites', onClick: () => { location.href = './conta.html#limites'; } } },
+      );
+    else toast('O trecho pode ter até 54 minutos.', { type: 'error' });
+  }
   tooLong = exceeds;
 }
 async function chooseFile() {

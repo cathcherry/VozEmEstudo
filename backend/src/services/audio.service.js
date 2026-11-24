@@ -1,7 +1,7 @@
 import { AppError } from '../domain/errors.js';
 import { env } from '../config/env.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
-import { assertSafeStoragePath } from '../validators/storage-path.validator.js';
+import { assertSafeStoragePath, isSharedDemoPath } from '../validators/storage-path.validator.js';
 
 export async function downloadAudioBuffer(storagePath) {
   assertSafeStoragePath(storagePath);
@@ -14,6 +14,7 @@ export async function downloadAudioBuffer(storagePath) {
 export async function finalizeAudioStorage(audio) {
   if (!audio?.storage_path) return null;
   assertSafeStoragePath(audio.storage_path);
+  if (isSharedDemoPath(audio.storage_path)) return audio.storage_path;
   const db = getAdminSupabase();
   const bucket = db.storage.from(env.audioBucket);
 

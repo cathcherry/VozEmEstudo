@@ -1,5 +1,14 @@
 # Testes e checks
 
+> **Atualização de 24/11/2026 (revisão 3.7).** `npm run test:browser` inclui também
+> `quiz-flow-check.cjs` (questões nos dois modos, falha ao salvar, letra e texto no resultado),
+> `read-aloud-check.cjs` (texto real enviado ao `speechSynthesis`), `notebook-editor-check.cjs`
+> (escrever, salvar, reabrir, caderno antigo intacto), `profile-cards-check.cjs` (modelos, embeds
+> sob a CSP, cards antigos), `tour-check.cjs` e `settings-check.cjs`. O backend ganhou
+> `not-found-page.test.js` e testes das rotas DELETE do planejamento e de anotações na busca. Para
+> rodar `npm run lint` é preciso `pip install -r requirements-dev.txt` (Ruff). Ver
+> [REVISAO_3_7.md](REVISAO_3_7.md).
+
 > **Atualização de 21/11/2026.** `npm test` também roda `test:personalization` (layout do Início,
 > blocos do perfil, modos de estudo, resumos do Início e idiomas). `npm run test:browser` roda
 > ainda `dashboard-home-check.cjs`, `navigation-check.cjs` (links, página atual, menu da conta,

@@ -34,6 +34,7 @@ import { lessonProgress, renderLessonSteps, lessonMode } from '../utils/lesson-s
 import { listFlashcardSets } from '../api/flashcard.api.js';
 import { listQuizSessions } from '../api/quiz-session.api.js';
 import { iconMarkup } from '../utils/icons.js';
+import { appendLimitsLink } from '../utils/public-testing.js';
 
 await initAuthenticatedShell();
 const $ = (selector) => document.querySelector(selector);
@@ -251,7 +252,7 @@ function layout() {
 
 // ---- Study path of this lesson ----------------------------------------------------------
 // Flashcard sets and question attempts live outside the material, so they load once on demand.
-let lessonExtras = { sets: null, attempted: false };
+let lessonExtras = { sets: null, attempted: false, sessions: [] };
 let lessonExtrasLoaded = false;
 async function loadLessonExtras() {
   lessonExtrasLoaded = true;
@@ -261,11 +262,17 @@ async function loadLessonExtras() {
       : null,
     flags.quiz_v2 ? listQuizSessions().catch(() => []) : [],
   ]);
+  const mine = (Array.isArray(sessions) ? sessions : []).filter(
+    (session) => session.material_id === materialId,
+  );
   lessonExtras = {
     sets: Array.isArray(sets) ? sets.length : null,
-    attempted: sessions.some((session) => session.material_id === materialId),
+    attempted: mine.length > 0,
+    sessions: mine,
   };
   updateLessonSteps();
+  // The Questões tab shows each list's attempts (continue / see result) once they are known.
+  if (mine.length && currentMaterial) renderQuestionBatches(currentMaterial.questionBatches || []);
 }
 function currentLessonMode() {
   const batches = currentMaterial?.questionBatches || [];
@@ -340,10 +347,11 @@ function updateLessonSteps() {
     const text = document.createElement('span');
     text.textContent = 'Revise os cartões e os erros nos próximos dias. ';
     done.append(title, text);
-    if (flags.flashcards || flags.quiz_v2) {
+    // The errors are reviewed in this lesson's Questões tab; the cards in Flashcards.
+    if (flags.flashcards) {
       const link = document.createElement('a');
-      link.href = './revisar.html';
-      link.textContent = 'Ir para Revisar';
+      link.href = './flashcards.html#revisar';
+      link.textContent = 'Ir para Flashcards';
       text.append(link);
     }
   }
@@ -447,7 +455,7 @@ async function renderLessonSets() {
         info.textContent = `${Number(set.card_count) || 0} cartões · ${due ? `${due} para revisar hoje` : 'nada pendente hoje'}`;
         const review = document.createElement('a');
         review.className = due ? 'primary-action' : 'secondary-action';
-        review.href = `./revisar.html?conjunto=${encodeURIComponent(set.id)}#flashcards`;
+        review.href = `./flashcards.html?conjunto=${encodeURIComponent(set.id)}#revisar`;
         review.textContent = due ? 'Revisar agora' : 'Abrir conjunto';
         const text = document.createElement('div');
         text.append(title, info);
@@ -823,6 +831,11 @@ function render(material) {
   $('[data-material-title]').removeAttribute('aria-busy');
   document.title = material.title + ' | Voz em Estudo';
   $('[data-material-meta]').textContent = material.subject || 'Sem disciplina';
+  // Public testing: a demo copy says so, discreetly (credits in a disclosure).
+  if (material.demo)
+    void import('./demo-lessons.js')
+      .then((module) => module.renderDemoNote($('.material-header-text'), material.demo))
+      .catch(() => {});
   const tagList = studyFor(materialId).tags;
   const tags = document.createElement('ul');
   tags.className = 'material-tags';
@@ -925,6 +938,7 @@ function renderQuestionBatches(batches) {
     answers: studyFor(materialId).answers,
     materialId,
     flags,
+    sessions: lessonExtras.sessions,
     actions: {
       export: (batch, name) => exportPanel.open({ listId: batch.id, listLabel: name }),
       ...(flags.study_authoring && flags.sharing
@@ -1064,6 +1078,7 @@ async function generate(kind, options) {
     completed = true;
   } catch (e) {
     setStatus(message, e.message, 'error');
+    appendLimitsLink(message, e);
   } finally {
     busy = false;
     generationFields.forEach((field, index) => {

@@ -34,8 +34,8 @@ export function selectRange(selected, items, anchorIndex, targetIndex) {
   return next;
 }
 
-/** "3 aulas selecionadas" / the hint when nothing is selected yet. */
+/** "3 aulas selecionadas" / a short state when nothing is selected yet. */
 export function selectionSummary(count) {
-  if (!count) return 'Toque nas aulas ou pastas para selecionar';
+  if (!count) return 'Nenhuma aula selecionada';
   return `${count} ${count === 1 ? 'aula selecionada' : 'aulas selecionadas'}`;
 }
