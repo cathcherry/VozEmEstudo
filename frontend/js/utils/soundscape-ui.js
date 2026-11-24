@@ -218,7 +218,7 @@ export function buildMixer(controller, { headingId, onClose, onMini, variant = '
   musicActions.append(load, remove);
   const musicNote = make(
     'p',
-    'O player oficial só carrega quando você pede. Sem login no Spotify, ele toca prévias de 30 segundos.',
+    'Sem login no Spotify, toca prévias de 30 segundos.',
     'soundscape-note',
   );
   music.append(form, musicActions, embed, musicNote);

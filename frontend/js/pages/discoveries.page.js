@@ -56,7 +56,7 @@ function showUnlocks(list = []) {
   const box = $('[data-unlock-notice]');
   box.replaceChildren(
     ...list.map((unlock) =>
-      el('p', { className: 'unlock-line' }, artSlot(document, unlock.kind, unlock.id), el('strong', { text: describeCollectible(unlock.id).name }), document.createTextNode(' — '), el('span', { text: describeCollectible(unlock.id).memory })),
+      el('p', { className: 'unlock-line' }, artSlot(document, unlock.kind, unlock.id), el('strong', { text: describeCollectible(unlock.id).name }), document.createTextNode(': '), el('span', { text: describeCollectible(unlock.id).memory })),
     ),
   );
   box.hidden = false;
@@ -279,7 +279,7 @@ async function showHome(collectionPromise) {
     $('[data-archive-panel="subjects"]').replaceChildren(
       emptyState(
         'Nenhuma descoberta ainda',
-        'Abra uma aula confirmada e escolha “Investigar uma pergunta”. O que você descobrir fica guardado aqui, numa ficha que muda com o que você acrescenta a ela.',
+        'Abra uma aula confirmada e escolha “Investigar uma pergunta”.',
         { href: './historico.html', action: 'Abrir a Biblioteca', mascot: 'curious', artId: 'empty.discoveries' },
       ),
     );

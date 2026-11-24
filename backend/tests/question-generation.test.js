@@ -535,11 +535,10 @@ const answerSlots = ({ messages }, { skip = () => false } = {}) => ({
       return {
         slot: slot.slot,
         statement,
+        // Distractors of the same size as the answer: a much longer correct option is rejected.
         options: [
           answer,
-          `Distrator A ${slot.slot}`,
-          `Distrator B ${slot.slot}`,
-          `Distrator C ${slot.slot}`,
+          ...['A', 'B', 'C'].map((tag) => `Distrator ${tag} ${slot.slot} `.padEnd(answer.length, 'x')),
         ],
         correctIndex: 0,
         explanation: 'Conforme a aula.',

@@ -471,8 +471,8 @@ async function showClassroom(id) {
   }
   initToolTabs($('[data-classroom-tabs]'), ['aulas', 'envios', 'flashcards', 'membros']);
   $('[data-submissions-hint]').textContent = manager
-    ? 'Cada envio passa por etapas separadas: aprovação para processar, processamento pelo aluno, sua conferência da transcrição e publicação. Nada é publicado automaticamente.'
-    : 'Envie uma gravação sua. O professor aprova o processamento, confere a transcrição e decide publicar; nada fica visível para a turma antes disso.';
+    ? 'Cada envio passa por aprovação, processamento, conferência da transcrição e publicação.'
+    : 'Envie uma gravação sua. O professor aprova, confere a transcrição e decide publicar.';
 
   const failure = (error) => setStatus(error.message || 'Não foi possível carregar.', 'error');
   // Contributions need their own migration: without it those sections stay hidden.
@@ -596,7 +596,7 @@ async function openLesson(id, lessonId, opener) {
     }),
     el('p', {
       className: 'tool-hint',
-      text: 'Você lê o que o professor escolheu publicar. Para estudar com suas notas e revisões, use a sua Biblioteca: nada do que você faz aqui é visto pela turma.',
+      text: 'Aulas publicadas pelo professor.',
     }),
   ];
   if (lesson.summary)
@@ -645,7 +645,7 @@ async function openLesson(id, lessonId, opener) {
                 el('summary', { text: 'Ver resposta' }),
                 own(
                   'p',
-                  `${q.options[q.correctIndex] ?? ''}${q.explanation ? ` — ${q.explanation}` : ''}`,
+                  `${q.options[q.correctIndex] ?? ''}${q.explanation ? ` · ${q.explanation}` : ''}`,
                 ),
               ),
             ),
@@ -721,7 +721,7 @@ async function renderSubmissions(id, manager, reloadAll) {
             if (isUnpublish(submission.status, to))
               return confirmDialog(
                 'Despublicar da turma',
-                'A aula sai da turma na hora e o envio volta para a etapa 4 (transcrição confirmada). Você pode publicar de novo depois.',
+                'A aula sai da turma na hora e o envio volta para a etapa 4 (transcrição confirmada).',
                 'Despublicar',
                 () => move(submission, to),
                 opener,
@@ -757,7 +757,7 @@ async function renderSubmissions(id, manager, reloadAll) {
                 extra: [
                   el('p', {
                     className: 'app-dialog-hint',
-                    text: 'O aluno processa a gravação na conta dele. Nada aparece para a turma antes da sua conferência e da publicação.',
+                    text: 'O aluno processa a gravação na conta dele.',
                   }),
                 ],
                 onSubmit: (values) => move(submission, to, { note: values.note || null }),
@@ -863,10 +863,6 @@ async function showSubmissionHistory(id, submission, opener) {
     extra: [
       own('p', detail.materialTitle || 'Gravação', 'classroom-dialog-subject'),
       events,
-      el('p', {
-        className: 'app-dialog-hint',
-        text: 'Só você e quem gerencia a turma veem este envio e o seu histórico.',
-      }),
     ],
     onSubmit: () => true,
   });
@@ -983,8 +979,8 @@ async function renderContributions(id, ctx, reloadAll) {
   const items = await api.listContributions(id).finally(() => loaded(list));
   section.hidden = false;
   $('[data-contributions-hint]').textContent = ctx.manager
-    ? 'Fila de revisão: conjuntos de flashcards e materiais integrados que os alunos querem compartilhar. A turma só vê o que você aprovar; o aluno lê o seu recado.'
-    : 'O que você ofereceu à turma e a resposta do professor. Só você e quem gerencia a turma veem esta lista.';
+    ? 'Conjuntos de flashcards e materiais integrados que os alunos querem compartilhar.'
+    : 'O que você ofereceu à turma e a resposta do professor.';
   const end = (item, opener) =>
     confirmDialog(
       item.status === 'pending' ? 'Retirar contribuição' : 'Parar de compartilhar',
@@ -1213,7 +1209,7 @@ function integratedContent({ sources = [], content = {} }, prefix) {
                 el('summary', { text: 'Ver resposta' }),
                 own(
                   'p',
-                  `${q.options?.[q.correctIndex] ?? ''}${q.explanation ? ` — ${q.explanation}` : ''}`,
+                  `${q.options?.[q.correctIndex] ?? ''}${q.explanation ? ` · ${q.explanation}` : ''}`,
                 ),
                 citationList(q.citations),
               ),
@@ -1691,7 +1687,7 @@ function wireDialogs(id, loaders, ctx) {
       extra: [
         el('p', {
           className: 'app-dialog-hint',
-          text: 'Os membros verão a frente e o verso dos cartões e o seu nome na turma. Seu histórico de revisão continua privado. Você pode parar de compartilhar quando quiser; cópias que outros já fizeram não voltam.',
+          text: 'Os membros verão a frente e o verso dos cartões e o seu nome na turma. Cópias que outros já fizeram continuam com eles.',
         }),
         reviewed()
           ? el('p', {
@@ -1764,7 +1760,7 @@ function wireDialogs(id, loaders, ctx) {
       extra: [
         el('p', {
           className: 'app-dialog-hint',
-          text: 'Os membros verão o resumo, as questões, os flashcards e os trechos citados, com o seu nome. As aulas de origem, suas anotações e o seu histórico continuam privados. Você pode parar de compartilhar quando quiser.',
+          text: 'Os membros verão o resumo, as questões, os flashcards e os trechos citados, com o seu nome.',
         }),
         reviewed()
           ? el('p', {

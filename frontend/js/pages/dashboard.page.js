@@ -17,6 +17,8 @@ import { icon as uiIcon } from '../utils/icons.js';
 import { maybeOfferTour } from '../utils/guided-tour.js';
 import { publicTestingEnabled } from '../utils/public-testing.js';
 
+// The tutorial may start on Início: hold first-visit notes until it decides (guided-tour.js).
+document.documentElement.dataset.tour = 'pending';
 const session=await initAuthenticatedShell();
 void maybeOfferTour({ user: session.user });
 // Investigations summary (only when discoveries are on and the adventure layer is visible).

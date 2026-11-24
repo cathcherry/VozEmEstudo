@@ -14,9 +14,9 @@ Documentos ligados: [SECURITY_AUDIT_PUBLIC_TESTING.md](SECURITY_AUDIT_PUBLIC_TES
 | Código (branch `claude/keen-shannon-sj3ut5`) | Pronto. Backend 450/450 testes, lint e checagens de navegador passando                                                                                                                                        |
 | Supabase **staging**                         | Migrações `20261125090000`, `20261125100000`, `20261125110000` aplicadas; isolamento entre duas contas testado com RLS real                                                                                   |
 | Supabase **produção** (`audioestudo`)        | Backup `backup_pre_public_testing_20261124` (64 tabelas + manifesto) → as 3 migrações aplicadas (sha256 conferido) → pós-checagens OK. Dados intactos: 4 contas (md5 dos ids igual), 22 materiais, 32 objetos |
-| Programa                                     | **Desligado** (`public_testing_config.enabled = false`). Nenhuma administradora cadastrada                                                                                                                    |
-| Aulas de demonstração                        | Carregadas automaticamente pela API na primeira inicialização com `FEATURE_PUBLIC_TESTING=true`                                                                                                               |
-| Hospedagem (API + worker)                    | **Não publicada**. Depende das suas contas (Railway, AssemblyAI, Groq)                                                                                                                                        |
+| Programa                                     | **Ligado em 24/11/2026 08:15 UTC**: contas criadas a partir daí são participantes; as 4 contas anteriores ficam como estavam (`apply_to_existing_accounts = false`). Nenhuma administradora cadastrada ainda  |
+| Aulas de demonstração                        | Carregadas pela API na primeira inicialização em produção (crase, vacinas, internet)                                                                                                                          |
+| Hospedagem (API + worker)                    | **Publicada no Railway** (projeto `voz-em-estudo`, ambiente `production`): API em https://vozemestudo-production.up.railway.app e serviço `worker`, ambos a partir da `main` com o `Dockerfile`               |
 
 ## 2. Passos que faltam (na ordem)
 
@@ -39,7 +39,19 @@ limite diário da organização é de cerca de 200 mil tokens. Os padrões do pr
 **o plano Developer é o recomendado** (ver CAPACIDADE_E_CUSTOS.md, “Tetos globais”). Não consegui
 ver o plano nem o saldo da conta daqui.
 
-### 2.3 Railway: dois serviços
+### 2.3 Railway: dois serviços (feito em 24/11/2026)
+
+Configuração real, feita pela API do Railway (o Railway não aceita mais `railway.json` para serviços
+novos; tudo fica nas configurações de cada serviço):
+
+- **VozEmEstudo (API):** build pelo `Dockerfile`; início `node backend/src/server.js`; healthcheck
+  `/api/health`; domínio `vozemestudo-production.up.railway.app` na porta 3000 (`PORT=3000` fixo,
+  senão o domínio aponta para uma porta diferente da do container e responde 502).
+- **worker:** o mesmo `Dockerfile`; início `node backend/src/worker.js`; reinício sempre. As
+  variáveis referenciam as da API (`${{VozEmEstudo.NOME}}`), inclusive as chaves secretas, que ficam
+  só no serviço da API.
+
+Referência original dos passos:
 
 Siga [HOSPEDAGEM.md](HOSPEDAGEM.md) (API + worker, raiz do repositório,
 `deploy/railway.api.json` e `deploy/railway.worker.json`), com estas variáveis **nos dois**:

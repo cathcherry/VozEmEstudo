@@ -66,7 +66,6 @@
 .lesson-notebook[hidden], .lesson-notebook [hidden] { display: none; }
 .lesson-notebook h2 { margin: 0; }
 .notebook-header { display: grid; gap: 4px; }
-.notebook-privacy { margin: 0; font-size: .88rem; color: var(--muted, var(--text)); }
 .notebook-status-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .notebook-status { margin: 0; font-size: .9rem; font-weight: 650; }
 .notebook-status[data-state='retrying'], .notebook-status[data-state='invalid'], .notebook-status[data-state='conflict'] { padding-inline-start: 8px; border-inline-start: 4px solid var(--danger, #9b1c1c); }
@@ -99,60 +98,111 @@
   .notebook-checklist li { grid-template-columns: auto minmax(0, 1fr); }
   .notebook-checklist li button { grid-column: 2; justify-self: start; }
 }
-}
+} /* end @layer legacy */
 /* ---- Destaques da aula: the compact list of highlights under the notebook ---------------- */
-.annotations-compact > h2 {
-  font-size: 1.25rem;
-}
-.annotations-compact .annotations-intro {
-  margin: 0.25rem 0 0.5rem;
-  color: var(--ink-muted);
-  font-size: var(--step--1, 0.9rem);
-}
-.annotations-compact .annotation-new > summary,
-.annotations-compact .annotation-edit > summary {
-  cursor: pointer;
-  font-weight: 600;
-}
-.annotations-compact > form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: end;
-  gap: 0.4rem;
-  margin-block: 0.6rem;
-}
-.annotations-compact > form label {
-  flex: 1 1 14rem;
-}
-.annotations-compact .annotation-card {
+.annotations-compact [hidden] { display: none !important; }
+.annotations-compact :is(button, input, textarea, select):focus-visible { outline: 3px solid var(--accent-strong); outline-offset: 2px; }
+.annotations-compact button { margin: 0; }
+.annotations-compact button svg { flex: none; }
+.annotations-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem;
-  margin-block: 0.6rem;
-  padding: 0.7rem 0.9rem;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
 }
-.annotations-compact .annotation-card > :is(h3, blockquote, p) {
-  flex: 1 0 100%;
-  margin: 0;
+.annotations-head > h2 { margin: 0; font-size: 1.25rem; }
+.annotations-compact .annotations-add { flex: none; }
+.annotations-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.annotations-compact .annotations-search { position: relative; display: block; margin: 0; }
+.annotations-compact .annotations-search-field { display: block; margin: 0; }
+.annotations-compact .annotations-search input {
+  box-sizing: border-box;
+  width: 13rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 2.5rem 0.25rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
 }
-.annotations-compact .annotation-card > h3 {
-  color: var(--ink-muted);
-  font-size: 0.8rem;
-  font-weight: 650;
+.annotations-compact .annotations-search .icon-only { position: absolute; inset-block: 0; inset-inline-end: 0.15rem; margin: auto 0; }
+.annotations-compact .icon-only {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink-muted, var(--muted));
+  background: transparent;
+  cursor: pointer;
 }
-.annotations-compact .annotation-card > button {
-  margin: 0;
-  min-height: 2rem;
-  font-size: var(--step--1, 0.88rem);
+.annotations-compact .icon-only:hover { color: var(--text); }
+.annotations-compact :is(.annotations-add, .annotation-actions button, .annotation-new-actions button, .annotation-edit-actions button) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid var(--border-light, var(--border));
+  border-radius: 999px;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
 }
-.annotations-compact .annotation-card > .annotation-edit {
-  order: 10;
-  flex: 1 0 100%;
+.annotations-compact .annotations-add { font-weight: 600; }
+.annotations-compact :is(.annotation-actions, .annotation-new-actions, .annotation-edit-actions) button:hover,
+.annotations-compact .annotations-add:hover { border-color: var(--accent-strong); }
+.annotations-compact .annotation-new-actions button[type='submit'],
+.annotations-compact .annotation-edit-actions button:first-child {
+  border-color: var(--accent-strong);
+  color: var(--accent-contrast, #fff);
+  background: var(--accent-strong);
 }
-.annotations-compact .annotation-edit[open] {
+.annotations-compact .annotation-remove { margin-inline-start: auto; }
+.annotations-compact .annotation-new {
   display: grid;
-  gap: 0.4rem;
+  max-width: none;
+  gap: 0.5rem;
+  margin-block: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border-light, var(--border));
+  border-radius: 12px;
+  background: var(--paper-raised, var(--surface));
+}
+.annotations-compact :is(.annotation-new, .annotation-edit) textarea { box-sizing: border-box; width: 100%; min-width: 0; font: inherit; }
+.annotations-compact :is(.annotation-new-label, .annotation-edit-label) { display: block; margin: 0; }
+.annotation-new-quoted { display: flex; align-items: flex-start; gap: 0.4rem; }
+.annotation-new-quote {
+  flex: 1;
+  margin: 0;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 4px solid #8b6b16;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.annotation-new-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.annotations-compact .annotation-color { display: inline-flex; flex: none; align-items: center; gap: 0.4rem; margin: 0 auto 0 0; white-space: nowrap; font-size: 0.88rem; }
+.annotations-compact .annotation-color select { min-height: 2.25rem; font: inherit; font-size: 0.88rem; }
+.annotations-compact .annotation-card {
+  display: grid;
+  gap: 0.45rem;
+  margin-block: 0.6rem;
+  padding: 0.75rem 0.9rem;
+}
+.annotations-compact .annotation-card > :is(blockquote, p) { margin: 0; }
+.annotations-compact .annotation-older { color: var(--ink-muted, var(--muted)); font-size: 0.8rem; font-weight: 650; }
+.annotations-compact .annotation-note { color: var(--ink-muted, var(--muted)); }
+.annotation-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.annotation-edit { display: grid; gap: 0.4rem; }
+.annotation-edit-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+@media (max-width: 520px) {
+  .annotations-tools { flex: 1 1 100%; flex-wrap: nowrap; }
+  .annotations-compact .annotations-search { flex: 1 1 auto; min-width: 0; }
+  .annotations-compact .annotations-search-field { flex: 1; }
+  .annotations-compact .annotations-search input { width: 100%; }
 }
 
 /* The notebook text is the person's writing, not section prose (.article-section p is muted). */

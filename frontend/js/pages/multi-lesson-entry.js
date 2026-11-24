@@ -172,7 +172,7 @@ export function openMultiLessonDialog(
           preview.append(el('h3', { text: `Fora deste material (${excluded.length})` }));
           const list = el('ul', { className: 'multi-lesson-excluded' });
           for (const item of excluded)
-            list.append(el('li', {}, own('span', item.title), document.createTextNode(' — '), el('span', { className: 'multi-lesson-reason', text: REASON[item.reason] || 'indisponível' })));
+            list.append(el('li', {}, own('span', item.title), document.createTextNode(': '), el('span', { className: 'multi-lesson-reason', text: REASON[item.reason] || 'indisponível' })));
           preview.append(list);
         }
         if (result.missing)

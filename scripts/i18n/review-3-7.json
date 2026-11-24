@@ -79,11 +79,6 @@
     "es": "Vamos a recuperar tu acceso.",
     "zh-CN": "我们来恢复你的访问。"
   },
-  "Suas aulas e anotações continuam guardadas na sua conta.": {
-    "en": "Your lessons and notes are still saved in your account.",
-    "es": "Tus clases y notas siguen guardadas en tu cuenta.",
-    "zh-CN": "你的课程和笔记仍保存在你的账户中。"
-  },
   "Informe seu e-mail. Se houver uma conta com senha, enviaremos um link para criar uma nova.": {
     "en": "Enter your email. If there is an account with a password, we'll send a link to create a new one.",
     "es": "Escribe tu correo. Si hay una cuenta con contraseña, enviaremos un enlace para crear una nueva.",
@@ -133,15 +128,5 @@
     "en": "Flagged questions",
     "es": "Preguntas señaladas",
     "zh-CN": "已标记的题目"
-  },
-  "Marcas pessoais: só você vê. Confira com a aula e desfaça quando estiver resolvido.": {
-    "en": "Personal marks: only you see them. Check against the lesson and undo once it's resolved.",
-    "es": "Marcas personales: solo tú las ves. Compara con la clase y deshazlas cuando esté resuelto.",
-    "zh-CN": "个人标记：只有你能看到。对照课程核查，解决后撤销。"
-  },
-  "Escolha uma aula transcrita. As listas anteriores continuam guardadas.": {
-    "en": "Choose a transcribed lesson. Earlier lists stay saved.",
-    "es": "Elige una clase transcrita. Las listas anteriores siguen guardadas.",
-    "zh-CN": "选择一节已转写的课程。之前的题目列表仍会保留。"
   }
 }

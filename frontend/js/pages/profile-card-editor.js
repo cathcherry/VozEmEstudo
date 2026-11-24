@@ -71,7 +71,7 @@ const TOOLBAR = [
 
 const SERVICE_HELP = {
   youtube:
-    'Aceita links como youtube.com/watch?v=…, youtu.be/…, Shorts e transmissões. O vídeo é mostrado pelo youtube-nocookie.com, o modo de privacidade reforçada do YouTube.',
+    'Aceita links como youtube.com/watch?v=…, youtu.be/…, Shorts e transmissões.',
   spotify:
     'Aceita links de open.spotify.com para música, álbum, playlist, artista, episódio ou podcast (no Spotify: Compartilhar › Copiar link).',
 };
@@ -268,7 +268,7 @@ export function createCardEditor(host) {
       field(
         'Passos',
         area,
-        'Um passo por linha (até 30). Marcar um passo no perfil fica salvo na sua conta.',
+        'Um passo por linha (até 30).',
       ),
       toneField(values.tone),
     ];
@@ -331,7 +331,7 @@ export function createCardEditor(host) {
       field(
         gif ? 'Arquivo GIF' : 'Imagem',
         file,
-        `${gif ? 'GIF ou WebP animado' : 'PNG, JPG, WebP ou GIF'} · até 8 MB. Fica no seu aparelho e na sua conta. ${current}`.trim(),
+        `${gif ? 'GIF ou WebP animado' : 'PNG, JPG, WebP ou GIF'} · até 8 MB. ${current}`.trim(),
       ),
       field(
         'Descrição para leitores de tela (recomendado)',

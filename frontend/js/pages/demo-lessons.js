@@ -118,11 +118,9 @@ export function demoCard(demo, index, status) {
   fact('questions', contentsText(demo));
   body.append(facts);
   const foot = el('div', 'demo-card__foot');
-  const badge = el('span', 'demo-card__badge');
-  badge.append(icon('check', { size: 16 }), el('span', '', 'Já processada — não usa seu limite'));
   const button = actionButton(demo, 'demo-card__action');
   button.addEventListener('click', () => openDemo(demo, button, card, status));
-  foot.append(badge, button);
+  foot.append(button);
   body.append(foot);
   card.append(cover, body);
   return card;
@@ -146,12 +144,7 @@ export async function mountLibraryShelf(anchor) {
   const eyebrow = el('p', 'demo-shelf__eyebrow', 'Período de testes');
   const heading = el('h2', 'demo-shelf__title', 'Aulas de demonstração');
   heading.id = 'demo-shelf-title';
-  const intro = el(
-    'p',
-    'demo-shelf__intro',
-    'Aulas completas, já transcritas, com resumo, questões e cartões prontos. Explore à vontade: elas não usam seu limite.',
-  );
-  copy.append(eyebrow, heading, intro);
+  copy.append(eyebrow, heading);
   head.append(copy);
   const status = el('p', 'sr-only');
   status.setAttribute('role', 'status');
@@ -197,13 +190,6 @@ export async function mountHomeEntry(after) {
   all.href = `./historico.html#${SHELF_ID}`;
   all.setAttribute('aria-label', 'Ver todas as aulas de demonstração');
   head.append(heading, all);
-  const intro = el(
-    'p',
-    'demo-home__intro',
-    pending.length === 1
-      ? '1 aula completa para explorar, já processada: não usa seu limite.'
-      : `${pending.length} aulas completas para explorar, já processadas: não usam seu limite.`,
-  );
   const status = el('p', 'sr-only');
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
@@ -232,34 +218,27 @@ export async function mountHomeEntry(after) {
     item.append(button);
     list.append(item);
   });
-  section.append(head, intro, list, status);
+  section.append(head, list, status);
   after.after(section);
   return section;
 }
 
-/** The discreet note next to a demo copy's title (credits in a disclosure). */
+/** The discreet tag next to a demo copy's title (credits, when there are any, in a disclosure). */
 export async function renderDemoNote(container, demo) {
   if (!container || !demo || container.querySelector('[data-demo-note]')) return;
   await ensureTestingStyles();
   if (container.querySelector('[data-demo-note]')) return;
-  const note = el('details', 'demo-note');
+  const note = el(demo.credits ? 'details' : 'div', 'demo-note');
   note.dataset.demoNote = '';
-  const summary = el('summary', 'demo-note__summary');
-  summary.append(
-    icon('info', { size: 16 }),
-    el('span', 'demo-note__label', 'Aula de demonstração'),
-    el('span', 'demo-note__detail', 'já processada; não usa seu limite'),
-  );
+  const summary = el(demo.credits ? 'summary' : 'p', 'demo-note__summary');
+  summary.append(icon('info', { size: 16 }), el('span', 'demo-note__label', 'Aula de demonstração'));
   note.append(summary);
-  const body = el('div', 'demo-note__body');
-  body.append(
-    el('p', '', 'Esta é a sua cópia de uma aula preparada para o período de testes. Suas anotações, respostas e cartões ficam só com você.'),
-  );
   if (demo.credits) {
+    const body = el('div', 'demo-note__body');
     const credits = el('p', 'demo-note__credits');
     credits.append(el('strong', '', 'Créditos: '), own('span', '', String(demo.credits)));
     body.append(credits);
+    note.append(body);
   }
-  note.append(body);
   container.append(note);
 }

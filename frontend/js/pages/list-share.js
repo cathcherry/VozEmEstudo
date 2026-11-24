@@ -112,7 +112,7 @@ export function initListShare({ materialId }) {
     open(batch, name) {
       batchId = batch.id;
       identity = { id: crypto.randomUUID(), token: randomShareToken() };
-      dialog.querySelector('#list-share-title').textContent = `Compartilhar — ${name}`;
+      dialog.querySelector('#list-share-title').textContent = `Compartilhar: ${name}`;
       message.textContent = '';
       result.replaceChildren();
       dialog.showModal();

@@ -30,12 +30,12 @@ function withIcon(name, text, className) {
 const MODES = {
   immediate: {
     title: 'Correção a cada questão',
-    hint: 'Depois de confirmar, você vê se acertou e a explicação antes de seguir. Bom para aprender enquanto pratica.',
+    hint: 'Veja se acertou e a explicação logo depois de responder.',
     icon: 'idea',
   },
   deferred: {
     title: 'Correção no final',
-    hint: 'Responda tudo sem ver o gabarito, como numa prova. A correção de todas aparece quando você concluir.',
+    hint: 'Responda tudo como numa prova e veja a correção no fim.',
     icon: 'document',
   },
 };
@@ -119,7 +119,6 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       option.append(radio, mark, text);
       fieldset.append(option);
     }
-    const note = el('p', 'As respostas ficam salvas na sua conta. Depois de salva, a resposta de uma questão não muda.', 'quiz-start-note');
     const message = el('p', '', 'quiz-selection-message');
     message.setAttribute('role', 'status');
     message.setAttribute('aria-live', 'polite');
@@ -129,7 +128,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
     const back = el('a', 'Voltar à aula', 'text-action quiz-start-back');
     back.href = returnLink;
     actions.append(button, back);
-    form.append(fieldset, note, message, actions);
+    form.append(fieldset, message, actions);
     card.append(eyebrow, heading, meta, form);
     main.replaceChildren(card);
     // A compact entry to resume recent attempts of this list, not a duplicated question bank.
@@ -232,7 +231,7 @@ export async function runQuizV2({ main, material, materialId, batch, sessionId: 
       source.append(caption, quote);
       box.append(source);
     }
-    box.append(el('p', 'Correção gerada automaticamente a partir da aula; confira no trecho se algo parecer estranho.', 'quiz-v2-note'));
+    box.append(el('p', 'Correção gerada a partir da aula. Na dúvida, confira o trecho.', 'quiz-v2-note'));
     return box;
   }
 

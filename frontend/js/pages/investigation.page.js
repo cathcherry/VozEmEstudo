@@ -54,7 +54,7 @@ function showUnlocks(list = []) {
         { className: 'unlock-line' },
         artSlot(document, unlock.id.split('.')[0], unlock.id),
         el('strong', { text: info.name }),
-        document.createTextNode(' — '),
+        document.createTextNode(': '),
         el('span', { text: info.memory }),
       );
     }),

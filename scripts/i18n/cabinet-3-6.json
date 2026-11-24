@@ -4,11 +4,6 @@
   "es": "Gabinete de curiosidades",
   "zh-CN": "珍奇柜"
  },
- "Cada objeto aqui é uma lembrança de algo que você fez numa investigação: quando foi e em que aula. Abra uma gaveta e inspecione o que já está nela. Nada expira e nada se perde com pausas.": {
-  "en": "Each object here is a memory of something you did in an investigation: when it was and in which lesson. Open a drawer and inspect what is already inside. Nothing expires and nothing is lost when you take a break.",
-  "es": "Cada objeto aquí es un recuerdo de algo que hiciste en una investigación: cuándo fue y en qué clase. Abre un cajón e inspecciona lo que ya contiene. Nada caduca y nada se pierde con las pausas.",
-  "zh-CN": "这里的每件物品都是你在一次探究中所做之事的纪念：何时、在哪节课。打开抽屉，查看里面已有的东西。没有任何东西会过期，暂停也不会让你失去什么。"
- },
  "Prateleiras": {
   "en": "Shelves",
   "es": "Estantes",
@@ -509,20 +504,10 @@
   "es": "Crear la colección",
   "zh-CN": "创建收藏集"
  },
- "Coleções só organizam: um cartão pode estar em várias, e excluir uma coleção não apaga nenhuma descoberta.": {
-  "en": "Collections only organize: a card can be in several, and deleting a collection never deletes a discovery.",
-  "es": "Las colecciones solo organizan: una ficha puede estar en varias, y eliminar una colección no borra ningún descubrimiento.",
-  "zh-CN": "收藏集只用于整理：一张卡片可以属于多个收藏集，删除收藏集不会删除任何发现。"
- },
  "Como um cartão muda": {
   "en": "How a card changes",
   "es": "Cómo cambia una ficha",
   "zh-CN": "卡片如何变化"
- },
- "Cada cartão muda com o que você faz na descoberta. Nada some com o tempo e nenhuma etapa é obrigatória.": {
-  "en": "Each card changes with what you do in the discovery. Nothing fades with time and no step is required.",
-  "es": "Cada ficha cambia con lo que haces en el descubrimiento. Nada desaparece con el tiempo y ningún paso es obligatorio.",
-  "zh-CN": "每张卡片都会随你在发现中的行动而变化。不会随时间消失，也没有必做的步骤。"
  },
  "A pergunta, enquanto a investigação está aberta.": {
   "en": "The question, while the investigation is open.",
@@ -643,10 +628,5 @@
   "en": "First revisit",
   "es": "Primera revisita",
   "zh-CN": "第一次回访"
- },
- "Abra uma aula confirmada e escolha “Investigar uma pergunta”. O que você descobrir fica guardado aqui, numa ficha que muda com o que você acrescenta a ela.": {
-  "en": "Open a confirmed lesson and choose “Investigate a question”. What you discover is kept here, on a card that changes with what you add to it.",
-  "es": "Abre una clase confirmada y elige «Investigar una pregunta». Lo que descubras se guarda aquí, en una ficha que cambia con lo que le añades.",
-  "zh-CN": "打开一节已确认的课程并选择“探究一个问题”。你的发现会保存在这里，卡片会随你的补充而变化。"
  }
 }

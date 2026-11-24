@@ -77,7 +77,7 @@ export class MediaPlayer {
         if (media !== this.media || !this.source) return;
         this.message(
           this.trim
-            ? 'A prévia deste formato não está disponível no navegador. O recorte pelo servidor continua disponível.'
+            ? 'A prévia deste formato não está disponível. O recorte continua funcionando.'
             : 'Não foi possível carregar a mídia. Renove o acesso ou tente o outro formato disponível.',
         );
         this.onError();

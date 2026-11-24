@@ -104,7 +104,7 @@ export default {
   'home.loadFailed': '无法加载{what}。',
 
   'customize.title': '自定义首页',
-  'customize.intro': '选择显示哪些内容以及顺序。更改会立即生效，并保存到你的账户。',
+  'customize.intro': '选择显示哪些内容以及顺序。',
   'customize.density': '卡片间距',
   'customize.comfortable': '舒适',
   'customize.compact': '紧凑',
@@ -148,7 +148,7 @@ export default {
   'profile.customize': '自定义个人资料',
   'profile.doneEditing': '完成编辑',
   'profile.editBar':
-    '编辑模式。使用每个区块的 ⋯ 菜单来移动、调整宽度、隐藏或复制。所有更改会立即保存。',
+    '编辑模式。使用每个区块的 ⋯ 菜单来移动、调整宽度、隐藏或复制。',
   'profile.addBlock': '添加区块',
   'profile.showAll': '全部显示',
   'profile.done': '完成',
@@ -160,7 +160,7 @@ export default {
   'appearance.title': '外观',
   'presets.title': '学习模式',
   'presets.intro':
-    '一键同时调整多项偏好。之后可以在“阅读与专注”中逐项微调。学习模式不会缩小文字，也不会关闭你已开启的无障碍选项。',
+    '一键同时调整多项偏好。',
   'presets.reading': '舒适阅读',
   'presets.readingText': '文字稍大，行更短，行距更宽。',
   'presets.focus': '深度专注',

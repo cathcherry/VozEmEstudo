@@ -1,8 +1,12 @@
 // Guided tour (3.7): a short walk through the main parts of the app, in context.
 //
-// - Offered once, on Início, to accounts created recently (a small, non-blocking invitation:
-//   "Começar" / "Agora não"). Older accounts are never interrupted; anyone can start it from
-//   Ajuda or Configurações (they open Início with ?tour=1).
+// - Starts by itself once, on Início, for accounts created recently (first visit after sign-up);
+//   "Pular" or Esc ends it for good. Older accounts are never interrupted; anyone can see it again
+//   from Ajuda or Configurações (they open Início with ?tour=1).
+// - Explanations that would otherwise sit on the screens (e.g. demonstration lessons do not use
+//   the testing allowance) live in the steps instead.
+// - While it runs, <html data-tour> is set and 'voz:tour-done' fires at the end, so other first-visit
+//   notes (the testing welcome) wait instead of covering it.
 // - A popover beside each target plus a ring around it; nothing covers or blocks the page.
 //   A step whose target is missing or hidden (feature off, phone layout) is skipped.
 // - Keyboard: Esc closes, → / Enter next, ← previous; focus moves to the step title and returns
@@ -30,6 +34,13 @@ export const TOUR_STEPS = Object.freeze([
     targets: nav('./nova-transcricao.html'),
     title: 'Nova transcrição',
     text: 'Comece por aqui: envie o áudio ou vídeo de uma aula. Você confere a transcrição antes de gerar resumo e questões.',
+  },
+  {
+    // Public testing only: the Início card exists when the program is on and demos are open.
+    id: 'demos',
+    targets: ['.demo-home', '.demo-shelf'],
+    title: 'Aulas de demonstração',
+    text: 'Três aulas completas para explorar transcrição, resumo, questões e flashcards. Abrir uma delas não gasta o seu limite de transcrição.',
   },
   {
     id: 'home',
@@ -85,7 +96,7 @@ export const TOUR_STEPS = Object.freeze([
     id: 'settings',
     targets: ['.sidebar-settings a[href="./configuracoes.html"]', '.account-menu-trigger'],
     title: 'Configurações e ajuda',
-    text: 'Aparência, idioma, senha e a Ajuda ficam aqui. Você pode refazer este tour quando quiser.',
+    text: 'Aparência, idioma, senha e a Ajuda ficam aqui. O tutorial pode ser visto de novo por lá.',
   },
 ]);
 
@@ -177,12 +188,21 @@ export function startTourFromAnywhere() {
   location.href = TOUR_START_URL;
 }
 
+/** Loads the tour stylesheet once; resolves when it applies (or after 3 s, so nothing hangs). */
 function ensureStyles(doc = document) {
-  if (doc.querySelector('link[href$="/css/guided-tour.css"]')) return;
-  const link = doc.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = '/css/guided-tour.css';
-  doc.head.append(link);
+  let link = doc.querySelector('link[href$="/css/guided-tour.css"]');
+  if (!link) {
+    link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/css/guided-tour.css';
+    doc.head.append(link);
+  }
+  if (link.sheet) return Promise.resolve();
+  return new Promise((resolve) => {
+    link.addEventListener('load', resolve, { once: true });
+    link.addEventListener('error', resolve, { once: true });
+    setTimeout(resolve, 3000);
+  });
 }
 
 const make = (tag, className, text) => {
@@ -231,7 +251,7 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   active?.close('replaced');
   const list = availableSteps(steps, (selector) => findVisible(selector, doc));
   if (!list.length) return null;
-  ensureStyles(doc);
+  const stylesReady = ensureStyles(doc);
   const reduced = prefersReducedMotion(doc);
   const returnFocus = doc.activeElement;
 
@@ -248,7 +268,7 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   counter.dataset.tourCounter = '';
   const close = make('button', 'tour-close', '×');
   close.type = 'button';
-  close.setAttribute('aria-label', 'Fechar tour');
+  close.setAttribute('aria-label', 'Fechar tutorial');
   close.dataset.tourClose = '';
   const title = make('h2', 'tour-title');
   title.id = 'tour-title';
@@ -262,13 +282,18 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   const forward = make('button', 'primary-action tour-next', 'Próximo');
   forward.type = 'button';
   forward.dataset.tourNext = '';
-  const hint = make('p', 'tour-hint', 'Esc fecha o tour. Use as setas para avançar ou voltar.');
+  // First step: "Pular" ends the tutorial; later steps go back.
   actions.append(back, forward);
   const head = make('div', 'tour-head');
   head.append(counter, close);
-  popover.append(head, title, text, actions, hint);
+  popover.append(head, title, text, actions);
   if (reduced) popover.dataset.reducedMotion = 'true';
+  // Invisible until the stylesheet applies: an unstyled popover would be measured and placed in
+  // the wrong spot (below or above the target instead of beside it) on a first visit.
+  popover.style.visibility = 'hidden';
+  ring.style.visibility = 'hidden';
   doc.body.append(ring, popover);
+  doc.documentElement.dataset.tour = 'active';
 
   let index = 0;
   let ended = false;
@@ -305,7 +330,8 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
     counter.textContent = `Passo ${index + 1} de ${list.length}`;
     title.textContent = current.title;
     text.textContent = current.text;
-    back.hidden = index === 0;
+    back.textContent = index === 0 ? 'Pular' : 'Voltar';
+    back.dataset.tourSkip = index === 0 ? 'true' : 'false';
     forward.textContent = index === list.length - 1 ? 'Concluir' : 'Próximo';
     current.target.scrollIntoView?.({
       block: 'nearest',
@@ -323,9 +349,11 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
     active = null;
     window.removeEventListener('resize', position);
     window.removeEventListener('scroll', position, true);
+    resized?.disconnect();
     doc.removeEventListener('keydown', onKey, true);
     ring.remove();
     popover.remove();
+    if (status !== 'replaced') releaseTourGate(doc);
     const target =
       returnFocus?.isConnected && returnFocus !== doc.body
         ? returnFocus
@@ -351,12 +379,32 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
     }
   }
   forward.addEventListener('click', () => show(index + 1));
-  back.addEventListener('click', () => show(index - 1));
+  back.addEventListener('click', () => (index === 0 ? end('dismissed') : show(index - 1)));
   close.addEventListener('click', () => end('dismissed'));
   window.addEventListener('resize', position);
   window.addEventListener('scroll', position, true);
   doc.addEventListener('keydown', onKey, true);
+  // The stylesheet may still be loading on a first visit (the tutorial starts by itself): place the
+  // popover again whenever its own size changes, so it ends up beside the target, not below it.
+  const resized = typeof ResizeObserver === 'function' ? new ResizeObserver(() => position()) : null;
+  resized?.observe(popover);
   show(0);
+  void stylesReady.then(() => {
+    if (ended) return;
+    // Appear already in place: without this, the left/top transition slides the popover from
+    // where it was measured unstyled to its real spot.
+    popover.style.transition = 'none';
+    ring.style.transition = 'none';
+    position();
+    void popover.offsetWidth;
+    popover.style.visibility = '';
+    ring.style.visibility = '';
+    title.focus({ preventScroll: true });
+    requestAnimationFrame(() => {
+      popover.style.transition = '';
+      ring.style.transition = '';
+    });
+  });
   active = {
     close: (status = 'dismissed') => end(status),
     next: () => show(index + 1),
@@ -371,56 +419,26 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   return active;
 }
 
-/** The small invitation on Início. Resolves to 'start' or 'later'. */
-function invite(doc = document) {
-  ensureStyles(doc);
-  return new Promise((resolve) => {
-    const card = make('section', 'tour-invite');
-    card.dataset.tourInvite = '';
-    card.setAttribute('aria-labelledby', 'tour-invite-title');
-    card.setAttribute('role', 'region');
-    if (prefersReducedMotion(doc)) card.dataset.reducedMotion = 'true';
-    const heading = make('h2', 'tour-invite-title', 'Fazer um tour rápido?');
-    heading.id = 'tour-invite-title';
-    const body = make('p', 'tour-invite-text', 'Conheça as partes principais do app em um minuto.');
-    const actions = make('div', 'tour-actions');
-    const start = make('button', 'primary-action', 'Começar');
-    start.type = 'button';
-    start.dataset.tourStart = '';
-    const later = make('button', 'secondary-action', 'Agora não');
-    later.type = 'button';
-    later.dataset.tourLater = '';
-    actions.append(start, later);
-    card.append(heading, body, actions);
-    // Announced politely, never focused: the page stays usable while it is there.
-    const live = make('p', 'sr-only');
-    live.setAttribute('role', 'status');
-    doc.body.append(card, live);
-    setTimeout(
-      () => (live.textContent = 'Fazer um tour rápido? Opção disponível no canto da tela.'),
-      300,
-    );
-    const finish = (answer) => {
-      card.remove();
-      live.remove();
-      resolve(answer);
-    };
-    start.addEventListener('click', () => finish('start'));
-    later.addEventListener('click', () => finish('later'));
-    card.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        finish('later');
-      }
-    });
-  });
+/** First-visit notes wait while the tutorial may start or is running (see <html data-tour>). */
+function releaseTourGate(doc = document) {
+  if (!doc.documentElement.dataset.tour) return;
+  delete doc.documentElement.dataset.tour;
+  doc.dispatchEvent(new CustomEvent('voz:tour-done'));
+}
+
+/** Resolves once no tutorial is pending or running (immediately when there is none). */
+export function afterTour(doc = document) {
+  if (!doc.documentElement.dataset.tour) return Promise.resolve();
+  return new Promise((resolve) => doc.addEventListener('voz:tour-done', () => resolve(), { once: true }));
 }
 
 /**
- * Início: starts the tour when asked (?tour=1, from Ajuda or Configurações) or invites a new
- * account once. Never throws: the tour is optional.
+ * Início: starts the tutorial when asked (?tour=1, from Ajuda or Configurações) or, once, by
+ * itself for a new account. Never throws: the tutorial is optional.
  */
 export async function maybeOfferTour({ user, doc = document, delay = 1200 } = {}) {
+  // Hold first-visit notes until we know whether the tutorial starts.
+  doc.documentElement.dataset.tour = 'pending';
   try {
     const store = createTourStore(user?.id);
     const params = new URLSearchParams(location.search);
@@ -436,18 +454,21 @@ export async function maybeOfferTour({ user, doc = document, delay = 1200 } = {}
     }
     // Let the navigation reveal feature pages and the dashboard settle first.
     await new Promise((resolve) => setTimeout(resolve, asked ? Math.min(delay, 600) : delay));
-    const run = () => startTour({ doc, onEnd: (status) => void store.save(status) });
-    if (asked) return run() ? 'started' : 'unavailable';
+    const run = () => {
+      const started = startTour({ doc, onEnd: (status) => void store.save(status) });
+      if (!started) releaseTourGate(doc);
+      return started ? 'started' : 'unavailable';
+    };
+    if (asked) return run();
     const record = store.cached() ?? (await store.load());
-    if (!shouldOfferTour({ record, user })) return 'skipped';
-    if (doc.querySelector('dialog[open]')) return 'skipped';
-    const answer = await invite(doc);
-    if (answer === 'later') {
-      void store.save('dismissed');
-      return 'dismissed';
+    if (!shouldOfferTour({ record, user }) || doc.querySelector('dialog[open]')) {
+      releaseTourGate(doc);
+      return 'skipped';
     }
-    return run() ? 'started' : 'unavailable';
+    // A new account: the tutorial starts by itself ("Pular" on the first step ends it).
+    return run();
   } catch {
+    releaseTourGate(doc);
     return 'error';
   }
 }

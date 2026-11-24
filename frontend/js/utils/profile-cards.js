@@ -16,7 +16,7 @@ export const CARD_TEMPLATES = Object.freeze([
     label: 'Texto',
     description: 'Notas com títulos, listas, destaques e cor de fundo.',
   },
-  { id: 'checklist', label: 'Checklist', description: 'Passos para marcar; fica salvo na conta.' },
+  { id: 'checklist', label: 'Checklist', description: 'Passos para marcar.' },
   { id: 'image', label: 'Imagem', description: 'Uma foto ou ilustração sua, com legenda.' },
   {
     id: 'gif',

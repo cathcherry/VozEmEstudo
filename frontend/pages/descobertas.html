@@ -18,7 +18,7 @@
 <a class="account-link" href="./conta.html" aria-label="Minha conta"><span class="user-initials" aria-hidden="true">•</span><span>Minha conta</span></a></div></header>
 <main class="article-content tool-page discoveries-page" id="conteudo-principal" tabindex="-1">
 <header class="article-heading tool-heading"><div><span class="discoveries-cover" data-discoveries-cover data-art-slot="cover" data-decoration aria-hidden="true"></span><h1>Arquivo de Descobertas</h1></div><a class="secondary-action button-link" href="./gabinete.html" data-game-ui>Gabinete</a></header>
-<p class="tool-intro">O caderno das perguntas que você investigou: cada página guarda trechos conferidos das aulas, a sua explicação, ligações e as vezes em que você voltou a ela.</p>
+<p class="tool-intro">O caderno das perguntas que você investigou.</p>
 <p class="discoveries-status" data-discoveries-status role="status" aria-live="polite"></p>
 <div class="investigation-unlocks" data-unlock-notice data-game-ui role="status" aria-live="polite" hidden></div>
 <section class="discoveries-home" data-discoveries-home aria-labelledby="discoveries-list-title" hidden>
@@ -43,13 +43,11 @@
 <input id="archive-collection-name" name="name" type="text" maxlength="60" placeholder="Por exemplo: Energia na natureza" autocomplete="off">
 <button type="submit" class="secondary-action">Criar a coleção</button>
 </div>
-<p class="tool-hint">Coleções só organizam: um cartão pode estar em várias, e excluir uma coleção não apaga nenhuma descoberta.</p>
 </form>
 <div class="archive-collections" data-collections></div>
 </div>
 <aside class="archive-legend" data-archive-legend aria-labelledby="archive-legend-title">
 <h3 id="archive-legend-title">Como um cartão muda</h3>
-<p>Cada cartão muda com o que você faz na descoberta. Nada some com o tempo e nenhuma etapa é obrigatória.</p>
 <ol class="archive-legend-list">
 <li data-trait="sketch"><span class="legend-swatch" aria-hidden="true"></span><strong>Esboço a lápis</strong><span>A pergunta, enquanto a investigação está aberta.</span></li>
 <li data-trait="inked"><span class="legend-swatch" aria-hidden="true"></span><strong>Passado a tinta</strong><span>Você explicou com as suas palavras, com uma evidência conferida da aula.</span></li>
@@ -81,7 +79,6 @@
 <input id="discovery-edit-title" name="title" type="text" maxlength="300" required>
 <label class="investigation-field" for="discovery-edit-explanation">Explicação</label>
 <textarea id="discovery-edit-explanation" name="explanation" rows="7" maxlength="5000" required></textarea>
-<p class="tool-hint">Cada versão fica guardada no histórico.</p>
 <div class="form-actions"><button type="submit" class="primary-action">Salvar nova versão</button></div>
 </form>
 </details>
@@ -117,7 +114,6 @@
 </section>
 <section class="discovery-block" aria-labelledby="discovery-revisits-title">
 <h3 id="discovery-revisits-title">Revisitas</h3>
-<p class="tool-hint">Uma revisita conta quando você muda algo nesta página pelo menos um dia depois de registrá-la (no máximo uma por dia).</p>
 <ul class="discovery-revisits" data-discovery-revisits></ul>
 </section>
 <details class="discovery-block discovery-history" data-discovery-history>

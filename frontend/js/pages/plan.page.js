@@ -31,7 +31,7 @@ if (!sections.length) {
   unavailable.append(
     emptyState(
       'O planejamento ainda não está ativo',
-      'Objetivos, calendário e tempo de estudo aparecem aqui quando forem ativados neste servidor.',
+      'Objetivos, calendário e tempo de estudo aparecem aqui.',
       { href: './painel.html', action: 'Voltar ao início', mascot: 'rest' },
     ),
   );

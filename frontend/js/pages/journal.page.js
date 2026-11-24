@@ -272,7 +272,7 @@ function renderJournal() {
   );
   const pager = el('nav', { className: 'journal-pager', 'aria-label': 'Páginas do diário', 'data-pager': '' });
   const tray = el('aside', { className: 'journal-tray', 'aria-label': 'Página e decorações', 'data-tray': '' });
-  const quiet = el('p', { className: 'journal-quiet-note', text: 'Modo silencioso: as decorações ficam guardadas, mas não aparecem. Mude em Aparência.' });
+  const quiet = el('p', { className: 'journal-quiet-note', text: 'Modo silencioso: decorações ocultas. Mude em Aparência.' });
   view.replaceChildren(
     toolbar,
     el(
@@ -1020,7 +1020,7 @@ const SAVE_TEXT = {
   saved: 'Salvo',
   dirty: 'Alterações não salvas',
   saving: 'Salvando…',
-  error: 'Não salvo — tentar de novo',
+  error: 'Não salvo. Tente de novo.',
   conflict: 'Esta página mudou em outro aparelho. Recarregue o diário.',
   quote: 'Não salvo: escolha a fonte da citação.',
 };

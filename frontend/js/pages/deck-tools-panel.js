@@ -239,7 +239,7 @@ export const SOURCES_MAX = 12; // sets per merge (server rule)
 export function openMergeDialog({ sets, opener, v3 = false }) {
   const ui = dialogShell(
     'Mesclar conjuntos',
-    'Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.',
+    'Um conjunto novo é criado com os cartões dos conjuntos escolhidos. Os originais não mudam.',
   );
   // One id per dialog: retrying after a dropped connection never creates two sets.
   const deckId = crypto.randomUUID();
@@ -292,7 +292,7 @@ export function openMergeDialog({ sets, opener, v3 = false }) {
   conflictStep.append(
     make(
       'p',
-      'Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas: nada se perde.',
+      'Para cada pergunta, mantenha uma das respostas ou junte todas em um cartão. Sem escolha, as respostas são juntadas.',
       'flashcard-muted',
     ),
   );
@@ -466,7 +466,7 @@ export function openImportDialog({ opener, v3 = false }) {
   const ui = dialogShell(
     'Importar cartões',
     v3
-      ? 'Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas. Um conjunto novo é criado; nada que você já tem muda.'
+      ? 'Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.'
       : 'Use um arquivo .txt, .tsv ou .csv: do Anki (Arquivo › Exportar › "Notas em texto simples"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas.',
   );
   const deckId = crypto.randomUUID(); // one per dialog: a retry never creates two sets

@@ -20,7 +20,7 @@ try {
   available.forEach((m) => {
     const option = document.createElement('option');
     option.value = m.id;
-    option.textContent = `${m.title}${m.subject ? ` — ${m.subject}` : ''}`;
+    option.textContent = `${m.title}${m.subject ? ` · ${m.subject}` : ''}`;
     materialSelect.appendChild(option);
   });
   // 3.7: attempts (continue / see result) and the personal question flags live here, now that

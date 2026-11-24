@@ -117,7 +117,7 @@ export default {
   // Personalizar o Início
   'customize.title': 'Personalizar o Início',
   'customize.intro':
-    'Escolha o que aparece e em que ordem. As mudanças aparecem na hora e ficam salvas na sua conta.',
+    'Escolha o que aparece e em que ordem.',
   'customize.density': 'Espaçamento dos cartões',
   'customize.comfortable': 'Confortável',
   'customize.compact': 'Compacto',
@@ -165,7 +165,7 @@ export default {
   'profile.customize': 'Personalizar perfil',
   'profile.doneEditing': 'Concluir edição',
   'profile.editBar':
-    'Modo de edição. Use o menu ⋯ de cada bloco para mover, mudar a largura, ocultar ou duplicar. Tudo é salvo na hora.',
+    'Modo de edição. Use o menu ⋯ de cada bloco para mover, mudar a largura, ocultar ou duplicar.',
   'profile.addBlock': 'Adicionar bloco',
   'profile.showAll': 'Mostrar tudo',
   'profile.done': 'Concluir',
@@ -178,7 +178,7 @@ export default {
   'appearance.title': 'Aparência',
   'presets.title': 'Modos de estudo',
   'presets.intro':
-    'Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.',
+    'Um clique ajusta várias preferências de uma vez.',
   'presets.reading': 'Leitura confortável',
   'presets.readingText': 'Texto um pouco maior, linhas mais curtas e mais espaço entre elas.',
   'presets.focus': 'Foco profundo',

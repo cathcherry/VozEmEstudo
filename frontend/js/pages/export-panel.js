@@ -101,7 +101,7 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
   function open({ listId = null, listLabel = '' } = {}) {
     const current = material();
     message.textContent = '';
-    title.textContent = listId ? `Exportar lista — ${listLabel}` : 'Exportar';
+    title.textContent = listId ? `Exportar lista: ${listLabel}` : 'Exportar';
     // Only a confirmed revision is exported; a revision awaiting review is never in the file.
     const confirmed = Boolean(current.transcription) && current.review?.state === 'ready_to_generate';
     form.elements.transcript.checked = !listId && confirmed;
@@ -178,7 +178,7 @@ export function initExportPanel({ material, flags, notesEnabled: notesAvailable,
           safeFilename(current.title + '-flashcards', 'csv'),
           'text/csv;charset=utf-8',
         );
-        return 'CSV preparado. Colunas: front, back, set, lesson, difficulty, focus, style, source_revision_id, evidence.';
+        return 'CSV pronto.';
       }
       const summary = data.get('summary')
         ? (current.summaries || []).find((s) => String(s.version) === data.get('summaryVersion'))

@@ -1295,7 +1295,7 @@ async function main() {
     assert.equal(await page.locator('[data-earned-avatars]').count(), 1);
     assert.equal(await avatarButtons.count(), 8);
     // XP and milestones are browser-derived incentives and the page says so.
-    await page.getByText('ainda não são verificados pelo servidor', { exact: false }).waitFor();
+    await page.getByText('Pontos e conquistas são só um incentivo', { exact: false }).waitFor();
     assert((await page.locator('.account-link img').getAttribute('src')).includes('reading.png'));
     await page.getByRole('button', { name: 'Editar informações', exact: true }).click();
     const profileDialog = page.getByRole('dialog', { name: 'Editar informações do perfil' });
@@ -2205,7 +2205,7 @@ async function main() {
     await newRow.locator('.row-menu > summary').click();
     await newRow.getByRole('button', { name: 'Exportar', exact: true }).click();
     await page.locator('[data-export-dialog][open]').waitFor();
-    assert.match(await page.locator('#export-dialog-title').textContent(), /^Exportar lista — Carros elétricos/);
+    assert.match(await page.locator('#export-dialog-title').textContent(), /^Exportar lista: Carros elétricos/);
     assert.equal(await page.locator('[data-export-form] [name=transcript]').isChecked(), false);
     assert.equal(await page.locator('[data-export-form] [name=list]:checked').count(), 1);
     await auditDialog('[data-export-dialog]', 'export dialog');

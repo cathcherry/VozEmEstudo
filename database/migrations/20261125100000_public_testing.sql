@@ -1,5 +1,6 @@
 -- Voz em Estudo — public testing program (controlled release for ~30–100 participants).
--- Additive only: new tables and functions, one RESTRICTIVE storage policy. No existing table,
+-- Additive only: new tables and functions, one RESTRICTIVE storage policy (replaced by
+-- 20261125120000_audio_object_cap_fix.sql: its check recursed on storage.objects). No existing table,
 -- column, constraint, function, policy or row is changed. Applying it changes nothing for anyone
 -- until the program is switched on in public.public_testing_config (enabled = false by default).
 --

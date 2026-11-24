@@ -1,11 +1,6 @@
 {
   "Diário de estudo": { "en": "Study journal", "es": "Diario de estudio", "zh-CN": "学习日记" },
   "Voz em Estudo | Diário de estudo": { "en": "Voz em Estudo | Study journal", "es": "Voz em Estudo | Diario de estudio", "zh-CN": "Voz em Estudo | 学习日记" },
-  "Um diário seu, feito de páginas: escreva o que entendeu, guarde lembranças das aulas e decore como quiser. Só você vê.": {
-    "en": "A journal of your own, made of pages: write what you understood, keep memories of your lessons and decorate it as you like. Only you can see it.",
-    "es": "Un diario tuyo, hecho de páginas: escribe lo que entendiste, guarda recuerdos de las clases y decóralo como quieras. Solo tú lo ves.",
-    "zh-CN": "一本属于你的日记，由一页页组成：写下你理解的内容，保存课堂的回忆，随心装饰。只有你能看到。"
-  },
   "Sua estante": { "en": "Your shelf", "es": "Tu estante", "zh-CN": "你的书架" },
   "Novo diário": { "en": "New journal", "es": "Nuevo diario", "zh-CN": "新日记" },
   "Abrir o diário {0}, {1}": { "en": "Open the journal {0}, {1}", "es": "Abrir el diario {0}, {1}", "zh-CN": "打开日记 {0}，{1}" },
@@ -63,11 +58,6 @@
   "Escrever": { "en": "Write", "es": "Escribir", "zh-CN": "书写" },
   "Decorar": { "en": "Decorate", "es": "Decorar", "zh-CN": "装饰" },
   "Página limpa (sem decorações)": { "en": "Plain page (no decorations)", "es": "Página limpia (sin decoraciones)", "zh-CN": "简洁页面（不显示装饰）" },
-  "Modo silencioso: as decorações ficam guardadas, mas não aparecem. Mude em Aparência.": {
-    "en": "Quiet mode: decorations are kept but not shown. Change it in Appearance.",
-    "es": "Modo silencioso: las decoraciones se guardan, pero no se muestran. Cámbialo en Apariencia.",
-    "zh-CN": "安静模式：装饰会保留，但不显示。可在“外观”中更改。"
-  },
   "Página e decorações": { "en": "Page and decorations", "es": "Página y decoraciones", "zh-CN": "页面和装饰" },
   "Título da página": { "en": "Page title", "es": "Título de la página", "zh-CN": "页面标题" },
   "Texto da página": { "en": "Page text", "es": "Texto de la página", "zh-CN": "页面文字" },
@@ -147,7 +137,6 @@
   "Sem desenho": { "en": "No drawing", "es": "Sin dibujo", "zh-CN": "无图案" },
   "Salvando…": { "en": "Saving…", "es": "Guardando…", "zh-CN": "正在保存…" },
   "Alterações não salvas": { "en": "Unsaved changes", "es": "Cambios sin guardar", "zh-CN": "有未保存的更改" },
-  "Não salvo — tentar de novo": { "en": "Not saved — try again", "es": "No guardado — intentar de nuevo", "zh-CN": "未保存——重试" },
   "Esta página mudou em outro aparelho. Recarregue o diário.": { "en": "This page changed on another device. Reload the journal.", "es": "Esta página cambió en otro dispositivo. Recarga el diario.", "zh-CN": "此页面已在另一台设备上更改。请重新加载日记。" },
   "Não salvo: escolha a fonte da citação.": { "en": "Not saved: choose the source of the quote.", "es": "No guardado: elige la fuente de la cita.", "zh-CN": "未保存：请选择引文出处。" },
   "O Diário de estudo ainda não está ativo": { "en": "The study journal is not active yet", "es": "El diario de estudio todavía no está activo", "zh-CN": "学习日记尚未启用" },
@@ -159,8 +148,6 @@
   "Seções do caderno": { "en": "Notebook sections", "es": "Secciones del cuaderno", "zh-CN": "笔记本章节" },
   "Seção {0}": { "en": "Section {0}", "es": "Sección {0}", "zh-CN": "第 {0} 节" },
   "Abrir meu Diário de estudo": { "en": "Open my study journal", "es": "Abrir mi diario de estudio", "zh-CN": "打开我的学习日记" },
-  "Capa {0}. Salvo na sua conta.": { "en": "Cover {0}. Saved to your account.", "es": "Portada {0}. Guardado en tu cuenta.", "zh-CN": "封面 {0}。已保存到你的账户。" },
-  "Papel {0}. Salvo na sua conta.": { "en": "Paper {0}. Saved to your account.", "es": "Papel {0}. Guardado en tu cuenta.", "zh-CN": "纸张 {0}。已保存到你的账户。" },
   "Quadriculado": { "en": "Grid", "es": "Cuadriculado", "zh-CN": "方格" },
   "Pontilhado": { "en": "Dotted", "es": "Punteado", "zh-CN": "点阵" },
   "Linho": { "en": "Linen", "es": "Lino", "zh-CN": "亚麻" },

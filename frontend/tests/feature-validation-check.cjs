@@ -702,11 +702,10 @@ async function main() {
       await notesPage.locator('#tab-notes').click();
       const notebook = notesPage.locator('[data-lesson-notebook]');
       await notebook.getByRole('heading', { name: 'Caderno da aula' }).waitFor();
-      await notebook.getByText('Privado: só você vê este caderno.').waitFor();
       // 3.6: the notebook starts as a closed cover; opening it shows the page.
       await notebook.getByRole('button', { name: 'Abrir o caderno' }).click();
       const rangeCard = notesPage.locator('[data-annotations-panel] .annotation-card', { hasText: 'O oxigênio' }).first();
-      await rangeCard.getByText('Abrange 2 trechos da transcrição').waitFor();
+      await notesPage.locator('[data-annotations-panel] .annotation-card.annotation-range', { hasText: 'O oxigênio' }).first().waitFor();
       // First save fails (unknown outcome): "Não foi possível salvar." + "Tentar de novo", same request on retry.
       notesData.notebookFailures = 1;
       // Opening the notebook puts the caret in the writing area: type at once.

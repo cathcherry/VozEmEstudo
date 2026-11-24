@@ -7,9 +7,11 @@ Data: 24/11/2026. Branch `claude/keen-shannon-sj3ut5`. Runbook operacional:
 
 ## 1. URL publicada
 
-**Nenhuma.** A API e o worker não estão hospedados: publicar exige as suas contas e chaves (Railway,
-AssemblyAI, Groq), que não estão disponíveis nesta sessão. Não divulgue nenhum endereço antes de
-seguir as seções 2.1 a 2.4 do runbook.
+**https://vozemestudo-production.up.railway.app** (Railway, publicado em 24/11/2026). Verificado:
+`/api/health` 200, páginas, CSP e HSTS, mídia das demonstrações, 404 amigável; as 3 aulas de
+demonstração foram carregadas pela API na inicialização; o worker está no ar. Antes de divulgar,
+conclua a seção 2.1 do runbook (URLs de redirecionamento e confirmação de e-mail no Supabase Auth) e
+faça o roteiro do item 22 com uma conta sua.
 
 ## 2. Commit
 
@@ -66,16 +68,16 @@ banco de produção recebeu as migrações do commit `57a10c08b10493c816b31ecf3b
 Os testes rodaram em **Postgres real** (staging e produção), com duas contas sintéticas, papel
 `authenticated` e claims de JWT de verdade. Tudo foi desfeito por rollback, sem resíduo (conferido).
 
-| Verificação | Staging | Produção |
-| --- | --- | --- |
-| Conta A lê material, segmentos ou permissões da conta B | negado | negado |
-| Navegador lê `usage_ledger`, `app_admins`, `demo_lessons`, cópias e configuração | negado | negado |
-| Navegador chama RPCs `*_admin` e a função `security definer` | negado | negado |
-| Navegador se cadastra como administradora | negado | negado |
-| `anon` lê demonstrações ou chama a função de uso | negado | — |
-| Cópias de demonstração diferentes por conta; abrir de novo devolve a mesma cópia | ok | ok |
-| Cota: 200 s ok, repetição sem custo, 101 s a mais recusado (`user_quota`), exatamente 300 s ok | ok | ok (parcial) |
-| Privilégios TRUNCATE/TRIGGER/REFERENCES do navegador | 0 | 0 |
+| Verificação                                                                                    | Staging | Produção     |
+| ---------------------------------------------------------------------------------------------- | ------- | ------------ |
+| Conta A lê material, segmentos ou permissões da conta B                                        | negado  | negado       |
+| Navegador lê `usage_ledger`, `app_admins`, `demo_lessons`, cópias e configuração               | negado  | negado       |
+| Navegador chama RPCs `*_admin` e a função `security definer`                                   | negado  | negado       |
+| Navegador se cadastra como administradora                                                      | negado  | negado       |
+| `anon` lê demonstrações ou chama a função de uso                                               | negado  | —            |
+| Cópias de demonstração diferentes por conta; abrir de novo devolve a mesma cópia               | ok      | ok           |
+| Cota: 200 s ok, repetição sem custo, 101 s a mais recusado (`user_quota`), exatamente 300 s ok | ok      | ok (parcial) |
+| Privilégios TRUNCATE/TRIGGER/REFERENCES do navegador                                           | 0       | 0            |
 
 Pela API (PGlite com as migrações reais), os testes automatizados cobrem:
 
@@ -104,11 +106,11 @@ Pela API (PGlite com as migrações reais), os testes automatizados cobrem:
 
 ## 8. As três aulas de demonstração
 
-| Aula | Matéria | Duração | Conteúdo |
-| --- | --- | --- | --- |
-| Crase: quando usar o acento grave | Português | 3 min 8 s | 25 segmentos, resumo, 8 questões, 10 cartões |
-| Como as vacinas ensinam o sistema imunológico | Ciências | 3 min 31 s | 25 segmentos, resumo, 8 questões, 10 cartões |
-| Como a internet entrega uma página | Tecnologia | 3 min 15 s | 24 segmentos, resumo, 8 questões, 10 cartões, **vídeo** com slides |
+| Aula                                          | Matéria    | Duração    | Conteúdo                                                           |
+| --------------------------------------------- | ---------- | ---------- | ------------------------------------------------------------------ |
+| Crase: quando usar o acento grave             | Português  | 3 min 8 s  | 25 segmentos, resumo, 8 questões, 10 cartões                       |
+| Como as vacinas ensinam o sistema imunológico | Ciências   | 3 min 31 s | 25 segmentos, resumo, 8 questões, 10 cartões                       |
+| Como a internet entrega uma página            | Tecnologia | 3 min 15 s | 24 segmentos, resumo, 8 questões, 10 cartões, **vídeo** com slides |
 
 - Roteiros originais da equipe, com narração sintetizada (espeak-ng + MBROLA), licença CC BY 4.0
   para o programa. Sem dados pessoais.
@@ -156,16 +158,16 @@ dono e pelo RLS. Ninguém vê o que outra conta fez (item 6). Abrir de novo devo
 
 ## 12. Limites de geração por IA (participante / administradora)
 
-| Ação | Participante | Administradora |
-| --- | --- | --- |
-| Transcrição acumulada | 5 min | 120 min |
-| Gravações processadas | 3 | 60 |
-| Resumos | 2 | 30 |
-| Listas de questões (até 10 por lista) | 2 | 30 |
-| Geração de flashcards (até 20) | 1 | 20 |
-| Nova sugestão de cartão | 5 | 60 |
-| Nova análise de avisos | 1 | 20 |
-| Material integrado | indisponível | 10 |
+| Ação                                  | Participante | Administradora |
+| ------------------------------------- | ------------ | -------------- |
+| Transcrição acumulada                 | 5 min        | 120 min        |
+| Gravações processadas                 | 3            | 60             |
+| Resumos                               | 2            | 30             |
+| Listas de questões (até 10 por lista) | 2            | 30             |
+| Geração de flashcards (até 20)        | 1            | 20             |
+| Nova sugestão de cartão               | 5            | 60             |
+| Nova análise de avisos                | 1            | 20             |
+| Material integrado                    | indisponível | 10             |
 
 - Cada pedido carrega uma chave de idempotência; repetir o mesmo pedido não conta.
 - Mudar opções conta como pedido novo.
@@ -215,12 +217,12 @@ insert into public.app_admins (user_id, granted_by, note) values ('UUID', 'quem 
 
 ## 17. Custos estimados por dia (Groq pago + AssemblyAI)
 
-| Participantes | Típico | Pior caso (todas as cotas no mesmo dia) | Teto absoluto |
-| --- | --- | --- | --- |
-| 10 | US$ 0,26 | US$ 0,42 | US$ 1,30 |
-| 30 | US$ 0,79 | US$ 1,25 | US$ 3,91 |
-| 50 | US$ 1,32 | US$ 2,08 | US$ 6,52 |
-| 100 | US$ 2,65 | US$ 4,16 | US$ 13,05 |
+| Participantes | Típico   | Pior caso (todas as cotas no mesmo dia) | Teto absoluto |
+| ------------- | -------- | --------------------------------------- | ------------- |
+| 10            | US$ 0,26 | US$ 0,42                                | US$ 1,30      |
+| 30            | US$ 0,79 | US$ 1,25                                | US$ 3,91      |
+| 50            | US$ 1,32 | US$ 2,08                                | US$ 6,52      |
+| 100           | US$ 2,65 | US$ 4,16                                | US$ 13,05     |
 
 Uma administradora com a cota cheia acrescenta até ~US$ 1,47 por dia. São estimativas com preços de
 fontes secundárias e tokens medidos offline. Calibre com os logs `LLM_USAGE`.
@@ -262,14 +264,14 @@ where id = 1;
 
 ## 20. Testes automatizados e de navegador
 
-| Suíte | Resultado |
-| --- | --- |
-| Backend (`npm run test:backend`) | 451/451 |
-| `npm test` (backend, DOM, UI, Python, qualidade) | 769 testes, 0 falhas (inclui Python e qualidade) |
-| Navegador (`npm run test:browser`, 30 roteiros, inclui o novo do programa) | todos passando (saída 0) |
-| CSP aplicada em 33 páginas | sem violações |
-| ESLint, checagem estática, checagem de segredos | limpos |
-| Postgres real (staging/produção) | item 6 |
+| Suíte                                                                      | Resultado                                        |
+| -------------------------------------------------------------------------- | ------------------------------------------------ |
+| Backend (`npm run test:backend`)                                           | 451/451                                          |
+| `npm test` (backend, DOM, UI, Python, qualidade)                           | 769 testes, 0 falhas (inclui Python e qualidade) |
+| Navegador (`npm run test:browser`, 30 roteiros, inclui o novo do programa) | todos passando (saída 0)                         |
+| CSP aplicada em 33 páginas                                                 | sem violações                                    |
+| ESLint, checagem estática, checagem de segredos                            | limpos                                           |
+| Postgres real (staging/produção)                                           | item 6                                           |
 
 **Não testado:** fluxo ponta a ponta com AssemblyAI, Groq e Supabase reais por uma API hospedada,
 porque não há chaves nem hospedagem nesta sessão. Faça o roteiro do item 22 com uma conta sua antes

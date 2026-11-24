@@ -283,7 +283,7 @@ export function initGlobalSearch({ form, main, heading, notes = null, listNotes 
       block.append(
         el(
           'p',
-          `Mais ${lesson.total - lesson.hits.length} na aula — abra para ver todos.`,
+          `Mais ${lesson.total - lesson.hits.length} resultados nesta aula`,
           'search-meta',
         ),
       );

@@ -13,9 +13,9 @@ let started = Date.now(),
   timer;
 
 const STEP_STATE_LABELS = {
-  active: ' — em andamento',
-  done: ' — concluído',
-  error: ' — não concluído',
+  active: ': em andamento',
+  done: ': concluído',
+  error: ': não concluído',
 };
 const STEP_ORDER = ['upload', 'queue', 'transcribe', 'ready'];
 

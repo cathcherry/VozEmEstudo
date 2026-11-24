@@ -1,9 +1,9 @@
-export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2.4';
+export const QUESTIONS_V2_PROMPT_VERSION = 'questions-v2.5';
 
 // The explanation is read right after answering, next to the lesson excerpt (evidence) that the
 // page already shows as "Trecho da aula": it explains the content, it does not cite its source.
 export const EXPLANATION_RULE =
-  'Escreva a explicação de forma direta e natural, como um professor explicaria ao corrigir: em uma a três frases, diga por que a alternativa correta está certa e, quando ajudar, por que a confusão mais provável está errada. Não abra nem apoie a explicação com referências à fonte, como "a transcrição afirma", "conforme a transcrição", "segundo o texto", "o trecho diz" ou "a aula menciona que": o trecho de apoio (evidence) já é mostrado ao aluno separadamente.';
+  'Escreva a explicação de forma direta e natural, como um professor explicaria ao corrigir: em uma a três frases, diga por que a alternativa correta está certa e, quando ajudar, por que a confusão mais provável está errada. Não abra nem apoie a explicação com referências à fonte, como "a transcrição afirma", "conforme a transcrição", "segundo o texto", "o trecho diz" ou "a aula menciona que": o trecho de apoio (evidence) já é mostrado ao aluno separadamente. Também não se refira à própria questão ("a frase citada", "a alternativa correta descreve", "corresponde ao que foi dito") nem repita o trecho com outras palavras: acrescente o raciocínio que liga a pergunta à resposta.';
 
 const SOURCE_RULES = [
   'Use exclusivamente a transcrição fornecida; não use conhecimento externo.',
@@ -92,6 +92,9 @@ export function buildPlannedQuestionMessages(transcript, { slots, avoid = [], to
         'Cada questão tem enunciado claro, exatamente quatro alternativas distintas, UMA única alternativa correta (correctIndex de 0 a 3) e explicação breve sustentada pela aula.',
         EXPLANATION_RULE,
         'Distratores: os três errados devem ser plausíveis para quem não estudou, do mesmo tipo e tamanho da resposta certa, de preferência outros termos ou ideias da própria aula ou confusões comuns; nunca use alternativas absurdas ou fora do assunto.',
+        'Escreva as quatro alternativas com suas próprias palavras, em português escrito e no mesmo registro: nunca copie frases da fala (com "tipo", "né", "o negócio é que", primeira pessoa do falante), porque o jeito de falar denuncia a resposta. As quatro devem ter estrutura gramatical e tamanho parecidos; a correta não pode ser a mais longa, a mais detalhada nem a única com palavras exatas da aula.',
+        'A pergunta só pode afirmar o que a aula sustenta: não invente premissas, qualificações ou números (por exemplo, não chame de "moderado" o que a aula não chamou). Pergunte "por que" apenas quando a aula diz explicitamente a razão, e a alternativa correta deve responder exatamente à pergunta feita, sem trocar uma coisa por outra (uma nota de gosto não é a intensidade de um sabor).',
+        'Quando a aula for informal ou de opinião (uma resenha, um vlog, uma degustação), pergunte o que a pessoa observou, avaliou ou concluiu e por que, atribuindo a opinião a ela; não transforme opiniões em fatos gerais.',
         'Varie a posição da alternativa correta entre as questões.',
         'Questões diferentes não podem ter a mesma resposta nem testar o mesmo fato com outras palavras, mesmo quando dois slots têm o mesmo conceito: nesse caso, cada uma testa um aspecto diferente dele.',
         'Habilidades cognitivas descrevem o tipo de raciocínio, não o número de respostas corretas.',

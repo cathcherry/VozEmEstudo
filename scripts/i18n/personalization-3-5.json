@@ -239,11 +239,6 @@
   "es": "Cambiar de modo nunca borra nada. Vale para tu cuenta, en todos los dispositivos.",
   "zh-CN": "切换模式不会删除任何内容。适用于你的账户和所有设备。"
  },
- "Muda só o que aparece; os seus registros continuam iguais. Vale para a sua conta, em todos os aparelhos.": {
-  "en": "It only changes what is shown; your records stay the same. It applies to your account, on every device.",
-  "es": "Solo cambia lo que se muestra; tus registros siguen iguales. Vale para tu cuenta, en todos los dispositivos.",
-  "zh-CN": "只改变显示的内容；你的记录保持不变。适用于你的账户和所有设备。"
- },
  "Atmosferas": {
   "en": "Atmospheres",
   "es": "Atmósferas",

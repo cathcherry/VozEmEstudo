@@ -92,7 +92,7 @@ async function main() {
       record('nova sessão: aviso de novo; Esc fecha; "Ver meus limites" abre Conta › limites');
       // Meters from /me (used comes as strings).
       const meter = (kind) => section.locator(`[data-kind="${kind}"]`).textContent();
-      assert.match(await meter('transcription_seconds'), /1 min 12 s de 5 min usados — restam 3 min 48 s/);
+      assert.match(await meter('transcription_seconds'), /1 min 12 s de 5 min usados · restam 3 min 48 s/);
       assert.match(await meter('processing_llm'), /Gravações processadas.*1 de 3 · restam 2/);
       assert.match(await meter('summary'), /Resumos.*1 de 2 · restam 1/);
       assert.match(await meter('questions'), /Listas de questões.*0 de 2 · restam 2/);
@@ -132,7 +132,7 @@ async function main() {
       const shelf = page.locator('[data-demo-shelf]');
       await shelf.waitFor();
       assert.equal(await shelf.locator('.demo-card').count(), 3);
-      assert.match(await shelf.textContent(), /Já processada — não usa seu limite/);
+      assert.doesNotMatch(await shelf.textContent(), /limite|—/, 'no explanations or em dashes on the shelf');
       assert.match(await shelf.locator('.demo-card').first().textContent(), /Resumo · 10 questões · 12 cartões/);
       assert.deepEqual(
         await shelf.locator('[data-demo-action-label]').allTextContents(),
@@ -152,7 +152,7 @@ async function main() {
       assert.equal(data.testing.opens.length, 1);
       const note = page.locator('[data-demo-note]');
       await note.waitFor();
-      assert.match(await note.locator('summary').textContent(), /Aula de demonstração.*já processada; não usa seu limite/);
+      assert.equal((await note.locator('summary').textContent()).trim(), 'Aula de demonstração');
       await note.locator('summary').click();
       assert.match(await note.textContent(), /Créditos:/);
       await shot(page, 'material-demo-note', false);

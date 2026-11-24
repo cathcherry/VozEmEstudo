@@ -66,7 +66,7 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
     buttons.className = 'deck-tools-grid';
     buttons.append(
       tool('Importar cartões', 'Do Anki (pacote .apkg ou notas em texto), de uma planilha CSV ou de uma lista com pergunta e resposta.', importButton, 'deck-tool-import-hint'),
-      tool('Mesclar conjuntos', 'Junta dois ou mais conjuntos num novo, sem cartões repetidos. Também vale para baralhos compartilhados nas turmas.', mergeButton, 'deck-tool-merge-hint'),
+      tool('Mesclar conjuntos', 'Junta dois ou mais conjuntos num novo, sem cartões repetidos.', mergeButton, 'deck-tool-merge-hint'),
     );
     toolsTitle.className = 'sr-only';
     tools.append(toolsTitle, buttons, result);
@@ -160,7 +160,7 @@ export function initFlashcardSetsPanel({ container, materials, onChange, onSelec
       summary,
       make(
         'p',
-        'Crie conjuntos na aba Flashcards de cada aula. Para mesclar conjuntos ou importar cartões, use “Juntar ou trazer conjuntos”, em Novos cartões. Aqui você organiza, revisa por conjunto e exporta.',
+        'Crie conjuntos na aba Flashcards de cada aula.',
         'flashcard-muted',
       ),
     );

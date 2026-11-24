@@ -19,11 +19,6 @@
   "es": "Investigar una pregunta",
   "zh-CN": "探究一个问题"
  },
- "Uma pergunta sua sobre esta aula, respondida com trechos da transcrição confirmada e com as suas palavras. Só a pergunta, uma evidência e a sua explicação são necessárias; as outras etapas são opcionais.": {
-  "en": "A question of yours about this lesson, answered with passages of the confirmed transcript and in your own words. Only the question, one piece of evidence and your explanation are required; the other steps are optional.",
-  "es": "Una pregunta tuya sobre esta clase, respondida con fragmentos de la transcripción confirmada y con tus palabras. Solo se necesitan la pregunta, una evidencia y tu explicación; los demás pasos son opcionales.",
-  "zh-CN": "你对这节课提出的问题，用已确认转录中的片段和你自己的话来回答。只需要问题、一条证据和你的解释；其他步骤是可选的。"
- },
  "Etapas da investigação": {
   "en": "Investigation steps",
   "es": "Pasos de la investigación",
@@ -119,11 +114,6 @@
   "es": "Ya exploré los fragmentos",
   "zh-CN": "我已浏览片段"
  },
- "Selecione palavras de um ou mais trechos e use a seleção como evidência, ou use um trecho inteiro. O servidor confere cada citação com a transcrição confirmada.": {
-  "en": "Select words from one or more passages and use the selection as evidence, or use a whole passage. The server checks every quote against the confirmed transcript.",
-  "es": "Selecciona palabras de uno o más fragmentos y usa la selección como evidencia, o usa un fragmento entero. El servidor comprueba cada cita con la transcripción confirmada.",
-  "zh-CN": "从一个或多个片段中选择文字作为证据，或使用整个片段。服务器会将每条引文与已确认的转录核对。"
- },
  "Nenhuma seleção ainda.": {
   "en": "No selection yet.",
   "es": "Todavía no hay selección.",
@@ -174,11 +164,6 @@
   "es": "Explicar con tus palabras",
   "zh-CN": "用你自己的话解释"
  },
- "Escreva a resposta como você a explicaria a alguém, usando as evidências. Ninguém corrige este texto: ele é seu.": {
-  "en": "Write the answer as you would explain it to someone, using the evidence. Nobody grades this text: it is yours.",
-  "es": "Escribe la respuesta como se la explicarías a alguien, usando las evidencias. Nadie corrige este texto: es tuyo.",
-  "zh-CN": "像向别人解释那样写下答案，并使用证据。没有人会批改这段文字：它属于你。"
- },
  "Sua explicação": {
   "en": "Your explanation",
   "es": "Tu explicación",
@@ -198,11 +183,6 @@
   "en": "{0} of at least 20 characters",
   "es": "{0} de 20 caracteres como mínimo",
   "zh-CN": "{0} / 至少 20 个字符"
- },
- "Ligue questões que você já respondeu, cartões, destaques ou o caderno desta aula. Nada é copiado: a descoberta só aponta para eles.": {
-  "en": "Link questions you have answered, cards, highlights or this lesson's notebook. Nothing is copied: the discovery only points to them.",
-  "es": "Vincula preguntas que ya respondiste, tarjetas, resaltados o el cuaderno de esta clase. No se copia nada: el descubrimiento solo apunta a ellos.",
-  "zh-CN": "关联你已回答的题目、卡片、高亮或本课笔记本。不会复制任何内容：发现只是指向它们。"
  },
  "Questões que você respondeu": {
   "en": "Questions you answered",
@@ -288,11 +268,6 @@
   "en": "Discovery recorded.",
   "es": "Descubrimiento registrado.",
   "zh-CN": "发现已记录。"
- },
- "A sua descoberta está no Arquivo de Descobertas. Você pode voltar a ela, acrescentar evidências, ligar a outras descobertas e refletir de novo quando quiser.": {
-  "en": "Your discovery is in the Discovery Archive. You can come back to it, add evidence, connect it to other discoveries and reflect again whenever you like.",
-  "es": "Tu descubrimiento está en el Archivo de Descubrimientos. Puedes volver a él, añadir evidencias, vincularlo a otros descubrimientos y reflexionar de nuevo cuando quieras.",
-  "zh-CN": "你的发现保存在发现档案中。你可以随时回来、添加证据、关联其他发现并再次反思。"
  },
  "Abrir a descoberta": {
   "en": "Open the discovery",
@@ -454,11 +429,6 @@
   "es": "· en curso",
   "zh-CN": "· 进行中"
  },
- "O caderno das perguntas que você investigou: cada página guarda trechos conferidos das aulas, a sua explicação, ligações e as vezes em que você voltou a ela.": {
-  "en": "The notebook of the questions you investigated: each page keeps checked passages of the lessons, your explanation, links and the times you came back to it.",
-  "es": "El cuaderno de las preguntas que investigaste: cada página guarda fragmentos comprobados de las clases, tu explicación, vínculos y las veces que volviste a ella.",
-  "zh-CN": "你探究过的问题的笔记本：每一页都保存课程中经过核对的片段、你的解释、关联以及你回来查看的记录。"
- },
  "Páginas do caderno": {
   "en": "Notebook pages",
   "es": "Páginas del cuaderno",
@@ -488,11 +458,6 @@
   "en": "Explanation",
   "es": "Explicación",
   "zh-CN": "解释"
- },
- "Cada versão fica guardada no histórico.": {
-  "en": "Every version is kept in the history.",
-  "es": "Cada versión queda guardada en el historial.",
-  "zh-CN": "每个版本都会保存在历史中。"
  },
  "Salvar nova versão": {
   "en": "Save new version",
@@ -553,11 +518,6 @@
   "en": "Revisits",
   "es": "Revisitas",
   "zh-CN": "回访"
- },
- "Uma revisita conta quando você muda algo nesta página pelo menos um dia depois de registrá-la (no máximo uma por dia).": {
-  "en": "A revisit counts when you change something on this page at least one day after recording it (at most one per day).",
-  "es": "Una revisita cuenta cuando cambias algo en esta página al menos un día después de registrarla (como máximo una por día).",
-  "zh-CN": "在记录至少一天后修改此页面的内容，才算一次回访（每天最多一次）。"
  },
  "Versões anteriores": {
   "en": "Earlier versions",

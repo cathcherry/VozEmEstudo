@@ -100,7 +100,6 @@
   .quiz-session-main[data-quiz-v2='true'] .quiz-mode-copy { display: grid; gap: 4px; padding-right: 26px; min-width: 0; }
   .quiz-session-main[data-quiz-v2='true'] .quiz-mode-title { font-size: 1.05rem; color: var(--text); }
   .quiz-session-main[data-quiz-v2='true'] .quiz-mode-hint { color: var(--muted); font-size: .9rem; line-height: 1.45; }
-  .quiz-session-main[data-quiz-v2='true'] .quiz-start-note { margin: 16px 0 0; color: var(--muted); font-size: .88rem; }
   .quiz-session-main[data-quiz-v2='true'] .quiz-start-actions {
     display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 18px;
   }

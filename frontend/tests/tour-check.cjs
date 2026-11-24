@@ -1,5 +1,6 @@
 // Guided tour and Ajuda in a real browser with the simulated API (no backend, no Supabase):
-// a new account is invited once on Início, "Agora não" is remembered in the account, the tour
+// the tutorial starts by itself on a new account's first Início, "Pular" is remembered in the
+// account, the tour
 // restarts from Ajuda and Configurações, keyboard navigation and focus work, steps without a
 // visible target are skipped, the Ajuda search filters topics, axe has nothing to report and
 // nothing scrolls sideways at 390 px (also with the largest text).
@@ -35,7 +36,7 @@ async function main() {
   const { server, base } = await startServer();
   const browser = await launchBrowser();
   try {
-    // ---------- First entry: invitation, "Agora não" is remembered -------------------------
+    // ---------- First entry: the tutorial starts by itself; "Pular" is remembered -----------
     {
       const data = state();
       data.profileState = [];
@@ -43,37 +44,67 @@ async function main() {
         user: newUser(),
       });
       await page.goto(base + '/painel.html');
-      const invite = page.locator('[data-tour-invite]');
-      await invite.waitFor({ timeout: 8000 });
-      assert.equal(await page.locator('[data-guided-tour]').count(), 0, 'no tour before asked');
-      // Non-blocking: the page keeps working (the search field takes focus and text).
-      await page.locator('.topbar-search input').fill('fotossíntese');
-      assert.equal(await page.locator('.topbar-search input').inputValue(), 'fotossíntese');
-      await page.locator('.topbar-search input').fill('');
-      await settle(page);
-      await axeCheck(page, '[data-tour-invite]', 'Convite do tour');
-      await shot(page, 'convite-1440', false);
-      await invite.getByRole('button', { name: 'Agora não' }).click();
-      await invite.waitFor({ state: 'detached' });
+      const tour = page.locator('[data-guided-tour]');
+      await tour.waitFor({ timeout: 8000 });
+      assert.equal(await step(page), 'create', 'starts at the first step');
+      assert.equal(await page.locator('[data-tour-invite]').count(), 0, 'no invitation card any more');
+      assert.equal(await page.locator('.tour-hint').count(), 0, 'no instructional footer');
+      const skip = tour.locator('[data-tour-back]');
+      assert.equal((await skip.textContent()).trim(), 'Pular');
+      await skip.click();
+      await tour.waitFor({ state: 'detached' });
       for (let i = 0; i < 40 && !tourRow(data); i++) await page.waitForTimeout(50);
       assert.equal(tourRow(data)?.data.status, 'dismissed', 'saved in the account');
       await page.reload();
       await page.waitForTimeout(2200);
-      assert.equal(await invite.count(), 0, 'not offered again (this browser)');
+      assert.equal(await tour.count(), 0, 'not started again (this browser)');
       await context.close();
       // Another browser of the same account: the account copy decides.
       const second = await openApp(browser, base, allFlags, data, undefined, { user: newUser() });
       await second.page.goto(base + '/painel.html');
       await second.page.waitForTimeout(2200);
       assert.equal(
-        await second.page.locator('[data-tour-invite]').count(),
+        await second.page.locator('[data-guided-tour]').count(),
         0,
-        'not offered on another browser',
+        'not started on another browser',
       );
       await second.context.close();
       record(
-        'Conta nova: convite discreto no Início, sem bloquear a página; "Agora não" fica salvo na conta e o convite não volta',
+        'Conta nova: o tutorial começa sozinho no primeiro Início; "Pular" fica salvo na conta e ele não volta',
       );
+    }
+
+    // ---------- Public testing: the demo lessons step, then the welcome note ------------------
+    {
+      const data = state();
+      data.profileState = [];
+      data.testing = require('./support/mock-testing.cjs').testingState('tester');
+      const { context, page } = await openApp(
+        browser,
+        base,
+        { ...allFlags, public_testing: true },
+        data,
+        undefined,
+        { user: newUser() },
+      );
+      await page.goto(base + '/painel.html');
+      const tour = page.locator('[data-guided-tour]');
+      await tour.waitFor({ timeout: 8000 });
+      await page.waitForTimeout(1500);
+      assert.equal(await page.locator('[data-testing-welcome]').count(), 0, 'the welcome note waits');
+      const seen = [await step(page)];
+      for (let i = 0; i < 14; i++) {
+        const next = tour.locator('[data-tour-next]');
+        const last = (await next.textContent()).trim() === 'Concluir';
+        await next.click();
+        if (last) break;
+        seen.push(await step(page));
+      }
+      assert(seen.includes('demos'), `demo lessons step: ${seen.join()}`);
+      await tour.waitFor({ state: 'detached' });
+      await page.locator('[data-testing-welcome]').waitFor({ timeout: 6000 });
+      await context.close();
+      record('Programa de testes: o tutorial mostra as aulas de demonstração e o aviso de boas-vindas só aparece depois dele');
     }
 
     // ---------- An older account is not interrupted ----------------------------------------
@@ -82,9 +113,9 @@ async function main() {
       const { context, page } = await openApp(browser, base, allFlags, data);
       await page.goto(base + '/painel.html');
       await page.waitForTimeout(2200);
-      assert.equal(await page.locator('[data-tour-invite]').count(), 0);
+      assert.equal(await page.locator('[data-guided-tour]').count(), 0);
       await context.close();
-      record('Conta antiga (ou sem data de criação) não recebe o convite');
+      record('Conta antiga (ou sem data de criação) não vê o tutorial sozinho');
     }
 
     // ---------- Start from the invitation, keyboard, focus, completion -----------------------
@@ -95,21 +126,20 @@ async function main() {
         user: newUser(),
       });
       await page.goto(base + '/painel.html');
-      await page.locator('[data-tour-start]').click({ timeout: 8000 });
       const tour = page.locator('[data-guided-tour]');
-      await tour.waitFor();
+      await tour.waitFor({ timeout: 8000 });
       assert.equal(await step(page), 'create');
       assert.equal(await page.locator('[data-tour-counter]').textContent(), 'Passo 1 de 9');
       assert(await focusedInTour(page), 'focus moves into the tour');
       assert.equal(
-        await tour.locator('[data-tour-back]').isHidden(),
-        true,
-        'no "Voltar" on step 1',
+        (await tour.locator('[data-tour-back]').textContent()).trim(),
+        'Pular',
+        '"Pular" instead of "Voltar" on step 1',
       );
       // Beside the target, not over it.
       const target = await page.locator('.side-navigation .nav-create').boundingBox();
       const box = await tour.boundingBox();
-      assert(box.x >= target.x + target.width, 'popover beside the target');
+      assert(box.x >= target.x + target.width, `popover beside the target ${JSON.stringify({ box, target })}`);
       await settle(page);
       await axeCheck(page, '[data-guided-tour]', 'Tour (passo 1)');
       await shot(page, 'tour-passo-1-1440', false);

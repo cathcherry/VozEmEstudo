@@ -176,7 +176,10 @@ async function main() {
     await axeCheck(second.page, '[data-notes-section]', 'caderno antigo');
     await capture(second.page, 'caderno-antigo-1440');
     // Edit one paragraph: everything else is saved back exactly as it was.
-    await oldEditor.locator('p', { hasText: 'ATP e NADPH.' }).click();
+    // Click on the paragraph's last line (its middle sits between the two lines), then End.
+    const twoLines = oldEditor.locator('p', { hasText: 'ATP e NADPH.' });
+    const lineBox = await twoLines.boundingBox();
+    await twoLines.click({ position: { x: 8, y: lineBox.height - 6 } });
     await second.page.keyboard.press('End');
     await second.page.keyboard.type(' (fase clara)');
     await saved(oldBook);
