@@ -424,3 +424,100 @@ body.app-page[data-page='material'] .question-batch-row {
   justify-self: start;
 }
 }
+
+/* 3.6 — "Criar flashcards" (lesson): numbered steps (where to keep, how to generate), then the
+   suggestions to check, and the save key in a bar that stays in view at the bottom. Saving
+   closes the dialog and confirms with a toast. */
+@layer pages {
+  .flashcard-authoring-dialog {
+    width: min(42rem, calc(100vw - 2rem));
+  }
+  .flashcard-authoring-dialog .dialog-lead {
+    max-width: 56ch;
+    margin: 0 0 var(--space-4);
+    font-size: var(--step-ui);
+    line-height: 1.5;
+  }
+  .flashcard-authoring-dialog .authoring-steps {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .flashcard-authoring-dialog .authoring-step {
+    margin: 0;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: color-mix(in srgb, var(--paper-sunken) 45%, var(--paper-raised));
+  }
+  .flashcard-authoring-dialog .authoring-step > legend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0 var(--space-1);
+    color: var(--ink);
+    font: 650 var(--step-0) / 1.3 var(--font-ui);
+  }
+  .flashcard-authoring-dialog .authoring-step-number {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--brand-ink);
+    color: var(--on-brand);
+    font: 700 0.8rem / 1 var(--font-ui);
+  }
+  .flashcard-authoring-dialog .authoring-grid {
+    gap: var(--space-3) var(--space-4);
+  }
+  .flashcard-authoring-dialog .authoring-grid label {
+    display: grid;
+    gap: var(--space-1);
+    color: var(--ink-muted);
+    font-size: var(--step-ui);
+    font-weight: 600;
+  }
+  .flashcard-authoring-dialog .authoring-grid label[hidden] {
+    display: none;
+  }
+  .flashcard-authoring-dialog .authoring-grid :is(select, input) {
+    width: 100%;
+    margin: 0;
+  }
+  .flashcard-authoring-dialog .advanced-options {
+    margin: var(--space-3) 0 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
+  }
+  .flashcard-authoring-dialog .authoring-steps > .primary-action {
+    justify-self: start;
+    margin: 0;
+  }
+  .flashcard-authoring-dialog .flashcard-preview:not(:empty) {
+    margin: var(--space-3) 0 0;
+  }
+  .flashcard-authoring-dialog .flashcard-proposal {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--brand-ink);
+    border-radius: var(--radius-panel);
+    background: var(--paper-raised);
+  }
+  .flashcard-authoring-dialog .flashcard-proposal[data-rejected='true'] {
+    border-left-color: var(--line-strong);
+  }
+  .flashcard-authoring-dialog .authoring-save-bar:has(> [data-flashcard-save]:not([hidden])) {
+    position: sticky;
+    bottom: calc(-1 * var(--space-5));
+    display: flex;
+    justify-content: flex-end;
+    margin: var(--space-3) calc(-1 * var(--space-5)) calc(-1 * var(--space-5));
+    padding: var(--space-3) var(--space-5);
+    border-top: 1px solid var(--line);
+    background: var(--paper-raised);
+  }
+  .flashcard-authoring-dialog .authoring-save-bar [data-flashcard-save] {
+    margin: 0;
+  }
+}
