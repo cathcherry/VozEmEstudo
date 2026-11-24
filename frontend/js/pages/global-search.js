@@ -21,6 +21,28 @@ export const SCOPES = Object.freeze({
   lessons: 'nos títulos das aulas',
   questions: 'nas questões',
   transcripts: 'nas transcrições',
+  notes: 'nas anotações',
+});
+/** The lesson, opened on the highlighted passage when the note has one (as in the lesson's notes). */
+export function noteHref(note) {
+  const params = new URLSearchParams({ id: note.material_id });
+  const quote = String(note.quote || '').split('\n')[0].trim();
+  if (quote) {
+    params.set('busca', quote.length > 80 ? quote.slice(0, 80).replace(/\s+\S*$/, '') : quote);
+    if (Number.isInteger(note.segment_position)) params.set('trecho', String(note.segment_position));
+  }
+  return `./material.html?${params}`;
+}
+/** A note as the search service returns it → the fields the result list reads. */
+export const fromSearchNote = (note) => ({
+  id: note.noteId,
+  material_id: note.materialId,
+  lessonTitle: note.lessonTitle,
+  source_revision: note.sourceRevision,
+  segment_position: note.segmentPosition,
+  quote: note.quote,
+  note_text: note.noteText,
+  color: note.color,
 });
 const TAB_LABELS = {
   lessons: 'Aulas',
@@ -62,10 +84,14 @@ export function resultGroups(result) {
 
 /**
  * Painel search bar: suggestions (matching lesson titles + where to search) and results on the
- * dashboard, separated in tabs for lessons, questions and transcripts. When the dashboard passes
- * `notes`, the user's own annotations become one more tab (first page; `openNotes` shows them all).
+ * dashboard, separated in tabs for lessons, questions and transcripts. With annotations on
+ * (`notes()` resolves true) the user's own notes are one more tab and a scope of their own (the
+ * server searches them with the rest, for this account only). `?em=notes` without a search lists
+ * every note (`listNotes(offset)`, a page at a time): the place old "Revisar › Anotações" links reach.
  */
-export function initGlobalSearch({ form, main, heading, notes = null, openNotes = null }) {
+export function initGlobalSearch({ form, main, heading, notes = null, listNotes = null }) {
+  let notesOn = null;
+  const notesEnabled = async () => (notesOn ??= notes ? Boolean(await notes().catch(() => false)) : false);
   const input = form.querySelector('input[type=search]');
   input.setAttribute('aria-label', translate('search.label'));
   input.placeholder = translate('search.placeholder');
@@ -110,6 +136,7 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
     const q = input.value.trim();
     if (q.length < 2) return close();
     const all = await loadMaterials();
+    const withNotes = await notesEnabled();
     if (input.value.trim() !== q) return;
     const needle = fold(q);
     const lessons = all
@@ -121,7 +148,9 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
       .slice(0, 4);
     options = [
       ...lessons.map((m) => ({ kind: 'lesson', material: m })),
-      ...Object.keys(SCOPES).map((scope) => ({ kind: 'scope', scope })),
+      ...Object.keys(SCOPES)
+        .filter((scope) => scope !== 'notes' || withNotes)
+        .map((scope) => ({ kind: 'scope', scope })),
     ];
     listbox.replaceChildren();
     if (lessons.length) {
@@ -263,7 +292,7 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
 
   function noteItem(note, q) {
     const link = el('a', null, `search-result search-note annotation-${note.color || 'yellow'}`);
-    link.href = materialHref(note.material_id);
+    link.href = noteHref(note);
     link.append(el('small', `${note.lessonTitle || 'Aula'} · revisão ${note.source_revision}`));
     if (note.quote) link.append(markedText('span', note.quote, q, 'search-note-quote'));
     if (note.note_text) link.append(markedText('span', note.note_text, q));
@@ -287,7 +316,9 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
       const empty = emptyState(
         `Nada encontrado para “${q}”`,
         scope === 'all'
-          ? 'O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.'
+          ? Array.isArray(result.notes)
+            ? 'O Nino procurou nos títulos, nas questões, nas transcrições e nas suas anotações. Confira a grafia ou tente outra palavra.'
+            : 'O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.'
           : `Nada ${SCOPES[scope]}. Que tal procurar em tudo?`,
         { href: null, mascot: 'curious', size: 128 },
       );
@@ -316,16 +347,11 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
                 : transcriptItem(item, q),
         );
       panel.append(list);
-      if (group.key === 'notes' && openNotes) {
-        const all = el(
-          'button',
-          `Ver ${group.count === 1 ? 'a anotação' : `as ${group.count} anotações`} em Revisar`,
-          'text-action',
+      // More notes than shown: the first ones are listed; a narrower search finds the rest.
+      if (group.key === 'notes' && group.count > group.items.length)
+        panel.append(
+          el('p', `Mostrando ${group.items.length} de ${group.count} anotações. Use mais palavras para encontrar as outras.`, 'search-meta'),
         );
-        all.type = 'button';
-        all.addEventListener('click', () => openNotes(q));
-        panel.append(all);
-      }
       return panel;
     });
     if (groups.length === 1) {
@@ -385,19 +411,10 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
     results.replaceChildren(el('p', 'Procurando…', 'loading-state'));
     const version = ++request;
     try {
-      // Annotations are optional: a failure there never hides the library results.
-      const [result, notePage] = await Promise.all([
-        searchLibrary(q, scope),
-        scope === 'all' && notes ? notes(q).catch(() => null) : null,
-      ]);
+      // The server searches the notes with the rest (own notes only; none when annotations are off).
+      const result = await searchLibrary(q, scope);
       if (version !== request) return;
-      if (notePage?.notes?.length) {
-        const titles = new Map((await loadMaterials()).map((m) => [m.id, m.title]));
-        result.notes = notePage.notes
-          .slice(0, 20)
-          .map((note) => ({ ...note, lessonTitle: titles.get(note.material_id) }));
-        result.notesTotal = notePage.total;
-      }
+      if (Array.isArray(result.notes)) result.notes = result.notes.map(fromSearchNote);
       // Tags live in this browser, so lessons found by tag are added here.
       if (scope === 'all' || scope === 'lessons') {
         const known = new Set(result.lessons.map((lesson) => lesson.materialId));
@@ -422,11 +439,61 @@ export function initGlobalSearch({ form, main, heading, notes = null, openNotes 
     }
   }
 
+  /** Every note of the account, newest first, a page at a time ("Ver todas" on Início). */
+  async function showAllNotes() {
+    if (!listNotes || !(await notesEnabled())) return;
+    setSearching(true);
+    results.replaceChildren();
+    const title = el('h2', 'Suas anotações');
+    title.id = 'global-search-title';
+    title.tabIndex = -1;
+    const back = el('button', 'Voltar ao início', 'text-action');
+    back.type = 'button';
+    back.addEventListener('click', () => {
+      clear();
+      history.replaceState(null, '', location.pathname);
+    });
+    const head = el('div', null, 'search-results-head');
+    head.append(title, back);
+    const hint = el('p', 'Cada anotação abre a aula no trecho destacado. Para procurar uma, use a busca acima.', 'search-meta');
+    const list = el('div', null, 'search-list');
+    const more = el('button', 'Mostrar mais anotações', 'secondary-action');
+    more.type = 'button';
+    more.hidden = true;
+    const status = el('p', null, 'search-meta');
+    status.setAttribute('role', 'status');
+    results.append(head, hint, list, status, more);
+    let offset = 0;
+    const titles = new Map((await loadMaterials()).map((m) => [m.id, m.title]));
+    const load = async () => {
+      more.disabled = true;
+      results.setAttribute('aria-busy', 'true');
+      try {
+        const page = await listNotes(offset);
+        for (const note of page.notes || [])
+          list.append(noteItem({ ...note, lessonTitle: titles.get(note.material_id) }, ''));
+        offset += (page.notes || []).length;
+        const total = Number(page.total) || 0;
+        status.textContent = total ? `${offset} de ${total} anotações` : 'Nenhuma anotação ainda. Destaque um trecho numa aula para começar.';
+        more.hidden = offset >= total || !(page.notes || []).length;
+      } catch (error) {
+        status.textContent = error.message || 'As anotações não puderam ser carregadas agora.';
+      } finally {
+        more.disabled = false;
+        results.setAttribute('aria-busy', 'false');
+      }
+    };
+    more.addEventListener('click', () => void load());
+    await load();
+    title.focus();
+  }
+
   const params = new URLSearchParams(location.search);
   if (params.get('busca'))
     void run(
       params.get('busca'),
       Object.hasOwn(SCOPES, params.get('em')) ? params.get('em') : 'all',
     );
-  return { run, clear };
+  else if (params.get('em') === 'notes') void showAllNotes();
+  return { run, clear, showAllNotes };
 }

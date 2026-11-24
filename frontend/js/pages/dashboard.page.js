@@ -24,11 +24,12 @@ initRailTabs();
 void initDashboardCustomize({ owner: session.user.id }).catch(() => { /* The default layout stays usable. */ });
 // Summary cards for the study tools (each links to Revisar or Planejar).
 initDashboardHome();
-// Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page.
+// Search bar: lessons, questions, transcripts and (when enabled) annotations, in tabs on this page;
+// ?em=notes lists every note (old "Revisar › Anotações" links and the notes card land here).
 const searchForm=document.querySelector('.topbar-search');
 if(searchForm)initGlobalSearch({form:searchForm,main:document.querySelector('main'),heading:document.querySelector('.desk-scene')||document.querySelector('.dashboard-heading'),
-  notes:async(q)=>(await isFeatureEnabled('annotations').catch(()=>false))?listAnnotations({q,offset:0}):null,
-  openNotes:(q)=>{location.href=`./revisar.html?busca=${encodeURIComponent(q)}#anotacoes`;}});
+  notes:()=>isFeatureEnabled('annotations'),
+  listNotes:(offset)=>listAnnotations({offset})});
 const name=session.user.user_metadata?.display_name || session.user.user_metadata?.full_name || session.user.user_metadata?.name || '';
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');

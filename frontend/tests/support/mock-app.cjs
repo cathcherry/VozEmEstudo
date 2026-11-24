@@ -797,19 +797,36 @@ async function setup(context, base, flags, data, options = {}) {
         ended_at: body.close ? new Date().toISOString() : null,
       });
     }
-    if (p === '/api/search')
+    if (p === '/api/search') {
+      // 3.6: the server also searches the account's own notes (when annotations are on).
+      const q = (url.searchParams.get('q') || '').toLowerCase();
+      const scope = url.searchParams.get('scope') || 'all';
+      const titles = new Map(materials.map((m) => [m.id, m.title]));
+      const notes = flags.annotations
+        ? data.notes
+            .filter((n) => `${n.quote} ${n.note_text}`.toLowerCase().includes(q))
+            .map((n) => ({
+              noteId: n.id,
+              materialId: n.material_id,
+              lessonTitle: titles.get(n.material_id) || 'Aula',
+              sourceRevision: n.source_revision,
+              segmentPosition: n.segment_position ?? null,
+              quote: n.quote || '',
+              noteText: n.note_text || '',
+              color: n.color || 'yellow',
+              createdAt: n.created_at,
+            }))
+        : null;
       return json({
-        lessons: [
-          {
-            materialId: 'l-foto',
-            title: 'Fotossíntese e respiração celular',
-            subject: 'Biologia',
-            createdAt: materials[0].created_at,
-          },
-        ],
+        lessons:
+          scope === 'all' || scope === 'lessons'
+            ? [{ materialId: 'l-foto', title: 'Fotossíntese e respiração celular', subject: 'Biologia', createdAt: materials[0].created_at }]
+            : [],
         questions: [],
         transcripts: [],
+        ...(notes ? { notes: scope === 'all' || scope === 'notes' ? notes : [], notesTotal: notes.length } : {}),
       });
+    }
     // Private classrooms (Turmas): stateful simulation in ./mock-classrooms.cjs.
     if (p.startsWith('/api/classrooms'))
       return require('./mock-classrooms.cjs').handleClassrooms({
