@@ -24,7 +24,8 @@ export async function revealStudyNavigation() {
   try {
     const flags = await getFeatureFlags();
     const root = document.documentElement;
-    root.dataset.navReview = String(Boolean(flags.flashcards || flags.annotations || flags.quiz_v2));
+    // 3.7: the entry is "Flashcards" (Revisar was retired); questions live in the lesson and questoes.html.
+    root.dataset.navReview = String(Boolean(flags.flashcards));
     root.dataset.navPlan = String(Boolean(flags.planning || flags.calendar || flags.study_tracking));
     root.dataset.navFocus = String(Boolean(flags.study_tracking));
     root.dataset.navClassrooms = String(Boolean(flags.classrooms));
