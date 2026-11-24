@@ -3,6 +3,7 @@ import { AppError } from '../domain/errors.js';
 import { createEvidenceLocator } from '../domain/evidence-match.js';
 import { conceptKey, planCoverage, sourceCapacity } from '../domain/question-plan.js';
 import { filterRedundant, normalizeText } from '../domain/question-redundancy.js';
+import { questionQualityIssue } from '../domain/question-quality.js';
 import { buildConceptMessages, buildPlannedQuestionMessages } from '../prompts/questions.v2.js';
 
 /** At most three model calls per list: analysis, generation and one replacement round. */
@@ -186,6 +187,11 @@ export function buildQuestionGenerator({ complete }) {
           reject('unsupported');
           continue;
         }
+        const issue = questionQualityIssue(item.data, normalizedSource);
+        if (issue) {
+          reject(issue);
+          continue;
+        }
         candidates.push({
           ...item.data,
           evidence,
@@ -270,12 +276,14 @@ export function shortfallReason({ generated, count, planned, rejected = {} }) {
   if (generated >= count) return null;
   if (planned < count && generated >= planned) return 'insufficient_content';
   // Everything else the filter rejects (same answer, paraphrase, earlier list…) is a repeat.
+  // Quality rejections (copied alternative, length giveaway) are malformed answers, not repeats.
+  const malformed = ['invalid', 'copied_option', 'length_giveaway'];
   const repeats = Object.entries(rejected)
-    .filter(([reason]) => reason !== 'unsupported' && reason !== 'invalid')
+    .filter(([reason]) => reason !== 'unsupported' && !malformed.includes(reason))
     .reduce((sum, [, n]) => sum + n, 0);
   const ranked = [
     ['unsupported', rejected.unsupported || 0],
-    ['invalid', rejected.invalid || 0],
+    ['invalid', malformed.reduce((sum, reason) => sum + (rejected[reason] || 0), 0)],
     ['redundancy', repeats],
   ].sort((a, b) => b[1] - a[1]);
   return ranked[0][1] > 0 ? ranked[0][0] : 'model_omitted';
@@ -298,9 +306,12 @@ export async function mockQuestionCompletion({ stage, messages }) {
   return {
     questions: input.plan.map((slot) => ({
       slot: slot.slot,
-      statement: `[Demonstração · ${slot.skill} · ${slot.difficulty}] Qual trecho a aula apresenta sobre "${slot.concept}"?`,
+      // The concept's words in reverse: distinct per concept without repeating a short evidence.
+      statement: `[Demonstração · ${slot.skill} · ${slot.difficulty}] O que a aula diz sobre "${String(slot.concept).split(/\s+/u).reverse().join(' ')}"?`,
+      // Its own wording, like a real answer (a copied transcript sentence is rejected).
       options: [
-        slot.conceptEvidence,
+        // Distinct per concept but never a literal quote (reversed words, at most seven).
+        String(slot.conceptEvidence || slot.concept).split(/\s+/u).reverse().slice(0, 7).join(' '),
         `Alternativa de demonstração não citada (${slot.slot}-b).`,
         `Alternativa de demonstração não citada (${slot.slot}-c).`,
         `Alternativa de demonstração não citada (${slot.slot}-d).`,

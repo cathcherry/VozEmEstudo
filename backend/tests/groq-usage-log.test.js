@@ -55,7 +55,7 @@ test('question prompts ask for exam-style statements that never mention the tran
   const { MULTI_LESSON_PROMPT_VERSION } = await import('../src/prompts/multi-lesson.v1.js');
   const system = buildPlannedQuestionMessages([{ position: 0, text: 'x' }], { slots: [{ id: 's1', skill: 'recall', difficulty: 'easy', concept: { label: 'fotossíntese', evidence: null } }] })[0].content;
   assert.match(system, /nunca mencione "a transcrição"/);
-  assert.equal(QUESTIONS_V2_PROMPT_VERSION, 'questions-v2.4', 'a new prompt version invalidates reuse of older lists');
+  assert.equal(QUESTIONS_V2_PROMPT_VERSION, 'questions-v2.5', 'a new prompt version invalidates reuse of older lists');
   assert.equal(MULTI_LESSON_PROMPT_VERSION, 'multi-lesson-v3');
 });
 
