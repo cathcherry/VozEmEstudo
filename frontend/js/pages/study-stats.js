@@ -165,7 +165,7 @@ export async function initStudyStats({ container, materials = null } = {}) {
   const heading = make('h2', 'Seu ritmo');
   heading.id = 'study-stats-title';
   container.setAttribute('aria-labelledby', heading.id);
-  const intro = make('p', 'Tempo creditado nas últimas 12 semanas. Só conta o tempo com o cronômetro ativo.', 'stats-intro');
+  const intro = make('p', 'Últimas 12 semanas.', 'stats-intro');
   const tiles = make('dl', null, 'stats-tiles');
   const tile = (label, value) => {
     const box = make('div', null, 'stats-tile');
