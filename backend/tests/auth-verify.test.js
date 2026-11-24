@@ -54,3 +54,32 @@ test('userFromClaims never trusts a missing or non-user role', () => {
   assert.equal(userFromClaims(null), null);
   assert.equal(userFromClaims({ sub: 'x', role: 'service_role' }), null);
 });
+
+test('server mode refuses anonymous sign-ins and unconfirmed e-mail accounts', async () => {
+  const verifyWith = (user) =>
+    buildTokenVerifier({
+      mode: 'server',
+      client: fakeClient({ getUser: async () => ({ data: { user }, error: null }) }),
+    })('t');
+  const base = { id: 'u1', app_metadata: { provider: 'email' } };
+  await assert.rejects(verifyWith({ ...base, email_confirmed_at: null }), (e) => e.code === 'AUTH_REQUIRED');
+  await assert.rejects(
+    verifyWith({ id: 'u2', is_anonymous: true, app_metadata: { provider: 'anonymous' } }),
+    (e) => e.code === 'AUTH_REQUIRED',
+  );
+  assert.equal((await verifyWith({ ...base, email_confirmed_at: '2026-11-01T00:00:00Z' })).id, 'u1');
+  // OAuth accounts are confirmed by the provider.
+  assert.equal((await verifyWith({ id: 'u3', app_metadata: { provider: 'google' } })).id, 'u3');
+});
+
+test('jwks mode refuses anonymous tokens and does not require the (absent) confirmation claim', async () => {
+  const verifyWith = (extra) =>
+    buildTokenVerifier({
+      mode: 'jwks',
+      client: fakeClient({
+        getClaims: async () => ({ data: { claims: { ...claims, ...extra } }, error: null }),
+      }),
+    })('t');
+  await assert.rejects(verifyWith({ is_anonymous: true }), (e) => e.code === 'AUTH_REQUIRED');
+  assert.equal((await verifyWith({})).id, claims.sub);
+});

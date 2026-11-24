@@ -10,6 +10,7 @@ import { assertPublicSupabaseKey } from './validators/public-config.validator.js
 import { requestIdMiddleware } from './middleware/request-id.middleware.js';
 import { testingRouter, demoLessonRouter } from './routes/testing.routes.js';
 import { requireAuth } from './middleware/auth.middleware.js';
+import { limitPerAddress } from './middleware/public-rate-limit.middleware.js';
 import { notFoundMiddleware, errorMiddleware } from './middleware/error.middleware.js';
 import { materialRouter } from './routes/material.routes.js';
 import { catalogRouter } from './routes/catalog.routes.js';
@@ -36,11 +37,14 @@ const processingDisclosure = () => disclosureLabels(getAiRegistry().config);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const app = express();
+app.disable('x-powered-by');
+if (env.trustProxy) app.set('trust proxy', env.trustProxy);
 
 // Policy for the static front end (scripts are local files; styles use inline attributes;
 // Supabase API, storage uploads and realtime; blob/data media; YouTube/Spotify embeds of the
 // profile and of the soundscape music player — see docs/AUDIO_E_MUSICA.md).
-// Off by default until checked against the real project: see docs/HOSPEDAGEM.md.
+// Enforced by default when NODE_ENV=production (CONTENT_SECURITY_POLICY overrides): see
+// docs/HOSPEDAGEM.md. The password check queries the HIBP range API (k-anonymity) from the page.
 export function contentSecurityDirectives(supabaseUrl) {
   const supabase = supabaseUrl ? [supabaseUrl, supabaseUrl.replace(/^http/, 'ws')] : [];
   return {
@@ -49,7 +53,7 @@ export function contentSecurityDirectives(supabaseUrl) {
     styleSrc: ["'self'", "'unsafe-inline'"],
     imgSrc: ["'self'", 'data:', 'blob:', ...supabase],
     mediaSrc: ["'self'", 'blob:', ...supabase],
-    connectSrc: ["'self'", ...supabase],
+    connectSrc: ["'self'", ...supabase, 'https://api.pwnedpasswords.com'],
     fontSrc: ["'self'", 'data:'],
     frameSrc: ["'self'", 'https://www.youtube-nocookie.com', 'https://www.youtube.com', 'https://open.spotify.com'],
     objectSrc: ["'none'"],
@@ -106,8 +110,11 @@ if (isFeatureEnabled('notebooks')) app.use('/api/notebooks', requireAuth, notebo
 if(isFeatureEnabled('calendar'))app.use('/api/calendar',requireAuth,calendarRouter);
 if(isFeatureEnabled('sharing')){
   app.use('/api/sharing',requireAuth,sharingRouter);
-  app.post('/api/shared-material',publicShare);
-  if (isFeatureEnabled('study_authoring')) app.post('/api/shared-question-list', publicQuestionList);
+  // Unauthenticated: capped per address (the token itself has 256 bits).
+  const publicLimit = limitPerAddress({ max: env.rateLimitPublicSharesPerMinute, windowMs: 60000 });
+  app.post('/api/shared-material', publicLimit, publicShare);
+  if (isFeatureEnabled('study_authoring'))
+    app.post('/api/shared-question-list', publicLimit, publicQuestionList);
 }
 if (isFeatureEnabled('catalog_units')) app.use('/api/catalog', requireAuth, catalogRouter);
 if (isFeatureEnabled('planning')) app.use('/api/planning', requireAuth, planningRouter);

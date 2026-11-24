@@ -21,6 +21,24 @@ export function leaseSeconds(value) {
   return seconds <= 0 ? 0 : Math.max(60, Math.round(seconds));
 }
 
+/**
+ * Content-Security-Policy mode: an explicit 'off', 'report-only' or 'enforce' always wins; when
+ * unset (or invalid) production enforces the policy and other environments leave it off.
+ */
+export function cspMode(value, nodeEnv) {
+  if (['off', 'report-only', 'enforce'].includes(value)) return value;
+  return nodeEnv === 'production' ? 'enforce' : 'off';
+}
+
+/** Express "trust proxy": unset/false (default), true, or a number of proxy hops. */
+export function trustProxy(value) {
+  const text = String(value ?? '').trim().toLowerCase();
+  if (!text || text === 'false' || text === '0') return false;
+  if (text === 'true') return true;
+  const hops = Math.floor(Number(text));
+  return Number.isFinite(hops) && hops > 0 ? hops : false;
+}
+
 export const env = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development',
   port: number(process.env.PORT, 3000),
@@ -34,10 +52,14 @@ export const env = Object.freeze({
   supabaseAuthVerify: process.env.SUPABASE_AUTH_VERIFY === 'jwks' ? 'jwks' : 'server',
   audioBucket: process.env.SUPABASE_AUDIO_BUCKET || 'audios',
   // Per-account limits on costly requests (0 turns a limit off). See docs/HOSPEDAGEM.md.
-  // Content-Security-Policy for the served pages: 'off' (default), 'report-only' or 'enforce'.
-  contentSecurityPolicy: ['report-only', 'enforce'].includes(process.env.CONTENT_SECURITY_POLICY)
-    ? process.env.CONTENT_SECURITY_POLICY
-    : 'off',
+  // Content-Security-Policy for the served pages: 'off', 'report-only' or 'enforce'. Unset:
+  // 'enforce' when NODE_ENV=production, 'off' otherwise (see cspMode).
+  contentSecurityPolicy: cspMode(process.env.CONTENT_SECURITY_POLICY, process.env.NODE_ENV),
+  // Behind a hosting proxy, the number of hops to trust so req.ip is the visitor's address
+  // (used only by the limit on the public share endpoints).
+  trustProxy: trustProxy(process.env.TRUST_PROXY),
+  // Unauthenticated share lookups per address per minute (0 turns the limit off).
+  rateLimitPublicSharesPerMinute: number(process.env.RATE_LIMIT_PUBLIC_SHARES_PER_MINUTE, 30),
   rateLimitTranscriptionsPerDay: number(process.env.RATE_LIMIT_TRANSCRIPTIONS_PER_DAY, 20),
   rateLimitGenerationsPerHour: number(process.env.RATE_LIMIT_GENERATIONS_PER_HOUR, 30),
   rateLimitMediaPerMinute: number(process.env.RATE_LIMIT_MEDIA_PER_MINUTE, 20),
@@ -75,6 +97,18 @@ export const env = Object.freeze({
   // Server-side ceiling for one question list; the database accepts at most 100.
   maxQuestionListCount: listLimit(process.env.MAX_QUESTION_LIST_COUNT),
 });
+
+/** Settings that are unsafe for a public deployment (logged as warnings at API start-up). */
+export function productionConfigWarnings(config = env) {
+  if (config.nodeEnv !== 'production') return [];
+  const warnings = [];
+  if (config.mockExternalServices) warnings.push('MOCK_EXTERNAL_SERVICES=true simula transcrição e IA');
+  if (config.contentSecurityPolicy !== 'enforce') warnings.push(`CONTENT_SECURITY_POLICY=${config.contentSecurityPolicy}`);
+  if (!/^https:\/\//.test(config.appOrigin)) warnings.push('APP_ORIGIN não usa https://');
+  if (/localhost|127\.0\.0\.1/.test(config.appOrigin)) warnings.push('APP_ORIGIN aponta para localhost');
+  if (config.mockAsrSegmentsFile) warnings.push('MOCK_ASR_SEGMENTS_FILE definido');
+  return warnings;
+}
 
 export function missingRuntimeSecrets() {
   return [

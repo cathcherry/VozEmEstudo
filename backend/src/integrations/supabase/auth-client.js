@@ -30,6 +30,20 @@ export function userFromClaims(claims) {
 }
 
 /**
+ * Accounts the API refuses even with a valid token: anonymous sign-ins (if ever enabled in the
+ * project) and e-mail/password accounts whose address was never confirmed. Supabase does not
+ * issue sessions to unconfirmed accounts while "Confirm email" is on; this keeps the API closed
+ * if that dashboard setting is switched off by mistake. OAuth accounts are confirmed by the
+ * provider. Only `server` mode sees the confirmation date (it is not a JWT claim).
+ */
+export function isAllowedUser(user, { checkConfirmation = true } = {}) {
+  if (!user?.id || user.is_anonymous === true) return false;
+  const provider = user.app_metadata?.provider;
+  if (checkConfirmation && provider === 'email' && !user.email_confirmed_at && !user.confirmed_at) return false;
+  return true;
+}
+
+/**
  * `server` (default): asks Supabase Auth for the user on every request (`getUser`), so a revoked
  * session stops working at once.
  * `jwks` (SUPABASE_AUTH_VERIFY=jwks): verifies the signature of an asymmetric token against the
@@ -42,11 +56,11 @@ export function buildTokenVerifier({ mode = env.supabaseAuthVerify, client = get
     if (mode === 'jwks') {
       const { data, error } = await client().auth.getClaims(token);
       const user = error ? null : userFromClaims(data?.claims);
-      if (!user) throw errors.authRequired();
+      if (!user || !isAllowedUser(user, { checkConfirmation: false })) throw errors.authRequired();
       return user;
     }
     const { data, error } = await client().auth.getUser(token);
-    if (error || !data?.user) throw errors.authRequired();
+    if (error || !data?.user || !isAllowedUser(data.user)) throw errors.authRequired();
     return data.user;
   };
 }
