@@ -22,7 +22,7 @@ flowchart LR
 - **Um serviço de worker** com o mesmo código, sem porta HTTP. Busca tarefas na fila do banco e
   chama os provedores de IA. Pode ter mais de uma instância (reservas com renovação evitam
   execução dupla), mas uma basta.
-- **Supabase** existente (Postgres, Auth, Storage). Nenhuma migration nova é necessária para esta
+- **Supabase** existente (Postgres, Auth, Storage). O teste público usa as migrações de 25/11 (já aplicadas; ver [LANCAMENTO_TESTE_PUBLICO.md](LANCAMENTO_TESTE_PUBLICO.md)). Nenhuma outra é necessária para esta
   versão.
 - FFmpeg/ffprobe vêm dos pacotes npm (`ffmpeg-static`, `ffprobe-static`); não é preciso instalar
   nada no sistema.

@@ -27,6 +27,9 @@ export const RELEASE_SETTINGS = Object.freeze({
   FEATURE_DISCOVERIES: 'true',
   // Diário de estudo: migration 20261124100000 applied in production on 22/11/2026.
   FEATURE_JOURNAL: 'true',
+  // Programa de testes públicos: só na hospedagem do teste (docs/LANCAMENTO_TESTE_PUBLICO.md);
+  // numa instalação local ele aplicaria as cotas de participante.
+  FEATURE_PUBLIC_TESTING: 'false',
   // Not implemented: must stay off.
   FEATURE_SOCIAL_BASIC: 'false',
   GROQ_MODEL: 'openai/gpt-oss-120b',
