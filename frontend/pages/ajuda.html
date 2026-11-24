@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/css/product.css" />
     <link rel="stylesheet" href="/css/library.css" />
   <link rel="stylesheet" href="/css/personalization.css" />
+  <link rel="stylesheet" href="/css/help.css" />
 </head>
   <body class="app-page" data-page="help">
     <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
@@ -81,183 +82,170 @@
         >
       </div>
     </header>
-    <main tabindex="-1" class="article-content" id="conteudo-principal"><nav class="settings-breadcrumb" aria-label="Caminho"><a href="./configuracoes.html">Configurações</a><span aria-hidden="true">/</span><span>Ajuda</span></nav>
-      <header class="article-heading">
-        <span class="eyebrow">Precisa de uma orientação?</span>
+    <main tabindex="-1" class="article-content help-page" id="conteudo-principal"><nav class="settings-breadcrumb" aria-label="Caminho"><a href="./configuracoes.html">Configurações</a><span aria-hidden="true">/</span><span>Ajuda</span></nav>
+      <header class="article-heading help-heading">
         <h1>Ajuda</h1>
-        <p>O caminho principal é enviar uma aula, conferir a transcrição e seguir as etapas de estudo da aula; depois, revisar e planejar os próximos estudos.</p>
+        <p>Como usar cada parte do Voz em Estudo. Busque um assunto ou escolha um tópico.</p>
       </header>
-      <section class="article-section first-section">
-        <h2>Onde encontrar cada coisa</h2>
-        <dl class="help-locations">
-          <div>
-            <dt>Nova transcrição</dt>
-            <dd>Botão no topo do menu: envie áudio ou vídeo de uma aula e acompanhe as três etapas.</dd>
+      <div class="help-tools">
+        <form class="help-search" role="search" data-help-search>
+          <label for="help-filter">Buscar na ajuda</label>
+          <div class="help-search-field">
+            <svg class="ui-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="search"><use href="/assets/icons/sprite.svg#i-search"/></svg>
+            <input id="help-filter" type="search" autocomplete="off" placeholder="Ex.: flashcards, pastas, senha" aria-describedby="help-filter-status" />
           </div>
+          <p class="help-filter-status" id="help-filter-status" data-help-status role="status" aria-live="polite"></p>
+        </form>
+        <aside class="help-tour-card" aria-labelledby="help-tour-title">
+          <svg class="ui-icon" width="24" height="24" focusable="false" aria-hidden="true" data-icon="tour"><use href="/assets/icons/sprite.svg#i-tour"/></svg>
           <div>
-            <dt>Início</dt>
-            <dd>
-              A aula para continuar, o que pede atenção hoje (tarefas, cartões, horários) e o seu
-              tempo de estudo na semana. Cada bloco leva à página completa.
-            </dd>
+            <h2 id="help-tour-title">Tour guiado</h2>
+            <p>Um passeio de um minuto pelas partes principais, no Início.</p>
           </div>
-          <div>
-            <dt>Biblioteca</dt>
-            <dd>
-              Todas as aulas: busque por título ou tag, agrupe por disciplina e use o menu ⋯ de cada
-              aula para editar informações. Cada aula mostra as etapas de estudo — conferir a
-              transcrição, resumo, questões e flashcards — e o próximo passo.
-            </dd>
-          </div>
-          <div>
-            <dt>Revisar</dt>
-            <dd>
-              Flashcards do dia, criação e conjuntos de cartões, suas tentativas de questões (com
-              "refazer apenas as erradas") e todas as anotações. Aparece quando esses recursos estão
-              ativos.
-            </dd>
-          </div>
-          <div>
-            <dt>Planejar</dt>
-            <dd>
-              Objetivos e tarefas, calendário de estudos (com exportação .ics) e tempo de estudo com
-              meta semanal. Aparece quando esses recursos estão ativos.
-            </dd>
-          </div>
-          <div>
-            <dt>Aparência</dt>
-            <dd>
-              Cores, fonte e temas personalizados nomeados, com configurações de leitura e foco.
-            </dd>
-          </div>
-          <div>
-            <dt>Leitura e foco</dt>
-            <dd>Tamanho do texto, espaçamento, contraste e movimento.</dd>
-          </div>
-          <div>
-            <dt>Minha conta</dt>
-            <dd>Perfil, objetivo de estudo e oito avatares do Nino, pelo atalho no cabeçalho.</dd>
-          </div>
-        </dl>
-      </section>
-      <section class="article-section" id="nova-transcricao">
-        <h2>Como transcrever uma aula</h2>
-        <ol class="help-procedure">
-          <li>
-            Abra <a href="./nova-transcricao.html">Nova transcrição</a> e escolha um MP4, MP3, WAV,
-            M4A, AAC, OGG, FLAC, WebM ou MOV de até 100 MB.
-          </li>
-          <li>
-            Ouça a gravação e escolha o início e o fim do trecho. Você também pode baixar o recorte
-            antes de continuar.
-          </li>
-          <li>Avance, dê um título à aula e escolha a quantidade de questões.</li>
-          <li>
-            Selecione “Enviar e transcrever”. Somente o áudio do trecho escolhido é enviado para
-            transcrição; a página da aula mostra o andamento.
-          </li>
-          <li>
-            Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser
-            atualizados após uma edição.
-          </li>
-        </ol>
-      </section>
-      <section class="article-section" id="criacao-questoes">
-        <h2>Como estudar</h2>
-        <p>
-          Abra uma aula na <a href="./historico.html">Biblioteca</a>. Use Gerar questões na própria
-          Biblioteca ou no material para criar novos lotes, mesmo de áudios antigos. A transcrição
-          salva é suficiente; não é preciso reenviar a gravação. Os lotes anteriores continuam
-          disponíveis. O resumo e a transcrição ficam na mesma página.
-        </p>
-      </section>
-      <section class="article-section" id="anotacoes">
-        <h2>Anotações e destaques</h2>
-        <p>
-          Numa aula, abra <strong>Anotações e destaques desta aula</strong>, selecione um trecho da
-          transcrição em modo de edição e use <strong>Usar seleção da transcrição</strong>; escreva
-          uma nota e salve. Todas as anotações ficam em <strong>Revisar › Anotações</strong> e
-          também aparecem na busca do Início.
-        </p>
-      </section>
-      <section class="article-section" id="foco-leitura">
-        <h2>Foco e personalização</h2>
-        <p>
-          O botão “Modo foco” e o atalho Alt + F reduzem distrações. A barra lateral se recolhe
-          automaticamente. Abra novamente pelo botão do menu quando precisar navegar. No foco, use
-          A− e A+ no cabeçalho para ajustar o texto.
-        </p>
-        <p>
-          Use <a href="./aparencia.html">Aparência</a> para mudar o tema e
-          <a href="./aparencia.html#reading-settings">Leitura e foco</a> para ajustar o conforto de leitura. As
-          preferências são sincronizadas com a sua conta.
-        </p>
-      </section>
-      <section class="article-section" id="seus-dados" aria-labelledby="storage-heading">
-        <h2 id="storage-heading">Onde seus dados ficam salvos</h2>
-        <aside class="storage-notice" role="note" aria-labelledby="storage-notice-title">
-          <svg class="ui-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="info"><use href="/assets/icons/sprite.svg#i-info"/></svg>
-          <div>
-            <h3 id="storage-notice-title">Sincronização da conta</h3>
-            <p>
-              O histórico, as conquistas e as preferências são sincronizados com sua conta.
-              Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira
-              o estado de sincronização no perfil antes de limpar os dados do navegador.
-            </p>
-          </div>
+          <button class="secondary-action" type="button" data-start-tour>Iniciar tour</button>
         </aside>
-        <dl class="storage-details">
-          <div>
-            <dt>Na sua conta</dt>
-            <dd>
-              Materiais, transcrições, resumos, questões, disciplinas, perfil, fotos e GIFs,
-              blocos, checklists, andamento, respostas de estudo, conquistas, temas e preferências.
-            </dd>
-          </div>
-          <div>
-            <dt>Neste navegador</dt>
-            <dd>
-              Uma cópia para acesso rápido e alterações que aguardam sincronização.
-              O estado temporário de widgets HTML/CSS personalizados pode ser reiniciado ao recarregar.
-                Essa cópia continua neste navegador depois de sair da conta: em computadores
-                compartilhados, use uma janela anônima.
-            </dd>
-          </div>
-        </dl>
-      </section>
-      <section class="article-section" id="privacidade">
-        <h2>Áudio e revisão</h2>
-        <p>
-          Se você não selecionar uma opção para guardar a gravação, o áudio é descartado após o
-          processamento. A transcrição e os materiais gerados permanecem na Biblioteca.
-        </p>
-        <p>
-          O conteúdo gerado automaticamente pode conter erros. Compare-o com a transcrição e revise
-          os trechos necessários.
-        </p>
-      </section>
-      <section class="article-section">
-        <h2>Gravações e transcrição</h2>
-        <details>
-          <summary>O app também analisa as imagens do vídeo?</summary>
-          <p>
-            Não. A transcrição usa somente o áudio. Slides, imagens e fórmulas visuais não são
-            analisados.
-          </p>
-        </details>
-        <details>
-          <summary>Qual é a diferença entre guardar áudio e vídeo?</summary>
-          <p>
-            Guardar o áudio conserva o som do trecho escolhido. Guardar o vídeo conserva o arquivo MP4
-            original inteiro, inclusive as partes fora do recorte. Sem conservação, o arquivo é
-            removido após a transcrição, mas os textos permanecem disponíveis.
-          </p>
-        </details>
-        <details>
-          <summary>Como meus dados são utilizados?</summary>
-          <p>Consulte a <a href="./privacidade.html">política de privacidade e uso de dados</a>.</p>
-        </details>
-      </section>
+      </div>
+      <nav class="help-index" aria-labelledby="help-index-title">
+        <h2 id="help-index-title" class="help-index-title">Tópicos</h2>
+        <ul data-help-index role="list">
+          <li><a href="#onde-fica">Onde fica cada coisa</a></li>
+          <li><a href="#nova-transcricao">Enviar uma aula</a></li>
+          <li><a href="#conferir-transcricao">Conferir e confirmar a transcrição</a></li>
+          <li><a href="#resumo">Resumo</a></li>
+          <li><a href="#criacao-questoes">Questões</a></li>
+          <li><a href="#flashcards">Flashcards</a></li>
+          <li><a href="#biblioteca">Biblioteca, pastas e disciplinas</a></li>
+          <li><a href="#material-integrado">Material integrado</a></li>
+          <li><a href="#anotacoes">Caderno e anotações</a></li>
+          <li><a href="#planejar">Planejamento e tempo de estudo</a></li>
+          <li><a href="#focar">Focar e sons ambientes</a></li>
+          <li><a href="#foco-leitura">Acessibilidade e leitura</a></li>
+          <li><a href="#idiomas">Idiomas</a></li>
+          <li><a href="#conta-senha">Conta e senha</a></li>
+          <li><a href="#seus-dados">Seus dados e privacidade</a></li>
+          <li><a href="#gravacoes">Gravações: perguntas frequentes</a></li>
+        </ul>
+      </nav>
+      <p class="help-empty" data-help-empty hidden>Nenhum tópico encontrado. Tente outra palavra ou veja a lista completa.</p>
+      <div class="help-topics" data-help-topics>
+        <section class="help-topic" id="onde-fica" aria-labelledby="onde-fica-title">
+          <h2 id="onde-fica-title">Onde fica cada coisa</h2>
+          <dl class="help-locations">
+            <div><dt>Nova transcrição</dt><dd>Botão no topo do menu: envie o áudio ou vídeo de uma aula.</dd></div>
+            <div><dt>Início</dt><dd>A aula para continuar, o que pede atenção hoje e o seu tempo de estudo na semana.</dd></div>
+            <div><dt>Biblioteca</dt><dd>Todas as aulas, com pastas, disciplinas, busca e o próximo passo de cada uma.</dd></div>
+            <div><dt>Revisar</dt><dd>Flashcards do dia, suas tentativas de questões e todas as anotações.</dd></div>
+            <div><dt>Planejar</dt><dd>Objetivos, tarefas, calendário de estudos e tempo de estudo.</dd></div>
+            <div><dt>Focar</dt><dd>O cronômetro de foco, com pausas e sons ambientes.</dd></div>
+            <div><dt>Configurações</dt><dd>Conta, aparência, idioma, sons, senha, dados e esta Ajuda.</dd></div>
+          </dl>
+          <p class="help-note">Revisar, Planejar e Focar aparecem no menu quando esses recursos estão ativos.</p>
+        </section>
+        <section class="help-topic" id="nova-transcricao" aria-labelledby="nova-transcricao-title">
+          <h2 id="nova-transcricao-title">Enviar uma aula</h2>
+          <ol class="help-procedure">
+            <li>Abra Nova transcrição e escolha um arquivo MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM ou MOV de até 100 MB.</li>
+            <li>Ouça a gravação e marque o início e o fim do trecho que interessa.</li>
+            <li>Dê um título à aula e escolha quantas questões quer receber.</li>
+            <li>Selecione “Enviar e transcrever”. Só o áudio do trecho escolhido é enviado; a página da aula mostra o andamento.</li>
+          </ol>
+          <p class="help-links"><a href="./nova-transcricao.html">Abrir Nova transcrição</a></p>
+        </section>
+        <section class="help-topic" id="conferir-transcricao" aria-labelledby="conferir-transcricao-title">
+          <h2 id="conferir-transcricao-title">Conferir e confirmar a transcrição</h2>
+          <p>Quando a transcrição fica pronta, leia o texto na aba Transcrição. Avisos automáticos apontam trechos que podem ter sido mal entendidos; eles ajudam, mas podem falhar.</p>
+          <p>Para corrigir, use Editar, ajuste o texto e salve. Depois selecione “Confirmar e continuar”: só então o resumo e as questões são gerados a partir do texto conferido.</p>
+          <p>Se você editar uma transcrição já confirmada, resumos e questões anteriores podem precisar ser gerados de novo.</p>
+        </section>
+        <section class="help-topic" id="resumo" aria-labelledby="resumo-title">
+          <h2 id="resumo-title">Resumo</h2>
+          <p>Depois da confirmação, a aba Resumo mostra os pontos principais da aula. Use “Gerar resumo” para criar um novo a partir da transcrição salva, sem reenviar a gravação.</p>
+          <p>O conteúdo gerado automaticamente pode conter erros. Compare com a transcrição antes de estudar por ele.</p>
+        </section>
+        <section class="help-topic" id="criacao-questoes" aria-labelledby="criacao-questoes-title">
+          <h2 id="criacao-questoes-title">Questões</h2>
+          <p>Na aba Questões, responda às perguntas da aula e veja a correção com a explicação. Gere novos lotes quando quiser, mesmo de aulas antigas; os lotes anteriores continuam disponíveis.</p>
+          <p>Suas tentativas ficam em Revisar, com a opção de refazer apenas as erradas. Se uma questão parecer errada, marque-a para revisão.</p>
+        </section>
+        <section class="help-topic" id="flashcards" aria-labelledby="flashcards-title">
+          <h2 id="flashcards-title">Flashcards</h2>
+          <p>Na aba Flashcards de uma aula, crie cartões a partir do conteúdo ou escreva os seus. Os cartões voltam para revisão no dia certo: os que você erra aparecem mais cedo.</p>
+          <p>Os cartões do dia ficam em Revisar e no bloco Flashcards do Início. Você também pode organizar cartões em conjuntos.</p>
+        </section>
+        <section class="help-topic" id="biblioteca" aria-labelledby="biblioteca-title">
+          <h2 id="biblioteca-title">Biblioteca, pastas e disciplinas</h2>
+          <p>A Biblioteca reúne todas as aulas. Busque por título ou tag, agrupe por disciplina e organize em pastas e unidades.</p>
+          <p>O menu ⋯ de cada aula permite editar título, disciplina e tags. Cada aula mostra as etapas de estudo e o próximo passo: conferir a transcrição, resumo, questões e flashcards.</p>
+          <p class="help-links"><a href="./historico.html">Abrir Biblioteca</a></p>
+        </section>
+        <section class="help-topic" id="material-integrado" aria-labelledby="material-integrado-title">
+          <h2 id="material-integrado-title">Material integrado</h2>
+          <p>Estude várias aulas juntas: na Biblioteca, selecione as aulas e escolha “Material integrado”, ou abra uma pasta e escolha estudar a unidade inteira.</p>
+          <p>Antes de gerar, o app mostra quais aulas entram e quais ficam de fora, e por quê; só entram aulas com a transcrição confirmada. Cada item do resumo e das questões leva ao trecho da aula de onde veio.</p>
+        </section>
+        <section class="help-topic" id="anotacoes" aria-labelledby="anotacoes-title">
+          <h2 id="anotacoes-title">Caderno e anotações</h2>
+          <p>Cada aula tem um caderno próprio na aba Anotações, salvo automaticamente na sua conta. Escreva tópicos, listas e resumos com as suas palavras.</p>
+          <p>Para destacar um trecho, selecione-o na transcrição e escolha destacar ou anotar. Todas as anotações ficam em Revisar e também aparecem na busca do Início.</p>
+        </section>
+        <section class="help-topic" id="planejar" aria-labelledby="planejar-title">
+          <h2 id="planejar-title">Planejamento e tempo de estudo</h2>
+          <p>Em Planejar, crie objetivos e tarefas com prazo, marque horários no calendário de estudos e exporte o calendário para outro app (arquivo .ics).</p>
+          <p>A aba Tempo mostra suas semanas em relação à meta semanal e as aulas que você mais estudou. Ajuste a meta quando quiser.</p>
+          <p class="help-links"><a href="./planejar.html">Abrir Planejar</a></p>
+        </section>
+        <section class="help-topic" id="focar" aria-labelledby="focar-title">
+          <h2 id="focar-title">Focar e sons ambientes</h2>
+          <p>Em Focar, escolha a duração e inicie um bloco de foco, com pausas entre os blocos. Enquanto ele corre, um pequeno indicador aparece no topo das outras páginas.</p>
+          <p>O botão de fones no topo abre os sons ambientes: chuva, café, biblioteca e outros, com volume para cada um. Nada toca antes de você apertar o play.</p>
+          <p class="help-links"><a href="./focar.html">Abrir Focar</a></p>
+        </section>
+        <section class="help-topic" id="foco-leitura" aria-labelledby="foco-leitura-title">
+          <h2 id="foco-leitura-title">Acessibilidade e leitura</h2>
+          <p>O botão “Modo foco” (ou Alt + F) esconde distrações e recolhe o menu; no foco, A− e A+ ajustam o texto.</p>
+          <p>Em Aparência e leitura você muda tamanho do texto, espaçamento, fonte de leitura, contraste e movimento, liga a guia de leitura e a leitura em voz alta, e ativa o modo para leitores de tela.</p>
+          <p>Pressione ? em qualquer página para ver os atalhos de teclado.</p>
+          <p class="help-links"><a href="./aparencia.html#reading-settings">Abrir Leitura e acessibilidade</a><button class="text-action" type="button" data-open-shortcuts aria-haspopup="dialog">Ver atalhos de teclado</button></p>
+        </section>
+        <section class="help-topic" id="idiomas" aria-labelledby="idiomas-title">
+          <h2 id="idiomas-title">Idiomas</h2>
+          <p>Em Configurações, escolha o idioma da interface: português, inglês, espanhol ou chinês. Ele muda menus, botões e mensagens.</p>
+          <p>Transcrições, resumos, questões e o que você escreveu continuam no idioma original. O idioma da gravação é escolhido ao enviar cada aula.</p>
+        </section>
+        <section class="help-topic" id="conta-senha" aria-labelledby="conta-senha-title">
+          <h2 id="conta-senha-title">Conta e senha</h2>
+          <p>Nome, foto, capa e apresentação ficam em Minha conta, pelo avatar no topo da página.</p>
+          <p>Para trocar a senha, abra Configurações › Trocar senha: defina uma nova agora ou receba um link por e-mail. Esqueceu a senha antes de entrar? Use “Esqueci minha senha” na tela de login.</p>
+          <p class="help-links"><a href="./configuracoes.html">Abrir Configurações</a></p>
+        </section>
+        <section class="help-topic" id="seus-dados" aria-labelledby="seus-dados-title">
+          <h2 id="seus-dados-title">Seus dados e privacidade</h2>
+          <aside class="storage-notice" role="note" aria-labelledby="storage-notice-title">
+            <svg class="ui-icon" width="20" height="20" focusable="false" aria-hidden="true" data-icon="info"><use href="/assets/icons/sprite.svg#i-info"/></svg>
+            <div>
+              <h3 id="storage-notice-title">Sincronização da conta</h3>
+              <p>O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado em Dados neste navegador antes de limpar os dados do navegador.</p>
+            </div>
+          </aside>
+          <p>O que é enviado para transcrição, onde cada coisa fica guardada e por quanto tempo estão na política de privacidade.</p>
+          <p class="help-links"><a href="./privacidade.html">Privacidade e uso de dados</a><a href="./configuracoes.html#dados-neste-navegador">Dados neste navegador</a></p>
+        </section>
+        <section class="help-topic" id="gravacoes" aria-labelledby="gravacoes-title">
+          <h2 id="gravacoes-title">Gravações: perguntas frequentes</h2>
+          <details>
+            <summary>O app também analisa as imagens do vídeo?</summary>
+            <p>Não. A transcrição usa somente o áudio. Slides, imagens e fórmulas visuais não são analisados.</p>
+          </details>
+          <details>
+            <summary>O áudio fica guardado?</summary>
+            <p>Se você não selecionar uma opção para guardar a gravação, o áudio é descartado após o processamento. A transcrição e os materiais gerados permanecem na Biblioteca.</p>
+          </details>
+          <details>
+            <summary>Qual é a diferença entre guardar áudio e vídeo?</summary>
+            <p>Guardar o áudio conserva o som do trecho escolhido. Guardar o vídeo conserva o arquivo MP4 original inteiro, inclusive as partes fora do recorte. Sem conservação, o arquivo é removido após a transcrição, mas os textos permanecem disponíveis.</p>
+          </details>
+        </section>
+      </div>
     </main>
     <footer class="site-footer">
       <span>Voz em Estudo</span><a href="./ajuda.html#seus-dados">Ajuda e dados</a>
