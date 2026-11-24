@@ -72,7 +72,7 @@ async function main() {
     assert.equal(await dialog.locator('input[name="title"]').inputValue(), 'Metabolismo energético');
     const included = await dialog.locator('.multi-lesson-sources li').allTextContents();
     assert.deepEqual(included, ['Fotossíntese e respiração celular', 'Respiração celular']);
-    assert.match(await dialog.locator('.multi-lesson-excluded').textContent(), /Cloroplastos \(rascunho\) — transcrição ainda não confirmada/);
+    assert.match(await dialog.locator('.multi-lesson-excluded').textContent(), /Cloroplastos \(rascunho\): transcrição ainda não confirmada/);
     await settle(page);
     await axeCheck(page, 'dialog[open]', 'Diálogo do material integrado');
     await shot(page, 'dialogo-unidade', false);
@@ -202,7 +202,7 @@ async function main() {
     await unitsDialog.getByRole('group', { name: 'Biologia' }).waitFor();
     await page.keyboard.press('Space');
     await unitsDialog.locator('.multi-lesson-status', { hasText: '2 aulas prontas para estudar juntas.' }).waitFor();
-    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Cloroplastos \(rascunho\) — transcrição ainda não confirmada/);
+    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Cloroplastos \(rascunho\): transcrição ainda não confirmada/);
     await unitsDialog.getByRole('checkbox', { name: 'Célula' }).check();
     await unitsDialog.locator('.multi-lesson-status', { hasText: '3 aulas prontas para estudar juntas.' }).waitFor();
     assert.deepEqual(await unitsDialog.locator('.multi-lesson-sources li').allTextContents(), ['Fotossíntese e respiração celular', 'Respiração celular', 'Membrana plasmática']);

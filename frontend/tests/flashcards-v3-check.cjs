@@ -123,7 +123,7 @@ async function main() {
     await tools.getByRole('button', { name: 'Mesclar conjuntos' }).click();
     const merge = page.getByRole('dialog', { name: 'Mesclar conjuntos' });
     await merge.waitFor();
-    assert.match(await merge.locator('.app-dialog-hint').textContent(), /nunca são alterados/);
+    assert.match(await merge.locator('.app-dialog-hint').textContent(), /originais não mudam/);
     await page.waitForFunction(() => document.activeElement?.type === 'checkbox', null, { timeout: 3000 });
     await merge.getByRole('checkbox', { name: /^Ana/ }).check();
     await merge.locator('.deck-preview', { hasText: 'Escolha mais um conjunto' }).waitFor();
