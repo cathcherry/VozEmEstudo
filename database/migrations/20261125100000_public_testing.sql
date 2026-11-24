@@ -1,5 +1,6 @@
 -- Voz em Estudo — public testing program (controlled release for ~30–100 participants).
--- Additive only: new tables and functions, one RESTRICTIVE storage policy. No existing table,
+-- Additive only: new tables and functions, one RESTRICTIVE storage policy (replaced by
+-- 20261125120000_audio_object_cap_fix.sql: its check recursed on storage.objects). No existing table,
 -- column, constraint, function, policy or row is changed. Applying it changes nothing for anyone
 -- until the program is switched on in public.public_testing_config (enabled = false by default).
 --
@@ -550,9 +551,9 @@ do $storage$
 begin
   if to_regclass('storage.objects') is not null and exists (
       select 1 from information_schema.columns where table_schema = 'storage' and table_name = 'objects' and column_name = 'owner_id') then
-    -- The cap itself is created by 20261125120000_audio_object_cap_fix.sql: counting
-    -- storage.objects inside a policy on storage.objects recursed (42P17) and broke every upload.
-    execute 'drop policy if exists public_testing_audio_object_cap on storage.objects';
+    execute $p$create policy public_testing_audio_object_cap on storage.objects as restrictive for insert to authenticated
+      with check (bucket_id <> 'audios' or (select count(*) from storage.objects o
+        where o.bucket_id = 'audios' and o.owner_id = (select auth.uid())::text) < 40)$p$;
   end if;
 end
 $storage$;
