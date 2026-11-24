@@ -166,9 +166,31 @@ Outras observações do ambiente:
    - Leitura em voz alta num resumo longo
 4. Não há migration nova. As rotas `DELETE` do planejamento usam as tabelas que já existem.
 
-## 5. Testes
+## 5. Testes (24/11/2026, neste contêiner, API simulada)
 
-Ver o relatório final da sessão. Os comandos estão em [TESTING.md](TESTING.md). Verificações de navegador novas:
+- `npm run lint` (ESLint + Ruff), `check:syntax`, `check:secrets`, `check:ci`: OK.
+- `npm test`:
+  - backend 423/423;
+  - DOM 35/35;
+  - auth-css 17;
+  - catalog 12;
+  - planning 19;
+  - quiz v2 8;
+  - diagnóstico 4;
+  - flashcards 26;
+  - player 22;
+  - tempo de estudo 35;
+  - learning tools 37;
+  - study authoring 20;
+  - personalization 58;
+  - turmas 3;
+  - arte 10;
+  - Python e qualidade 47.
+  - Tudo passa.
+- `npm run test:browser`: as 29 verificações passam, incluindo `browser-check` (57 jornadas, rodada isolada) e as novas listadas abaixo.
+- Fora do conjunto: `presentation-check.cjs` falha igual na `main` @ `62e73b2`, ou seja, já falhava antes desta revisão.
+
+Verificações de navegador novas:
 
 - `quiz-flow-check`
 - `notebook-editor-check`
@@ -176,6 +198,8 @@ Ver o relatório final da sessão. Os comandos estão em [TESTING.md](TESTING.md
 - `profile-cards-check`
 - `tour-check`
 - `settings-check`
+
+Os comandos estão em [TESTING.md](TESTING.md).
 
 ## 6. Limitações conhecidas
 
