@@ -123,7 +123,7 @@ async function main() {
     await page.locator('#planning-task-goal').selectOption('g2');
     await page.locator('#planning-task-title').fill('Resumir o capítulo 5');
     await page.locator('[data-planning-task-form] [type=submit]').click();
-    await page.locator('[data-planning-status]', { hasText: 'Tarefa criada' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Tarefa criada' }).waitFor();
     assert(data.tasks.some((t) => t.title === 'Resumir o capítulo 5'));
     assert.equal(new URL(page.url()).search, '', 'the creation request is not repeated on reload');
     await settle(page);
@@ -140,16 +140,24 @@ async function main() {
     await page
       .locator('#calendario .calendar-event-form input[type=text]')
       .fill('Estudar capítulo 5');
-    await page
-      .locator('#calendario input[type=datetime-local]')
-      .nth(0)
-      .fill(`${day(2)}T10:00`);
-    await page
-      .locator('#calendario input[type=datetime-local]')
-      .nth(1)
-      .fill(`${day(2)}T11:00`);
+    // Day, start and duration; the slot is repeated in words before saving.
+    const compose = page.getByRole('dialog', { name: 'Agendar estudo' });
+    await compose.getByLabel('Dia', { exact: true }).fill(day(2));
+    await compose.getByLabel('Horário', { exact: true }).fill('10:00');
+    await compose.getByLabel('Duração').selectOption('90');
+    await compose.locator('.calendar-when-summary', { hasText: 'das 10:00 às 11:30' }).waitFor();
+    await compose.getByLabel('Aula vinculada (opcional)').selectOption('l-foto');
+    await compose.getByLabel('Anotações (opcional)').fill('Levar o caderno');
     await page.locator('#calendario .calendar-event-form [type=submit]').click();
-    await page.locator('#calendario [role=status]', { hasText: 'Horário salvo' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Estudo agendado para' }).waitFor();
+    const saved = data.savedEvents.at(-1).body;
+    assert.equal(Date.parse(saved.endsAt) - Date.parse(saved.startsAt), 90 * 60000, '1 h 30 min');
+    assert.equal(new Date(saved.startsAt).getHours(), 10);
+    assert.equal(saved.materialId, 'l-foto');
+    assert.equal(saved.description, 'Levar o caderno');
+    // No fixed confirmation stays in the calendar.
+    assert.equal(await page.locator('#calendario .calendar-status').textContent(), '');
+    await page.locator('#calendario .calendar-entry', { hasText: 'Estudar capítulo 5' }).waitFor();
     await settle(page);
     await axeCheck(page, 'main', 'Planejar › calendário');
     await shot(page, 'planejar-calendario-1440');

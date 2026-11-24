@@ -25,11 +25,12 @@ test('annotations capture a saved selection with its revision and preserve text 
 test('calendar renders deadlines and creates a timed event linked to the chosen task',async()=>{
   const dom=new JSDOM('<section id="panel" hidden></section>');let received;
   const dependencies={listCalendar:async(q)=>({items:[{kind:'task',id:'task-a',title:'Revisar aula',date:q.fromDay,materialId:'material-a'}],total:1}),
-    saveCalendarEvent:async(body)=>{received=body;return {version:1};},monthRange,localDay,itemOnDay,calendarIcs,downloadText:()=>{},pendingMutation,renderWeek,weekStartOf,weekRange,moveEvent,addDays};
+    saveCalendarEvent:async(body)=>{received=body;return {version:1};},monthRange,localDay,itemOnDay,calendarIcs,downloadText:()=>{},pendingMutation,toast:()=>{},renderWeek,weekStartOf,weekRange,moveEvent,addDays};
   const factory=new Function('document','Option','crypto','confirm',...Object.keys(dependencies),`${code('calendar-panel')};return initCalendarPanel;`);
   try{const doc=dom.window.document;await factory(doc,dom.window.Option,webcrypto,()=>true,...Object.values(dependencies))({panel:doc.querySelector('#panel'),materials:[{id:'material-a',title:'Aula A'}]});
     assert(doc.querySelectorAll('.study-calendar-grid button').length>=28);
     [...doc.querySelectorAll('button')].find((b)=>b.textContent==='Agendar horário para esta tarefa').click();
+    assert.match(doc.querySelector('.calendar-when-summary').textContent,/das 09:00 às 10:00/);
     doc.querySelector('form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await until(()=>Boolean(received));
     assert.equal(received.body.taskId,'task-a');assert.equal(received.body.materialId,'material-a');assert.equal(Date.parse(received.body.endsAt)-Date.parse(received.body.startsAt),3600000);
   }finally{dom.window.close();}

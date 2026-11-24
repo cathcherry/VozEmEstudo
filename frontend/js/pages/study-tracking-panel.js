@@ -53,7 +53,9 @@ export async function initStudyTrackingPanel({materials=[],materialId=null,timer
   const primary=make('button','Iniciar foco','primary-action focus-primary');primary.type='button';
   const stopButton=make('button','Encerrar bloco','text-action focus-stop');stopButton.type='button';stopButton.hidden=true;
   controls.append(primary,stopButton);
-  const hint=make('p','O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.','focus-hint');hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
+  // Only says something when it matters (paused, stopped while away, an error); how the timer
+  // works between pages is explained in Ajuda.
+  const hint=make('p','','focus-hint');hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
   // The lesson the next block counts for (opened before coming to Focar).
   const lessonLine=make('p',null,'focus-lesson');lessonLine.hidden=true;
   focus.append(heading,modes,dial,lessonLine,cycles,controls,hint);
@@ -167,7 +169,7 @@ export async function initStudyTrackingPanel({materials=[],materialId=null,timer
     const every=state.settings.longEvery,done=state.cycle%every;
     for(let i=0;i<every;i+=1){const dot=make('span',null,'focus-cycle'+(i<done?' is-done':''));dot.setAttribute('aria-hidden','true');cycles.append(dot);}
     cycles.append(make('span',state.completedToday?`${state.completedToday} ${state.completedToday===1?'foco concluído hoje':'focos concluídos hoje'}`:'Nenhum foco concluído ainda','focus-cycles-text'));
-    hint.textContent=state.error||(state.notice?.kind==='stopped_away'?'O cronômetro parou porque nenhuma página ficou aberta e visível.':running?'O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.':state.status==='paused'?'Bloco pausado. Retome quando quiser.':'O cronômetro continua entre as páginas; ele para se nenhuma ficar aberta.');
+    hint.textContent=state.error||(state.notice?.kind==='stopped_away'?'O cronômetro parou porque nenhuma página ficou aberta e visível.':state.status==='paused'?'Bloco pausado. Retome quando quiser.':'');
     signal('study-clock',{mode:state.mode,elapsed:state.elapsed,remaining:state.remaining,running,busy:state.busy,session:state.server?{id:state.server.id}:null});
     // Credited time changes when a server session closes: refresh the week.
     const marker=state.server?.id||'';

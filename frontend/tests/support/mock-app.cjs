@@ -396,18 +396,20 @@ async function setup(context, base, flags, data, options = {}) {
     if (p === '/api/planning/goals' && method === 'POST') {
       const body = request.postDataJSON();
       const goal = {
-        id: `g${data.goals.length + 1}`,
+        id: `g${data.goals.length + data.createdGoals.length + 1}`,
         title: body.title,
         status: 'active',
         target_date: body.targetDate,
+        created_at: new Date().toISOString(),
       };
       data.createdGoals.push(goal);
+      data.goals.unshift(goal);
       return json(goal, 201);
     }
     if (/^\/api\/planning\/goals\/[^/]+\/tasks$/.test(p) && method === 'POST') {
       const body = request.postDataJSON();
       const task = {
-        id: `t${data.tasks.length + 1}`,
+        id: `t${(data.taskSeq = (data.taskSeq || data.tasks.length) + 1)}`,
         goal_id: p.split('/')[4],
         subgoal_id: body.subgoalId || null,
         title: body.title,
@@ -420,6 +422,40 @@ async function setup(context, base, flags, data, options = {}) {
       };
       data.tasks.push(task);
       return json(task, 201);
+    }
+    // Planejar 3.7: subgoals, edits and deletions (deleting a goal takes its subgoals and tasks).
+    if (/^\/api\/planning\/goals\/[^/]+\/subgoals$/.test(p) && method === 'POST') {
+      const body = request.postDataJSON();
+      const subgoal = {
+        id: `s${data.subgoals.length + 1}-${Date.now() % 1000}`,
+        goal_id: p.split('/')[4],
+        title: body.title,
+        due_date: body.dueDate || null,
+        created_at: new Date().toISOString(),
+      };
+      data.subgoals.push(subgoal);
+      return json(subgoal, 201);
+    }
+    const planningItem = p.match(/^\/api\/planning\/(goals|subgoals|tasks)\/([^/]+)$/);
+    if (planningItem && (method === 'PATCH' || method === 'DELETE')) {
+      const [, kind, id] = planningItem;
+      const item = data[kind].find((entry) => entry.id === id);
+      if (!item) return json({ error: { message: 'Não encontrado.' } }, 404);
+      if (method === 'DELETE') {
+        data[kind] = data[kind].filter((entry) => entry.id !== id);
+        if (kind === 'goals') {
+          data.subgoals = data.subgoals.filter((entry) => entry.goal_id !== id);
+          data.tasks = data.tasks.filter((entry) => entry.goal_id !== id);
+        }
+        if (kind === 'subgoals')
+          for (const task of data.tasks) if (task.subgoal_id === id) task.subgoal_id = null;
+        data.planningDeletes = [...(data.planningDeletes || []), `${kind}/${id}`];
+        return json({ id, deleted: true });
+      }
+      const body = request.postDataJSON();
+      const fields = { title: 'title', status: 'status', targetDate: 'target_date', dueDate: 'due_date', subgoalId: 'subgoal_id', materialId: 'material_id', referenceUrl: 'reference_url' };
+      for (const [from, to] of Object.entries(fields)) if (from in body) item[to] = body[from];
+      return json(item);
     }
     // ---- Flashcards 3.0 (FEATURE_FLASHCARDS_V3) ------------------------------------------------
     const renderNote = (n) => {

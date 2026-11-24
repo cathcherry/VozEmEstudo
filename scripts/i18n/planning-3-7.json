@@ -1,0 +1,327 @@
+{
+  "Ordenar por": {
+    "en": "Sort by",
+    "es": "Ordenar por",
+    "zh-CN": "排序方式"
+  },
+  "Todas as tarefas": {
+    "en": "All tasks",
+    "es": "Todas las tareas",
+    "zh-CN": "全部任务"
+  },
+  "O que você quer concluir?": {
+    "en": "What do you want to finish?",
+    "es": "¿Qué quieres terminar?",
+    "zh-CN": "你想完成什么？"
+  },
+  "Ex.: Concluir a apresentação do TCC até quinta-feira": {
+    "en": "E.g. Finish the thesis presentation by Thursday",
+    "es": "Ej.: Terminar la presentación del TFG hasta el jueves",
+    "zh-CN": "例如：周四前完成毕业论文答辩演示"
+  },
+  "Data do prazo": {
+    "en": "Deadline date",
+    "es": "Fecha del plazo",
+    "zh-CN": "截止日期"
+  },
+  "Atalhos de prazo": {
+    "en": "Deadline shortcuts",
+    "es": "Atajos de plazo",
+    "zh-CN": "截止日期快捷选项"
+  },
+  "Amanhã": {
+    "en": "Tomorrow",
+    "es": "Mañana",
+    "zh-CN": "明天"
+  },
+  "Sexta-feira": {
+    "en": "Friday",
+    "es": "Viernes",
+    "zh-CN": "周五"
+  },
+  "Em uma semana": {
+    "en": "In a week",
+    "es": "En una semana",
+    "zh-CN": "一周后"
+  },
+  "Depois de criar, adicione as tarefas direto no cartão do objetivo.": {
+    "en": "After creating it, add tasks right in the goal's card.",
+    "es": "Después de crearlo, agrega las tareas directamente en la tarjeta del objetivo.",
+    "zh-CN": "创建后，直接在目标卡片中添加任务。"
+  },
+  "Nova tarefa com detalhes": {
+    "en": "New task with details",
+    "es": "Nueva tarea con detalles",
+    "zh-CN": "带详情的新任务"
+  },
+  "Marcar como concluído": {
+    "en": "Mark as done",
+    "es": "Marcar como completado",
+    "zh-CN": "标记为已完成"
+  },
+  "Reabrir objetivo": {
+    "en": "Reopen goal",
+    "es": "Reabrir objetivo",
+    "zh-CN": "重新打开目标"
+  },
+  "Desarquivar": {
+    "en": "Unarchive",
+    "es": "Desarchivar",
+    "zh-CN": "取消归档"
+  },
+  "Excluir objetivo": {
+    "en": "Delete goal",
+    "es": "Eliminar objetivo",
+    "zh-CN": "删除目标"
+  },
+  "Excluir subobjetivo": {
+    "en": "Delete subgoal",
+    "es": "Eliminar subobjetivo",
+    "zh-CN": "删除子目标"
+  },
+  "Excluir tarefa": {
+    "en": "Delete task",
+    "es": "Eliminar tarea",
+    "zh-CN": "删除任务"
+  },
+  "Ex.: Slides, Ensaio": {
+    "en": "E.g. Slides, Rehearsal",
+    "es": "Ej.: Diapositivas, Ensayo",
+    "zh-CN": "例如：幻灯片、排练"
+  },
+  "Nenhuma tarefa ainda": {
+    "en": "No tasks yet",
+    "es": "Ninguna tarea todavía",
+    "zh-CN": "还没有任务"
+  },
+  "A tarefa foi concluída": {
+    "en": "The task is done",
+    "es": "La tarea está completada",
+    "zh-CN": "任务已完成"
+  },
+  "Objetivo criado. Agora adicione as tarefas.": {
+    "en": "Goal created. Now add the tasks.",
+    "es": "Objetivo creado. Ahora agrega las tareas.",
+    "zh-CN": "目标已创建。现在添加任务。"
+  },
+  "Tarefa adicionada.": {
+    "en": "Task added.",
+    "es": "Tarea agregada.",
+    "zh-CN": "任务已添加。"
+  },
+  "Objetivo excluído.": {
+    "en": "Goal deleted.",
+    "es": "Objetivo eliminado.",
+    "zh-CN": "目标已删除。"
+  },
+  "Subobjetivo excluído.": {
+    "en": "Subgoal deleted.",
+    "es": "Subobjetivo eliminado.",
+    "zh-CN": "子目标已删除。"
+  },
+  "Tarefa excluída.": {
+    "en": "Task deleted.",
+    "es": "Tarea eliminada.",
+    "zh-CN": "任务已删除。"
+  },
+  "Objetivo reaberto.": {
+    "en": "Goal reopened.",
+    "es": "Objetivo reabierto.",
+    "zh-CN": "目标已重新打开。"
+  },
+  "Objetivo concluído. Parabéns!": {
+    "en": "Goal completed. Congratulations!",
+    "es": "Objetivo completado. ¡Felicidades!",
+    "zh-CN": "目标已完成。恭喜！"
+  },
+  "Objetivo de volta à lista.": {
+    "en": "Goal back on the list.",
+    "es": "Objetivo de vuelta en la lista.",
+    "zh-CN": "目标已回到列表。"
+  },
+  "Objetivo arquivado.": {
+    "en": "Goal archived.",
+    "es": "Objetivo archivado.",
+    "zh-CN": "目标已归档。"
+  },
+  "vence hoje": {
+    "en": "due today",
+    "es": "vence hoy",
+    "zh-CN": "今天到期"
+  },
+  "vence amanhã": {
+    "en": "due tomorrow",
+    "es": "vence mañana",
+    "zh-CN": "明天到期"
+  },
+  "venceu ontem": {
+    "en": "was due yesterday",
+    "es": "venció ayer",
+    "zh-CN": "昨天已到期"
+  },
+  "Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar e até quando.": {
+    "en": "A goal gathers the tasks of an exam, subject or project. Start with what you want to achieve and by when.",
+    "es": "Un objetivo reúne las tareas de un examen, materia o proyecto. Empieza por lo que quieres lograr y para cuándo.",
+    "zh-CN": "目标汇集一次考试、一门学科或一个项目的任务。从你想达成什么以及截止时间开始。"
+  },
+  "O que você vai estudar?": {
+    "en": "What will you study?",
+    "es": "¿Qué vas a estudiar?",
+    "zh-CN": "你要学习什么？"
+  },
+  "Ex.: Revisar os slides do TCC": {
+    "en": "E.g. Review the thesis slides",
+    "es": "Ej.: Repasar las diapositivas del TFG",
+    "zh-CN": "例如：复习毕业论文幻灯片"
+  },
+  "Dia": {
+    "en": "Day",
+    "es": "Día",
+    "zh-CN": "日期"
+  },
+  "Aula vinculada (opcional)": {
+    "en": "Linked lesson (optional)",
+    "es": "Clase vinculada (opcional)",
+    "zh-CN": "关联课程（可选）"
+  },
+  "Anotações (opcional)": {
+    "en": "Notes (optional)",
+    "es": "Notas (opcional)",
+    "zh-CN": "备注（可选）"
+  },
+  "O que revisar, material para levar…": {
+    "en": "What to review, materials to bring…",
+    "es": "Qué repasar, material para llevar…",
+    "zh-CN": "要复习的内容、要带的材料……"
+  },
+  "Agendar": {
+    "en": "Schedule",
+    "es": "Programar",
+    "zh-CN": "安排"
+  },
+  "Editar estudo agendado": {
+    "en": "Edit scheduled study",
+    "es": "Editar estudio programado",
+    "zh-CN": "编辑已安排的学习"
+  },
+  "Estudo agendado atualizado.": {
+    "en": "Scheduled study updated.",
+    "es": "Estudio programado actualizado.",
+    "zh-CN": "已安排的学习已更新。"
+  },
+  "Estudo removido do calendário.": {
+    "en": "Study removed from the calendar.",
+    "es": "Estudio eliminado del calendario.",
+    "zh-CN": "已从日历中移除学习。"
+  },
+  "Estudo agendado": {
+    "en": "Scheduled study",
+    "es": "Estudio programado",
+    "zh-CN": "已安排的学习"
+  },
+  "Prazo de tarefa · dia inteiro": {
+    "en": "Task deadline · all day",
+    "es": "Plazo de tarea · todo el día",
+    "zh-CN": "任务截止 · 全天"
+  },
+  "Nenhum estudo agendado.": {
+    "en": "No study scheduled.",
+    "es": "Ningún estudio programado.",
+    "zh-CN": "没有安排学习。"
+  },
+  "Nenhum estudo agendado neste dia.": {
+    "en": "No study scheduled on this day.",
+    "es": "Ningún estudio programado este día.",
+    "zh-CN": "这一天没有安排学习。"
+  },
+  "Reserve um horário para estudar e ele aparece aqui, junto com os prazos das tarefas.": {
+    "en": "Book a time to study and it shows up here, along with task deadlines.",
+    "es": "Reserva un horario para estudiar y aparecerá aquí, junto con los plazos de las tareas.",
+    "zh-CN": "预留学习时间后，它会和任务截止日期一起显示在这里。"
+  },
+  "Que tal reservar um horário curto para estudar neste dia?": {
+    "en": "How about booking a short study slot on this day?",
+    "es": "¿Qué tal reservar un horario corto para estudiar este día?",
+    "zh-CN": "要不要在这一天预留一段短暂的学习时间？"
+  },
+  "Últimas 12 semanas.": {
+    "en": "Last 12 weeks.",
+    "es": "Últimas 12 semanas.",
+    "zh-CN": "最近 12 周。"
+  },
+  "faltam {0} dias": {
+    "en": "{0} days left",
+    "es": "faltan {0} días",
+    "zh-CN": "还剩 {0} 天"
+  },
+  "venceu há {0} dias": {
+    "en": "was due {0} days ago",
+    "es": "venció hace {0} días",
+    "zh-CN": "已过期 {0} 天"
+  },
+  "{0} de {1} tarefas concluídas": {
+    "en": "{0} of {1} tasks done",
+    "es": "{0} de {1} tareas completadas",
+    "zh-CN": "已完成 {0}/{1} 项任务"
+  },
+  "Todas as {0} tarefas concluídas": {
+    "en": "All {0} tasks done",
+    "es": "Las {0} tareas completadas",
+    "zh-CN": "全部 {0} 项任务已完成"
+  },
+  "Nova tarefa em {0}": {
+    "en": "New task in {0}",
+    "es": "Nueva tarea en {0}",
+    "zh-CN": "{0} 中的新任务"
+  },
+  "Nova tarefa com prazo, aula ou link em {0}": {
+    "en": "New task with deadline, lesson or link in {0}",
+    "es": "Nueva tarea con plazo, clase o enlace en {0}",
+    "zh-CN": "在 {0} 中新建带截止日期、课程或链接的任务"
+  },
+  "Mais ações do objetivo: {0}": {
+    "en": "More actions for goal: {0}",
+    "es": "Más acciones del objetivo: {0}",
+    "zh-CN": "目标的更多操作：{0}"
+  },
+  "Mais ações do subobjetivo: {0}": {
+    "en": "More actions for subgoal: {0}",
+    "es": "Más acciones del subobjetivo: {0}",
+    "zh-CN": "子目标的更多操作：{0}"
+  },
+  "Mais ações da tarefa: {0}": {
+    "en": "More actions for task: {0}",
+    "es": "Más acciones de la tarea: {0}",
+    "zh-CN": "任务的更多操作：{0}"
+  },
+  "Prazo: {0}.": {
+    "en": "Deadline: {0}.",
+    "es": "Plazo: {0}.",
+    "zh-CN": "截止：{0}。"
+  },
+  "Horários no fuso deste aparelho ({0}).": {
+    "en": "Times in this device's time zone ({0}).",
+    "es": "Horarios en la zona horaria de este dispositivo ({0}).",
+    "zh-CN": "时间按本设备时区（{0}）显示。"
+  },
+  "Estudo agendado para {0}.": {
+    "en": "Study scheduled for {0}.",
+    "es": "Estudio programado para {0}.",
+    "zh-CN": "学习已安排在 {0}。"
+  },
+  "Editar {0}": {
+    "en": "Edit {0}",
+    "es": "Editar {0}",
+    "zh-CN": "编辑 {0}"
+  },
+  "Remover {0} do calendário": {
+    "en": "Remove {0} from the calendar",
+    "es": "Quitar {0} del calendario",
+    "zh-CN": "从日历中移除 {0}"
+  },
+  "Horário": {
+    "en": "Time",
+    "es": "Hora",
+    "zh-CN": "时间"
+  }
+}

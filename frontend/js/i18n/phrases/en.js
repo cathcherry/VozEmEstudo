@@ -97,6 +97,7 @@ export default {
   "A sincronização falhou. As mudanças continuam salvas neste navegador.": "Sync failed. Your changes are still saved in this browser.",
   "A sua descoberta está no Arquivo de Descobertas. Você pode voltar a ela, acrescentar evidências, ligar a outras descobertas e refletir de novo quando quiser.": "Your discovery is in the Discovery Archive. You can come back to it, add evidence, connect it to other discoveries and reflect again whenever you like.",
   "A sua primeira descoberta fica neste compartimento.": "Your first discovery goes in this compartment.",
+  "A tarefa foi concluída": "The task is done",
   "A transcrição ainda não está disponível.": "The transcript isn't available yet.",
   "A transcrição ainda não está disponível. Tente novamente.": "The transcript isn't available yet. Try again.",
   "A transcrição ainda não está pronta.": "The transcript is not ready yet.",
@@ -182,6 +183,7 @@ export default {
   "Afirmação com erro": "Statement with an error",
   "Agenda": "Schedule",
   "Agenda do mês": "This month's schedule",
+  "Agendar": "Schedule",
   "Agendar estudo": "Schedule study",
   "Agendar horário para esta tarefa": "Schedule a session for this task",
   "Agora estou estudando": "Now studying",
@@ -227,6 +229,7 @@ export default {
   "Alterações salvas.": "Changes saved.",
   "Alternativas da questão": "Answer options",
   "Aluno(a)": "Student",
+  "Amanhã": "Tomorrow",
   "Amarelo": "Yellow",
   "Amigável (Lexend)": "Friendly (Lexend)",
   "Amplo": "Wide",
@@ -243,6 +246,7 @@ export default {
   "Animar GIF": "Play GIF",
   "Anotação excluída.": "Note deleted.",
   "Anotações": "Notes",
+  "Anotações (opcional)": "Notes (optional)",
   "Anotações anteriores": "Previous notes",
   "Anotações com títulos": "Notes with headings",
   "Anotações e destaques": "Notes and highlights",
@@ -346,6 +350,7 @@ export default {
   "As últimas aulas que você abriu.": "The last lessons you opened.",
   "As unidades escolhidas ainda não têm aulas.": "The chosen units have no lessons yet.",
   "AssemblyAI": "AssemblyAI",
+  "Atalhos de prazo": "Deadline shortcuts",
   "Atalhos de teclado": "Keyboard shortcuts",
   "Até": "Due",
   "Até 3 adesivos. Tire um para escolher outro.": "Up to 3 stickers. Remove one to choose another.",
@@ -385,6 +390,7 @@ export default {
   "Aula relacionada": "Related lesson",
   "Aula relacionada (opcional)": "Related lesson (optional)",
   "Aula removida": "Removed lesson",
+  "Aula vinculada (opcional)": "Linked lesson (optional)",
   "Aulas": "Lessons",
   "Aulas em estudo": "Lessons in progress",
   "Aulas estudadas": "Lessons studied",
@@ -803,6 +809,7 @@ export default {
   "Dados da conta": "Account details",
   "Dados de acesso e perfil": "Sign-in details and profile",
   "Dar prioridade a": "Prioritize",
+  "Data do prazo": "Deadline date",
   "Data indisponível": "Date unavailable",
   "Data inválida para exportar.": "Invalid date to export.",
   "Datas e eventos, quando houver": "Dates and events, when applicable",
@@ -828,7 +835,9 @@ export default {
   "Deixe esta janela aberta enquanto estuda: o som continua quando você troca de página no Voz em Estudo.": "Keep this window open while you study: the sound continues when you change pages in Voz em Estudo.",
   "Deixe esta janela aberta: o som continua enquanto você navega pelo Voz em Estudo.": "Keep this window open: the sound continues while you browse Voz em Estudo.",
   "Depois de confirmar, você vê se acertou e a explicação antes de seguir. Bom para aprender enquanto pratica.": "After confirming, you see whether you got it right and the explanation before moving on. Good for learning while you practise.",
+  "Depois de criar, adicione as tarefas direto no cartão do objetivo.": "After creating it, add tasks right in the goal's card.",
   "Depois, outro.": "Then another.",
+  "Desarquivar": "Unarchive",
   "Desativa animações e transições da interface.": "Turns off interface animations and transitions.",
   "desativada": "off",
   "Desativado": "Off",
@@ -871,6 +880,7 @@ export default {
   "Detalhes": "Details",
   "Detalhes do processamento": "Processing details",
   "Detectar automaticamente": "Detect automatically",
+  "Dia": "Day",
   "Dia anterior": "Previous day",
   "Dia seguinte": "Next day",
   "Diagnóstico da tentativa": "Attempt diagnosis",
@@ -922,6 +932,7 @@ export default {
   "Editar bloco": "Edit block",
   "Editar disciplina": "Edit subject",
   "Editar este cartão no formulário": "Edit this card in the form",
+  "Editar estudo agendado": "Edit scheduled study",
   "Editar horário": "Edit session",
   "Editar informações": "Edit details",
   "Editar informações do perfil": "Edit profile details",
@@ -946,6 +957,7 @@ export default {
   "Em processamento": "Processing",
   "Em progresso": "In progress",
   "Em todo o site": "Across the site",
+  "Em uma semana": "In a week",
   "Emblema da pasta": "Folder emblem",
   "Encerrar": "End",
   "Encerrar a sessão de estudo aberta em outro aparelho ou aba? O tempo já registrado é mantido.": "End the study session open on another device or tab? Time already logged is kept.",
@@ -1120,10 +1132,13 @@ export default {
   "Estudo": "Estudo",
   "Estudo à beira-mar": "Seaside study",
   "Estudo aconchegante": "Cozy study",
+  "Estudo agendado": "Scheduled study",
+  "Estudo agendado atualizado.": "Scheduled study updated.",
   "Estudo aventura": "Adventure study",
   "Estudo livre": "Free study",
   "Estudo livre, sem tempo definido": "Free study, no set time",
   "Estudo mais leve, no seu ritmo.": "Lighter studying, at your own pace.",
+  "Estudo removido do calendário.": "Study removed from the calendar.",
   "Estudo silencioso": "Quiet study",
   "Etapas (uma por linha)": "Steps (one per line)",
   "Etapas da investigação": "Investigation steps",
@@ -1138,11 +1153,14 @@ export default {
   "Evitar repetir questões já geradas": "Avoid repeating questions already generated",
   "Ex.: Biologia — divisão celular": "E.g.: Biology — cell division",
   "Ex.: causas da Independência": "E.g.: causes of Independence",
+  "Ex.: Concluir a apresentação do TCC até quinta-feira": "E.g. Finish the thesis presentation by Thursday",
   "Ex.: História do Brasil — Conceitos básicos": "E.g. Brazilian history — Basic concepts",
   "Ex.: Introdução a Banco de Dados": "E.g.: Introduction to Databases",
   "Ex.: O que estou estudando": "E.g. What I'm studying",
   "Ex.: Revisão para a prova": "E.g. Exam review",
   "Ex.: revisão, energia, vestibular": "E.g. review, energy, entrance exam",
+  "Ex.: Revisar os slides do TCC": "E.g. Review the thesis slides",
+  "Ex.: Slides, Ensaio": "E.g. Slides, Rehearsal",
   "Excluir": "Delete",
   "Excluir a coleção": "Delete the collection",
   "Excluir anotação": "Delete note",
@@ -1152,6 +1170,9 @@ export default {
   "Excluir esta página do diário? O texto e as decorações dela somem.": "Delete this page from the journal? Its text and decorations will be gone.",
   "Excluir este cartão e o histórico de revisões dele? Esta ação não pode ser desfeita.": "Delete this card and its review history? This can't be undone.",
   "Excluir material": "Delete material",
+  "Excluir objetivo": "Delete goal",
+  "Excluir subobjetivo": "Delete subgoal",
+  "Excluir tarefa": "Delete task",
   "Exemplo": "Example",
   "Exemplo (opcional)": "Example (optional)",
   "Exemplo ilustrativo": "Illustrative example",
@@ -1329,6 +1350,7 @@ export default {
   "Histórico de revisões": "Review history",
   "Histórico do cartão selecionado": "Selected card history",
   "Hoje": "Today",
+  "Horário": "Time",
   "Horário removido.": "Study time removed.",
   "Horário vinculado a uma tarefa.": "Study time linked to a task.",
   "Horas por semana.": "Hours per week.",
@@ -1539,6 +1561,7 @@ export default {
   "Marca pessoal para conferir depois": "Personal mark to check later",
   "Marcação removida.": "Mark removed.",
   "Marcar aula como estudada": "Mark lesson as studied",
+  "Marcar como concluído": "Mark as done",
   "Marcar problema": "Mark problem",
   "Marcos de estudo": "Study milestones",
   "Marcos do seu caminho": "Milestones along your way",
@@ -1806,6 +1829,8 @@ export default {
   "Nenhum cartão pendente. Suas próximas revisões aparecerão aqui.": "No cards due. Your next reviews will show up here.",
   "Nenhum convite criado.": "No invitations created.",
   "Nenhum envio dos alunos.": "No submissions from students.",
+  "Nenhum estudo agendado neste dia.": "No study scheduled on this day.",
+  "Nenhum estudo agendado.": "No study scheduled.",
   "Nenhum foco concluído ainda": "No focus session finished yet",
   "Nenhum horário ou prazo neste mês ainda.": "No study times or deadlines this month yet.",
   "Nenhum indício detectado nesta análise": "Nothing detected in this analysis",
@@ -1845,6 +1870,7 @@ export default {
   "Nenhuma revisita ainda.": "No revisits yet.",
   "Nenhuma seção do resumo tinha trecho de apoio.": "No section of the summary had a supporting passage.",
   "Nenhuma seleção ainda.": "No selection yet.",
+  "Nenhuma tarefa ainda": "No tasks yet",
   "Nenhuma tarefa aqui ainda.": "No tasks here yet.",
   "Nenhuma tarefa concluída aqui.": "No completed tasks here.",
   "Nenhuma turma ainda": "No classes yet",
@@ -1899,6 +1925,7 @@ export default {
   "Nova reflexão": "New reflection",
   "Nova senha": "New password",
   "Nova tarefa": "New task",
+  "Nova tarefa com detalhes": "New task with details",
   "Nova tentativa": "New attempt",
   "Nova transcrição": "New transcription",
   "Nova turma": "New class",
@@ -1990,8 +2017,11 @@ export default {
   "O que mudou no que você pensava? O que ainda ficou em aberto?": "What changed in what you thought? What is still open?",
   "O que o card vai mostrar?": "What will the card show?",
   "O que parece errado?": "What looks wrong?",
+  "O que revisar, material para levar…": "What to review, materials to bring…",
   "O que você entendeu hoje?": "What did you understand today?",
   "O que você ofereceu à turma e a resposta do professor. Só você e quem gerencia a turma veem esta lista.": "What you offered the class and the teacher's answer. Only you and the class managers see this list.",
+  "O que você quer concluir?": "What do you want to finish?",
+  "O que você vai estudar?": "What will you study?",
   "O registro de tempo de estudo aparece aqui quando for ativado neste servidor.": "Study time tracking appears here once it is enabled on this server.",
   "O som ambiente parou ao trocar de página.": "The ambient sound stopped when you changed page.",
   "O texto transcrito é enviado a um serviço externo de IA para avisos preliminares e, após sua confirmação, resumo e questões.": "The transcribed text is sent to an external AI service for preliminary warnings and, after you confirm, the summary and questions.",
@@ -1999,11 +2029,17 @@ export default {
   "O trecho não foi encontrado no texto atual. A citação continua guardada aqui.": "The passage was not found in the current text. The quote is still kept here.",
   "O trecho pode ter até 54 minutos.": "The clip can be up to 54 minutes long.",
   "Objetivo": "Goal",
+  "Objetivo arquivado.": "Goal archived.",
   "Objetivo atualizado.": "Goal updated.",
+  "Objetivo concluído. Parabéns!": "Goal completed. Congratulations!",
+  "Objetivo criado. Agora adicione as tarefas.": "Goal created. Now add the tasks.",
   "Objetivo criado. Agora você pode adicionar tarefas a ele.": "Goal created. Now you can add tasks to it.",
   "Objetivo da lista": "Goal of the list",
   "Objetivo de estudo": "Study goal",
+  "Objetivo de volta à lista.": "Goal back on the list.",
+  "Objetivo excluído.": "Goal deleted.",
   "Objetivo principal": "Main goal",
+  "Objetivo reaberto.": "Goal reopened.",
   "Objetivos ativos do Planejar, com as tarefas feitas.": "Active goals from Plan, with completed tasks.",
   "Objetivos e tarefas": "Goals and tasks",
   "Objetivos e tarefas, calendário de estudos (com exportação .ics) e tempo de estudo com meta semanal. Aparece quando esses recursos estão ativos.": "Goals and tasks, study calendar (with .ics export) and study time with a weekly goal. Shown when these features are on.",
@@ -2045,6 +2081,7 @@ export default {
   "Ordem das tarefas salva.": "Task order saved.",
   "Ordem manual": "Manual order",
   "Ordenar": "Sort",
+  "Ordenar por": "Sort by",
   "Ordenar tarefas": "Sort tasks",
   "Organização": "Organization",
   "Organização das tarefas": "Task organization",
@@ -2239,6 +2276,7 @@ export default {
   "Prazo": "Due date",
   "Prazo (opcional)": "Due date (optional)",
   "Prazo de tarefa": "Task deadline",
+  "Prazo de tarefa · dia inteiro": "Task deadline · all day",
   "Prazo e pendências": "Due date and pending",
   "Prazo inválido.": "Invalid due date.",
   "Precisa de uma orientação?": "Need some guidance?",
@@ -2331,6 +2369,7 @@ export default {
   "Quantidade de questões": "Number of questions",
   "Quantidade máxima": "Maximum number",
   "Quantidade personalizada": "Custom amount",
+  "Que tal reservar um horário curto para estudar neste dia?": "How about booking a short study slot on this day?",
   "questão": "question",
   "Questão de múltipla escolha": "Multiple-choice question",
   "Questão marcada.": "Question marked.",
@@ -2349,6 +2388,7 @@ export default {
   "questões repetidas ou sem fonte foram descartadas": "repeated or unsourced questions were discarded",
   "Qui": "Thu",
   "Rápida": "Fast",
+  "Reabrir objetivo": "Reopen goal",
   "Realça bordas, campos e links para facilitar a identificação.": "Strengthens borders, fields and links so they're easier to spot.",
   "Reaproveitar se já existir um material igual": "Reuse an identical material if one exists",
   "Reaproveitar um material igual que já exista (não gasta uma nova geração)": "Reuse an identical material if one exists (does not use a new generation)",
@@ -2421,6 +2461,7 @@ export default {
   "Reproduzir a partir deste trecho": "Play from this excerpt",
   "Reproduzir ou pausar": "Play or pause",
   "Reservar um momento para estudar hoje.": "Set aside a moment to study today.",
+  "Reserve um horário para estudar e ele aparece aqui, junto com os prazos das tarefas.": "Book a time to study and it shows up here, along with task deadlines.",
   "Resolva as perguntas com respostas diferentes": "Resolve questions with different answers",
   "Responda às questões, consulte as explicações e volte ao material para revisar suas dúvidas.": "Answer the questions, read the explanations and go back to the material to review your doubts.",
   "Responda estas questões como uma lista comum, com placar e revisão dos erros. A lista fica guardada na primeira aula usada.": "Answer these questions as a regular list, with a score and a review of your mistakes. The list is kept in the first lesson used.",
@@ -2650,6 +2691,7 @@ export default {
   "Seus dados": "Your data",
   "Seus sons ambientes estavam tocando. Quer continuar?": "Your ambient sounds were playing. Continue?",
   "Sex": "Fri",
+  "Sexta-feira": "Friday",
   "Sim. Você pode editar os trechos da transcrição e salvar uma nova revisão, mantendo o histórico de versões. Resumos e questões anteriores sinalizam quando precisam ser atualizados após uma alteração no texto.": "Yes. You can edit the transcript excerpts and save a new revision, keeping the version history. Earlier summaries and questions show when they need updating after a change to the text.",
   "Simples": "Simple",
   "Simples (Verdana)": "Simple (Verdana)",
@@ -2740,6 +2782,7 @@ export default {
   "Subobjetivo (opcional)": "Subgoal (optional)",
   "Subobjetivo atualizado.": "Subgoal updated.",
   "Subobjetivo criado.": "Subgoal created.",
+  "Subobjetivo excluído.": "Subgoal deleted.",
   "Substituir a versão do outro aparelho pela deste aparelho?": "Replace the other device's version with this device's?",
   "Subtítulo": "Subheading",
   "Subtítulo.": "Subheading.",
@@ -2760,9 +2803,11 @@ export default {
   "Também dá para digitar: **negrito**, *itálico*, ==destaque==, ## título, - lista, > citação e [texto](https://link).": "You can also type: **bold**, *italic*, ==highlight==, ## heading, - list, > quote and [text](https://link).",
   "Tarde de matcha": "Matcha afternoon",
   "Tarefa": "Task",
+  "Tarefa adicionada.": "Task added.",
   "Tarefa atualizada.": "Task updated.",
   "Tarefa concluída.": "Task completed.",
   "Tarefa criada.": "Task created.",
+  "Tarefa excluída.": "Task deleted.",
   "Tarefa reaberta.": "Task reopened.",
   "Tarefas e flashcards": "Tasks and flashcards",
   "Tela cheia": "Full screen",
@@ -2835,6 +2880,7 @@ export default {
   "Todas as disciplinas": "All subjects",
   "Todas as questões têm resposta. Revise se quiser e conclua a tentativa.": "Every question has an answer. Review if you like and finish the attempt.",
   "Todas as tags": "All tags",
+  "Todas as tarefas": "All tasks",
   "Todas as tarefas daqui estão concluídas.": "All tasks here are completed.",
   "Todas são de outras disciplinas.": "All of them are from other subjects.",
   "Todo o acervo": "Whole collection",
@@ -2892,6 +2938,7 @@ export default {
   "Turmas privadas: o professor publica aulas, os alunos enviam gravações para aprovação e compartilham flashcards. Só os membros veem o que foi publicado ou compartilhado, e o seu progresso, suas notas e revisões continuam só seus.": "Private classes: the teacher publishes lessons, students submit recordings for approval and share flashcards. Only members see what was published or shared, and your progress, notes and reviews stay yours alone.",
   "Turquesa": "Turquoise",
   "Turquesa e azul profundo.": "Turquoise and deep blue.",
+  "Últimas 12 semanas.": "Last 12 weeks.",
   "Último acesso": "Last opened",
   "um caderno de aula": "a lesson notebook",
   "Um cantinho para a sua curiosidade": "A little corner for your curiosity",
@@ -2906,6 +2953,7 @@ export default {
   "Um exemplo que ajude a lembrar": "An example that helps you remember",
   "Um lembrete por linha": "One reminder per line",
   "Um número": "One number",
+  "Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar e até quando.": "A goal gathers the tasks of an exam, subject or project. Start with what you want to achieve and by when.",
   "Um objetivo reúne as tarefas de uma prova, matéria ou projeto. Comece pelo que você quer alcançar.": "A goal groups the tasks for an exam, subject or project. Start with what you want to achieve.",
   "Um passo por linha (até 30). Marcar um passo no perfil fica salvo na sua conta.": "One step per line (up to 30). Ticking a step on your profile is saved to your account.",
   "Um pequeno passo.": "One small step.",
@@ -2980,6 +3028,9 @@ export default {
   "Velocidade": "Speed",
   "Velocidade da voz": "Voice speed",
   "Velocidade de reprodução": "Playback speed",
+  "vence amanhã": "due tomorrow",
+  "vence hoje": "due today",
+  "venceu ontem": "was due yesterday",
   "Vento": "Wind",
   "Ver andamento": "View progress",
   "Ver cartões": "View cards",
@@ -3495,6 +3546,10 @@ export default {
    "{0} line skipped: over the limit of {1}."
   ],
   [
+   "Nova tarefa com prazo, aula ou link em {0}",
+   "New task with deadline, lesson or link in {0}"
+  ],
+  [
    "(ou a {0}, se o serviço principal falhar)",
    "(or to {0}, if the main service fails)"
   ],
@@ -3565,6 +3620,10 @@ export default {
   [
    "Você a ligou a {0} outras descobertas.",
    "You linked it to {0} other discoveries."
+  ],
+  [
+   "Horários no fuso deste aparelho ({0}).",
+   "Times in this device's time zone ({0})."
   ],
   [
    "{0} de {1} acertos ({2}%). {3} erros.",
@@ -3723,6 +3782,10 @@ export default {
    "Continue attempt from {0}: {1}"
   ],
   [
+   "Todas as {0} tarefas concluídas",
+   "All {0} tasks done"
+  ],
+  [
    "Não foi possível carregar {0}.",
    "Couldn't load {0}."
   ],
@@ -3747,6 +3810,10 @@ export default {
    "Paper {0}. Saved to your account."
   ],
   [
+   "Mais ações do subobjetivo: {0}",
+   "More actions for subgoal: {0}"
+  ],
+  [
    "Gerar novas questões para {0}",
    "Generate new questions for {0}"
   ],
@@ -3769,6 +3836,10 @@ export default {
   [
    "Destaque da revisão {0} · {1}",
    "Highlight from revision {0} · {1}"
+  ],
+  [
+   "{0} de {1} tarefas concluídas",
+   "{0} of {1} tasks done"
   ],
   [
    "Destaque da revisão {0}: {1}",
@@ -3825,6 +3896,10 @@ export default {
   [
    "Resposta correta: {0} — {1}",
    "Correct answer: {0} — {1}"
+  ],
+  [
+   "Mais ações do objetivo: {0}",
+   "More actions for goal: {0}"
   ],
   [
    "Nada encontrado para “{0}”",
@@ -3917,6 +3992,18 @@ export default {
   [
    "acerto ({0}%) · {1} erros",
    "correct ({0}%) · {1} mistakes"
+  ],
+  [
+   "Mais ações da tarefa: {0}",
+   "More actions for task: {0}"
+  ],
+  [
+   "Estudo agendado para {0}.",
+   "Study scheduled for {0}."
+  ],
+  [
+   "Remover {0} do calendário",
+   "Remove {0} from the calendar"
   ],
   [
    "Opções da disciplina {0}",
@@ -4271,6 +4358,14 @@ export default {
    "{0} questions · {1}"
   ],
   [
+   "venceu há {0} dias",
+   "was due {0} days ago"
+  ],
+  [
+   "Nova tarefa em {0}",
+   "New task in {0}"
+  ],
+  [
    "{0} · questão {1}",
    "{0} · question {1}"
   ],
@@ -4431,6 +4526,10 @@ export default {
    "New card · {0}"
   ],
   [
+   "faltam {0} dias",
+   "{0} days left"
+  ],
+  [
    "Salvar {0} {1}",
    "Save {0} {1}"
   ],
@@ -4583,6 +4682,10 @@ export default {
    "Question {0}"
   ],
   [
+   "Prazo: {0}.",
+   "Deadline: {0}."
+  ],
+  [
    "Versão {0}",
    "Version {0}"
   ],
@@ -4613,6 +4716,10 @@ export default {
   [
    "Foco · {0}",
    "Focus · {0}"
+  ],
+  [
+   "Editar {0}",
+   "Edit {0}"
   ],
   [
    "Nível {0}",

@@ -34,23 +34,80 @@ async function main() {
     await page.goto(base + '/planejar.html?criar=objetivo#tarefas');
     await page.locator('#planning-goal-title:visible').waitFor();
     assert.equal(await page.evaluate(() => document.activeElement.id), 'planning-goal-title');
-    await page.locator('#planning-goal-title').fill('Preparar o seminário');
+    // "Quero concluir a apresentação do meu TCC até quinta-feira": the deadline comes from the text.
+    const goalText = 'Concluir a apresentação do meu TCC até quinta-feira';
+    await page.locator('#planning-goal-title').fill(goalText);
+    const thursday = await page.evaluate(() => {
+      const d = new Date();
+      d.setDate(d.getDate() + ((4 - d.getDay() + 7) % 7));
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    });
+    assert.equal(await page.locator('#planning-goal-date').inputValue(), thursday, 'deadline read from the text');
+    await page.locator('[data-planning-goal-detected]', { hasText: 'quinta-feira' }).waitFor();
+    // Shortcuts set the date too; "Sem prazo" clears it; typing again restores the detected day.
+    await page.locator('[data-planning-quick-dates] button', { hasText: 'Amanhã' }).click();
+    assert.notEqual(await page.locator('#planning-goal-date').inputValue(), '');
+    await page.locator('#planning-goal-date').fill(thursday);
     await page.locator('[data-planning-goal-form] [type=submit]').click();
-    await page.locator('[data-planning-status]', { hasText: 'Objetivo criado' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Objetivo criado' }).waitFor();
     assert.deepEqual(
-      data.createdGoals.map((g) => g.title),
-      ['Preparar o seminário'],
+      data.createdGoals.map((g) => [g.title, g.target_date]),
+      [[goalText, thursday]],
     );
+    // Focus goes straight to the new goal's own "Adicionar tarefa" line.
+    const tcc = page.locator('.planning-goal', { hasText: goalText });
+    await tcc.locator('.planning-goal-due .planning-due-date').waitFor();
+    const quick = tcc.getByRole('textbox', { name: `Nova tarefa em ${goalText}` });
+    await page.waitForFunction(() => document.activeElement?.closest('.planning-quick-add'));
+    for (const title of ['Montar os slides', 'Ensaiar a fala', 'Revisar as referências']) {
+      await quick.fill(title);
+      await quick.press('Enter');
+      await tcc.locator('.planning-task', { hasText: title }).waitFor();
+      assert.equal(await page.evaluate(() => document.activeElement?.closest('.planning-quick-add') !== null), true, 'focus stays on the quick line');
+    }
+    await tcc.locator('.planning-meta', { hasText: '0 de 3 tarefas concluídas' }).waitFor();
+    // No fixed success message on the page: confirmations are toasts.
+    assert.equal(await page.locator('[data-planning-status]').textContent(), '');
+    await tcc.getByRole('checkbox', { name: 'Concluir tarefa: Montar os slides' }).check();
+    await tcc.locator('.planning-meta', { hasText: '1 de 3 tarefas concluídas' }).waitFor();
+    await tcc.locator('.planning-percent', { hasText: '33%' }).waitFor();
+    assert.equal(
+      await tcc.locator('.planning-progress').evaluate((bar) => Number(getComputedStyle(bar).getPropertyValue('--done')).toFixed(2)),
+      '0.33',
+    );
+    await page.waitForFunction(() => document.activeElement?.matches('input[type=checkbox]'));
+    // Edit and delete live in the task's "⋯" menu.
+    const refs = tcc.locator('.planning-task', { hasText: 'Revisar as referências' });
+    await refs.locator('summary[aria-label="Mais ações da tarefa: Revisar as referências"]').click();
+    page.once('dialog', (dialog) => dialog.accept());
+    await refs.getByRole('button', { name: 'Excluir tarefa' }).click();
+    await tcc.locator('.planning-meta', { hasText: '1 de 2 tarefas concluídas' }).waitFor();
+    assert(data.planningDeletes.some((entry) => entry.startsWith('tasks/')), 'deleted in the account');
+    // A subgoal is added inside the goal, and its own line adds tasks to it.
+    await tcc.locator(`summary[aria-label="Mais ações do objetivo: ${goalText}"]`).click();
+    await tcc.getByRole('button', { name: 'Novo subobjetivo' }).click();
+    await tcc.getByRole('textbox', { name: 'Novo subobjetivo' }).fill('Ensaio geral');
+    await tcc.getByRole('button', { name: 'Adicionar subobjetivo' }).click();
+    const sub = tcc.locator('.planning-subgoal', { hasText: 'Ensaio geral' });
+    await sub.waitFor();
+    await sub.getByRole('textbox', { name: 'Nova tarefa em Ensaio geral' }).fill('Cronometrar 15 minutos até amanhã');
+    await sub.getByRole('textbox', { name: 'Nova tarefa em Ensaio geral' }).press('Enter');
+    await sub.locator('.planning-task', { hasText: 'Cronometrar' }).locator('.planning-due', { hasText: 'vence amanhã' }).waitFor();
+    await settle(page);
+    await axeCheck(page, 'main', 'Planejar › objetivo do TCC');
+    await shot(page, 'planejar-tcc');
+    record('Objetivo "TCC até quinta-feira": prazo entendido pelo texto, tarefas adicionadas no próprio cartão (Enter), concluir atualiza contagem e barra, ⋯ exclui, subobjetivo com sua própria linha; confirmações em toast');
+
     const checkbox = page.getByRole('checkbox', {
       name: 'Concluir tarefa: Refazer as questões erradas',
     });
     await checkbox.check();
-    await page.locator('[data-planning-status]', { hasText: 'Tarefa concluída' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Tarefa concluída' }).waitFor();
     assert(data.tasks.find((t) => t.id === 't2').completed_at, 'saved as completed');
     await page
       .getByRole('checkbox', { name: 'Concluir tarefa: Refazer as questões erradas' })
       .uncheck();
-    await page.locator('[data-planning-status]', { hasText: 'Tarefa reaberta' }).waitFor();
+    await page.locator('.app-toast:not([hidden])', { hasText: 'Tarefa reaberta' }).waitFor();
     assert.equal(data.tasks.find((t) => t.id === 't2').completed_at, null, 'reopened');
     await page.locator('#planning-task-filter').selectOption('completed');
     // Goal g1 has no completed task: its lists explain why they are empty.
@@ -254,7 +311,7 @@ async function main() {
       await block.locator('summary').focus();
       await page.keyboard.press('Enter');
       await block.getByRole('button', { name: '30 min mais tarde' }).click();
-      await page.locator('.calendar-status', { hasText: 'Horário movido para' }).waitFor();
+      await page.locator('.app-toast:not([hidden])', { hasText: 'Horário movido para' }).waitFor();
       const moved = data.events.find((e) => e.id === 'w1');
       assert.equal(new Date(moved.startsAt).getHours(), 14);
       assert.equal(new Date(moved.startsAt).getMinutes(), 30);

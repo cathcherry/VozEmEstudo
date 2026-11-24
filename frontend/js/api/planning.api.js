@@ -28,6 +28,12 @@ export const updateTask = (taskId, changes) =>
   apiFetch(`/api/planning/tasks/${encodeURIComponent(taskId)}`, {
     method: 'PATCH', body: JSON.stringify(changes),
   });
+export const deleteGoal = (goalId) =>
+  apiFetch(`/api/planning/goals/${encodeURIComponent(goalId)}`, { method: 'DELETE' });
+export const deleteSubgoal = (subgoalId) =>
+  apiFetch(`/api/planning/subgoals/${encodeURIComponent(subgoalId)}`, { method: 'DELETE' });
+export const deleteTask = (taskId) =>
+  apiFetch(`/api/planning/tasks/${encodeURIComponent(taskId)}`, { method: 'DELETE' });
 export const setTaskCompleted = (taskId, completed) =>
   apiFetch(`/api/planning/tasks/${encodeURIComponent(taskId)}/completion`, {
     method: 'PATCH', body: JSON.stringify({ completed }),

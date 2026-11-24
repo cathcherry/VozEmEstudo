@@ -216,3 +216,18 @@ test('reordering foreign goals never reaches the database mutation', async () =>
     (error) => error.code === 'NOT_FOUND');
   assert.equal(writes, 0);
 });
+
+test('deleting goals, subgoals and tasks is scoped to the owner and validates ids', async () => {
+  const calls = [];
+  const service = buildPlanningService({
+    async deleteOwnedGoal(userId, id) { calls.push(['goal', userId, id]); return { id, deleted: true }; },
+    async deleteOwnedSubgoal(userId, id) { calls.push(['subgoal', userId, id]); return { id, deleted: true }; },
+    async deleteOwnedTask(userId, id) { calls.push(['task', userId, id]); return { id, deleted: true }; },
+  });
+  assert.deepEqual(await service.deleteTask(a, task), { id: task, deleted: true });
+  await service.deleteSubgoal(a, material);
+  await service.deleteGoal(a, goal);
+  assert.deepEqual(calls, [['task', a, task], ['subgoal', a, material], ['goal', a, goal]]);
+  assert.throws(() => service.deleteTask(a, 'not-an-id'));
+  assert.equal(calls.length, 3);
+});
