@@ -391,10 +391,19 @@ export function startTour({ steps = TOUR_STEPS, onEnd = () => {}, doc = document
   show(0);
   void stylesReady.then(() => {
     if (ended) return;
+    // Appear already in place: without this, the left/top transition slides the popover from
+    // where it was measured unstyled to its real spot.
+    popover.style.transition = 'none';
+    ring.style.transition = 'none';
     position();
+    void popover.offsetWidth;
     popover.style.visibility = '';
     ring.style.visibility = '';
     title.focus({ preventScroll: true });
+    requestAnimationFrame(() => {
+      popover.style.transition = '';
+      ring.style.transition = '';
+    });
   });
   active = {
     close: (status = 'dismissed') => end(status),
