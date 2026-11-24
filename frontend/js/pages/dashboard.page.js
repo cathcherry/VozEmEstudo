@@ -50,7 +50,26 @@ const name=session.user.user_metadata?.display_name || session.user.user_metadat
 document.querySelector('[data-first-name]').textContent=name ? ', '+name.trim().split(/\s+/)[0] : '';
 const container=document.querySelector('[data-dashboard-data]'), overview=document.querySelector('[data-overview]');
 const continued=document.querySelector('[data-continue-list]'), recent=document.querySelector('[data-recent-list]');
-function dashboardLesson(material) {
+// Folder tones cycle in the same order as the Biblioteca's folders (lavender, matcha, honey, mist, rose).
+const TONES = ['lavender', 'matcha', 'honey', 'mist', 'rose'];
+/** Subject → folder tone, in alphabetical order of subjects (the same colours as the Biblioteca). */
+function subjectTones(materials) {
+  const names = [...new Set(materials.map((m) => m.subject || t('lesson.noSubject')))].sort((a, b) => a.localeCompare(b, intlLocale()));
+  return new Map(names.map((subject, index) => [subject, TONES[index % TONES.length]]));
+}
+/** Bar heights (0.25 to 1) of a lesson's waveform, stable for the same lesson. */
+function waveHeights(seed, count) {
+  let h = 2166136261;
+  for (const ch of String(seed)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+    const base = 0.45 + 0.35 * Math.sin(i / 3.1) * Math.sin(i / 7.3);
+    out.push(Math.max(0.22, Math.min(1, base + ((h % 1000) / 1000 - 0.5) * 0.55)));
+  }
+  return out;
+}
+function dashboardLesson(material, { tone, hero = false } = {}) {
   const study = studyFor(material.id);
   const audio = Array.isArray(material.audio_files) ? material.audio_files[0] : material.audio_files || material.audio;
   const durationMs = Number(audio?.duration_ms || study.duration * 1000 || 0);
@@ -59,6 +78,7 @@ function dashboardLesson(material) {
   card.className = 'dashboard-lesson-card';
   card.href = materialHref(material.id);
   card.dataset.materialId = material.id;
+  if (tone) card.dataset.folderTone = tone;
   const atEnd = playbackAtEnd(material);
   const action = t(study.completed || atEnd ? 'lesson.revisit' : study.openedAt ? 'lesson.continue' : 'lesson.open');
   card.setAttribute('aria-label', t('lesson.cardLabel', { action, title: material.title }));
@@ -77,6 +97,14 @@ function dashboardLesson(material) {
     playbackState.className = 'dashboard-lesson-subject';
     playbackState.textContent = t('lesson.atEnd');
     copy.append(playbackState);
+  }
+  if (hero) {
+    // The lesson is a recording: the next action reads as a player (the whole card is the link).
+    const play = document.createElement('span');
+    play.className = 'dashboard-lesson-play';
+    play.setAttribute('aria-hidden', 'true');
+    play.append(uiIcon('play', { size: 22 }));
+    card.append(play);
   }
   card.append(copy);
 
@@ -143,6 +171,21 @@ function dashboardLesson(material) {
       playback.style.removeProperty('--dashboard-tooltip-x');
     });
     playback.append(progress, duration, tooltip);
+    if (hero) {
+      // Progress drawn as the recording's shape: the part already heard is filled.
+      const wave = document.createElement('span');
+      wave.className = 'dashboard-lesson-wave';
+      wave.setAttribute('aria-hidden', 'true');
+      const heights = waveHeights(material.id, 72);
+      const played = Math.round((percent / 100) * heights.length);
+      heights.forEach((height, index) => {
+        const bar = document.createElement('i');
+        bar.style.setProperty('--h', height.toFixed(2));
+        if (index < played) bar.className = 'is-played';
+        wave.append(bar);
+      });
+      playback.prepend(wave);
+    }
     card.append(playback);
   }
   return card;
@@ -161,18 +204,18 @@ async function load() {
     }
     continued.replaceChildren(); recent.replaceChildren();
     const last=materials.filter(m=>studyFor(m.id).openedAt).sort((a,b)=>(studyFor(b.id).playedAt||studyFor(b.id).openedAt)-(studyFor(a.id).playedAt||studyFor(a.id).openedAt)).slice(0,1);
+    const tones = subjectTones(materials);
+    const toneOf = (material) => tones.get(material.subject || t('lesson.noSubject'));
     if (last.length) for (const material of last) {
-      continued.append(dashboardLesson(material));
+      continued.append(dashboardLesson(material, { tone: toneOf(material), hero: true }));
     } else continued.append(emptyState(t(materials.length?'dashboard.noActive':'dashboard.emptyLibrary'),t(materials.length?'dashboard.noActiveHint':'dashboard.emptyLibraryHint'),{href:materials.length?'./historico.html':'./nova-transcricao.html',action:t(materials.length?'dashboard.openLibrary':'nav.newTranscription'),mascot:materials.length?'reading':'laptop'}));
     const recentMaterials=materials.filter(material=>!last.some(item=>item.id===material.id)).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,6);
     document.querySelector('[data-recent-section]').hidden=!recentMaterials.length;
-    for (const material of recentMaterials) recent.append(dashboardLesson(material));
+    for (const material of recentMaterials) recent.append(dashboardLesson(material, { tone: toneOf(material) }));
     const shelf=document.querySelector('[data-subject-list]'); shelf.replaceChildren();
     const subjects=new Map(); for(const m of materials) { const subject=m.subject||t('lesson.noSubject'); const list=subjects.get(subject)||[]; list.push(m); subjects.set(subject,list); }
-    // Folder tones cycle in the same order as the Biblioteca's folders (lavender, matcha, honey, mist, rose).
-    const tones=['lavender','matcha','honey','mist','rose']; let toneIndex=0;
     for(const [subject,items] of [...subjects].sort((a,b)=>a[0].localeCompare(b[0],intlLocale()))) {
-      const link=document.createElement('a'); link.className='subject-folder'; link.dataset.folderTone=tones[toneIndex++%tones.length]; link.href='./historico.html?subject='+encodeURIComponent(subject);
+      const link=document.createElement('a'); link.className='subject-folder'; link.dataset.folderTone=tones.get(subject); link.href='./historico.html?subject='+encodeURIComponent(subject);
       const icon=document.createElement('span'); icon.className='subject-folder-icon'; icon.append(uiIcon('folder',{size:18})); icon.setAttribute('aria-hidden','true');
       const copy=document.createElement('span'); const title=document.createElement('strong'); title.textContent=subject; const detail=document.createElement('small'); const reviewed=items.filter(m=>studyFor(m.id).completed).length; detail.textContent=t('dashboard.subjectLessons',{count:items.length})+(reviewed?' · '+t('dashboard.subjectStudied',{count:reviewed}):''); copy.append(title,detail); link.append(icon,copy); shelf.append(link);
     }

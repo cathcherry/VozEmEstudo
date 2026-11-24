@@ -964,3 +964,199 @@
     }
   }
 }
+
+/* ---- Início refresh: cool canvas, the next lesson as a player, recent lessons as a table and a
+   tinted side panel. Lessons and subjects keep the Biblioteca's folder colours. ---------------- */
+@layer pages {
+  body[data-page='dashboard'] {
+    --dash-rail-tint: var(--paper-raised);
+  }
+  /* The cool canvas only with the default look: an atmosphere's palette, a wallpaper or reinforced
+     contrast keep their own page background. */
+  :root:is([data-atmosphere='lavender-desk'], [data-atmosphere-palette='off']):is([data-wallpaper='none'], :not([data-wallpaper])):not([data-high-contrast='true']) body[data-page='dashboard'] {
+    background-color: color-mix(in srgb, var(--lavender) 10%, var(--paper));
+  }
+  body[data-page='dashboard'] :is(.dashboard-lesson-card, .subject-folder)[data-folder-tone='lavender'],
+  body[data-page='dashboard'] .dash-continue { --tone: var(--lavender); --tone-ink: var(--lavender-ink); }
+  body[data-page='dashboard'] :is(.dashboard-lesson-card, .subject-folder)[data-folder-tone='matcha'],
+  body[data-page='dashboard'] .dash-continue:has([data-folder-tone='matcha']) { --tone: var(--matcha); --tone-ink: var(--matcha-ink); }
+  body[data-page='dashboard'] :is(.dashboard-lesson-card, .subject-folder)[data-folder-tone='honey'],
+  body[data-page='dashboard'] .dash-continue:has([data-folder-tone='honey']) { --tone: var(--honey); --tone-ink: var(--honey-ink); }
+  body[data-page='dashboard'] :is(.dashboard-lesson-card, .subject-folder)[data-folder-tone='mist'],
+  body[data-page='dashboard'] .dash-continue:has([data-folder-tone='mist']) { --tone: var(--mist); --tone-ink: var(--mist-ink); }
+  body[data-page='dashboard'] :is(.dashboard-lesson-card, .subject-folder)[data-folder-tone='rose'],
+  body[data-page='dashboard'] .dash-continue:has([data-folder-tone='rose']) { --tone: var(--rose); --tone-ink: var(--rose-ink); }
+
+  /* Panels of the main column: white on the canvas, no outline. */
+  body[data-page='dashboard'] .dash-main .dash-card {
+    border-color: transparent;
+    border-radius: 22px;
+    box-shadow: 0 1px 2px rgb(var(--shadow-color) / 0.06);
+  }
+
+  /* The next lesson, as a player in its subject's colour. */
+  body[data-page='dashboard'] .dash-continue {
+    border: 0;
+    border-radius: 28px;
+    background: color-mix(in srgb, var(--tone) 30%, var(--paper-raised));
+    box-shadow: none;
+  }
+  body[data-page='dashboard'] .dash-continue .dash-card-head h2 {
+    color: color-mix(in srgb, var(--tone-ink) 80%, var(--ink));
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'play copy date' 'topics topics topics' 'playback playback playback' 'cue cue cue';
+    align-items: center;
+    column-gap: var(--space-4);
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-topics { padding-left: calc(3.5rem + var(--space-4)); }
+  body[data-page='dashboard'] .dashboard-lesson-play {
+    grid-area: play;
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--tone-ink);
+    color: var(--paper-raised);
+  }
+  body[data-page='dashboard'] .dashboard-lesson-play .ui-icon { margin-left: 3px; }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-card:hover .dashboard-lesson-play {
+    background: color-mix(in srgb, var(--tone-ink) 85%, var(--ink));
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-date {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
+    color: var(--tone-ink);
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-wave {
+    flex: 1 0 100%;
+    display: flex;
+    align-items: center;
+    gap: clamp(1px, 0.3vw, 3px);
+    min-width: 0;
+    height: 3.25rem;
+    overflow: hidden;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-wave i {
+    flex: 1 1 0;
+    min-width: 0;
+    height: calc(var(--h) * 100%);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--tone-ink) 22%, transparent);
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-wave i.is-played {
+    background: var(--tone-ink);
+  }
+  /* The waveform shows the progress; the native bar stays for assistive technology. */
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback progress {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-playback { position: relative; }
+  body[data-page='dashboard'] .dash-continue .dashboard-lesson-percent { color: var(--tone-ink); }
+
+  /* Recent lessons: one row per lesson, like a table (subject colour, title, date, length). */
+  body[data-page='dashboard'] .dash-recent-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
+    grid-template-columns: 0.75rem minmax(0, 1fr) auto minmax(7rem, 11rem);
+    grid-template-areas: 'tone copy date playback';
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-2);
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:first-child { border-top: 0; }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card::before {
+    content: '';
+    grid-area: tone;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 4px;
+    background: var(--tone, var(--lavender));
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-card:hover {
+    border-color: var(--line);
+    background: color-mix(in srgb, var(--tone, var(--lavender)) 14%, transparent);
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-date {
+    align-self: center;
+    border: 0;
+    background: none;
+  }
+  body[data-page='dashboard'] .dash-recent .dashboard-lesson-playback progress { accent-color: var(--tone-ink, var(--brand-ink)); }
+
+  /* Side panel: one tinted surface, sections separated by space. */
+  body[data-page='dashboard'] .dash-rail {
+    border: 0;
+    border-radius: 28px;
+    background: var(--dash-rail-tint);
+    box-shadow: none;
+  }
+  body[data-page='dashboard'] .dash-rail > .dash-card,
+  body[data-page='dashboard'] .dash-rail > .dash-card:not([hidden], [data-user-hidden]) ~ .dash-card {
+    border-top-color: var(--line);
+  }
+
+  /* Subjects: pastel tiles in two columns. */
+  body[data-page='dashboard'] .dash-rail .subject-shelf {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 7.5rem), 1fr));
+    gap: var(--space-2);
+    margin: 0;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    gap: var(--space-2);
+    min-height: 5.25rem;
+    padding: var(--space-3);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--tone, var(--lavender)) 45%, var(--paper-raised));
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder:hover {
+    background: color-mix(in srgb, var(--tone, var(--lavender)) 65%, var(--paper-raised));
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder > span:last-child {
+    display: grid;
+    gap: 2px;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder small {
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder[data-folder-tone] .subject-folder-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--paper-raised) 70%, transparent);
+    box-shadow: none;
+    color: var(--tone-ink);
+    font-size: inherit;
+  }
+  body[data-page='dashboard'] .dash-rail .subject-folder[data-folder-tone] .subject-folder-icon::before,
+  body[data-page='dashboard'] .dash-rail .subject-folder[data-folder-tone] .subject-folder-icon::after { content: none; }
+  body[data-page='dashboard'] .dash-rail .subject-folder .subject-folder-icon .ui-icon { width: 1rem; height: 1rem; color: var(--tone-ink); }
+
+  @media (max-width: 640px) {
+    body[data-page='dashboard'] .dash-recent .dashboard-lesson-card {
+      grid-template-columns: 0.75rem minmax(0, 1fr) auto;
+      grid-template-areas: 'tone copy date' '. playback playback';
+    }
+    body[data-page='dashboard'] .dash-continue .dashboard-lesson-topics { padding-left: 0; }
+    /* Half the bars on a phone: the same shape, thicker strokes. */
+    body[data-page='dashboard'] .dash-continue .dashboard-lesson-wave i:nth-child(even) { display: none; }
+  }
+}
