@@ -21,6 +21,7 @@ export const FEATURE_FLAG_NAMES = Object.freeze([
   'multi_lesson',
   'discoveries',
   'journal',
+  'public_testing',
 ]);
 
 export function normalizeFeatureFlags(source = {}) {

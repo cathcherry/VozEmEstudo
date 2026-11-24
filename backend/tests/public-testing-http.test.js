@@ -138,6 +138,13 @@ test('public testing over HTTP: quotas, roles, admin overview and demo lessons',
     const after = await request('/api/testing/me');
     assert.equal(Number(after.body.used.summary), 2);
     assert.equal(Number(after.body.used.transcription_seconds), 300);
+    // Canonical demo media: only audio.mp3 / video.mp4 of a lesson folder, with Range for seeking.
+    const audio = await nativeFetch(`${origin}/demo-media/crase/audio.mp3`, { headers: { Range: 'bytes=0-99' } });
+    assert.equal(audio.status, 206);
+    assert.equal(audio.headers.get('content-type'), 'audio/mpeg');
+    assert.equal((await audio.arrayBuffer()).byteLength, 100);
+    for (const path of ['/demo-media/crase/lesson.json', '/demo-media/crase/script.json', '/demo-media/../backend/.env', '/demo-media/%2e%2e/%2e%2e/backend/package.json', '/demo-media/crase%2f..%2f..%2fpackage.json', '/demo-media/nao-existe/audio.mp3'])
+      assert.equal((await nativeFetch(origin + path)).status, 404, path);
     const ledgerKinds = (await db.query('select distinct kind from public.usage_ledger where user_id = $1', [a])).rows.map((r) => r.kind).sort();
     assert.deepEqual(ledgerKinds, ['summary', 'transcription_seconds']);
   } finally {

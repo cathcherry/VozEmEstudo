@@ -48,17 +48,21 @@ export async function get(userId, materialId) {
   const audio = Array.isArray(material.audio_files)
     ? material.audio_files[0]
     : material.audio_files;
-  const signedAudioUrl =
-    audio?.retain_original && audio?.storage_path
+  // Public testing: a demo copy plays the single canonical media served by the app.
+  const demoCopy = await demo.copyOf(userId, materialId);
+  const demoMedia = demoCopy ? demo.demoPlayback(demoCopy, audio?.duration_ms) : null;
+  const signedAudioUrl = demoMedia
+    ? demoMedia.signedAudioUrl
+    : audio?.retain_original && audio?.storage_path
       ? await createAudioSignedUrl(audio.storage_path)
       : null;
   const currentRevision = transcription?.current_revision || 0;
-  // Public testing: a demo copy says so (and carries the credits of the original material).
-  const demoCopy = await demo.copyOf(userId, materialId);
   return {
     ...material,
     ...(demoCopy ? { demo: { slug: demoCopy.slug, credits: demoCopy.credits || null } } : {}),
-    ...(isFeatureEnabled('mp4_retention') ? await videoService.playback(userId, materialId) : {}),
+    ...(demoMedia
+      ? { video: demoMedia.video, signedVideoUrl: demoMedia.signedVideoUrl }
+      : isFeatureEnabled('mp4_retention') ? await videoService.playback(userId, materialId) : {}),
     audio,
     signedAudioUrl,
     transcription,

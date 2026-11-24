@@ -152,6 +152,15 @@ if (env.serveFrontend) {
     res.sendFile('favicon.png', { root: path.join(frontendRoot, 'assets/brand') }),
   );
   app.use(express.static(path.join(frontendRoot, 'pages')));
+  // Public testing: the canonical demo media (original, openly licensed; one file per lesson).
+  // Only <slug>/audio.mp3 and <slug>/video.mp4 are served; Range requests work for seeking.
+  const demoRoot = path.resolve(__dirname, '../../database/demo-lessons');
+  app.use('/demo-media', (req, res, next) => {
+    if (!/^\/[a-z0-9-]+\/(audio\.mp3|video\.mp4)$/.test(req.path)) return res.status(404).end();
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.set('X-Content-Type-Options', 'nosniff');
+    return next();
+  }, express.static(demoRoot, { index: false, dotfiles: 'deny' }), (_req, res) => res.status(404).end());
   app.get('/', (_req, res) => res.redirect('/index.html'));
   // A page address that does not exist gets a friendly page; API and asset requests keep JSON 404s.
   app.use((req, res, next) => {

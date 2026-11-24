@@ -66,6 +66,29 @@ export async function open(userId, demoId) {
   return { materialId: opened.materialId, created: Boolean(opened.created) };
 }
 
+/**
+ * Canonical demo media are original, openly licensed files shipped with the app
+ * (database/demo-lessons/<slug>/) and served by the API at /demo-media/<slug>/<file>: one copy for
+ * everyone, no Storage upload, no Supabase egress. `demo/<slug>/<file>` → `/demo-media/<slug>/<file>`.
+ */
+export function demoMediaUrl(path) {
+  const match = /^demo\/([a-z0-9-]+)\/(audio\.mp3|video\.mp4)$/.exec(String(path || ''));
+  return match ? `/demo-media/${match[1]}/${match[2]}` : null;
+}
+
+/** Playback for a demo copy in the same shape as the regular playback (audio, optional video). */
+export function demoPlayback(copy, durationMs) {
+  const signedAudioUrl = demoMediaUrl(copy.audioPath);
+  const signedVideoUrl = copy.videoPath ? demoMediaUrl(copy.videoPath) : null;
+  return {
+    signedAudioUrl,
+    video: signedVideoUrl
+      ? { originalName: `${copy.slug}.mp4`, sizeBytes: null, durationMs: Number(durationMs) || null, clipStartMs: 0, clipEndMs: Number(durationMs) || null }
+      : null,
+    signedVideoUrl,
+  };
+}
+
 /** Demo copy metadata of a material (canonical file paths and credits), or null. */
 export async function copyOf(userId, materialId) {
   if (!publicTestingEnabled()) return null;
