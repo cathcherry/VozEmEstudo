@@ -15,10 +15,12 @@ function probe() {
     const page = await fetch(base + '/pagina-que-nao-existe.html', { headers: { accept: 'text/html' } });
     const api = await fetch(base + '/api/nao-existe', { headers: { accept: 'text/html' } });
     const asset = await fetch(base + '/js/nao-existe.js', { headers: { accept: '*/*' } });
+    const hidden = await fetch(base + '/.env', { headers: { accept: 'text/html' } });
     console.log(JSON.stringify({
       page: { status: page.status, type: page.headers.get('content-type'), body: await page.text() },
       api: { status: api.status, body: await api.json().catch(() => null) },
       asset: { status: asset.status, type: asset.headers.get('content-type') },
+      hidden: { status: hidden.status, body: await hidden.json().catch(() => null) },
     }));
     server.close();`;
   return new Promise((resolve, reject) => {
@@ -56,4 +58,6 @@ test('unknown pages get the friendly 404 page, API and assets keep plain 404s', 
   assert.equal(result.api.body.error.code, 'NOT_FOUND');
   assert.equal(result.asset.status, 404);
   assert.doesNotMatch(String(result.asset.type), /text\/html/);
+  assert.equal(result.hidden.status, 404);
+  assert.equal(result.hidden.body.error.code, 'NOT_FOUND', 'hidden files keep the JSON 404');
 });
