@@ -1,10 +1,12 @@
 import { app } from './app.js';
 import { env, missingRuntimeSecrets } from './config/env.js';
 import { logger } from './utils/logger.js';
+import { autoseedDemoLessons } from './services/demo-seed.service.js';
 
 const server = app.listen(env.port, () => {
   const missing = missingRuntimeSecrets();
   logger.info('API_STARTED', { port: env.port, origin: env.appOrigin, missingConfiguration: missing });
+  if (!missing.length) void autoseedDemoLessons();
 });
 
 function shutdown() {
