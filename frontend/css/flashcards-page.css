@@ -1040,7 +1040,7 @@
   @media (max-width: 760px) {
     body.app-page[data-page='flashcards'] .flashcards-tabs {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
     }
     body.app-page[data-page='flashcards'] .flashcards-tabs [role='tab'] {
       justify-content: flex-start;
@@ -1058,7 +1058,7 @@
       grid-template-columns: minmax(0, 1fr);
     }
     body.app-page[data-page='flashcards'] .flashcard-rating-buttons {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
     }
     body.app-page[data-page='flashcards'] .flashcard-face {
       padding: var(--space-4) var(--space-4) var(--space-2);
@@ -1075,7 +1075,7 @@
     }
     body.app-page[data-page='flashcards'] .flashcard-filters label {
       display: grid;
-      grid-template-columns: 6.5rem minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
       white-space: normal;
     }
     body.app-page[data-page='flashcards'] .flashcard-filters select {
