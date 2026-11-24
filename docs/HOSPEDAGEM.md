@@ -29,16 +29,21 @@ flowchart LR
 
 ## Serviços e comandos
 
-| Serviço | Build                                                     | Início                            | Verificação                         |
-| ------- | --------------------------------------------------------- | --------------------------------- | ----------------------------------- |
-| API     | `npm ci --prefix backend --omit=dev --no-audit --no-fund` | `npm --prefix backend start`      | `GET /api/health` → `{"ok":true}`   |
-| Worker  | o mesmo                                                   | `npm --prefix backend run worker` | log `WORKER_STARTED`; tarefas andam |
+| Serviço | Build                               | Início                       | Verificação                         |
+| ------- | ----------------------------------- | ---------------------------- | ----------------------------------- |
+| API     | `Dockerfile` da raiz do repositório | `node backend/src/server.js` | `GET /api/health` → `{"ok":true}`   |
+| Worker  | o mesmo `Dockerfile`                | `node backend/src/worker.js` | log `WORKER_STARTED`; tarefas andam |
 
-Exemplos de configuração do Railway (config como código, um arquivo por serviço):
-`deploy/railway.api.json` e `deploy/railway.worker.json`. No Railway, crie dois serviços a partir do
-mesmo repositório, **diretório raiz = raiz do repositório**, e aponte cada um para o seu arquivo.
-Node: o `package.json` da raiz exige `>=22.19.0`; defina a versão 22 no serviço se a plataforma não
-detectar sozinha.
+O build usa o **`Dockerfile` da raiz** (Node 22, só as dependências de produção do backend, mais
+`frontend/` e `database/demo-lessons/`). Não use o construtor automático (Railpack/Nixpacks): a raiz
+do repositório tem um `package.json` só de ferramentas de qualidade, sem `start`, e o Railpack falha
+ao preparar o build ("Railpack failed to prepare the build").
+
+No Railway, crie dois serviços a partir do mesmo repositório (**diretório raiz = raiz do
+repositório**) e, em cada serviço, em _Settings › Config-as-code_, aponte para o arquivo dele:
+`deploy/railway.api.json` (API: comando de início e healthcheck) e `deploy/railway.worker.json`
+(worker). Sem o arquivo, o Railway ainda detecta o `Dockerfile` e inicia a API; para o worker,
+defina então o _Custom Start Command_ `node backend/src/worker.js`.
 
 Testado neste contêiner (sem publicar): com variáveis de exemplo, a API inicia a partir da raiz,
 `/api/health` responde 200, `painel.html` e os catálogos de idioma são servidos, rotas inexistentes
