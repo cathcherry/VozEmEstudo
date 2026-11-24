@@ -177,11 +177,11 @@ async function main() {
       );
       assert.equal(saved.statement, 'Onde ocorre a fotossíntese?');
       // The list of flagged questions lived in Revisar › Questões; since Revisar was retired (3.6)
-      // it belongs with the questions (questoes.html). Checked there once that page shows it.
+      // it lives with the questions (questoes.html, 3.7).
       await p.goto(base + '/revisar.html#questoes');
       await p.waitForURL('**/questoes.html');
       const flagged = p.locator('[data-question-reports]');
-      if (await flagged.count()) {
+      {
         await flagged.locator('.question-report-row', { hasText: 'Onde ocorre a fotossíntese?' }).waitFor();
         assert.match(await flagged.textContent(), /Não está na aula/);
         assert.equal(
@@ -190,7 +190,7 @@ async function main() {
         );
         await settle(p);
         await axeCheck(p, '[data-question-reports]', 'Questões marcadas');
-      } else console.log('NOTE questoes.html does not list flagged questions yet (they stay saved in the account)');
+      }
       // Another device (fresh browser, same account) sees the flag; undo keeps a dated removal.
       const other = await openApp(browser, base, allFlags, q, { width: 1280, height: 900 });
       await other.page.goto(base + '/material.html?id=l-foto#questoes');

@@ -1,4 +1,4 @@
-// Revisar › Questões: every question attempt across lessons, newest first, with the one action
+// Questões (questoes.html): every question attempt across lessons, newest first, with the one action
 // that makes sense for each (continue an open attempt, or see the result and redo the mistakes).
 import { listQuizSessions } from '../api/quiz-session.api.js';
 import { ninoNote } from '../utils/material-ui.js';
@@ -10,7 +10,7 @@ const make = (tag, text, className) => {
   return node;
 };
 
-// Revisar's "para hoje" line counts the lists still open.
+// Listeners (e.g. the Flashcards page link) count the lists still open.
 const signal = (detail) => document.dispatchEvent(new CustomEvent('voz:quiz-history', { detail }));
 
 export async function initQuizHistoryPanel({ materials = [] }) {

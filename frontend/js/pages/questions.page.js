@@ -1,6 +1,9 @@
 import '../utils/preferences.js';
 import { initAuthenticatedShell } from '../utils/shell.js';
 import { listMaterials, generateQuestions } from '../api/material.api.js';
+import { getFeatureFlags } from '../utils/feature-flags.js';
+import { initQuizHistoryPanel } from './quiz-history-panel.js';
+import { initQuestionReportsPanel } from './question-reports-panel.js';
 
 await initAuthenticatedShell();
 const form = document.querySelector('[data-generate-questions-form]');
@@ -20,6 +23,14 @@ try {
     option.textContent = `${m.title}${m.subject ? ` — ${m.subject}` : ''}`;
     materialSelect.appendChild(option);
   });
+  // 3.7: attempts (continue / see result) and the personal question flags live here, now that
+  // the old "Revisar" page is gone (revisar.html#questoes redirects to this page).
+  const flags = await getFeatureFlags().catch(() => ({}));
+  if (flags.quiz_v2) {
+    document.querySelector('[data-quiz-history-panel]').hidden = false;
+    void initQuizHistoryPanel({ materials });
+    void initQuestionReportsPanel({ section: document.querySelector('[data-question-reports]'), materials });
+  }
   const requested = new URLSearchParams(location.search).get('material');
   if (requested) materialSelect.value = requested;
   submitButton.disabled = !available.length;
