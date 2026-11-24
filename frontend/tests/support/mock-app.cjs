@@ -274,8 +274,9 @@ const sdk = (user, withDb = false) =>
   `${withDb ? dbClient : ''}export function createClient(){const user=${JSON.stringify(user)};return {auth:{
 getSession:async()=>({data:{session:localStorage.getItem('mock-signed-out')?null:{user,access_token:'mock-token'}},error:null}),
 getUser:async()=>({data:{user},error:null}),onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),
-signInWithPassword:async()=>{localStorage.removeItem('mock-signed-out');return {data:{user,session:{user,access_token:'mock-token'}},error:null}},
-signOut:async()=>{localStorage.setItem('mock-signed-out','1');return {error:null}},updateUser:async()=>({data:{user},error:null})},
+signInWithPassword:async(c)=>{if(c?.password==='senha-errada')return {data:{user:null,session:null},error:{message:'Invalid login credentials',status:400}};localStorage.removeItem('mock-signed-out');return {data:{user,session:{user,access_token:'mock-token'}},error:null}},
+signOut:async()=>{localStorage.setItem('mock-signed-out','1');return {error:null}},updateUser:async()=>({data:{user},error:null}),
+resetPasswordForEmail:async()=>{await new Promise((r)=>setTimeout(r,150));return {data:{},error:localStorage.getItem('mock-reset-error')?{message:'For security purposes, you can only request this after 60 seconds.',status:429}:null}}},
 ${withDb ? 'from:db,' : ''}storage:{from:()=>({upload:async()=>({error:null}),remove:async()=>({error:null}),createSignedUrl:async()=>({data:{signedUrl:''},error:null})})}}}`;
 
 /**
