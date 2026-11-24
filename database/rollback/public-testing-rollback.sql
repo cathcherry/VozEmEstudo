@@ -5,6 +5,7 @@
 begin;
 set local lock_timeout = '5s';
 drop policy if exists public_testing_audio_object_cap on storage.objects;
+drop function if exists private.audio_object_count_for_current_user();
 drop function if exists public.demo_copy_of_admin(uuid, uuid);
 drop function if exists public.demo_lesson_materialize_admin(uuid, uuid);
 drop function if exists public.demo_lessons_list_admin(uuid);
