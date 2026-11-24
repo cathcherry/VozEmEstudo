@@ -184,7 +184,7 @@ export function initDashboardHome() {
         cardsActions.replaceChildren(
           link(
             t('home.reviewCards', { count: dueCount }),
-            './revisar.html?acao=revisar#flashcards',
+            './flashcards.html?acao=revisar#revisar',
           ),
         );
       } else {
@@ -364,7 +364,7 @@ export function initDashboardHome() {
         ? t('home.notesSaved', { count: total })
         : t('home.notesIntro');
       notesLink.textContent = total ? t('common.seeAllF') : t('home.howToNote');
-      notesLink.href = total ? './revisar.html#anotacoes' : './ajuda.html#anotacoes';
+      notesLink.href = total ? './painel.html?em=notes' : './ajuda.html#anotacoes';
     } catch (error) {
       notesSummary.textContent = error?.message || t('home.notesUnavailable');
     }

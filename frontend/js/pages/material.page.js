@@ -346,10 +346,11 @@ function updateLessonSteps() {
     const text = document.createElement('span');
     text.textContent = 'Revise os cartões e os erros nos próximos dias. ';
     done.append(title, text);
-    if (flags.flashcards || flags.quiz_v2) {
+    // The errors are reviewed in this lesson's Questões tab; the cards in Flashcards.
+    if (flags.flashcards) {
       const link = document.createElement('a');
-      link.href = './revisar.html';
-      link.textContent = 'Ir para Revisar';
+      link.href = './flashcards.html#revisar';
+      link.textContent = 'Ir para Flashcards';
       text.append(link);
     }
   }
@@ -453,7 +454,7 @@ async function renderLessonSets() {
         info.textContent = `${Number(set.card_count) || 0} cartões · ${due ? `${due} para revisar hoje` : 'nada pendente hoje'}`;
         const review = document.createElement('a');
         review.className = due ? 'primary-action' : 'secondary-action';
-        review.href = `./revisar.html?conjunto=${encodeURIComponent(set.id)}#flashcards`;
+        review.href = `./flashcards.html?conjunto=${encodeURIComponent(set.id)}#revisar`;
         review.textContent = due ? 'Revisar agora' : 'Abrir conjunto';
         const text = document.createElement('div');
         text.append(title, info);

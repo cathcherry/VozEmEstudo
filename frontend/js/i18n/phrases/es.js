@@ -6,6 +6,7 @@ export default {
   "— concluído": "— completado",
   "— não concluído": "— no completado",
   ", selecione um trecho da transcrição em modo de edição e use": ", selecciona un fragmento de la transcripción en modo de edición y usa",
+  "; escreva uma nota e salve. As anotações ficam na própria aula e aparecem na busca do Início, na aba": "; escribe una nota y guarda. Las notas quedan en la propia clase y aparecen en la búsqueda de Inicio, en la pestaña",
   "; escreva uma nota e salve. Todas as anotações ficam em": "; escribe una nota y guárdala. Todas las notas están en",
   ": entre linhas, entre parágrafos e entre palavras. Amplo segue a recomendação WCAG de espaçamento.": ": entre líneas, entre párrafos y entre palabras. Amplio sigue la recomendación WCAG de espaciado.",
   ". Consulte": ". Consulta",
@@ -22,6 +23,7 @@ export default {
   "← Todas as descobertas": "← Todos los descubrimientos",
   "← Todas as turmas": "← Todas las clases",
   "← Todos os materiais integrados": "← Todos los materiales integrados",
+  "→ nas seções": "→ en las secciones",
   "+ Nova disciplina": "+ Nueva asignatura",
   "+ Nova unidade": "+ Nueva unidad",
   "1 aula": "1 clase",
@@ -87,6 +89,7 @@ export default {
   "A outra é de uma disciplina diferente.": "El otro es de una asignatura diferente.",
   "A paginação do andamento não pôde ser concluída.": "No se pudo completar la paginación del progreso.",
   "A participação na turma terminou.": "La participación en la clase terminó.",
+  "A partir da transcrição confirmada desta aula. Nada é salvo antes de você conferir as sugestões; depois, os cartões entram na revisão em Flashcards.": "A partir de la transcripción confirmada de esta clase. Nada se guarda antes de que revises las sugerencias; después, las tarjetas entran en el repaso de Tarjetas.",
   "A pasta está vazia.": "La carpeta está vacía.",
   "A pergunta já está no cartão, a lápis.": "La pregunta ya está en la ficha, a lápiz.",
   "A pergunta, enquanto a investigação está aberta.": "La pregunta, mientras la investigación está abierta.",
@@ -95,6 +98,7 @@ export default {
   "A resposta marcada como certa está errada": "La respuesta marcada como correcta está mal",
   "A resposta não foi salva.": "La respuesta no se guardó.",
   "A revisão ainda não está ativa": "El repaso aún no está activo",
+  "A revisão de cartões aparece aqui quando o recurso for ativado neste servidor.": "El repaso de tarjetas aparece aquí cuando se active la función en este servidor.",
   "A seleção inclui uma citação da aula. Para tirá-la, use o botão “Remover citação”.": "La selección incluye una cita de la clase. Para quitarla, usa el botón “Remover citação”.",
   "A seleção passou do limite (1.000 caracteres ou 50 trechos).": "La selección supera el límite (1.000 caracteres o 50 fragmentos).",
   "A senha atual não confere.": "La contraseña actual no es correcta.",
@@ -149,6 +153,7 @@ export default {
   "Abrir conjunto": "Abrir conjunto",
   "Abrir cópia compartilhada": "Abrir copia compartida",
   "Abrir disciplina": "Abrir asignatura",
+  "Abrir Flashcards": "Abrir Tarjetas",
   "Abrir Focar": "Abrir Enfocar",
   "Abrir Leitura e acessibilidade": "Abrir Lectura y accesibilidad",
   "Abrir material": "Abrir material",
@@ -216,6 +221,7 @@ export default {
   "Ainda não encontrado. Ver como encontrar": "Aún no encontrado. Ver cómo encontrarlo",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "Aún no hay análisis de esta transcripción. Puedes solicitar los avisos de arriba.",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "Aún no hay conjuntos. Crea uno en la pestaña Resumen de una clase.",
+  "Ainda não há conjuntos. Gere um na aba Flashcards de uma aula ou traga um em “Importar e mesclar”.": "Aún no hay conjuntos. Genera uno en la pestaña Tarjetas de una clase o tráelo en «Importar y combinar».",
   "Ainda não há flashcards desta aula": "Aún no hay flashcards de esta clase",
   "Ainda não há ligações. Na página de uma descoberta, use “Ligar a outra descoberta” para unir duas ideias, inclusive de disciplinas diferentes.": "Aún no hay conexiones. En la página de un descubrimiento, usa «Unir a otro descubrimiento» para juntar dos ideas, incluso de asignaturas distintas.",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "Aún no hay listas de preguntas. Usa “Generar lista” para crear la primera.",
@@ -298,12 +304,14 @@ export default {
   "Aparência aplicada ao conjunto inteiro. Os cartões não mudaram.": "Apariencia aplicada a todo el conjunto. Las tarjetas no cambiaron.",
   "Aparência aplicada com contraste ajustado.": "Apariencia aplicada con contraste ajustado.",
   "Aparência aplicada.": "Apariencia aplicada.",
+  "Aparência de um conjunto": "Aspecto de un conjunto",
   "Aparência deste conjunto": "Apariencia de este conjunto",
   "Aparência do conjunto novo": "Apariencia del conjunto nuevo",
   "Aparência dos cartões": "Aspecto de las tarjetas",
   "Aparência e foco": "Apariencia y enfoque",
   "Aparência e leitura": "Apariencia y lectura",
   "Aparência e temas": "Apariencia y temas",
+  "Aparência favorita": "Aspecto favorito",
   "Aparência, idioma, senha e a Ajuda ficam aqui. Você pode refazer este tour quando quiser.": "Apariencia, idioma, contraseña y la Ayuda están aquí. Puedes repetir este recorrido cuando quieras.",
   "Aparência, leitura e movimento são ajustados em": "La apariencia, la lectura y el movimiento se ajustan en",
   "Aplicação": "Aplicación",
@@ -337,6 +345,7 @@ export default {
   "Arquivado": "Archivado",
   "Arquivados": "Archivadas",
   "Arquivar": "Archivar",
+  "Arquivar (sai da revisão, o histórico fica)": "Archivar (sale del repaso, el historial se conserva)",
   "Arquivar turma": "Archivar clase",
   "Arquivo": "Archivo",
   "Arquivo de Descobertas": "Archivo de Descubrimientos",
@@ -353,6 +362,7 @@ export default {
   "Arredondado": "Redondeado",
   "Arrumar a mesa": "Ordenar el escritorio",
   "Arrumar a mesa no Início": "Arreglar el escritorio en Inicio",
+  "As anotações não puderam ser carregadas agora.": "No se pudieron cargar las notas ahora.",
   "As aulas da seleção mudaram desde a prévia. Confira a lista atualizada e confirme de novo.": "Las clases de la selección cambiaron desde la vista previa. Revisa la lista actualizada y confirma de nuevo.",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "Se borrarán las copias de esta cuenta en este navegador y se cerrará tu sesión. Lo que ya está guardado en la cuenta sigue allí.",
   "As disciplinas que você mais revisita.": "Las asignaturas que más repasas.",
@@ -503,6 +513,7 @@ export default {
   "Busque uma aula para abrir ou continue de onde parou.": "Busca una clase para abrirla o continúa donde lo dejaste.",
   "Cachecol de inverno": "Bufanda de invierno",
   "Cacto": "Cactus",
+  "Cada anotação abre a aula no trecho destacado. Para procurar uma, use a busca acima.": "Cada nota abre la clase en el fragmento destacado. Para buscar una, usa la búsqueda de arriba.",
   "Cada aula tem um caderno próprio na aba Anotações, salvo automaticamente na sua conta. Escreva tópicos, listas e resumos com as suas palavras.": "Cada clase tiene su propio cuaderno en la pestaña Notas, guardado automáticamente en tu cuenta. Escribe temas, listas y resúmenes con tus palabras.",
   "Cada cartão muda com o que você faz na descoberta. Nada some com o tempo e nenhuma etapa é obrigatória.": "Cada ficha cambia con lo que haces en el descubrimiento. Nada desaparece con el tiempo y ningún paso es obligatorio.",
   "Cada envio passa por etapas separadas: aprovação para processar, processamento pelo aluno, sua conferência da transcrição e publicação. Nada é publicado automaticamente.": "Cada envío pasa por etapas separadas: aprobación para procesar, procesamiento por el alumno, tu revisión de la transcripción y publicación. Nada se publica automáticamente.",
@@ -561,9 +572,11 @@ export default {
   "Carregar mais links": "Cargar más enlaces",
   "Carregar mais registros do mês": "Cargar más registros del mes",
   "Carregar player": "Cargar reproductor",
+  "cartão": "tarjeta",
   "Cartão": "Tarjeta",
   "Cartão criado e disponível para a primeira revisão.": "Tarjeta creada y lista para su primer repaso.",
   "Cartão excluído.": "Tarjeta eliminada.",
+  "Cartão salvo. Ele já entra na revisão.": "Tarjeta guardada. Ya entra en el repaso.",
   "Cartões": "Tarjetas",
   "Cartões compactos e linhas largas para ver mais conteúdo de uma vez.": "Tarjetas compactas y líneas anchas para ver más contenido a la vez.",
   "Cartões desta coleção": "Fichas de esta colección",
@@ -599,6 +612,7 @@ export default {
   "Claro · navegação completa": "Claro · navegación completa",
   "Clássica": "Clásica",
   "Clássico": "Clásico",
+  "Clique ou toque no cartão para virar. No teclado: Espaço ou Enter.": "Haz clic o toca la tarjeta para voltearla. Con el teclado: Espacio o Intro.",
   "Código ou link do convite": "Código o enlace de la invitación",
   "Código puro": "Código puro",
   "Código puro HTML/CSS": "Código puro HTML/CSS",
@@ -640,6 +654,7 @@ export default {
   "Como este cartão vai mudar": "Cómo cambiará esta ficha",
   "Como estudar": "Cómo estudiar",
   "Como funciona": "Cómo funciona",
+  "Como gerar": "Cómo generar",
   "Como meus dados são utilizados?": "¿Cómo se usan mis datos?",
   "Como personalizar": "Cómo personalizar",
   "Como posso enviar e escolher o trecho da aula?": "¿Cómo puedo subir y elegir el fragmento de la clase?",
@@ -738,6 +753,7 @@ export default {
   "Conquistadas": "Conseguidos",
   "Conquistas": "Logros",
   "Consulte a": "Consulta la",
+  "Consulte, revise, renomeie, arquive ou exporte cada conjunto. Para editar um cartão, use “Organizar meus cartões”.": "Consulta, repasa, renombra, archiva o exporta cada conjunto. Para editar una tarjeta, usa «Organizar mis tarjetas».",
   "Conta": "Cuenta",
   "Conta criada": "Cuenta creada",
   "Conta criada em": "Cuenta creada el",
@@ -937,6 +953,7 @@ export default {
   "Diferença": "Diferencia",
   "Difícil": "Difícil",
   "Dificuldade": "Dificultad",
+  "Dificuldade e foco": "Dificultad y enfoque",
   "Dificuldade e habilidades": "Dificultad y habilidades",
   "Digite a senha atual.": "Escribe la contraseña actual.",
   "Digite o título de uma aula para encontrá-la.": "Escribe el título de una clase para encontrarla.",
@@ -953,12 +970,14 @@ export default {
   "Disponível depois de confirmar a transcrição": "Disponible después de confirmar la transcripción",
   "Distribuição": "Distribución",
   "Divisores": "Divisores",
+  "Do Anki (pacote .apkg ou notas em texto), de uma planilha CSV ou de uma lista com pergunta e resposta.": "De Anki (paquete .apkg o notas en texto), de una hoja CSV o de una lista con pregunta y respuesta.",
   "Do áudio ao texto": "Del audio al texto",
   "Do mais fácil ao mais difícil": "De la más fácil a la más difícil",
   "Do mais fácil ao mais difícil, cobrindo vários tipos de raciocínio.": "De lo más fácil a lo más difícil, cubriendo varios tipos de razonamiento.",
   "Do tema": "Del tema",
   "Do tema escolhido": "Del tema elegido",
   "Dom": "Dom",
+  "dos resultados.": "de los resultados.",
   "Duplicar": "Duplicar",
   "Duração": "Duración",
   "Dúvidas frequentes": "Preguntas frecuentes",
@@ -1022,6 +1041,7 @@ export default {
   "Encontre tudo por aula e disciplina.": "Encuentra todo por clase y asignatura.",
   "Endereço (https://)": "Dirección (https://)",
   "Enquadramento": "Encuadre",
+  "Enter no cartão": "Intro en la tarjeta",
   "Enter no horário": "Enter en la marca de tiempo",
   "Entrar": "Iniciar sesión",
   "Entrar com código": "Entrar con código",
@@ -1082,7 +1102,9 @@ export default {
   "Escolha quais blocos aparecem no Início e em que ordem.": "Elige qué bloques aparecen en Inicio y en qué orden.",
   "Escolha um arquivo com conteúdo e até 100 MB.": "Elige un archivo con contenido y de hasta 100 MB.",
   "Escolha um bloco de dados.": "Elige un bloque de datos.",
+  "Escolha um conjunto": "Elige un conjunto",
   "Escolha um conjunto para cartões com tipo.": "Elige un conjunto para tarjetas con tipo.",
+  "Escolha um conjunto para dar a ele uma aparência só dele.": "Elige un conjunto para darle un aspecto propio.",
   "Escolha um conjunto seu": "Elige un conjunto tuyo",
   "Escolha um material já transcrito e crie um novo lote sem apagar os anteriores.": "Elige un material ya transcrito y crea un nuevo lote sin borrar los anteriores.",
   "Escolha um material seu": "Elige un material tuyo",
@@ -1111,6 +1133,7 @@ export default {
   "Esconder cápsula (o cronômetro continua)": "Ocultar cápsula (el temporizador sigue)",
   "Escreva a anotação ou exclua-a.": "Escribe la nota o elimínala.",
   "Escreva a pergunta e a resposta.": "Escribe la pregunta y la respuesta.",
+  "Escreva a pergunta na frente e a resposta no verso. O cartão entra na revisão de hoje.": "Escribe la pregunta en el anverso y la respuesta en el reverso. La tarjeta entra en el repaso de hoy.",
   "Escreva a resposta como você a explicaria a alguém, usando as evidências. Ninguém corrige este texto: ele é seu.": "Escribe la respuesta como se la explicarías a alguien, usando las evidencias. Nadie corrige este texto: es tuyo.",
   "Escreva à vontade: Enter começa um novo parágrafo. Comece a linha com # para título, - para lista, 1. para lista numerada, [ ] para checklist ou > para citação.": "Escribe con libertad: Enter empieza un párrafo nuevo. Empieza la línea con # para título, - para lista, 1. para lista numerada, [ ] para checklist o > para cita.",
   "Escreva à vontade.": "Escribe libremente.",
@@ -1284,6 +1307,7 @@ export default {
   "Ficha de conceito": "Ficha de concepto",
   "Fichário": "Fichero",
   "Fila de revisão: conjuntos de flashcards e materiais integrados que os alunos querem compartilhar. A turma só vê o que você aprovar; o aluno lê o seu recado.": "Cola de revisión: conjuntos de flashcards y materiales integrados que los alumnos quieren compartir. La clase solo ve lo que apruebes; el alumno lee tu mensaje.",
+  "Filtrar a revisão": "Filtrar el repaso",
   "Filtrar conquistas": "Filtrar logros",
   "Filtrar por aula": "Filtrar por clase",
   "Filtros": "Filtros",
@@ -1336,6 +1360,7 @@ export default {
   "Fotossíntese": "Fotosíntesis",
   "Frente": "Anverso",
   "Frente do cartão": "Anverso de la tarjeta",
+  "Frente:": "Anverso:",
   "Fundo": "Fondo",
   "Fundo das páginas": "Fondo de las páginas",
   "Fundo diferente por página": "Fondo distinto por página",
@@ -1362,6 +1387,7 @@ export default {
   "Gerando questões…": "Generando preguntas…",
   "Gerando resumo…": "Generando resumen…",
   "Gerar cartões com IA": "Generar tarjetas con IA",
+  "Gerar com IA": "Generar con IA",
   "Gerar lista": "Generar lista",
   "Gerar lista de questões": "Generar lista de preguntas",
   "Gerar material integrado": "Generar material integrado",
@@ -1449,6 +1475,7 @@ export default {
   "Importar andamento local sem registro na conta": "Importar progreso local sin registro en la cuenta",
   "Importar arquivo": "Importar archivo",
   "Importar cartões": "Importar tarjetas",
+  "Importar e mesclar": "Importar y combinar",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "Importa el audio o video y elige un fragmento o la grabación completa.",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "Importa un audio o video. Puedes seleccionar el inicio y el final del fragmento que quieres transcribir o usar el archivo completo. También puedes descargar el recorte en MP4 para video o MP3 para audio.",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "Importa una grabación y selecciona el inicio y el final del fragmento que quieres transcribir.",
@@ -1500,6 +1527,7 @@ export default {
   "Ir para a Biblioteca": "Ir a la Biblioteca",
   "Ir para a primeira ou a última aba": "Ir a la primera o última pestaña",
   "Ir para a próxima sem resposta": "Ir a la siguiente sin respuesta",
+  "Ir para Flashcards": "Ir a Tarjetas",
   "Ir para Leitura e foco": "Ir a Lectura y enfoque",
   "Ir para Material integrado": "Ir a Material integrado",
   "Ir para o Início": "Ir a Inicio",
@@ -1518,6 +1546,7 @@ export default {
   "Janela da escrivaninha": "Ventana del escritorio",
   "Jardim noturno": "Jardín nocturno",
   "jeito de estudar.": "forma de estudiar.",
+  "Junta dois ou mais conjuntos num novo, sem cartões repetidos. Também vale para baralhos compartilhados nas turmas.": "Une dos o más conjuntos en uno nuevo, sin tarjetas repetidas. También vale para mazos compartidos en las clases.",
   "Juntar as respostas em um cartão": "Unir las respuestas en una tarjeta",
   "Juntar ou trazer conjuntos": "Combinar o traer conjuntos",
   "Kraft": "Kraft",
@@ -1734,6 +1763,7 @@ export default {
   "Mostrar confirmação de senha": "Mostrar confirmación de contraseña",
   "Mostrar esta lista de atalhos": "Mostrar esta lista de atajos",
   "Mostrar inteira": "Mostrar entera",
+  "Mostrar mais anotações": "Mostrar más notas",
   "Mostrar mês todo": "Mostrar mes completo",
   "Mostrar navegação do modo foco": "Mostrar navegación del modo enfoque",
   "Mostrar no perfil": "Mostrar en el perfil",
@@ -1758,6 +1788,7 @@ export default {
   "Muda só a aparência: perguntas, respostas, autoria e histórico continuam iguais.": "Solo cambia la apariencia: preguntas, respuestas, autoría e historial se mantienen.",
   "Muda só o que aparece; os seus registros continuam iguais. Vale para a sua conta, em todos os aparelhos.": "Solo cambia lo que se muestra; tus registros siguen iguales. Vale para tu cuenta, en todos los dispositivos.",
   "Muda só o que aparece; os seus registros continuam iguais. Vale para este aparelho.": "Solo cambia lo que aparece; tus registros siguen iguales. Vale para este dispositivo.",
+  "Muda só o visual: perguntas, respostas e histórico continuam iguais.": "Solo cambia el aspecto: preguntas, respuestas e historial siguen iguales.",
   "Mudar de lugar": "Cambiar de lugar",
   "Muitas descobertas.": "Muchos descubrimientos.",
   "Muito grande — 150%": "Muy grande — 150%",
@@ -1898,6 +1929,7 @@ export default {
   "Não. A revisão é recomendada, mas não é obrigatória para continuar estudando. Como transcrições, resumos e questões podem conter imprecisões, recomendamos conferir as informações com a aula original, principalmente antes de usá-las em trabalhos ou avaliações.": "No. La revisión es recomendable, pero no es obligatoria para seguir estudiando. Como las transcripciones, resúmenes y preguntas pueden contener imprecisiones, recomendamos contrastar la información con la clase original, sobre todo antes de usarla en trabajos o evaluaciones.",
   "Não. A transcrição usa somente o áudio. Slides, imagens e fórmulas visuais não são analisados.": "No. La transcripción usa solo el audio. Las diapositivas, imágenes y fórmulas visuales no se analizan.",
   "Narrativo": "Narrativo",
+  "nas anotações": "en las notas",
   "nas questões": "en las preguntas",
   "nas transcrições": "en las transcripciones",
   "Navegação": "Navegación",
@@ -1927,6 +1959,7 @@ export default {
   "Nenhum tópico encontrado. Tente outra palavra ou veja a lista completa.": "No se encontró ningún tópico. Prueba otra palabra o mira la lista completa.",
   "nenhuma ainda": "ninguno aún",
   "Nenhuma anotação ainda.": "Aún no hay notas.",
+  "Nenhuma anotação ainda. Destaque um trecho numa aula para começar.": "Aún no hay notas. Destaca un fragmento en una clase para empezar.",
   "Nenhuma anotação encontrada.": "No se encontraron notas.",
   "Nenhuma aula aberta ainda.": "Aún no has abierto ninguna clase.",
   "Nenhuma aula de origem continua disponível e confirmada para guardar a lista. Confira as aulas usadas.": "Ninguna clase de origen sigue disponible y confirmada para guardar la lista. Revisa las clases utilizadas.",
@@ -2086,6 +2119,7 @@ export default {
   "O navegador bloqueou a janela do mini-player. Permita pop-ups para este site.": "El navegador bloqueó la ventana del minirreproductor. Permite ventanas emergentes para este sitio.",
   "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "El navegador bloqueó las notificaciones de este sitio. Permítelas en la configuración del navegador.",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino buscó en los títulos, las preguntas y las transcripciones. Revisa la ortografía o prueba otra palabra.",
+  "O Nino procurou nos títulos, nas questões, nas transcrições e nas suas anotações. Confira a grafia ou tente outra palavra.": "Nino buscó en los títulos, las preguntas, las transcripciones y tus notas. Revisa la ortografía o prueba otra palabra.",
   "O planejamento ainda não está ativo": "La planificación aún no está activa",
   "O planejamento está temporariamente indisponível.": "La planificación no está disponible temporalmente.",
   "O player oficial só carrega quando você pede. Sem login no Spotify, ele toca prévias de 30 segundos.": "El reproductor oficial solo se carga cuando lo pides. Sin iniciar sesión en Spotify, reproduce vistas previas de 30 segundos.",
@@ -2093,6 +2127,7 @@ export default {
   "O professor revisa o conjunto antes de a turma ver. Acompanhe a resposta em Envios.": "El profesor revisa el conjunto antes de que la clase lo vea. Sigue la respuesta en Envíos.",
   "O professor revisa o material antes de a turma ver.": "El profesor revisa el material antes de que la clase lo vea.",
   "O projeto": "El proyecto",
+  "O que a clorofila absorve?": "¿Qué absorbe la clorofila?",
   "O que a imagem mostra, em poucas palavras.": "Lo que muestra la imagen, en pocas palabras.",
   "O que acontece / o que fazer": "Qué pasa / qué hacer",
   "O que aconteceu": "Qué pasó",
@@ -2162,6 +2197,7 @@ export default {
   "Ondas do mar": "Olas del mar",
   "Onde encontrar cada coisa": "Dónde encontrar cada cosa",
   "Onde fica cada coisa": "Dónde está cada cosa",
+  "Onde guardar": "Dónde guardarla",
   "Onde seus dados ficam": "Dónde quedan tus datos",
   "Onde seus dados ficam salvos": "Dónde se guardan tus datos",
   "Opaco": "Opaco",
@@ -2185,11 +2221,15 @@ export default {
   "Orientação": "Orientación",
   "Os arquivos e materiais são armazenados no Supabase. Você pode conservar o áudio do trecho transcrito e, separadamente, o MP4 original inteiro, incluindo partes fora do recorte. Quando você não conserva o áudio, ele é removido do nosso armazenamento após a transcrição; os textos continuam disponíveis. O vídeo conservado pode ser removido na aula.": "Los archivos y materiales se almacenan en Supabase. Puedes conservar el audio del fragmento transcrito y, por separado, el MP4 original completo, incluidas las partes fuera del recorte. Si no conservas el audio, se elimina de nuestro almacenamiento después de la transcripción; los textos siguen disponibles. El video conservado se puede eliminar en la clase.",
   "Os cartões começam do zero na revisão.": "Las tarjetas empiezan desde cero en el repaso.",
+  "Os cartões do dia (vire o cartão com um clique, um toque ou Espaço), seus conjuntos, criar cartões à mão ou com IA, importar e mesclar, e a aparência dos cartões. Aparece quando os flashcards estão ativos. As questões ficam em cada aula e na lista de questões; as anotações, em cada aula e na busca do Início.": "Las tarjetas del día (voltea la tarjeta con un clic, un toque o Espacio), tus conjuntos, crear tarjetas a mano o con IA, importar y combinar, y el aspecto de las tarjetas. Aparece cuando las tarjetas están activas. Las preguntas están en cada clase y en la lista de preguntas; las notas, en cada clase y en la búsqueda de Inicio.",
   "Os cartões do dia ficam em Revisar e no bloco Flashcards do Início. Você também pode organizar cartões em conjuntos.": "Las tarjetas del día están en Repasar y en el bloque Flashcards de Inicio. También puedes organizar tarjetas en conjuntos.",
   "Os conjuntos escolhidos não têm cartões ativos.": "Los conjuntos elegidos no tienen tarjetas activas.",
   "Os conjuntos originais não mudaram.": "Los conjuntos originales no cambiaron.",
+  "Os flashcards agora têm uma página própria": "Las tarjetas ahora tienen su propia página",
+  "Os flashcards ainda não estão ativos": "Las tarjetas aún no están activas",
   "Os flashcards estão indisponíveis.": "Las tarjetas no están disponibles.",
   "Os flashcards estão indisponíveis. Nenhuma alteração foi feita.": "Las tarjetas no están disponibles. No se hizo ningún cambio.",
+  "Os flashcards não puderam ser carregados agora.": "No se pudieron cargar las tarjetas ahora.",
   "Os materiais estarão disponíveis quando o acesso for restabelecido.": "Los materiales estarán disponibles cuando se restablezca el acceso.",
   "Os membros continuam lendo o que já foi publicado, mas nada novo pode ser enviado, publicado ou compartilhado.": "Los miembros siguen leyendo lo ya publicado, pero no se puede enviar, publicar ni compartir nada nuevo.",
   "Os membros verão a frente e o verso dos cartões e o seu nome na turma. Seu histórico de revisão continua privado. Você pode parar de compartilhar quando quiser; cópias que outros já fizeram não voltam.": "Los miembros verán el anverso y el reverso de las tarjetas y tu nombre en la clase. Tu historial de repaso sigue privado. Puedes dejar de compartir cuando quieras; las copias que otros ya hicieron no vuelven.",
@@ -2488,6 +2528,7 @@ export default {
   "questões": "preguntas",
   "Questões": "Preguntas",
   "Questões de listas anteriores": "Preguntas de listas anteriores",
+  "Questões em andamento": "Preguntas en curso",
   "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "Preguntas en las que marcaste un problema. Revísalas con la clase y deshaz la marca cuando esté resuelto.",
   "Questões integradas": "Preguntas integradas",
   "questões marcadas": "preguntas marcadas",
@@ -2631,15 +2672,19 @@ export default {
   "Revisar": "Repasar",
   "Revisar › Anotações": "Repasar › Notas",
   "Revisar agora": "Repasar ahora",
+  "Revisar cartões": "Repasar tarjetas",
   "Revisar envio": "Revisar subida",
+  "Revisar este conjunto": "Repasar este conjunto",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "Repasar mis notas\\nPracticar una pregunta\\nTomar un descanso",
   "Revisar, Planejar e Focar aparecem no menu quando esses recursos estão ativos.": "Repasar, Planificar y Enfocar aparecen en el menú cuando esas funciones están activas.",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "Revisa la transcripción. Los resúmenes y preguntas de versiones anteriores pueden necesitar actualizarse después de una edición.",
   "Revise com flashcards e retome suas questões e anotações.": "Repasa con flashcards y retoma tus preguntas y notas.",
   "Revise e pratique": "Repasa y practica",
+  "Revise estes cartões com a repetição espaçada, num conjunto pessoal em Flashcards › Conjuntos. Cada cartão mostra a aula de onde veio.": "Repasa estas tarjetas con repetición espaciada, en un conjunto personal en Tarjetas › Conjuntos. Cada tarjeta muestra la clase de la que viene.",
   "Revise estes cartões com a repetição espaçada, num conjunto pessoal em Revisar › Conjuntos. Cada cartão mostra a aula de onde veio.": "Repasa estas tarjetas con repetición espaciada, en un conjunto personal en Repasar › Conjuntos. Cada tarjeta muestra la clase de la que proviene.",
   "Revise flashcards, retome tentativas de questões e reencontre os trechos que você destacou nas aulas.": "Repasa tarjetas, retoma intentos de preguntas y vuelve a los fragmentos que resaltaste en las clases.",
   "Revise o texto reconhecido. Resumo e questões usam a versão que você confirmar.": "Revisa el texto reconocido. El resumen y las preguntas usan la versión que confirmes.",
+  "Revise os cartões de hoje, organize seus conjuntos e crie cartões novos: à mão, com IA ou importando.": "Repasa las tarjetas de hoy, organiza tus conjuntos y crea tarjetas nuevas: a mano, con IA o importando.",
   "Revise os cartões e os erros nos próximos dias.": "Repasa las tarjetas y los errores en los próximos días.",
   "Revise por resumos e questões.": "Repasa con resúmenes y preguntas.",
   "Revisita": "Revisita",
@@ -2687,6 +2732,7 @@ export default {
   "Salvar anotação": "Guardar nota",
   "Salvar bloco": "Guardar bloque",
   "Salvar card": "Guardar tarjeta",
+  "Salvar cartão": "Guardar tarjeta",
   "Salvar cartões": "Guardar tarjetas",
   "Salvar como conjunto de flashcards": "Guardar como conjunto de tarjetas",
   "Salvar e avançar": "Guardar y seguir",
@@ -2720,6 +2766,7 @@ export default {
   "Seções da turma": "Secciones de la clase",
   "Seções do caderno": "Secciones del cuaderno",
   "Seções do planejamento": "Secciones de la planificación",
+  "Seções dos flashcards": "Secciones de las tarjetas",
   "Seg": "Lun",
   "Seguir áudio": "Seguir audio",
   "Segurança": "Seguridad",
@@ -2897,6 +2944,7 @@ export default {
   "Sua semana": "Tu semana",
   "Sua transcrição está pronta": "Tu transcripción está lista",
   "Suas alterações deste aparelho estão guardadas. Escolha como continuar; nada é apagado sem confirmação.": "Tus cambios en este dispositivo están guardados. Elige cómo continuar; nada se borra sin confirmación.",
+  "Suas anotações": "Tus notas",
   "Suas aulas e anotações continuam guardadas na sua conta.": "Tus clases y notas siguen guardadas en tu cuenta.",
   "Suas aulas não puderam ser carregadas agora.": "No se pudieron cargar tus clases ahora.",
   "Suas aulas vão aparecer aqui.": "Tus clases aparecerán aquí.",
@@ -2919,6 +2967,7 @@ export default {
   "Sugestão substituída.": "Sugerencia reemplazada.",
   "Sugestões a partir da aula": "Sugerencias a partir de la clase",
   "Sugestões a partir da transcrição confirmada de uma aula.": "Sugerencias a partir de la transcripción confirmada de una clase.",
+  "Sugestões a partir da transcrição confirmada de uma aula. Para gerar um conjunto inteiro, abra a aula e use a aba Flashcards.": "Sugerencias a partir de la transcripción confirmada de una clase. Para generar un conjunto entero, abre la clase y usa la pestaña Tarjetas.",
   "Sugestões de busca": "Sugerencias de búsqueda",
   "Supabase": "Supabase",
   "Superfícies": "Superficies",
@@ -3030,6 +3079,7 @@ export default {
   "Tornar aluno(a)": "Hacer alumno(a)",
   "Tornar monitor(a)": "Hacer asistente",
   "Tour guiado": "Recorrido guiado",
+  "Traga cartões do Anki ou de uma planilha, ou junte conjuntos. Um conjunto novo é criado; os originais não mudam.": "Trae tarjetas de Anki o de una hoja de cálculo, o une conjuntos. Se crea un conjunto nuevo; los originales no cambian.",
   "Transcrevendo o áudio…": "Transcribiendo el audio…",
   "Transcrição": "Transcripción",
   "transcrição ainda não confirmada": "transcripción aún no confirmada",
@@ -3062,6 +3112,7 @@ export default {
   "Trocar": "Cambiar",
   "Trocar arquivo": "Cambiar archivo",
   "Trocar de modo nunca apaga nada. Vale para a sua conta, em todos os aparelhos.": "Cambiar de modo nunca borra nada. Vale para tu cuenta, en todos los dispositivos.",
+  "Trocar entre Revisar cartões, Conjuntos, Criar cartão e as outras seções": "Cambiar entre Repasar tarjetas, Conjuntos, Crear tarjeta y las demás secciones",
   "Trocar entre Transcrição, Resumo e Questões": "Cambiar entre Transcripción, Resumen y Preguntas",
   "Trocar senha": "Cambiar contraseña",
   "Trovão distante (raro e suave)": "Trueno lejano (raro y suave)",
@@ -3083,6 +3134,7 @@ export default {
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "Un clic ajusta varias preferencias a la vez. Después, ajusta cada una en Lectura y enfoque. Los modos nunca reducen el texto ni desactivan opciones de accesibilidad que hayas activado.",
   "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "Se crea un conjunto nuevo, solo tuyo, con las tarjetas de los conjuntos elegidos. Los originales (los tuyos y los compartidos por compañeros) nunca se modifican, y el historial de repaso no se copia: el conjunto nuevo empieza desde cero.",
   "Um cronômetro de foco com pausas. O tempo estudado aparece no Início e no Planejar.": "Un cronómetro de enfoque con pausas. El tiempo estudiado aparece en Inicio y en Planificar.",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou os Flashcards, e aparece no alto da tela enquanto corre.": "Un cronómetro para toda la cuenta: sigue cuando abres una clase, la Biblioteca o las Tarjetas, y aparece arriba en la pantalla mientras corre.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece no alto da tela enquanto corre.": "Un cronómetro para toda la cuenta: sigue cuando abres una clase, la Biblioteca o Repasar, y aparece arriba de la pantalla mientras corre.",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "Un temporizador para toda la cuenta: sigue cuando abres una clase, la Biblioteca o Repasar, y aparece en una cápsula discreta en la esquina de la pantalla.",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "Un destacado citado no pertenece a esta clase o cambió de revisión. Recarga el cuaderno.",
@@ -3160,6 +3212,7 @@ export default {
   "Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas. Um conjunto novo é criado; nada que você já tem muda.": "Usa un paquete de Anki (.apkg), un archivo .txt, .tsv o .csv de Anki (Archivo › Exportar › \"Notas en texto plano\"), la exportación CSV de aquí o una lista con pregunta y respuesta en dos columnas. Se crea un conjunto nuevo; nada de lo que ya tienes cambia.",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "Usa una imagen PNG, JPEG, WebP o GIF.",
   "Vaga-lume": "Luciérnaga",
+  "Vale para todos os cartões, menos os conjuntos com uma aparência própria.": "Vale para todas las tarjetas, salvo los conjuntos con un aspecto propio.",
   "Validade": "Validez",
   "Validando seu link de recuperação...": "Validando tu enlace de recuperación...",
   "Vamos descobrir": "¿Vamos a descubrir",
@@ -3222,6 +3275,8 @@ export default {
   "Vídeo removido.": "Video eliminado.",
   "Vidro translúcido": "Vidrio translúcido",
   "Vinho": "Vino",
+  "Virar cartão": "Voltear tarjeta",
+  "Virar o cartão (frente e verso)": "Voltear la tarjeta (anverso y reverso)",
   "Visual padrão restaurado.": "Aspecto predeterminado restaurado.",
   "Visualização": "Vista",
   "Visualização das pastas": "Vista de carpetas",
@@ -3408,6 +3463,10 @@ export default {
    "Se generaron {0} de {1}: la clase es demasiado corta para más preguntas distintas."
   ],
   [
+   "Mostrando {0} de {1} anotações. Use mais palavras para encontrar as outras.",
+   "Mostrando {0} de {1} notas. Usa más palabras para encontrar las demás."
+  ],
+  [
    "A turma verá a transcrição da revisão {0}, mesmo que você a edite depois.",
    "La clase verá la transcripción de la revisión {0}, aunque la edites después."
   ],
@@ -3482,6 +3541,10 @@ export default {
   [
    "Coleção criada: {0}. Escolha os cartões que entram nela.",
    "Colección creada: {0}. Elige las fichas que entran en ella."
+  ],
+  [
+   "{0} cartões salvos em “{1}” (repetidos ficaram de fora).",
+   "{0} tarjetas guardadas en «{1}» (las repetidas quedaron fuera)."
   ],
   [
    "Remover o bloco \"{0}\"? Esta ação não pode ser desfeita.",
@@ -3622,6 +3685,14 @@ export default {
   [
    "Sinalizada para revisar: {0}. Editar ou remover",
    "Marcada para revisar: {0}. Editar o quitar"
+  ],
+  [
+   "Cartão salvo em “{0}”. Ele já entra na revisão.",
+   "Tarjeta guardada en «{0}». Ya entra en el repaso."
+  ],
+  [
+   "{0} cartões salvos (repetidos ficaram de fora).",
+   "{0} tarjetas guardadas (las repetidas quedaron fuera)."
   ],
   [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
@@ -3836,6 +3907,10 @@ export default {
    "Pregunta {0} de {1} · {2} respondida"
   ],
   [
+   "{0} listas de questões em andamento",
+   "{0} listas de preguntas en curso"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "¿Quitar la asignatura “{0}”?\\n\\n{1}"
   ],
@@ -3854,6 +3929,10 @@ export default {
   [
    "{0}: você reescreveu a explicação.",
    "{0}: reescribiste la explicación."
+  ],
+  [
+   "{0} lista de questões em andamento",
+   "{0} lista de preguntas en curso"
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -3964,6 +4043,10 @@ export default {
    "Más acciones del subobjetivo: {0}"
   ],
   [
+   "Revisar cartões, {0} para hoje",
+   "Repasar tarjetas, {0} para hoy"
+  ],
+  [
    "Gerar novas questões para {0}",
    "Generar nuevas preguntas para {0}"
   ],
@@ -4014,6 +4097,10 @@ export default {
   [
    "Selecionar a pasta {0} ({1})",
    "Seleccionar la carpeta {0} ({1})"
+  ],
+  [
+   "{0} cartões salvos em “{1}”.",
+   "{0} tarjetas guardadas en «{1}»."
   ],
   [
    "Horário salvo na conta. {0}",
@@ -4082,6 +4169,10 @@ export default {
   [
    "acertos ({0}%) · {1} erros",
    "aciertos ({0}%) · {1} errores"
+  ],
+  [
+   "{0} cartão salvo em “{1}”.",
+   "{0} tarjeta guardada en «{1}»."
   ],
   [
    "Pelo menos {0} caracteres",
@@ -4404,6 +4495,10 @@ export default {
    "Ver el resultado del {0}"
   ],
   [
+   "{0} de {1} anotações",
+   "{0} de {1} notas"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · caduca el {1}"
   ],
@@ -4450,6 +4545,10 @@ export default {
   [
    "Você sinalizou: {0}",
    "Marcaste: {0}"
+  ],
+  [
+   "{0} cartões salvos.",
+   "{0} tarjetas guardadas."
   ],
   [
    "Ações da lista {0}",
@@ -4586,6 +4685,10 @@ export default {
   [
    "{0} de {1} feitos",
    "{0} de {1} hechos"
+  ],
+  [
+   "{0} cartão salvo.",
+   "{0} tarjeta guardada."
   ],
   [
    "Questão {0}. {1}",

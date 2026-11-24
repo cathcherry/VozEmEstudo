@@ -397,8 +397,8 @@ async function main() {
       await ready(p);
       assert.equal(await p.evaluate(() => document.documentElement.lang), 'pt-BR');
       assert.equal(
-        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
-        'Revisar',
+        await p.locator('.primary-navigation a[href="./flashcards.html"] span').textContent(),
+        'Flashcards',
       );
       await p.goto(base + '/aparencia.html');
       await Promise.all([p.waitForNavigation(), p.locator('#setting-language').selectOption('en')]);
@@ -411,12 +411,12 @@ async function main() {
       await ready(p);
       assert.equal(await p.evaluate(() => document.documentElement.lang), 'en');
       assert.equal(
-        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
-        'Review',
+        await p.locator('.primary-navigation a[href="./flashcards.html"] span').textContent(),
+        'Flashcards',
       );
       assert.equal(
-        await p.locator('.primary-navigation a[href="./revisar.html"]').getAttribute('aria-label'),
-        'Review',
+        await p.locator('.primary-navigation a[href="./flashcards.html"]').getAttribute('aria-label'),
+        'Flashcards',
       );
       assert.match(
         await p.locator('[data-cards-actions] .button-link').textContent(),
@@ -452,8 +452,8 @@ async function main() {
       ]);
       await p.locator('h1', { hasText: 'Aparência' }).waitFor();
       assert.equal(
-        await p.locator('.primary-navigation a[href="./revisar.html"] span').textContent(),
-        'Revisar',
+        await p.locator('.primary-navigation a[href="./flashcards.html"] span').textContent(),
+        'Flashcards',
       );
       await lang.context.close();
       record(

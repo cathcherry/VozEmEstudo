@@ -13,13 +13,19 @@ import { initFlashcardSetsPanel } from './flashcard-sets-panel.js';
 import { ninoNote } from '../utils/material-ui.js';
 import { CARD_TEMPLATES, templateFor } from '../utils/card-templates.js';
 import { setUiPreference, getUiPreferences } from '../utils/preferences.js';
+import { toast } from '../utils/toast.js';
 
-// Tells the dashboard summary what changed. Inline (no import) so panel tests can evaluate this file.
+// Flashcards page (flashcards.html, 3.6): the review queue, sets, creating, generating, importing
+// and the cards' look, each in its own section. This module builds the tools and puts each one in
+// its section's slot ([data-flashcard-…-slot]); the page (flashcards.page.js) owns the sections.
+
+// Tells the page (and the dashboard summary) what changed. Inline (no import) so panel tests can
+// evaluate this file.
 const signal = (name, detail) => {
   try {
     const view = document.defaultView;
     if (view?.CustomEvent) document.dispatchEvent(new view.CustomEvent(`voz:${name}`, { detail }));
-  } catch { /* the dashboard summary is optional */ }
+  } catch { /* the listeners are optional */ }
 };
 
 function make(tag, value, className) {
@@ -28,42 +34,26 @@ function make(tag, value, className) {
   if (className) element.className = className;
   return element;
 }
+// A programmatic choice behaves like the person's own (the window's Event, also under test DOMs).
+const announceChange = (element) => element.dispatchEvent(new (document.defaultView?.Event || Event)('change'));
+
+// A short sample shown in each look of the gallery (appearance only, never a real card).
+const LOOK_SAMPLE = 'O que a clorofila absorve?';
+const SIDE_NAMES = { front: 'Frente', back: 'Verso' };
 
 export async function initFlashcardsPanel({ materials }) {
   const panel = document.querySelector('[data-flashcards-panel]');
   if (!panel || !(await isFeatureEnabled('flashcards'))) return;
+  const slot = (name) => panel.querySelector(`[data-flashcard-${name}-slot]`);
 
   const createForm = panel.querySelector('[data-flashcard-create-form]');
   const frontInput = createForm.querySelector('[name="front"]');
   const backInput = createForm.querySelector('[name="back"]');
   const materialInput = createForm.querySelector('[name="materialId"]');
   const createMessage = panel.querySelector('[data-flashcard-create-status]');
-  // Creating cards happens in dialogs opened from two buttons; the review stays the focus here.
-  const dialogs = {
-    generate: panel.querySelector('[data-flashcard-generate-disclosure]'),
-    create: panel.querySelector('[data-flashcard-create-disclosure]'),
-  };
-  const createDone = panel.querySelector('[data-flashcard-create-done]');
-  const openDialog = (kind, focus) => {
-    const dialog = dialogs[kind];
-    if (!dialog || dialog.tagName !== 'DIALOG') return;
-    for (const other of Object.values(dialogs)) if (other !== dialog && other?.open) other.close?.();
-    if (!dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
-    (focus || dialog.querySelector('select, textarea, input'))?.focus();
-  };
-  for (const button of panel.querySelectorAll('[data-flashcard-open]')) {
-    button.addEventListener('click', () => { if (createDone) setStatus(createDone, ''); openDialog(button.dataset.flashcardOpen); });
-  }
-  for (const dialog of Object.values(dialogs)) {
-    if (dialog?.tagName !== 'DIALOG') continue;
-    dialog.querySelector('[data-flashcard-close]')?.addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-    dialog.addEventListener('close', () => {
-      const kind = Object.keys(dialogs).find((key) => dialogs[key] === dialog);
-      setTimeout(() => panel.querySelector(`[data-flashcard-open="${kind}"]`)?.focus(), 0);
-    });
-  }
   const reviewMessage = panel.querySelector('[data-flashcard-review-status]');
+  // "Frente" / "Verso" for screen readers when the card turns (the card itself is not a live region).
+  const sideMessage = panel.querySelector('[data-flashcard-side-status]');
   const count = panel.querySelector('[data-flashcard-count]');
   const dueArea = panel.querySelector('[data-flashcard-due-area]');
   const manager = panel.querySelector('[data-flashcard-manage-form]');
@@ -76,7 +66,10 @@ export async function initFlashcardsPanel({ materials }) {
   let dueCards = [];
   let allCards = [];
   let dueTotal = 0;
+  // The card on screen: which side shows, and whether its back was seen (then it can be rated).
+  let side = 'front';
   let revealed = false;
+  let turning = false;
   let pendingReview = null;
   let reviewing = false;
   let loading = false;
@@ -107,15 +100,13 @@ export async function initFlashcardsPanel({ materials }) {
   const generateMessage = make('p');
   generateMessage.setAttribute('role', 'status');
   generateMessage.setAttribute('aria-live', 'polite');
-  const drafts = make('div');
+  const drafts = make('div', null, 'flashcard-drafts');
   generateForm.append(generateLessonLabel, amountLabel, generateButton);
   generator.append(make('h3', 'Criar cartões com IA'),
-    make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.'),
+    make('p', 'Usa a revisão confirmada da transcrição. Confira a resposta e o trecho de apoio antes de copiar o cartão para o formulário e salvá-lo. A prévia não é salva automaticamente.', 'flashcard-muted'),
     generateForm, generateMessage, drafts);
-  const generatorSlot = panel.querySelector('[data-flashcard-generator-slot]');
-  if (generatorSlot) generatorSlot.append(generator);
-  else createForm.before(generator);
-  // Re-rendering the review card replaces the focused button; keep keyboard users in place.
+  (slot('generator') || createForm.parentElement).append(generator);
+  // Re-rendering the review card replaces the focused control; keep keyboard users in place.
   const keepFocus = (selector) => {
     const active = document.activeElement;
     if (active && active !== document.body && active.isConnected && panel.contains(active)) return;
@@ -128,14 +119,12 @@ export async function initFlashcardsPanel({ materials }) {
       void refresh().then(() => afterCreate());
       return;
     }
+    // The page has already shown the section ("?acao=revisar" / "?acao=criar", Início's shortcuts).
     if (action === 'review') {
-      (dueArea.querySelector('button') || count)?.focus?.();
+      (dueArea.querySelector('.flashcard-flip') || count)?.focus?.();
       dueArea.scrollIntoView?.({ block: 'nearest' });
     } else if (action === 'create') {
-      const summary = panel.querySelector('[data-flashcard-open="generate"]')
-        || panel.querySelector('[data-flashcard-generate-disclosure] > summary');
-      summary?.focus();
-      summary?.scrollIntoView?.({ block: 'nearest' });
+      frontInput.focus();
     }
   });
 
@@ -162,9 +151,8 @@ export async function initFlashcardsPanel({ materials }) {
           const use = make('button', 'Editar este cartão no formulário', 'secondary-action');
           use.type = 'button';
           use.addEventListener('click', () => {
-            const disclosure = createForm.closest('details');
-            if (disclosure) disclosure.open = true;
-            else openDialog('create', frontInput);
+            // The form lives in "Criar cartão": the page shows that section first.
+            signal('flashcards-section', { section: 'criar' });
             frontInput.value = card.front;
             backInput.value = card.back;
             materialInput.value = selectedMaterial;
@@ -183,19 +171,26 @@ export async function initFlashcardsPanel({ materials }) {
     })();
   });
 
+  // Revisar cartões: the queue can be narrowed to one lesson or one set (one quiet row above it).
   const filters = make('div', null, 'flashcard-filters');
-  const lessonLabel = make('label', 'Filtrar por aula');
+  filters.setAttribute('role', 'group');
+  filters.setAttribute('aria-label', 'Filtrar a revisão');
+  const lessonLabel = make('label', 'Aula');
   const lessonFilter = make('select');
   lessonFilter.append(new Option('Todas as aulas', ''));
   for (const material of materials) lessonFilter.append(new Option(material.title, material.id));
   lessonLabel.append(lessonFilter);
-  const statusLabel = make('label', 'Cartões no gerenciador');
+  // Which cards "Organizar meus cartões" lists (it shares the lesson and set filters).
+  const statusLabel = make('label', 'Cartões no gerenciador', 'flashcard-manage-status-filter');
   const statusFilter = make('select');
   for (const [value, label] of [['all', 'Todos'], ['active', 'Ativos'], ['archived', 'Arquivados']])
     statusFilter.append(new Option(label, value));
   statusLabel.append(statusFilter);
-  filters.append(lessonLabel, statusLabel);
-  panel.insertBefore(filters, panel.querySelector('.flashcard-columns'));
+  filters.append(lessonLabel);
+  const filtersSlot = slot('filters');
+  if (filtersSlot) filtersSlot.replaceWith(filters);
+  else dueArea.before(filters);
+  manager.prepend(statusLabel);
   // Flashcards 2.0 (sets migration): filter by set, add manual cards to a set, delete cards.
   const setsEnabled = await isFeatureEnabled('flashcard_sets').catch(() => false);
   const setLabel = make('label', 'Conjunto');
@@ -215,25 +210,57 @@ export async function initFlashcardsPanel({ materials }) {
     materialInput.closest('label').after(createSetLabel);
     manager.querySelector('[type="submit"]').after(deleteCardButton);
   }
-  // Flashcards 3.0: card appearance, kept apart from content. Favourite for every card, or a
-  // different look for the set being reviewed.
+  // Aparência (Flashcards 3.0): the look, kept apart from the content. A gallery of the looks
+  // for every card (the favourite) and, per set, a look of its own.
   const looks = make('div', null, 'flashcard-looks');
-  const lookLabel = make('label', 'Aparência dos cartões');
-  const look = make('select');
-  look.dataset.cardTemplatePicker = '';
-  for (const [value, label] of CARD_TEMPLATES) look.append(new Option(label, value));
-  lookLabel.append(look);
-  const setLookLabel = make('label', 'Neste conjunto');
+  const gallery = make('fieldset', null, 'flashcard-look-gallery');
+  gallery.dataset.cardTemplatePicker = '';
+  gallery.append(
+    make('legend', 'Aparência favorita'),
+    make('p', 'Vale para todos os cartões, menos os conjuntos com uma aparência própria.', 'flashcard-muted'),
+  );
+  const tiles = make('div', null, 'flashcard-look-tiles');
+  const lookRadios = [];
+  for (const [value, label, description] of CARD_TEMPLATES) {
+    const tile = make('label', null, 'flashcard-look-tile');
+    const input = make('input', null, 'flashcard-look-input');
+    input.type = 'radio';
+    input.name = 'flashcard-look';
+    input.value = value;
+    // A miniature of the look (decoration: the name and description below say what it is).
+    const sample = make('span', null, 'flashcard-look-sample');
+    sample.dataset.cardTemplate = value;
+    sample.setAttribute('aria-hidden', 'true');
+    sample.append(make('span', SIDE_NAMES.front, 'flashcard-look-side'), make('span', LOOK_SAMPLE, 'flashcard-content'));
+    tile.append(input, sample, make('span', label, 'flashcard-look-name'), make('span', description, 'flashcard-look-desc'));
+    tiles.append(tile);
+    lookRadios.push(input);
+  }
+  gallery.append(tiles);
+  const setLooks = make('fieldset', null, 'flashcard-set-looks');
+  setLooks.append(
+    make('legend', 'Aparência de um conjunto'),
+    make('p', 'Escolha um conjunto para dar a ele uma aparência só dele.', 'flashcard-muted'),
+  );
+  const lookSetLabel = make('label', 'Conjunto');
+  const lookSet = make('select');
+  lookSet.dataset.lookSet = '';
+  lookSet.append(new Option('Escolha um conjunto', ''));
+  lookSetLabel.append(lookSet);
+  const setLookLabel = make('label', 'Aparência deste conjunto');
   const setLook = make('select');
   setLook.dataset.setTemplatePicker = '';
   setLook.append(new Option('Igual à favorita', ''));
   for (const [value, label] of CARD_TEMPLATES) setLook.append(new Option(label, value));
   setLookLabel.append(setLook);
-  looks.append(lookLabel, setLookLabel);
+  setLooks.append(lookSetLabel, setLookLabel);
+  setLooks.hidden = !setsEnabled;
+  looks.append(gallery, setLooks);
   const syncLooks = () => {
     const prefs = typeof getUiPreferences === 'function' ? getUiPreferences() : {};
-    look.value = prefs.cardTemplate || 'classic';
-    const setId = setsEnabled ? setFilter.value : '';
+    const favourite = prefs.cardTemplate || 'classic';
+    for (const radio of lookRadios) radio.checked = radio.value === favourite;
+    const setId = setsEnabled ? lookSet.value : '';
     setLookLabel.hidden = !setId;
     setLook.value = (setId && prefs.setTemplates?.[setId]) || '';
   };
@@ -245,23 +272,26 @@ export async function initFlashcardsPanel({ materials }) {
         preferences: getUiPreferences(),
       });
   };
-  look.addEventListener('change', () => {
-    setUiPreference('cardTemplate', look.value);
-    restyle();
-  });
+  for (const radio of lookRadios)
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
+      setUiPreference('cardTemplate', radio.value);
+      restyle();
+    });
+  lookSet.addEventListener('change', syncLooks);
   setLook.addEventListener('change', () => {
     const next = { ...(getUiPreferences().setTemplates || {}) };
-    if (setLook.value) next[setFilter.value] = setLook.value;
-    else delete next[setFilter.value];
+    if (setLook.value) next[lookSet.value] = setLook.value;
+    else delete next[lookSet.value];
     setUiPreference('setTemplates', next);
     restyle();
   });
   if (typeof setUiPreference === 'function') {
-    panel.querySelector('.flashcard-review-column')?.prepend(looks);
+    (slot('looks') || panel.querySelector('.flashcard-review-column'))?.append(looks);
     syncLooks();
   }
   function fillSetOptions(sets) {
-    for (const select of [setFilter, createSet]) {
+    for (const select of [setFilter, createSet, lookSet]) {
       const previous = select.value;
       select.replaceChildren(select.options[0]);
       for (const set of sets) select.append(new Option(set.name, set.id));
@@ -300,6 +330,20 @@ export async function initFlashcardsPanel({ materials }) {
   materialInput.append(new Option('Sem aula vinculada', ''));
   for (const material of materials) materialInput.append(new Option(material.title, material.id));
 
+  // Turning the card: a click or tap anywhere on it, Space or Enter while it has focus, or the
+  // "Virar cartão" button. The rating buttons sit below the card, so turning never rates it.
+  function turn() {
+    if (!dueCards[0]) return;
+    const fromFace = Boolean(document.activeElement?.classList?.contains('flashcard-face'));
+    side = side === 'front' ? 'back' : 'front';
+    if (side === 'back') revealed = true;
+    turning = true;
+    renderDue();
+    turning = false;
+    dueArea.querySelector(fromFace ? '.flashcard-face' : '.flashcard-flip')?.focus();
+    if (sideMessage) sideMessage.textContent = side === 'back' ? 'Verso do cartão' : 'Frente do cartão';
+  }
+
   function renderDue() {
     dueArea.replaceChildren();
     count.textContent = flashcardSummary(dueTotal);
@@ -323,48 +367,75 @@ export async function initFlashcardsPanel({ materials }) {
       setId: setsEnabled && setFilter.value ? setFilter.value : null,
       preferences: typeof getUiPreferences === 'function' ? getUiPreferences() : {},
     });
-    const frontTitle = make('h3', 'Frente do cartão');
-    const front = make('p', card.front_text, 'flashcard-content');
-    article.append(frontTitle, front);
+    article.dataset.side = side;
+    if (turning) article.dataset.turning = 'true';
+    // The face is what turns: focusable, named by its side, described by how to turn it.
+    const face = make('div', null, 'flashcard-face');
+    face.tabIndex = 0;
+    face.setAttribute('role', 'group');
+    face.setAttribute('aria-roledescription', 'cartão');
+    face.setAttribute('aria-label', side === 'back' ? 'Verso do cartão' : 'Frente do cartão');
+    face.setAttribute('aria-describedby', 'flashcard-turn-hint');
+    face.append(make('h3', SIDE_NAMES[side], 'flashcard-side-label'));
+    if (side === 'front') face.append(make('p', card.front_text, 'flashcard-content'));
+    else {
+      face.append(make('p', card.back_text, 'flashcard-content flashcard-answer'));
+      const recap = make('p', null, 'flashcard-recap');
+      recap.append(make('span', `${SIDE_NAMES.front}: `, 'flashcard-recap-label'), card.front_text);
+      face.append(recap);
+    }
+    face.addEventListener('click', (event) => {
+      if (event.target.closest?.('a, button, input, select, textarea')) return;
+      // Selecting a passage to copy it does not turn the card.
+      if (String(document.defaultView?.getSelection?.() || '').trim()) return;
+      turn();
+    });
+    face.addEventListener('keydown', (event) => {
+      if (event.target !== face || (event.key !== ' ' && event.key !== 'Enter')) return;
+      event.preventDefault();
+      turn();
+    });
+    article.append(face);
+    const foot = make('div', null, 'flashcard-card-foot');
     const material = materialMap.get(card.material_id);
     if (material) {
       const link = make('a', `Aula: ${material.title}`);
       link.href = `./material.html?id=${encodeURIComponent(material.id)}`;
       link.className = 'flashcard-material-link';
-      article.append(link);
+      foot.append(link);
     }
-
-    if (!revealed) {
-      const reveal = make('button', 'Revelar resposta', 'secondary-action');
-      reveal.type = 'button';
-      reveal.disabled = loading;
-      reveal.addEventListener('click', () => {
-        revealed = true;
-        renderDue();
-        keepFocus('.flashcard-rating-buttons button:not([disabled])');
-      });
-      article.append(reveal);
-    } else {
-      article.append(make('h4', 'Verso do cartão'));
-      article.append(make('p', card.back_text, 'flashcard-content flashcard-answer'));
-      const legend = make('p', 'Como você se lembrou?', 'flashcard-muted');
+    const flip = make('button', 'Virar cartão', 'secondary-action flashcard-flip');
+    flip.type = 'button';
+    flip.setAttribute('aria-pressed', String(side === 'back'));
+    flip.addEventListener('click', turn);
+    const hint = make('p', 'Clique ou toque no cartão para virar. No teclado: Espaço ou Enter.', 'flashcard-turn-hint');
+    hint.id = 'flashcard-turn-hint';
+    foot.append(flip, hint);
+    article.append(foot);
+    dueArea.append(article);
+    if (revealed) {
+      const rate = make('div', null, 'flashcard-rate');
+      rate.setAttribute('role', 'group');
+      const legend = make('p', 'Como você se lembrou?', 'flashcard-rate-legend');
+      legend.id = 'flashcard-rate-legend';
+      rate.setAttribute('aria-labelledby', legend.id);
       const ratingRow = make('div', null, 'flashcard-rating-buttons');
       for (const rating of FLASHCARD_RATINGS) {
-        const button = make('button', rating.label, 'secondary-action');
+        const button = make('button', null, 'secondary-action');
         button.type = 'button';
-        button.title = rating.detail;
+        button.dataset.rating = String(rating.value);
+        button.append(make('span', rating.label, 'flashcard-rating-label'), make('span', rating.detail, 'flashcard-rating-detail'));
         button.disabled = reviewing || loading || (pendingReview !== null && pendingReview.rating !== rating.value);
         button.addEventListener('click', () => { void submitRating(card, rating.value); });
         ratingRow.append(button);
       }
-      article.append(legend, ratingRow);
+      rate.append(legend, ratingRow);
+      dueArea.append(rate);
     }
-    dueArea.append(article);
     // Flashcards 3.0 decorates the card (look, type, images) without owning this panel.
     article.dataset.cardId = card.id;
     signal('flashcard-shown', { card, article });
   }
-
   function renderManagement() {
     const selectedId = managerSelect.value;
     managerSelect.replaceChildren(new Option('Selecione um cartão', ''));
@@ -455,6 +526,7 @@ export async function initFlashcardsPanel({ materials }) {
       allTotal = all.total;
       pageLimit = all.limit;
       revealed = false;
+      side = 'front';
       renderDue();
       renderManagement();
     } finally {
@@ -485,6 +557,11 @@ export async function initFlashcardsPanel({ materials }) {
   }
   lessonFilter.addEventListener('change', () => changeView(0));
   setFilter.addEventListener('change', () => {
+    // "Aparência de um conjunto" starts on the set being reviewed.
+    if (setFilter.value && lookSet.value !== setFilter.value) {
+      lookSet.value = setFilter.value;
+      announceChange(lookSet);
+    }
     if (typeof syncLooks === 'function') syncLooks();
     changeView(0);
   });
@@ -543,13 +620,20 @@ export async function initFlashcardsPanel({ materials }) {
             front: frontInput.value, back: backInput.value,
             materialId: materialInput.value || null,
           });
+        // The next card usually goes to the same lesson and set: only the text is cleared.
+        const keep = { material: materialInput.value, set: createSet.value };
+        const setName = createSet.selectedOptions?.[0]?.textContent || '';
         createForm.reset();
-        setStatus(createMessage, 'Cartão criado e disponível para a primeira revisão.', 'success');
-        if (dialogs.create?.open) {
-          dialogs.create.close();
-          setStatus(createMessage, '');
-          if (createDone) setStatus(createDone, 'Cartão criado e disponível para a primeira revisão.', 'success');
-        }
+        materialInput.value = keep.material;
+        createSet.value = keep.set;
+        // A brief confirmation, out of the way of the next card (nothing stays in the form).
+        toast(
+          keep.set && setsEnabled
+            ? `Cartão salvo em “${setName}”. Ele já entra na revisão.`
+            : 'Cartão salvo. Ele já entra na revisão.',
+          { type: 'success', action: { label: 'Revisar agora', onClick: () => signal('flashcards-section', { section: 'revisar' }) } },
+        );
+        frontInput.focus();
         await refresh();
         await afterCreate();
       } catch (error) {
@@ -582,8 +666,9 @@ export async function initFlashcardsPanel({ materials }) {
   if (setsEnabled) {
     const setsPanel = initFlashcardSetsPanel({
       container: manager.closest('details'),
-      // Merge and import stay visible next to "Novos cartões" instead of inside a closed section.
-      toolsSlot: panel.querySelector('.flashcard-create-column'),
+      // The list goes in "Conjuntos"; merge and import in "Importar e mesclar".
+      listSlot: slot('sets'),
+      toolsSlot: slot('tools') || panel.querySelector('.flashcard-create-column'),
       materials,
       onChange: refresh,
       onSelect: (setId) => {
@@ -591,8 +676,9 @@ export async function initFlashcardsPanel({ materials }) {
         if (![...setFilter.options].some((option) => option.value === setId)) fillSetOptions(setsPanel.sets());
         setFilter.value = setId;
         // Same as choosing it in the filter: the look of the set and its cards follow.
-        setFilter.dispatchEvent(new Event('change'));
-        manager.closest('details').open = true;
+        announceChange(setFilter);
+        // A set chosen in Conjuntos, merged or imported is reviewed right away.
+        signal('flashcards-section', { section: 'revisar' });
         setFilter.focus();
       },
     });
@@ -609,6 +695,8 @@ export async function initFlashcardsPanel({ materials }) {
     const requested = new URLSearchParams(document.defaultView?.location?.search || '').get('conjunto');
     if (requested && [...setFilter.options].some((option) => option.value === requested)) {
       setFilter.value = requested;
+      lookSet.value = requested;
+      createSet.value = requested;
       if (typeof syncLooks === 'function') syncLooks();
       changeView(0);
     }

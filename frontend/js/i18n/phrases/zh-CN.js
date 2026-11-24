@@ -6,6 +6,7 @@ export default {
   "— concluído": "— 已完成",
   "— não concluído": "— 未完成",
   ", selecione um trecho da transcrição em modo de edição e use": "，在编辑模式下选中一段转写，然后使用",
+  "; escreva uma nota e salve. As anotações ficam na própria aula e aparecem na busca do Início, na aba": "；写下笔记并保存。笔记保存在课程中，并出现在首页搜索结果的标签",
   "; escreva uma nota e salve. Todas as anotações ficam em": "；写下笔记并保存。所有笔记都在",
   ": entre linhas, entre parágrafos e entre palavras. Amplo segue a recomendação WCAG de espaçamento.": "：行间、段落间和词间。“宽松”符合 WCAG 间距建议。",
   ". Consulte": "中调整。请查看",
@@ -22,6 +23,7 @@ export default {
   "← Todas as descobertas": "← 全部发现",
   "← Todas as turmas": "← 全部班级",
   "← Todos os materiais integrados": "← 全部综合学习材料",
+  "→ nas seções": "→（在分区中）",
   "+ Nova disciplina": "+ 新建科目",
   "+ Nova unidade": "+ 新建单元",
   "1 aula": "1 节课",
@@ -87,6 +89,7 @@ export default {
   "A outra é de uma disciplina diferente.": "另一个来自不同学科。",
   "A paginação do andamento não pôde ser concluída.": "无法完成进度的分页加载。",
   "A participação na turma terminou.": "班级成员身份已结束。",
+  "A partir da transcrição confirmada desta aula. Nada é salvo antes de você conferir as sugestões; depois, os cartões entram na revisão em Flashcards.": "根据本课已确认的转写。你检查建议之前不会保存任何内容；之后卡片会加入“记忆卡片”的复习。",
   "A pasta está vazia.": "文件夹为空。",
   "A pergunta já está no cartão, a lápis.": "问题已经用铅笔写在卡片上了。",
   "A pergunta, enquanto a investigação está aberta.": "探究进行中时的问题。",
@@ -95,6 +98,7 @@ export default {
   "A resposta marcada como certa está errada": "标为正确的答案是错的",
   "A resposta não foi salva.": "答案未保存。",
   "A revisão ainda não está ativa": "复习功能尚未启用",
+  "A revisão de cartões aparece aqui quando o recurso for ativado neste servidor.": "此服务器启用该功能后，卡片复习会显示在这里。",
   "A seleção inclui uma citação da aula. Para tirá-la, use o botão “Remover citação”.": "所选内容包含课程引用。要移除它，请使用“移除引用”按钮。",
   "A seleção passou do limite (1.000 caracteres ou 50 trechos).": "所选内容超出限制（1000 个字符或 50 个片段）。",
   "A senha atual não confere.": "当前密码不正确。",
@@ -149,6 +153,7 @@ export default {
   "Abrir conjunto": "打开卡组",
   "Abrir cópia compartilhada": "打开分享的副本",
   "Abrir disciplina": "打开科目",
+  "Abrir Flashcards": "打开记忆卡片",
   "Abrir Focar": "打开专注",
   "Abrir Leitura e acessibilidade": "打开阅读与无障碍",
   "Abrir material": "打开材料",
@@ -216,6 +221,7 @@ export default {
   "Ainda não encontrado. Ver como encontrar": "尚未找到。查看如何找到",
   "Ainda não há análises desta transcrição. Você pode solicitar os avisos acima.": "此转写尚无分析。你可以在上方请求提示。",
   "Ainda não há conjuntos. Crie um na aba Resumo de uma aula.": "暂无卡组。请在课程的“摘要”标签页中创建。",
+  "Ainda não há conjuntos. Gere um na aba Flashcards de uma aula ou traga um em “Importar e mesclar”.": "还没有卡组。可在课程的“记忆卡片”标签生成，或在“导入与合并”中导入。",
   "Ainda não há flashcards desta aula": "这节课还没有抽认卡",
   "Ainda não há ligações. Na página de uma descoberta, use “Ligar a outra descoberta” para unir duas ideias, inclusive de disciplinas diferentes.": "还没有连接。在发现页面中使用“连接到另一个发现”来把两个想法连起来，即使它们来自不同学科。",
   "Ainda não há listas de questões. Use “Gerar lista” para criar a primeira.": "还没有题目列表。使用“生成列表”创建第一个。",
@@ -298,12 +304,14 @@ export default {
   "Aparência aplicada ao conjunto inteiro. Os cartões não mudaram.": "外观已应用到整个卡组。卡片内容未改变。",
   "Aparência aplicada com contraste ajustado.": "外观已应用，对比度已调整。",
   "Aparência aplicada.": "外观已应用。",
+  "Aparência de um conjunto": "卡组外观",
   "Aparência deste conjunto": "此卡组的外观",
   "Aparência do conjunto novo": "新卡组的外观",
   "Aparência dos cartões": "卡片外观",
   "Aparência e foco": "外观与专注",
   "Aparência e leitura": "外观与阅读",
   "Aparência e temas": "外观与主题",
+  "Aparência favorita": "常用外观",
   "Aparência, idioma, senha e a Ajuda ficam aqui. Você pode refazer este tour quando quiser.": "外观、语言、密码和帮助都在这里。你可以随时重新参加导览。",
   "Aparência, leitura e movimento são ajustados em": "外观、阅读和动画可在",
   "Aplicação": "应用",
@@ -337,6 +345,7 @@ export default {
   "Arquivado": "已归档",
   "Arquivados": "已归档",
   "Arquivar": "归档",
+  "Arquivar (sai da revisão, o histórico fica)": "归档（不再复习，保留历史）",
   "Arquivar turma": "归档班级",
   "Arquivo": "文件",
   "Arquivo de Descobertas": "发现档案",
@@ -353,6 +362,7 @@ export default {
   "Arredondado": "圆润",
   "Arrumar a mesa": "布置书桌",
   "Arrumar a mesa no Início": "在首页整理书桌",
+  "As anotações não puderam ser carregadas agora.": "暂时无法加载笔记。",
   "As aulas da seleção mudaram desde a prévia. Confira a lista atualizada e confirme de novo.": "自预览以来所选课程已变化。请查看更新后的列表并再次确认。",
   "As cópias desta conta neste navegador serão apagadas e você sairá da conta. O que já está salvo na conta continua lá.": "此账户在本浏览器中的副本将被删除，你也会退出登录。已保存到账户中的内容仍会保留。",
   "As disciplinas que você mais revisita.": "你最常回顾的科目。",
@@ -503,6 +513,7 @@ export default {
   "Busque uma aula para abrir ou continue de onde parou.": "搜索要打开的课程，或从上次中断处继续。",
   "Cachecol de inverno": "冬季围巾",
   "Cacto": "仙人掌",
+  "Cada anotação abre a aula no trecho destacado. Para procurar uma, use a busca acima.": "每条笔记都会在标记的段落打开课程。要查找笔记，请使用上方的搜索。",
   "Cada aula tem um caderno próprio na aba Anotações, salvo automaticamente na sua conta. Escreva tópicos, listas e resumos com as suas palavras.": "每节课在“笔记”标签中都有自己的笔记本，自动保存到你的账户。用自己的话写要点、清单和总结。",
   "Cada cartão muda com o que você faz na descoberta. Nada some com o tempo e nenhuma etapa é obrigatória.": "每张卡片都会随你在发现中的行动而变化。不会随时间消失，也没有必做的步骤。",
   "Cada envio passa por etapas separadas: aprovação para processar, processamento pelo aluno, sua conferência da transcrição e publicação. Nada é publicado automaticamente.": "每份提交都经过独立的步骤：批准处理、学生处理、你检查转录、发布。不会自动发布任何内容。",
@@ -561,9 +572,11 @@ export default {
   "Carregar mais links": "加载更多链接",
   "Carregar mais registros do mês": "加载本月更多记录",
   "Carregar player": "加载播放器",
+  "cartão": "卡片",
   "Cartão": "卡片",
   "Cartão criado e disponível para a primeira revisão.": "卡片已创建，可进行首次复习。",
   "Cartão excluído.": "卡片已删除。",
+  "Cartão salvo. Ele já entra na revisão.": "卡片已保存，已加入复习。",
   "Cartões": "卡片",
   "Cartões compactos e linhas largas para ver mais conteúdo de uma vez.": "紧凑卡片和宽行，一次查看更多内容。",
   "Cartões desta coleção": "此收藏集中的卡片",
@@ -599,6 +612,7 @@ export default {
   "Claro · navegação completa": "浅色 · 完整导航",
   "Clássica": "经典",
   "Clássico": "经典",
+  "Clique ou toque no cartão para virar. No teclado: Espaço ou Enter.": "点击或轻触卡片即可翻转。键盘：空格或回车。",
   "Código ou link do convite": "邀请码或邀请链接",
   "Código puro": "纯代码",
   "Código puro HTML/CSS": "纯 HTML/CSS 代码",
@@ -640,6 +654,7 @@ export default {
   "Como este cartão vai mudar": "这张卡片会如何变化",
   "Como estudar": "如何学习",
   "Como funciona": "使用方法",
+  "Como gerar": "生成方式",
   "Como meus dados são utilizados?": "我的数据如何使用？",
   "Como personalizar": "个性化方式",
   "Como posso enviar e escolher o trecho da aula?": "如何上传并选择课程片段？",
@@ -738,6 +753,7 @@ export default {
   "Conquistadas": "已获得",
   "Conquistas": "成就",
   "Consulte a": "请查看",
+  "Consulte, revise, renomeie, arquive ou exporte cada conjunto. Para editar um cartão, use “Organizar meus cartões”.": "查看、复习、重命名、归档或导出每个卡组。要编辑卡片，请使用“整理我的卡片”。",
   "Conta": "账户",
   "Conta criada": "账户创建时间",
   "Conta criada em": "账户创建于",
@@ -937,6 +953,7 @@ export default {
   "Diferença": "区别",
   "Difícil": "困难",
   "Dificuldade": "难度",
+  "Dificuldade e foco": "难度与重点",
   "Dificuldade e habilidades": "难度和能力",
   "Digite a senha atual.": "请输入当前密码。",
   "Digite o título de uma aula para encontrá-la.": "输入课程标题进行查找。",
@@ -953,12 +970,14 @@ export default {
   "Disponível depois de confirmar a transcrição": "确认转写后可用",
   "Distribuição": "分布",
   "Divisores": "分隔线",
+  "Do Anki (pacote .apkg ou notas em texto), de uma planilha CSV ou de uma lista com pergunta e resposta.": "来自 Anki（.apkg 包或纯文本笔记）、CSV 表格或问答列表。",
   "Do áudio ao texto": "从音频到文本",
   "Do mais fácil ao mais difícil": "由易到难",
   "Do mais fácil ao mais difícil, cobrindo vários tipos de raciocínio.": "由易到难，涵盖多种思维类型。",
   "Do tema": "跟随主题",
   "Do tema escolhido": "跟随所选主题",
   "Dom": "周日",
+  "dos resultados.": "中。",
   "Duplicar": "复制",
   "Duração": "时长",
   "Dúvidas frequentes": "常见问题",
@@ -1022,6 +1041,7 @@ export default {
   "Encontre tudo por aula e disciplina.": "按课程和科目查找所有内容。",
   "Endereço (https://)": "地址（https://）",
   "Enquadramento": "取景",
+  "Enter no cartão": "在卡片上按回车",
   "Enter no horário": "在时间戳上按 Enter",
   "Entrar": "登录",
   "Entrar com código": "用邀请码加入",
@@ -1082,7 +1102,9 @@ export default {
   "Escolha quais blocos aparecem no Início e em que ordem.": "选择首页显示哪些区块以及它们的顺序。",
   "Escolha um arquivo com conteúdo e até 100 MB.": "请选择一个非空且不超过 100 MB 的文件。",
   "Escolha um bloco de dados.": "请选择一个数据区块。",
+  "Escolha um conjunto": "选择卡组",
   "Escolha um conjunto para cartões com tipo.": "请为有类型的卡片选择一个卡组。",
+  "Escolha um conjunto para dar a ele uma aparência só dele.": "选择一个卡组，为它设置专属外观。",
   "Escolha um conjunto seu": "选择你的一个卡组",
   "Escolha um material já transcrito e crie um novo lote sem apagar os anteriores.": "选择一份已转写的资料，创建新一批题目，不会删除之前的题目。",
   "Escolha um material seu": "选择你自己的材料",
@@ -1111,6 +1133,7 @@ export default {
   "Esconder cápsula (o cronômetro continua)": "隐藏胶囊（计时器继续）",
   "Escreva a anotação ou exclua-a.": "请填写笔记或将其删除。",
   "Escreva a pergunta e a resposta.": "写下问题和答案。",
+  "Escreva a pergunta na frente e a resposta no verso. O cartão entra na revisão de hoje.": "在正面写问题，在背面写答案。卡片会加入今天的复习。",
   "Escreva a resposta como você a explicaria a alguém, usando as evidências. Ninguém corrige este texto: ele é seu.": "像向别人解释那样写下答案，并使用证据。没有人会批改这段文字：它属于你。",
   "Escreva à vontade: Enter começa um novo parágrafo. Comece a linha com # para título, - para lista, 1. para lista numerada, [ ] para checklist ou > para citação.": "随意书写：按 Enter 开始新段落。行首输入 # 为标题，- 为列表，1. 为编号列表，[ ] 为清单，> 为引用。",
   "Escreva à vontade.": "随意书写。",
@@ -1284,6 +1307,7 @@ export default {
   "Ficha de conceito": "概念卡片",
   "Fichário": "卡片盒",
   "Fila de revisão: conjuntos de flashcards e materiais integrados que os alunos querem compartilhar. A turma só vê o que você aprovar; o aluno lê o seu recado.": "审核队列：学生想分享的闪卡集和综合材料。班级只能看到你批准的内容；学生会看到你的留言。",
+  "Filtrar a revisão": "筛选复习",
   "Filtrar conquistas": "筛选成就",
   "Filtrar por aula": "按课程筛选",
   "Filtros": "筛选",
@@ -1336,6 +1360,7 @@ export default {
   "Fotossíntese": "光合作用",
   "Frente": "正面",
   "Frente do cartão": "卡片正面",
+  "Frente:": "正面：",
   "Fundo": "背景",
   "Fundo das páginas": "页面背景",
   "Fundo diferente por página": "每个页面使用不同背景",
@@ -1362,6 +1387,7 @@ export default {
   "Gerando questões…": "正在生成题目…",
   "Gerando resumo…": "正在生成摘要…",
   "Gerar cartões com IA": "用 AI 生成卡片",
+  "Gerar com IA": "用 AI 生成",
   "Gerar lista": "生成列表",
   "Gerar lista de questões": "生成题目列表",
   "Gerar material integrado": "生成综合学习材料",
@@ -1449,6 +1475,7 @@ export default {
   "Importar andamento local sem registro na conta": "导入未记录到账户的本地进度",
   "Importar arquivo": "导入文件",
   "Importar cartões": "导入卡片",
+  "Importar e mesclar": "导入与合并",
   "Importe o áudio ou vídeo e escolha um trecho ou a gravação inteira.": "导入音频或视频，选择一个片段或整段录音。",
   "Importe um áudio ou vídeo. Você pode selecionar o início e o fim do trecho que quer transcrever ou usar o arquivo inteiro. Também é possível baixar o recorte em MP4 para vídeo ou MP3 para áudio.": "导入音频或视频。你可以选择要转写片段的开始和结束位置，也可以使用整个文件。还可以将片段下载为 MP4（视频）或 MP3（音频）。",
   "Importe uma gravação e selecione o início e o fim do trecho que deseja transcrever.": "导入录音，选择要转写片段的开始和结束位置。",
@@ -1500,6 +1527,7 @@ export default {
   "Ir para a Biblioteca": "前往资料库",
   "Ir para a primeira ou a última aba": "跳到第一个或最后一个标签页",
   "Ir para a próxima sem resposta": "前往下一道未答题",
+  "Ir para Flashcards": "前往记忆卡片",
   "Ir para Leitura e foco": "前往阅读与专注",
   "Ir para Material integrado": "前往综合材料",
   "Ir para o Início": "前往首页",
@@ -1518,6 +1546,7 @@ export default {
   "Janela da escrivaninha": "书桌窗户",
   "Jardim noturno": "夜间花园",
   "jeito de estudar.": "学习方式发声。",
+  "Junta dois ou mais conjuntos num novo, sem cartões repetidos. Também vale para baralhos compartilhados nas turmas.": "将两个或更多卡组合并为一个新卡组，不含重复卡片。也适用于班级中共享的卡组。",
   "Juntar as respostas em um cartão": "将答案合并到一张卡片",
   "Juntar ou trazer conjuntos": "合并或导入卡组",
   "Kraft": "牛皮纸",
@@ -1734,6 +1763,7 @@ export default {
   "Mostrar confirmação de senha": "显示确认密码",
   "Mostrar esta lista de atalhos": "显示此快捷键列表",
   "Mostrar inteira": "完整显示",
+  "Mostrar mais anotações": "显示更多笔记",
   "Mostrar mês todo": "显示整月",
   "Mostrar navegação do modo foco": "显示专注模式导航",
   "Mostrar no perfil": "在个人资料中显示",
@@ -1758,6 +1788,7 @@ export default {
   "Muda só a aparência: perguntas, respostas, autoria e histórico continuam iguais.": "只改变外观：问题、答案、作者和记录保持不变。",
   "Muda só o que aparece; os seus registros continuam iguais. Vale para a sua conta, em todos os aparelhos.": "只改变显示的内容；你的记录保持不变。适用于你的账户和所有设备。",
   "Muda só o que aparece; os seus registros continuam iguais. Vale para este aparelho.": "只改变显示的内容；你的记录保持不变。仅适用于此设备。",
+  "Muda só o visual: perguntas, respostas e histórico continuam iguais.": "只改变外观：问题、答案和历史保持不变。",
   "Mudar de lugar": "换个位置",
   "Muitas descobertas.": "许多发现。",
   "Muito grande — 150%": "特大 — 150%",
@@ -1898,6 +1929,7 @@ export default {
   "Não. A revisão é recomendada, mas não é obrigatória para continuar estudando. Como transcrições, resumos e questões podem conter imprecisões, recomendamos conferir as informações com a aula original, principalmente antes de usá-las em trabalhos ou avaliações.": "不必须。建议核对，但这不是继续学习的必要条件。由于转写、摘要和题目可能存在不准确之处，建议对照原始课程核实信息，尤其是在用于作业或考试之前。",
   "Não. A transcrição usa somente o áudio. Slides, imagens e fórmulas visuais não são analisados.": "不会。转写只使用音频，幻灯片、图片和画面中的公式不会被分析。",
   "Narrativo": "叙述式",
+  "nas anotações": "在笔记中",
   "nas questões": "题目中",
   "nas transcrições": "转写中",
   "Navegação": "导航",
@@ -1927,6 +1959,7 @@ export default {
   "Nenhum tópico encontrado. Tente outra palavra ou veja a lista completa.": "未找到话题。请换个词或查看完整列表。",
   "nenhuma ainda": "还没有",
   "Nenhuma anotação ainda.": "暂无笔记。",
+  "Nenhuma anotação ainda. Destaque um trecho numa aula para começar.": "还没有笔记。在课程中标记一段文字即可开始。",
   "Nenhuma anotação encontrada.": "未找到笔记。",
   "Nenhuma aula aberta ainda.": "还没有打开过课程。",
   "Nenhuma aula de origem continua disponível e confirmada para guardar a lista. Confira as aulas usadas.": "没有仍可用且已确认的来源课程来保存题单。请检查所用课程。",
@@ -2086,6 +2119,7 @@ export default {
   "O navegador bloqueou a janela do mini-player. Permita pop-ups para este site.": "浏览器拦截了迷你播放器窗口。请允许此网站弹出窗口。",
   "O navegador bloqueou as notificações deste site. Libere nas configurações do navegador.": "浏览器已阻止本网站的通知。请在浏览器设置中允许。",
   "O Nino procurou nos títulos, nas questões e nas transcrições. Confira a grafia ou tente outra palavra.": "Nino 已搜索标题、题目和转写。请检查拼写或换个词试试。",
+  "O Nino procurou nos títulos, nas questões, nas transcrições e nas suas anotações. Confira a grafia ou tente outra palavra.": "Nino 在标题、题目、转写和你的笔记中查找过了。请检查拼写或换个词。",
   "O planejamento ainda não está ativo": "计划功能尚未启用",
   "O planejamento está temporariamente indisponível.": "计划功能暂时不可用。",
   "O player oficial só carrega quando você pede. Sem login no Spotify, ele toca prévias de 30 segundos.": "官方播放器只在你请求时加载。未登录 Spotify 时只播放 30 秒试听。",
@@ -2093,6 +2127,7 @@ export default {
   "O professor revisa o conjunto antes de a turma ver. Acompanhe a resposta em Envios.": "老师会在班级看到之前审核该卡集。请在“提交”中查看答复。",
   "O professor revisa o material antes de a turma ver.": "老师会在班级看到之前审核该材料。",
   "O projeto": "关于项目",
+  "O que a clorofila absorve?": "叶绿素吸收什么？",
   "O que a imagem mostra, em poucas palavras.": "用几个词描述图片内容。",
   "O que acontece / o que fazer": "会发生什么 / 该怎么做",
   "O que aconteceu": "发生了什么",
@@ -2162,6 +2197,7 @@ export default {
   "Ondas do mar": "海浪",
   "Onde encontrar cada coisa": "各功能位置",
   "Onde fica cada coisa": "各功能的位置",
+  "Onde guardar": "保存位置",
   "Onde seus dados ficam": "数据保存位置",
   "Onde seus dados ficam salvos": "数据保存位置",
   "Opaco": "不透明",
@@ -2185,11 +2221,15 @@ export default {
   "Orientação": "指引",
   "Os arquivos e materiais são armazenados no Supabase. Você pode conservar o áudio do trecho transcrito e, separadamente, o MP4 original inteiro, incluindo partes fora do recorte. Quando você não conserva o áudio, ele é removido do nosso armazenamento após a transcrição; os textos continuam disponíveis. O vídeo conservado pode ser removido na aula.": "文件和资料存储在 Supabase 中。你可以保留已转写片段的音频，也可以单独保留完整的原始 MP4（包括片段以外的部分）。如果不保留音频，转写完成后会从我们的存储中删除；文本仍可使用。保留的视频可在课程中删除。",
   "Os cartões começam do zero na revisão.": "这些卡片的复习从零开始。",
+  "Os cartões do dia (vire o cartão com um clique, um toque ou Espaço), seus conjuntos, criar cartões à mão ou com IA, importar e mesclar, e a aparência dos cartões. Aparece quando os flashcards estão ativos. As questões ficam em cada aula e na lista de questões; as anotações, em cada aula e na busca do Início.": "今天的卡片（点击、轻触或按空格翻转卡片）、你的卡组、手动或用 AI 制作卡片、导入与合并，以及卡片外观。启用记忆卡片后显示。题目在每节课和题目列表中；笔记在每节课和首页搜索中。",
   "Os cartões do dia ficam em Revisar e no bloco Flashcards do Início. Você também pode organizar cartões em conjuntos.": "今日卡片在“复习”和首页的“抽认卡”区块中。你也可以把卡片整理成卡组。",
   "Os conjuntos escolhidos não têm cartões ativos.": "所选卡组没有可用的卡片。",
   "Os conjuntos originais não mudaram.": "原卡组没有改变。",
+  "Os flashcards agora têm uma página própria": "记忆卡片现在有自己的页面",
+  "Os flashcards ainda não estão ativos": "记忆卡片尚未启用",
   "Os flashcards estão indisponíveis.": "记忆卡片不可用。",
   "Os flashcards estão indisponíveis. Nenhuma alteração foi feita.": "记忆卡片不可用。未做任何更改。",
+  "Os flashcards não puderam ser carregados agora.": "暂时无法加载记忆卡片。",
   "Os materiais estarão disponíveis quando o acesso for restabelecido.": "访问恢复后即可使用资料。",
   "Os membros continuam lendo o que já foi publicado, mas nada novo pode ser enviado, publicado ou compartilhado.": "成员仍可阅读已发布的内容，但不能再提交、发布或分享新内容。",
   "Os membros verão a frente e o verso dos cartões e o seu nome na turma. Seu histórico de revisão continua privado. Você pode parar de compartilhar quando quiser; cópias que outros já fizeram não voltam.": "成员会看到卡片的正反面以及你在班级中的名字。你的复习记录保持私密。你可以随时停止分享；他人已制作的副本无法收回。",
@@ -2488,6 +2528,7 @@ export default {
   "questões": "道题目",
   "Questões": "题目",
   "Questões de listas anteriores": "以往列表中的题目",
+  "Questões em andamento": "进行中的题目",
   "Questões em que você marcou um problema. Confira com a aula e desfaça quando estiver resolvido.": "你标记了问题的题目。请对照课程检查，解决后撤销标记。",
   "Questões integradas": "综合题目",
   "questões marcadas": "已标记的题目",
@@ -2631,15 +2672,19 @@ export default {
   "Revisar": "复习",
   "Revisar › Anotações": "复习 › 笔记",
   "Revisar agora": "立即复习",
+  "Revisar cartões": "复习卡片",
   "Revisar envio": "检查上传",
+  "Revisar este conjunto": "复习此卡组",
   "Revisar minhas notas\\nPraticar uma questão\\nFazer uma pausa": "复习我的笔记\\n练习一道题\\n休息一下",
   "Revisar, Planejar e Focar aparecem no menu quando esses recursos estão ativos.": "复习、计划和专注在启用相应功能后会出现在菜单中。",
   "Revise a transcrição. Resumos e questões de revisões anteriores podem precisar ser atualizados após uma edição.": "核对转写。编辑后，基于旧版本的摘要和题目可能需要更新。",
   "Revise com flashcards e retome suas questões e anotações.": "用抽认卡复习，并回顾你的题目和笔记。",
   "Revise e pratique": "复习并练习",
+  "Revise estes cartões com a repetição espaçada, num conjunto pessoal em Flashcards › Conjuntos. Cada cartão mostra a aula de onde veio.": "用间隔重复复习这些卡片，它们在“记忆卡片 › 卡组”中的个人卡组里。每张卡片都显示来源课程。",
   "Revise estes cartões com a repetição espaçada, num conjunto pessoal em Revisar › Conjuntos. Cada cartão mostra a aula de onde veio.": "在“复习 › 卡组”中的个人卡组里用间隔重复复习这些卡片。每张卡片都会显示它来自哪节课。",
   "Revise flashcards, retome tentativas de questões e reencontre os trechos que você destacou nas aulas.": "复习记忆卡片，继续题目作答，重温你在课程中标记的片段。",
   "Revise o texto reconhecido. Resumo e questões usam a versão que você confirmar.": "请检查识别出的文本。摘要和题目将使用你确认的版本。",
+  "Revise os cartões de hoje, organize seus conjuntos e crie cartões novos: à mão, com IA ou importando.": "复习今天的卡片，整理卡组，并手动、用 AI 或导入的方式制作新卡片。",
   "Revise os cartões e os erros nos próximos dias.": "在接下来几天复习卡片和错题。",
   "Revise por resumos e questões.": "通过摘要和题目复习。",
   "Revisita": "回访",
@@ -2687,6 +2732,7 @@ export default {
   "Salvar anotação": "保存笔记",
   "Salvar bloco": "保存区块",
   "Salvar card": "保存卡片",
+  "Salvar cartão": "保存卡片",
   "Salvar cartões": "保存卡片",
   "Salvar como conjunto de flashcards": "保存为闪卡卡组",
   "Salvar e avançar": "保存并继续",
@@ -2720,6 +2766,7 @@ export default {
   "Seções da turma": "班级栏目",
   "Seções do caderno": "笔记本章节",
   "Seções do planejamento": "计划板块",
+  "Seções dos flashcards": "记忆卡片分区",
   "Seg": "周一",
   "Seguir áudio": "跟随音频",
   "Segurança": "安全",
@@ -2897,6 +2944,7 @@ export default {
   "Sua semana": "你的一周",
   "Sua transcrição está pronta": "你的转写已就绪",
   "Suas alterações deste aparelho estão guardadas. Escolha como continuar; nada é apagado sem confirmação.": "你在此设备上的更改已保留。请选择如何继续；未经确认不会删除任何内容。",
+  "Suas anotações": "你的笔记",
   "Suas aulas e anotações continuam guardadas na sua conta.": "你的课程和笔记仍保存在你的账户中。",
   "Suas aulas não puderam ser carregadas agora.": "你的课程暂时无法加载。",
   "Suas aulas vão aparecer aqui.": "你的课程会显示在这里。",
@@ -2919,6 +2967,7 @@ export default {
   "Sugestão substituída.": "建议已替换。",
   "Sugestões a partir da aula": "来自课程的建议",
   "Sugestões a partir da transcrição confirmada de uma aula.": "根据某节课已确认的转写生成建议。",
+  "Sugestões a partir da transcrição confirmada de uma aula. Para gerar um conjunto inteiro, abra a aula e use a aba Flashcards.": "根据课程已确认的转写生成建议。要生成整套卡片，请打开课程并使用“记忆卡片”标签。",
   "Sugestões de busca": "搜索建议",
   "Supabase": "Supabase",
   "Superfícies": "表面",
@@ -3030,6 +3079,7 @@ export default {
   "Tornar aluno(a)": "设为学生",
   "Tornar monitor(a)": "设为助教",
   "Tour guiado": "导览",
+  "Traga cartões do Anki ou de uma planilha, ou junte conjuntos. Um conjunto novo é criado; os originais não mudam.": "从 Anki 或表格导入卡片，或合并卡组。会创建一个新卡组，原卡组不变。",
   "Transcrevendo o áudio…": "正在转写音频…",
   "Transcrição": "转写",
   "transcrição ainda não confirmada": "转写尚未确认",
@@ -3062,6 +3112,7 @@ export default {
   "Trocar": "更换",
   "Trocar arquivo": "更换文件",
   "Trocar de modo nunca apaga nada. Vale para a sua conta, em todos os aparelhos.": "切换模式不会删除任何内容。适用于你的账户和所有设备。",
+  "Trocar entre Revisar cartões, Conjuntos, Criar cartão e as outras seções": "在复习卡片、卡组、创建卡片等分区之间切换",
   "Trocar entre Transcrição, Resumo e Questões": "在转写、摘要和题目之间切换",
   "Trocar senha": "更改密码",
   "Trovão distante (raro e suave)": "远处雷声（稀少而轻柔）",
@@ -3083,6 +3134,7 @@ export default {
   "Um clique ajusta várias preferências de uma vez. Depois, ajuste cada uma em Leitura e foco. Os modos nunca diminuem o texto nem desligam opções de acessibilidade que você ativou.": "一键同时调整多项偏好，之后可在“阅读与专注”中逐项微调。模式不会缩小文字，也不会关闭你已开启的无障碍选项。",
   "Um conjunto novo, só seu, é criado com os cartões dos conjuntos escolhidos. Os originais (os seus e os compartilhados por colegas) nunca são alterados, e o histórico de revisão não é copiado: o conjunto novo começa do zero.": "将用所选卡组的卡片创建一个只属于你的新卡组。原卡组（你自己的和同学共享的）永远不会被修改，复习记录也不会被复制：新卡组从零开始。",
   "Um cronômetro de foco com pausas. O tempo estudado aparece no Início e no Planejar.": "带休息的专注计时器。学习时间会显示在首页和计划中。",
+  "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou os Flashcards, e aparece no alto da tela enquanto corre.": "整个账户共用一个计时器：打开课程、图书馆或记忆卡片时它会继续，运行时显示在屏幕顶部。",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece no alto da tela enquanto corre.": "整个账户共用一个计时器：打开课程、资料库或复习时它会继续，运行时显示在屏幕顶部。",
   "Um cronômetro para a conta inteira: ele continua quando você abre uma aula, a Biblioteca ou Revisar, e aparece numa cápsula discreta no canto da tela.": "整个账户共用一个计时器：打开课程、资料库或复习时它都会继续，并显示在屏幕角落的小胶囊中。",
   "Um destaque citado não pertence a esta aula ou mudou de revisão. Recarregue o caderno.": "某个引用的高亮不属于此课或修订版已改变。请重新加载笔记本。",
@@ -3160,6 +3212,7 @@ export default {
   "Use um pacote do Anki (.apkg), um arquivo .txt, .tsv ou .csv do Anki (Arquivo › Exportar › \"Notas em texto simples\"), a exportação CSV daqui ou uma lista com pergunta e resposta em duas colunas. Um conjunto novo é criado; nada que você já tem muda.": "可使用 Anki 卡包（.apkg）、Anki 导出的 .txt、.tsv 或 .csv 文件（文件 › 导出 › “纯文本笔记”）、本站的 CSV 导出，或问题和答案分两列的列表。会创建一个新卡组；你已有的内容不会改变。",
   "Use uma imagem PNG, JPEG, WebP ou GIF.": "请使用 PNG、JPEG、WebP 或 GIF 图片。",
   "Vaga-lume": "萤火虫",
+  "Vale para todos os cartões, menos os conjuntos com uma aparência própria.": "适用于所有卡片，有自己外观的卡组除外。",
   "Validade": "有效期",
   "Validando seu link de recuperação...": "正在验证你的恢复链接...",
   "Vamos descobrir": "一起去发现",
@@ -3222,6 +3275,8 @@ export default {
   "Vídeo removido.": "视频已删除。",
   "Vidro translúcido": "半透明玻璃",
   "Vinho": "酒红",
+  "Virar cartão": "翻转卡片",
+  "Virar o cartão (frente e verso)": "翻转卡片（正面和背面）",
   "Visual padrão restaurado.": "已恢复默认外观。",
   "Visualização": "视图",
   "Visualização das pastas": "文件夹视图",
@@ -3408,6 +3463,10 @@ export default {
    "生成了 {0}/{1}：这节课太短，无法生成更多不同的题目。"
   ],
   [
+   "Mostrando {0} de {1} anotações. Use mais palavras para encontrar as outras.",
+   "显示 {1} 条笔记中的 {0} 条。用更多词语查找其余笔记。"
+  ],
+  [
    "A turma verá a transcrição da revisão {0}, mesmo que você a edite depois.",
    "即使你之后编辑，班级看到的也是版本 {0} 的转录。"
   ],
@@ -3482,6 +3541,10 @@ export default {
   [
    "Coleção criada: {0}. Escolha os cartões que entram nela.",
    "已创建收藏集：{0}。请选择放入其中的卡片。"
+  ],
+  [
+   "{0} cartões salvos em “{1}” (repetidos ficaram de fora).",
+   "已将 {0} 张卡片保存到“{1}”（重复的未保存）。"
   ],
   [
    "Remover o bloco \"{0}\"? Esta ação não pode ser desfeita.",
@@ -3622,6 +3685,14 @@ export default {
   [
    "Sinalizada para revisar: {0}. Editar ou remover",
    "已标记待复查：{0}。编辑或移除"
+  ],
+  [
+   "Cartão salvo em “{0}”. Ele já entra na revisão.",
+   "卡片已保存到“{0}”，已加入复习。"
+  ],
+  [
+   "{0} cartões salvos (repetidos ficaram de fora).",
+   "已保存 {0} 张卡片（重复的未保存）。"
   ],
   [
    "{0} {1}{2}. Eles entram na revisão do Painel.",
@@ -3836,6 +3907,10 @@ export default {
    "第 {0} 题，共 {1} 题 · 已答 {2} 题"
   ],
   [
+   "{0} listas de questões em andamento",
+   "{0} 份题目进行中"
+  ],
+  [
    "Remover a disciplina “{0}”?\\n\\n{1}",
    "删除科目“{0}”？\\n\\n{1}"
   ],
@@ -3854,6 +3929,10 @@ export default {
   [
    "{0}: você reescreveu a explicação.",
    "{0}：你改写了解释。"
+  ],
+  [
+   "{0} lista de questões em andamento",
+   "{0} 份题目进行中"
   ],
   [
    "Revisão registrada. Próxima: {0}.",
@@ -3964,6 +4043,10 @@ export default {
    "子目标的更多操作：{0}"
   ],
   [
+   "Revisar cartões, {0} para hoje",
+   "复习卡片，今天 {0} 张"
+  ],
+  [
    "Gerar novas questões para {0}",
    "为{0}生成新题目"
   ],
@@ -4014,6 +4097,10 @@ export default {
   [
    "Selecionar a pasta {0} ({1})",
    "选择文件夹 {0}（{1}）"
+  ],
+  [
+   "{0} cartões salvos em “{1}”.",
+   "已将 {0} 张卡片保存到“{1}”。"
   ],
   [
    "Horário salvo na conta. {0}",
@@ -4082,6 +4169,10 @@ export default {
   [
    "acertos ({0}%) · {1} erros",
    "答对（{0}%）· 答错 {1} 题"
+  ],
+  [
+   "{0} cartão salvo em “{1}”.",
+   "已将 {0} 张卡片保存到“{1}”。"
   ],
   [
    "Pelo menos {0} caracteres",
@@ -4404,6 +4495,10 @@ export default {
    "查看 {0} 的结果"
   ],
   [
+   "{0} de {1} anotações",
+   "第 {0} 条，共 {1} 条笔记"
+  ],
+  [
    "{0} · expira em {1}",
    "{0} · {1}到期"
   ],
@@ -4450,6 +4545,10 @@ export default {
   [
    "Você sinalizou: {0}",
    "你的标记：{0}"
+  ],
+  [
+   "{0} cartões salvos.",
+   "已保存 {0} 张卡片。"
   ],
   [
    "Ações da lista {0}",
@@ -4586,6 +4685,10 @@ export default {
   [
    "{0} de {1} feitos",
    "已完成 {0}/{1}"
+  ],
+  [
+   "{0} cartão salvo.",
+   "已保存 {0} 张卡片。"
   ],
   [
    "Questão {0}. {1}",

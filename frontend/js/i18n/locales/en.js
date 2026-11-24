@@ -12,6 +12,7 @@ export default {
   'nav.home': 'Home',
   'nav.library': 'Library',
   'nav.review': 'Review',
+  'nav.flashcards': 'Flashcards',
   'nav.plan': 'Plan',
   'nav.settings': 'Settings',
   'nav.myAccount': 'My account',
@@ -137,6 +138,8 @@ export default {
   'widget.notes': 'Notes',
   'widget.plan': 'Tasks and flashcards',
 
+  'flashcards.intro': 'Review today’s cards, organize your sets and make new cards: by hand, with AI or by importing.',
+  'flashcards.sections': 'Flashcard sections',
   'review.intro':
     'Review flashcards, resume question attempts and find again the passages you highlighted in your lessons.',
   'review.sections': 'Review sections',

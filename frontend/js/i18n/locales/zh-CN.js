@@ -12,6 +12,7 @@ export default {
   'nav.home': '首页',
   'nav.library': '资料库',
   'nav.review': '复习',
+  'nav.flashcards': '记忆卡片',
   'nav.plan': '计划',
   'nav.settings': '设置',
   'nav.myAccount': '我的账户',
@@ -128,6 +129,8 @@ export default {
   'widget.notes': '笔记',
   'widget.plan': '任务和记忆卡片',
 
+  'flashcards.intro': '复习今天的卡片，整理卡组，并手动、用 AI 或导入的方式制作新卡片。',
+  'flashcards.sections': '记忆卡片分区',
   'review.intro': '复习记忆卡片，继续未完成的答题，并重新找到你在课程中标记的段落。',
   'review.sections': '复习分区',
   'review.tabFlashcards': '记忆卡片',

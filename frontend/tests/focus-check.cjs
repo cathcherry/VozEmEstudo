@@ -72,7 +72,7 @@ async function main() {
     assert.equal(await indicator.evaluate((node) => node.tagName), 'A');
     assert.equal(await indicator.getAttribute('href'), './focar.html');
     assert.match(await indicator.getAttribute('aria-label'), /^Foco em andamento: \d\d:\d\d restantes\. Abrir Focar$/);
-    for (const url of ['/historico.html', '/material.html?id=l-foto', '/planejar.html#tempo', '/revisar.html#flashcards']) {
+    for (const url of ['/historico.html', '/material.html?id=l-foto', '/planejar.html#tempo', '/flashcards.html#revisar']) {
       await page.goto(base + url);
       await indicator.waitFor();
       assert.equal(await page.locator('.focus-primary, [data-focus-primary], .focus-time, #utility-panel, [data-focus-capsule], [data-utility-trigger]').count(), 0, `no timer on ${url}`);

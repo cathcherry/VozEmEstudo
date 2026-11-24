@@ -1,6 +1,6 @@
 // Navigation across every signed-in page with a simulated API: links resolve, the current page is
 // marked, the account menu is visible and usable at every width, the top search behaves the same
-// on Início, Revisar and Planejar, and browser back/forward restores the selected tool tab.
+// on Início, Flashcards and Planejar, and browser back/forward restores the selected tool tab.
 // Nothing here calls a real backend, AI provider or Supabase project.
 const path = require('node:path');
 const fs = require('node:fs');
@@ -27,7 +27,7 @@ const shot = shotter(output);
 const PAGES = [
   ['painel.html', 'Início'],
   ['historico.html', 'Biblioteca'],
-  ['revisar.html', 'Revisar'],
+  ['flashcards.html', 'Flashcards'],
   ['planejar.html', 'Planejar'],
   ['nova-transcricao.html', 'Nova transcrição'],
   // A lesson belongs to the Library.
@@ -105,7 +105,7 @@ async function main() {
         if (viewport.width < 600) {
           await page.locator('[data-menu-toggle]').click();
           const nav = page.locator('.primary-navigation');
-          for (const name of ['Início', 'Biblioteca', 'Revisar', 'Planejar'])
+          for (const name of ['Início', 'Biblioteca', 'Flashcards', 'Planejar'])
             assert(await nav.locator('a', { hasText: name }).isVisible(), `${label}: ${name}`);
           await page.keyboard.press('Escape');
         }
@@ -130,7 +130,7 @@ async function main() {
 
     // ---------- The same search everywhere ------------------------------------------------
     const { context, page } = await openApp(browser, base, allFlags, state());
-    for (const from of ['revisar.html', 'planejar.html']) {
+    for (const from of ['flashcards.html', 'planejar.html']) {
       await page.goto(`${base}/${from}`);
       await page.waitForLoadState('networkidle');
       const input = page.locator('.topbar-search input');
@@ -146,35 +146,39 @@ async function main() {
         .waitFor();
       assert.equal(await page.locator('.topbar-search input').inputValue(), 'fotossíntese');
     }
-    record('Busca do topo em Revisar e Planejar abre a mesma busca global do Início');
+    record('Busca do topo em Flashcards e Planejar abre a mesma busca global do Início');
 
     // ---------- Back and forward keep the chosen tab --------------------------------------
     await page.goto(`${base}/planejar.html#tarefas`);
     await page.waitForLoadState('networkidle');
     await page.locator('#tab-calendario').click();
     assert(page.url().endsWith('#calendario'));
-    await page.locator('.primary-navigation a', { hasText: 'Revisar' }).click();
-    await page.waitForURL('**/revisar.html');
-    await page.locator('#tab-anotacoes').click();
+    await page.locator('.primary-navigation a', { hasText: 'Flashcards' }).click();
+    await page.waitForURL('**/flashcards.html*');
+    await page.locator('#tab-conjuntos').click();
     await page.goBack();
     await page.waitForURL('**/planejar.html#calendario');
     await page.locator('#calendario:not([hidden])').waitFor();
     assert.equal(await page.locator('#tab-calendario').getAttribute('aria-selected'), 'true');
     await page.goForward();
-    await page.waitForURL('**/revisar.html#anotacoes');
-    await page.locator('#anotacoes:not([hidden])').waitFor();
-    assert.equal(await page.locator('#tab-anotacoes').getAttribute('aria-selected'), 'true');
-    // A link to another tab of the same page switches the tab without reloading.
+    await page.waitForURL('**/flashcards.html#conjuntos');
+    await page.locator('#conjuntos:not([hidden])').waitFor();
+    assert.equal(await page.locator('#tab-conjuntos').getAttribute('aria-selected'), 'true');
+    // A link to another section of the same page switches it without reloading.
     await page.evaluate(() => {
-      location.hash = 'questoes';
+      location.hash = 'criar';
     });
-    await page.locator('#questoes:not([hidden])').waitFor();
-    // An unknown or disabled tab falls back to the first available one.
-    await page.goto(`${base}/revisar.html#inexistente`);
-    await page.locator('#flashcards:not([hidden])').waitFor();
+    await page.locator('#criar:not([hidden])').waitFor();
+    // An unknown section falls back to the first one (the review).
+    await page.goto(`${base}/flashcards.html#inexistente`);
+    await page.locator('#revisar:not([hidden])').waitFor();
+    // Old Revisar links keep working: notes go to the notes search on Início.
+    await page.goto(`${base}/revisar.html?busca=energia#anotacoes`);
+    await page.waitForURL('**/painel.html?busca=energia&em=notes');
+    await page.locator('#search-panel-notes, [data-search-results] .search-note').first().waitFor();
     await settle(page);
     record(
-      'Voltar/avançar do navegador restauram a aba escolhida; #endereço desconhecido abre a primeira aba',
+      'Voltar/avançar do navegador restauram a aba escolhida; #endereço desconhecido abre a primeira aba; links antigos de Revisar continuam funcionando',
     );
     await context.close();
   } finally {

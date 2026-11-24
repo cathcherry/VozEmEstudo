@@ -122,7 +122,7 @@ test('multi-lesson exports over HTTP: question list answered with the question A
       const res = await api('POST', `/multi-lesson/${record.id}/flashcard-set`, { requestId: randomUUID(), name: 'Revisão integrada' });
       assert.equal(res.status, 200, JSON.stringify(res.body));
       assert.equal(res.body.kind, 'flashcards');
-      assert.equal(res.body.links.review, `./revisar.html?conjunto=${res.body.setId}#flashcards`);
+      assert.equal(res.body.links.review, `./flashcards.html?conjunto=${res.body.setId}#revisar`);
       const again = await api('POST', `/multi-lesson/${record.id}/flashcard-set`, { requestId: randomUUID() });
       assert.equal(again.body.setId, res.body.setId);
       assert.equal(again.body.replayed, true);

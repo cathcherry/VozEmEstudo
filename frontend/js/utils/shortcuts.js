@@ -29,6 +29,13 @@ const GROUPS = [
       ['Enter no horário', 'Tocar a gravação a partir daquele trecho'],
     ],
   },
+  {
+    title: 'Flashcards',
+    items: [
+      ['Espaço / Enter no cartão', 'Virar o cartão (frente e verso)'],
+      ['← / → nas seções', 'Trocar entre Revisar cartões, Conjuntos, Criar cartão e as outras seções'],
+    ],
+  },
 ];
 
 function isTyping(target) {
