@@ -1138,6 +1138,13 @@
     justify-content: center;
     padding: 0;
   }
+  /* Collapsed rail: logo only. The wordmark has no room and wrapped into a clipped column
+     ("Voz / em / Estu"); the link keeps its name through aria-label. */
+  @media (min-width: 901px) {
+    [data-sidebar-collapsed='true'] body.app-page .side-navigation .brand-name {
+      display: none;
+    }
+  }
 
   /* Topbar: a slim toolbar over the page; the page title lives in the page, not here. */
   body.app-page .site-header.app-topbar {
@@ -1164,6 +1171,13 @@
     gap: var(--space-2);
     min-width: 0;
     flex: 0 1 auto;
+  }
+  /* Page labels are short ("Início", "Biblioteca"): the search box shrinks first, the label never
+     turns into "Iní…" next to it. */
+  @media (min-width: 640px) {
+    body.app-page .site-header .topbar-title {
+      flex-shrink: 0;
+    }
   }
   body.app-page .site-header .topbar-page-label {
     color: var(--ink-muted);
