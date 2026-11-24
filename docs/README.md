@@ -14,6 +14,7 @@ Comece por aqui. Os documentos de **referência** descrevem o sistema como ele �
 | [BANCO_DE_DADOS.md](BANCO_DE_DADOS.md)                   | Migrations (com situação da produção), tabelas, RLS e ordem das próximas aplicações                |
 | [CONFIGURACAO.md](CONFIGURACAO.md)                       | Variáveis de ambiente, flags e ajustes no painel do Supabase                                       |
 | [AI_PROVIDERS.md](AI_PROVIDERS.md)                       | Provedores de transcrição e de texto, como trocar e o que cada um exige                            |
+| [CAPACIDADE_E_CUSTOS.md](CAPACIDADE_E_CUSTOS.md)         | Tokens medidos dos prompts, custos e limites por nº de testers, tetos globais recomendados         |
 | [FLUXO_MATERIAL.md](FLUXO_MATERIAL.md)                   | Do envio à geração, do ponto de vista do material                                                  |
 | [ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md)             | Situação de cada flag (código, banco, validação) e roteiro para ligar o que falta                  |
 | [ROADMAP.md](ROADMAP.md)                                 | Pronto, não ativado, migrations pendentes, validação incompleta, dívidas técnicas                  |
