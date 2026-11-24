@@ -7,6 +7,7 @@ Comece por aqui. Os documentos de **referência** descrevem o sistema como ele �
 
 | Documento                                                | Conteúdo                                                                                           |
 | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [REVISAO_3_7.md](REVISAO_3_7.md)                         | Revisão 3.7: o que mudou, inventário de ativação/validação, referências visuais e pendências      |
 | [FUNCIONALIDADES.md](FUNCIONALIDADES.md)                 | Tudo o que o app faz, página por página; onde cada dado fica; o que já pode ser ligado em produção |
 | [ARCHITECTURE.md](ARCHITECTURE.md)                       | Componentes, camadas do backend, fluxo de uma aula, geração de questões, segurança                 |
 | [API.md](API.md)                                         | Todas as rotas HTTP, flags, corpos e erros                                                         |
