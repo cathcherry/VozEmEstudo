@@ -1,0 +1,138 @@
+/* Guided tour (js/utils/guided-tour.js): a popover beside the target and a ring around it. No
+ * overlay: the page stays visible and usable. Loaded on demand by the module. */
+@layer pages {
+  .tour-ring {
+    position: fixed;
+    z-index: 1190;
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 3px var(--brand-ink, #5a4896),
+      0 0 0 7px color-mix(in srgb, var(--brand, #6e5bae) 28%, transparent);
+    pointer-events: none;
+  }
+  .tour-popover,
+  .tour-invite {
+    position: fixed;
+    z-index: 1200;
+    box-sizing: border-box;
+    width: min(22rem, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    padding: var(--space-4, 1rem) var(--space-5, 1.5rem) var(--space-4, 1rem);
+    border: 1px solid var(--line-strong, #ccc);
+    border-radius: var(--radius-window, 18px);
+    color: var(--ink, #2e2a3b);
+    background: var(--paper-raised, #fff);
+    box-shadow: var(--elev-3, 0 24px 60px -20px rgb(0 0 0 / 40%));
+    font-family: var(--font-ui, system-ui, sans-serif);
+  }
+  .tour-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3, 0.75rem);
+  }
+  .tour-counter {
+    margin: 0;
+    color: var(--ink-muted, #625c72);
+    font-size: var(--step--1, 0.8125rem);
+    font-weight: 600;
+  }
+  .tour-close {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: calc(var(--space-2, 0.5rem) * -1);
+    border: 0;
+    border-radius: 50%;
+    color: var(--ink, #2e2a3b);
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .tour-close:hover {
+    background: var(--paper-sunken, #efebf6);
+  }
+  .tour-title,
+  .tour-invite-title {
+    margin: var(--space-1, 0.25rem) 0 var(--space-2, 0.5rem);
+    font-family: var(--font-display, Georgia, serif);
+    font-size: var(--step-1, 1.25rem);
+    font-weight: 500;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .tour-title:focus {
+    outline: none;
+  }
+  .tour-title:focus-visible {
+    outline: 2px solid var(--brand-ink, #5a4896);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .tour-text,
+  .tour-invite-text {
+    margin: 0 0 var(--space-4, 1rem);
+    color: var(--ink, #2e2a3b);
+    font-size: var(--step-ui, 0.9375rem);
+    line-height: 1.5;
+  }
+  .tour-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2, 0.5rem);
+  }
+  .tour-actions > button {
+    min-height: 2.75rem;
+  }
+  .tour-hint {
+    margin: var(--space-3, 0.75rem) 0 0;
+    color: var(--ink-muted, #625c72);
+    font-size: var(--step--1, 0.8125rem);
+  }
+  /* Touch screens have no Esc or arrows. */
+  @media (hover: none) {
+    .tour-hint {
+      display: none;
+    }
+  }
+  .tour-invite {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: min(21rem, calc(100vw - 32px));
+  }
+  .tour-invite .tour-actions {
+    justify-content: flex-start;
+  }
+  /* Above the bottom dock when that navigation is used. */
+  :root[data-nav-dock='true'] .tour-invite {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-reduced-motion='true']) .tour-popover:not([data-reduced-motion]) {
+      transition:
+        left var(--dur, 160ms) var(--ease, ease),
+        top var(--dur, 160ms) var(--ease, ease);
+    }
+    :root:not([data-reduced-motion='true']) .tour-ring {
+      transition: all var(--dur, 160ms) var(--ease, ease);
+    }
+    :root:not([data-reduced-motion='true']) .tour-invite:not([data-reduced-motion]) {
+      animation: tour-invite-in 220ms var(--ease, ease) both;
+    }
+  }
+  @keyframes tour-invite-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+  @media (forced-colors: active) {
+    .tour-ring {
+      outline: 3px solid Highlight;
+    }
+  }
+}

@@ -1,0 +1,648 @@
+{
+  "Perfil": { "en": "Profile", "es": "Perfil", "zh-CN": "个人资料" },
+  "Conta criada em": {
+    "en": "Account created on",
+    "es": "Cuenta creada el",
+    "zh-CN": "账户创建于"
+  },
+  "E-mail e senha": {
+    "en": "Email and password",
+    "es": "Correo y contraseña",
+    "zh-CN": "电子邮件和密码"
+  },
+  "E-mail não informado": {
+    "en": "No email provided",
+    "es": "Correo no informado",
+    "zh-CN": "未提供电子邮件"
+  },
+  "Tema e cores": { "en": "Theme and colors", "es": "Tema y colores", "zh-CN": "主题和颜色" },
+  "Temas prontos, cores e fonte": {
+    "en": "Ready-made themes, colors and font",
+    "es": "Temas listos, colores y fuente",
+    "zh-CN": "现成主题、颜色和字体"
+  },
+  "Espaço de estudo": { "en": "Study space", "es": "Espacio de estudio", "zh-CN": "学习空间" },
+  "Atmosfera, papel de parede e decoração": {
+    "en": "Atmosphere, wallpaper and decoration",
+    "es": "Atmósfera, fondo y decoración",
+    "zh-CN": "氛围、壁纸和装饰"
+  },
+  "Leitura e acessibilidade": {
+    "en": "Reading and accessibility",
+    "es": "Lectura y accesibilidad",
+    "zh-CN": "阅读与无障碍"
+  },
+  "Tamanho do texto, contraste, movimento e leitor de tela": {
+    "en": "Text size, contrast, motion and screen reader",
+    "es": "Tamaño del texto, contraste, movimiento y lector de pantalla",
+    "zh-CN": "文字大小、对比度、动画和屏幕阅读器"
+  },
+  "Muda menus, botões e mensagens. Suas aulas e anotações continuam no idioma original.": {
+    "en": "Changes menus, buttons and messages. Your lessons and notes stay in their original language.",
+    "es": "Cambia menús, botones y mensajes. Tus clases y notas siguen en el idioma original.",
+    "zh-CN": "更改菜单、按钮和消息。你的课程和笔记保持原来的语言。"
+  },
+  "Sons": { "en": "Sounds", "es": "Sonidos", "zh-CN": "声音" },
+  "Chuva, café, biblioteca e música para estudar": {
+    "en": "Rain, café, library and music to study",
+    "es": "Lluvia, café, biblioteca y música para estudiar",
+    "zh-CN": "雨声、咖啡馆、图书馆和学习音乐"
+  },
+  "Botões de ouvir e velocidade da voz": {
+    "en": "Listen buttons and voice speed",
+    "es": "Botones para escuchar y velocidad de la voz",
+    "zh-CN": "朗读按钮和语速"
+  },
+  "Segurança": { "en": "Security", "es": "Seguridad", "zh-CN": "安全" },
+  "Trocar senha": { "en": "Change password", "es": "Cambiar contraseña", "zh-CN": "更改密码" },
+  "Por um link no e-mail ou definindo uma nova agora": {
+    "en": "With an email link or by setting a new one now",
+    "es": "Con un enlace por correo o definiendo una nueva ahora",
+    "zh-CN": "通过邮件链接，或立即设置新密码"
+  },
+  "Privacidade e dados": {
+    "en": "Privacy and data",
+    "es": "Privacidad y datos",
+    "zh-CN": "隐私和数据"
+  },
+  "Dados neste navegador": {
+    "en": "Data on this browser",
+    "es": "Datos en este navegador",
+    "zh-CN": "此浏览器中的数据"
+  },
+  "Sincronização e cópias guardadas aqui": {
+    "en": "Sync and copies kept here",
+    "es": "Sincronización y copias guardadas aquí",
+    "zh-CN": "同步和保存在这里的副本"
+  },
+  "O que é enviado e onde fica guardado": {
+    "en": "What is sent and where it is kept",
+    "es": "Qué se envía y dónde se guarda",
+    "zh-CN": "发送了什么以及保存在哪里"
+  },
+  "Central de ajuda": { "en": "Help center", "es": "Centro de ayuda", "zh-CN": "帮助中心" },
+  "Como usar cada parte do app": {
+    "en": "How to use each part of the app",
+    "es": "Cómo usar cada parte de la app",
+    "zh-CN": "如何使用应用的各个部分"
+  },
+  "Fazer o tour guiado": {
+    "en": "Take the guided tour",
+    "es": "Hacer el recorrido guiado",
+    "zh-CN": "参加导览"
+  },
+  "Um passeio rápido pelas partes principais": {
+    "en": "A quick walk through the main parts",
+    "es": "Un paseo rápido por las partes principales",
+    "zh-CN": "快速浏览主要部分"
+  },
+  "Sair da conta": { "en": "Sign out", "es": "Cerrar sesión", "zh-CN": "退出账户" },
+  "Sessão": { "en": "Session", "es": "Sesión", "zh-CN": "会话" },
+  "Saindo…": { "en": "Signing out…", "es": "Cerrando sesión…", "zh-CN": "正在退出…" },
+  "Não foi possível sair. Tente novamente.": {
+    "en": "Could not sign out. Try again.",
+    "es": "No se pudo cerrar sesión. Inténtalo de nuevo.",
+    "zh-CN": "无法退出。请重试。"
+  },
+  "Tudo salvo": { "en": "All saved", "es": "Todo guardado", "zh-CN": "全部已保存" },
+  "Envio pendente": { "en": "Upload pending", "es": "Envío pendiente", "zh-CN": "等待上传" },
+  "Sem conexão": { "en": "Offline", "es": "Sin conexión", "zh-CN": "无网络连接" },
+  "Definir uma nova senha agora": {
+    "en": "Set a new password now",
+    "es": "Definir una nueva contraseña ahora",
+    "zh-CN": "立即设置新密码"
+  },
+  "Senha atual": { "en": "Current password", "es": "Contraseña actual", "zh-CN": "当前密码" },
+  "Repita a nova senha": {
+    "en": "Repeat the new password",
+    "es": "Repite la nueva contraseña",
+    "zh-CN": "再次输入新密码"
+  },
+  "ou": { "en": "or", "es": "o", "zh-CN": "或" },
+  "Receber um link por e-mail": {
+    "en": "Get a link by email",
+    "es": "Recibir un enlace por correo",
+    "zh-CN": "通过电子邮件接收链接"
+  },
+  "Use esta opção se não lembra a senha atual. O link chega em:": {
+    "en": "Use this option if you do not remember your current password. The link goes to:",
+    "es": "Usa esta opción si no recuerdas la contraseña actual. El enlace llega a:",
+    "zh-CN": "如果你不记得当前密码，请使用此选项。链接将发送到："
+  },
+  "Você entra com Google ou GitHub. Para também entrar com e-mail e senha, receba um link e crie uma senha. O link chega em:": {
+    "en": "You sign in with Google or GitHub. To also sign in with email and password, get a link and create a password. The link goes to:",
+    "es": "Entras con Google o GitHub. Para entrar también con correo y contraseña, recibe un enlace y crea una contraseña. El enlace llega a:",
+    "zh-CN": "你使用 Google 或 GitHub 登录。若也想用电子邮件和密码登录，请接收链接并创建密码。链接将发送到："
+  },
+  "Enviar link": { "en": "Send link", "es": "Enviar enlace", "zh-CN": "发送链接" },
+  "Enviando…": { "en": "Sending…", "es": "Enviando…", "zh-CN": "正在发送…" },
+  "Enviando o link…": {
+    "en": "Sending the link…",
+    "es": "Enviando el enlace…",
+    "zh-CN": "正在发送链接…"
+  },
+  "Conferindo…": { "en": "Checking…", "es": "Comprobando…", "zh-CN": "正在检查…" },
+  "Conferindo a nova senha…": {
+    "en": "Checking the new password…",
+    "es": "Comprobando la nueva contraseña…",
+    "zh-CN": "正在检查新密码…"
+  },
+  "Salvando a nova senha…": {
+    "en": "Saving the new password…",
+    "es": "Guardando la nueva contraseña…",
+    "zh-CN": "正在保存新密码…"
+  },
+  "Digite a senha atual.": {
+    "en": "Enter your current password.",
+    "es": "Escribe la contraseña actual.",
+    "zh-CN": "请输入当前密码。"
+  },
+  "As duas senhas novas não são iguais.": {
+    "en": "The two new passwords do not match.",
+    "es": "Las dos contraseñas nuevas no coinciden.",
+    "zh-CN": "两次输入的新密码不一致。"
+  },
+  "A senha atual não confere.": {
+    "en": "The current password is not correct.",
+    "es": "La contraseña actual no es correcta.",
+    "zh-CN": "当前密码不正确。"
+  },
+  "Senha alterada": {
+    "en": "Password changed",
+    "es": "Contraseña cambiada",
+    "zh-CN": "密码已更改"
+  },
+  "Use a nova senha na próxima vez que entrar. Você continua conectado neste navegador.": {
+    "en": "Use the new password next time you sign in. You stay signed in on this browser.",
+    "es": "Usa la nueva contraseña la próxima vez que entres. Sigues conectado en este navegador.",
+    "zh-CN": "下次登录时请使用新密码。你在此浏览器中仍保持登录。"
+  },
+  "Link enviado": { "en": "Link sent", "es": "Enlace enviado", "zh-CN": "链接已发送" },
+  "Abra o e-mail enviado para {0} neste navegador e escolha a nova senha. Se não chegar em alguns minutos, confira o spam.": {
+    "en": "Open the email sent to {0} on this browser and choose the new password. If it does not arrive in a few minutes, check spam.",
+    "es": "Abre el correo enviado a {0} en este navegador y elige la nueva contraseña. Si no llega en unos minutos, revisa el spam.",
+    "zh-CN": "请在此浏览器中打开发送到 {0} 的邮件并设置新密码。如果几分钟内没有收到，请检查垃圾邮件。"
+  },
+  "Muitos pedidos seguidos. Aguarde um minuto e tente de novo.": {
+    "en": "Too many requests in a row. Wait a minute and try again.",
+    "es": "Demasiadas solicitudes seguidas. Espera un minuto e inténtalo de nuevo.",
+    "zh-CN": "请求过于频繁。请等待一分钟后再试。"
+  },
+  "A nova senha precisa ser diferente da atual.": {
+    "en": "The new password must be different from the current one.",
+    "es": "La nueva contraseña debe ser diferente de la actual.",
+    "zh-CN": "新密码必须与当前密码不同。"
+  },
+  "Por segurança, use a opção de receber um link por e-mail.": {
+    "en": "For security, use the option to get a link by email.",
+    "es": "Por seguridad, usa la opción de recibir un enlace por correo.",
+    "zh-CN": "为了安全，请使用通过电子邮件接收链接的选项。"
+  },
+  "Sem conexão com o servidor. Verifique a internet e tente de novo.": {
+    "en": "No connection to the server. Check your internet and try again.",
+    "es": "Sin conexión con el servidor. Revisa internet e inténtalo de nuevo.",
+    "zh-CN": "无法连接服务器。请检查网络后重试。"
+  },
+  "Não foi possível enviar o link agora. Tente de novo em instantes.": {
+    "en": "Could not send the link now. Try again in a moment.",
+    "es": "No se pudo enviar el enlace ahora. Inténtalo de nuevo en un momento.",
+    "zh-CN": "现在无法发送链接。请稍后再试。"
+  },
+  "Não foi possível trocar a senha agora. Tente de novo em instantes.": {
+    "en": "Could not change the password now. Try again in a moment.",
+    "es": "No se pudo cambiar la contraseña ahora. Inténtalo de nuevo en un momento.",
+    "zh-CN": "现在无法更改密码。请稍后再试。"
+  },
+  "Sincronização": { "en": "Sync", "es": "Sincronización", "zh-CN": "同步" },
+  "Perfil, layout do Início, preferências e histórico de estudo ficam na sua conta e voltam quando você entrar de novo.": {
+    "en": "Profile, Home layout, preferences and study history stay in your account and come back when you sign in again.",
+    "es": "Perfil, diseño de Inicio, preferencias e historial de estudio quedan en tu cuenta y vuelven cuando entras de nuevo.",
+    "zh-CN": "个人资料、首页布局、偏好设置和学习记录保存在你的账户中，再次登录时会恢复。"
+  },
+  "Este navegador guarda uma cópia para abrir mais rápido e continuar sem conexão. O que você muda sem conexão é enviado quando ela volta.": {
+    "en": "This browser keeps a copy to open faster and keep working offline. What you change offline is sent when the connection returns.",
+    "es": "Este navegador guarda una copia para abrir más rápido y seguir sin conexión. Lo que cambias sin conexión se envía cuando vuelve.",
+    "zh-CN": "此浏览器保存一份副本，以便更快打开并在离线时继续使用。离线时的更改会在恢复连接后发送。"
+  },
+  "Sair da conta não apaga essa cópia. Em computadores compartilhados, apague os dados desta conta antes de sair ou use uma janela anônima.": {
+    "en": "Signing out does not delete this copy. On shared computers, delete this account's data before signing out or use a private window.",
+    "es": "Cerrar sesión no borra esa copia. En computadoras compartidas, borra los datos de esta cuenta antes de salir o usa una ventana privada.",
+    "zh-CN": "退出账户不会删除此副本。在共用电脑上，请在退出前删除此账户的数据，或使用无痕窗口。"
+  },
+  "Apagar remove só as cópias desta conta neste navegador; outras contas e as preferências do dispositivo continuam.": {
+    "en": "Deleting removes only this account's copies on this browser; other accounts and the device preferences stay.",
+    "es": "Borrar quita solo las copias de esta cuenta en este navegador; otras cuentas y las preferencias del dispositivo se mantienen.",
+    "zh-CN": "删除只会移除此账户在此浏览器中的副本；其他账户和设备偏好设置保持不变。"
+  },
+  "Como usar cada parte do Voz em Estudo. Busque um assunto ou escolha um tópico.": {
+    "en": "How to use each part of Voz em Estudo. Search for a subject or pick a topic.",
+    "es": "Cómo usar cada parte de Voz em Estudo. Busca un tema o elige un tópico.",
+    "zh-CN": "如何使用 Voz em Estudo 的各个部分。搜索主题或选择一个话题。"
+  },
+  "Buscar na ajuda": { "en": "Search help", "es": "Buscar en la ayuda", "zh-CN": "搜索帮助" },
+  "Ex.: flashcards, pastas, senha": {
+    "en": "E.g. flashcards, folders, password",
+    "es": "Ej.: flashcards, carpetas, contraseña",
+    "zh-CN": "例如：抽认卡、文件夹、密码"
+  },
+  "Tour guiado": { "en": "Guided tour", "es": "Recorrido guiado", "zh-CN": "导览" },
+  "Um passeio de um minuto pelas partes principais, no Início.": {
+    "en": "A one-minute walk through the main parts, on Home.",
+    "es": "Un paseo de un minuto por las partes principales, en Inicio.",
+    "zh-CN": "在首页用一分钟浏览主要部分。"
+  },
+  "Iniciar tour": { "en": "Start tour", "es": "Iniciar recorrido", "zh-CN": "开始导览" },
+  "Onde fica cada coisa": {
+    "en": "Where everything is",
+    "es": "Dónde está cada cosa",
+    "zh-CN": "各功能的位置"
+  },
+  "Biblioteca, pastas e disciplinas": {
+    "en": "Library, folders and subjects",
+    "es": "Biblioteca, carpetas y asignaturas",
+    "zh-CN": "资料库、文件夹和科目"
+  },
+  "Caderno e anotações": {
+    "en": "Notebook and notes",
+    "es": "Cuaderno y notas",
+    "zh-CN": "笔记本和笔记"
+  },
+  "Planejamento e tempo de estudo": {
+    "en": "Planning and study time",
+    "es": "Planificación y tiempo de estudio",
+    "zh-CN": "计划和学习时间"
+  },
+  "Focar e sons ambientes": {
+    "en": "Focus and ambient sounds",
+    "es": "Enfoque y sonidos ambientales",
+    "zh-CN": "专注和环境音"
+  },
+  "Acessibilidade e leitura": {
+    "en": "Accessibility and reading",
+    "es": "Accesibilidad y lectura",
+    "zh-CN": "无障碍与阅读"
+  },
+  "Idiomas": { "en": "Languages", "es": "Idiomas", "zh-CN": "语言" },
+  "Conta e senha": {
+    "en": "Account and password",
+    "es": "Cuenta y contraseña",
+    "zh-CN": "账户和密码"
+  },
+  "Seus dados e privacidade": {
+    "en": "Your data and privacy",
+    "es": "Tus datos y privacidad",
+    "zh-CN": "你的数据和隐私"
+  },
+  "Gravações: perguntas frequentes": {
+    "en": "Recordings: frequently asked questions",
+    "es": "Grabaciones: preguntas frecuentes",
+    "zh-CN": "录音：常见问题"
+  },
+  "Nenhum tópico encontrado. Tente outra palavra ou veja a lista completa.": {
+    "en": "No topic found. Try another word or see the full list.",
+    "es": "No se encontró ningún tópico. Prueba otra palabra o mira la lista completa.",
+    "zh-CN": "未找到话题。请换个词或查看完整列表。"
+  },
+  "1 tópico encontrado": {
+    "en": "1 topic found",
+    "es": "1 tópico encontrado",
+    "zh-CN": "找到 1 个话题"
+  },
+  "{0} tópicos encontrados": {
+    "en": "{0} topics found",
+    "es": "{0} tópicos encontrados",
+    "zh-CN": "找到 {0} 个话题"
+  },
+  "Botão no topo do menu: envie o áudio ou vídeo de uma aula.": {
+    "en": "Button at the top of the menu: send the audio or video of a lesson.",
+    "es": "Botón arriba del menú: envía el audio o video de una clase.",
+    "zh-CN": "菜单顶部的按钮：上传课程的音频或视频。"
+  },
+  "A aula para continuar, o que pede atenção hoje e o seu tempo de estudo na semana.": {
+    "en": "The lesson to continue, what needs attention today and your study time this week.",
+    "es": "La clase para continuar, lo que requiere atención hoy y tu tiempo de estudio de la semana.",
+    "zh-CN": "要继续的课程、今天需要关注的事项以及本周的学习时间。"
+  },
+  "Todas as aulas, com pastas, disciplinas, busca e o próximo passo de cada uma.": {
+    "en": "All lessons, with folders, subjects, search and each one's next step.",
+    "es": "Todas las clases, con carpetas, asignaturas, búsqueda y el próximo paso de cada una.",
+    "zh-CN": "所有课程，包括文件夹、科目、搜索以及每节课的下一步。"
+  },
+  "Flashcards do dia, suas tentativas de questões e todas as anotações.": {
+    "en": "Today's flashcards, your question attempts and all your notes.",
+    "es": "Flashcards del día, tus intentos de preguntas y todas las notas.",
+    "zh-CN": "今日抽认卡、你的答题记录和所有笔记。"
+  },
+  "Objetivos, tarefas, calendário de estudos e tempo de estudo.": {
+    "en": "Goals, tasks, study calendar and study time.",
+    "es": "Objetivos, tareas, calendario de estudio y tiempo de estudio.",
+    "zh-CN": "目标、任务、学习日历和学习时间。"
+  },
+  "O cronômetro de foco, com pausas e sons ambientes.": {
+    "en": "The focus timer, with breaks and ambient sounds.",
+    "es": "El cronómetro de enfoque, con pausas y sonidos ambientales.",
+    "zh-CN": "专注计时器，含休息和环境音。"
+  },
+  "Conta, aparência, idioma, sons, senha, dados e esta Ajuda.": {
+    "en": "Account, appearance, language, sounds, password, data and this Help.",
+    "es": "Cuenta, apariencia, idioma, sonidos, contraseña, datos y esta Ayuda.",
+    "zh-CN": "账户、外观、语言、声音、密码、数据和本帮助。"
+  },
+  "Revisar, Planejar e Focar aparecem no menu quando esses recursos estão ativos.": {
+    "en": "Review, Plan and Focus appear in the menu when those features are on.",
+    "es": "Repasar, Planificar y Enfocar aparecen en el menú cuando esas funciones están activas.",
+    "zh-CN": "复习、计划和专注在启用相应功能后会出现在菜单中。"
+  },
+  "Abra Nova transcrição e escolha um arquivo MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM ou MOV de até 100 MB.": {
+    "en": "Open New transcription and choose an MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM or MOV file of up to 100 MB.",
+    "es": "Abre Nueva transcripción y elige un archivo MP4, MP3, WAV, M4A, AAC, OGG, FLAC, WebM o MOV de hasta 100 MB.",
+    "zh-CN": "打开“新建转录”，选择不超过 100 MB 的 MP4、MP3、WAV、M4A、AAC、OGG、FLAC、WebM 或 MOV 文件。"
+  },
+  "Ouça a gravação e marque o início e o fim do trecho que interessa.": {
+    "en": "Listen to the recording and mark the start and end of the part you need.",
+    "es": "Escucha la grabación y marca el inicio y el fin del fragmento que te interesa.",
+    "zh-CN": "收听录音，标记所需片段的开始和结束。"
+  },
+  "Dê um título à aula e escolha quantas questões quer receber.": {
+    "en": "Give the lesson a title and choose how many questions you want.",
+    "es": "Ponle un título a la clase y elige cuántas preguntas quieres recibir.",
+    "zh-CN": "为课程命名，并选择想要的题目数量。"
+  },
+  "Selecione “Enviar e transcrever”. Só o áudio do trecho escolhido é enviado; a página da aula mostra o andamento.": {
+    "en": "Select “Send and transcribe”. Only the audio of the chosen part is sent; the lesson page shows the progress.",
+    "es": "Selecciona “Enviar y transcribir”. Solo se envía el audio del fragmento elegido; la página de la clase muestra el avance.",
+    "zh-CN": "选择“上传并转录”。只会发送所选片段的音频；课程页面会显示进度。"
+  },
+  "Abrir Nova transcrição": {
+    "en": "Open New transcription",
+    "es": "Abrir Nueva transcripción",
+    "zh-CN": "打开新建转录"
+  },
+  "Quando a transcrição fica pronta, leia o texto na aba Transcrição. Avisos automáticos apontam trechos que podem ter sido mal entendidos; eles ajudam, mas podem falhar.": {
+    "en": "When the transcript is ready, read it in the Transcript tab. Automatic warnings point to passages that may have been misheard; they help, but they can be wrong.",
+    "es": "Cuando la transcripción está lista, lee el texto en la pestaña Transcripción. Los avisos automáticos señalan fragmentos que pueden haberse entendido mal; ayudan, pero pueden fallar.",
+    "zh-CN": "转录完成后，在“转录”标签中阅读文本。自动提示会标出可能识别有误的段落；它们有帮助，但也可能出错。"
+  },
+  "Para corrigir, use Editar, ajuste o texto e salve. Depois selecione “Confirmar e continuar”: só então o resumo e as questões são gerados a partir do texto conferido.": {
+    "en": "To fix it, use Edit, adjust the text and save. Then select “Confirm and continue”: only then are the summary and questions generated from the checked text.",
+    "es": "Para corregir, usa Editar, ajusta el texto y guarda. Después selecciona “Confirmar y continuar”: solo entonces se generan el resumen y las preguntas a partir del texto revisado.",
+    "zh-CN": "如需修改，请点击“编辑”，调整文本并保存。然后选择“确认并继续”：只有这样才会根据核对过的文本生成摘要和题目。"
+  },
+  "Se você editar uma transcrição já confirmada, resumos e questões anteriores podem precisar ser gerados de novo.": {
+    "en": "If you edit a transcript that was already confirmed, earlier summaries and questions may need to be generated again.",
+    "es": "Si editas una transcripción ya confirmada, puede que haya que generar de nuevo los resúmenes y preguntas anteriores.",
+    "zh-CN": "如果编辑已确认的转录，之前的摘要和题目可能需要重新生成。"
+  },
+  "Depois da confirmação, a aba Resumo mostra os pontos principais da aula. Use “Gerar resumo” para criar um novo a partir da transcrição salva, sem reenviar a gravação.": {
+    "en": "After confirmation, the Summary tab shows the lesson's main points. Use “Generate summary” to create a new one from the saved transcript, without sending the recording again.",
+    "es": "Tras la confirmación, la pestaña Resumen muestra los puntos principales de la clase. Usa “Generar resumen” para crear uno nuevo a partir de la transcripción guardada, sin reenviar la grabación.",
+    "zh-CN": "确认后，“摘要”标签会显示课程要点。使用“生成摘要”可根据已保存的转录生成新摘要，无需重新上传录音。"
+  },
+  "O conteúdo gerado automaticamente pode conter erros. Compare com a transcrição antes de estudar por ele.": {
+    "en": "Automatically generated content may contain mistakes. Compare it with the transcript before studying from it.",
+    "es": "El contenido generado automáticamente puede contener errores. Compáralo con la transcripción antes de estudiar con él.",
+    "zh-CN": "自动生成的内容可能有错误。学习前请与转录文本核对。"
+  },
+  "Na aba Questões, responda às perguntas da aula e veja a correção com a explicação. Gere novos lotes quando quiser, mesmo de aulas antigas; os lotes anteriores continuam disponíveis.": {
+    "en": "In the Questions tab, answer the lesson's questions and see the correction with the explanation. Generate new batches whenever you like, even for old lessons; earlier batches stay available.",
+    "es": "En la pestaña Preguntas, responde las preguntas de la clase y mira la corrección con la explicación. Genera nuevos lotes cuando quieras, incluso de clases antiguas; los lotes anteriores siguen disponibles.",
+    "zh-CN": "在“题目”标签中回答课程题目，并查看带解析的批改。可随时生成新的题组，旧课程也可以；之前的题组仍然保留。"
+  },
+  "Suas tentativas ficam em Revisar, com a opção de refazer apenas as erradas. Se uma questão parecer errada, marque-a para revisão.": {
+    "en": "Your attempts are in Review, with the option to redo only the wrong ones. If a question looks wrong, flag it for review.",
+    "es": "Tus intentos quedan en Repasar, con la opción de rehacer solo las incorrectas. Si una pregunta parece errónea, márcala para revisión.",
+    "zh-CN": "你的答题记录在“复习”中，可以只重做答错的题。如果某道题看起来有误，请标记以便核查。"
+  },
+  "Na aba Flashcards de uma aula, crie cartões a partir do conteúdo ou escreva os seus. Os cartões voltam para revisão no dia certo: os que você erra aparecem mais cedo.": {
+    "en": "In a lesson's Flashcards tab, create cards from the content or write your own. Cards come back for review on the right day: the ones you miss return sooner.",
+    "es": "En la pestaña Flashcards de una clase, crea tarjetas a partir del contenido o escribe las tuyas. Las tarjetas vuelven a repaso el día adecuado: las que fallas aparecen antes.",
+    "zh-CN": "在课程的“抽认卡”标签中，可根据内容生成卡片或自己编写。卡片会在合适的日子回来复习：答错的会更早出现。"
+  },
+  "Os cartões do dia ficam em Revisar e no bloco Flashcards do Início. Você também pode organizar cartões em conjuntos.": {
+    "en": "Today's cards are in Review and in the Flashcards block on Home. You can also organize cards into sets.",
+    "es": "Las tarjetas del día están en Repasar y en el bloque Flashcards de Inicio. También puedes organizar tarjetas en conjuntos.",
+    "zh-CN": "今日卡片在“复习”和首页的“抽认卡”区块中。你也可以把卡片整理成卡组。"
+  },
+  "A Biblioteca reúne todas as aulas. Busque por título ou tag, agrupe por disciplina e organize em pastas e unidades.": {
+    "en": "The Library gathers all lessons. Search by title or tag, group by subject and organize into folders and units.",
+    "es": "La Biblioteca reúne todas las clases. Busca por título o etiqueta, agrupa por asignatura y organiza en carpetas y unidades.",
+    "zh-CN": "资料库汇集所有课程。可按标题或标签搜索、按科目分组，并整理到文件夹和单元中。"
+  },
+  "O menu ⋯ de cada aula permite editar título, disciplina e tags. Cada aula mostra as etapas de estudo e o próximo passo: conferir a transcrição, resumo, questões e flashcards.": {
+    "en": "Each lesson's ⋯ menu lets you edit title, subject and tags. Each lesson shows its study steps and the next one: check the transcript, summary, questions and flashcards.",
+    "es": "El menú ⋯ de cada clase permite editar título, asignatura y etiquetas. Cada clase muestra las etapas de estudio y el próximo paso: revisar la transcripción, resumen, preguntas y flashcards.",
+    "zh-CN": "每节课的 ⋯ 菜单可编辑标题、科目和标签。每节课都会显示学习步骤和下一步：核对转录、摘要、题目和抽认卡。"
+  },
+  "Estude várias aulas juntas: na Biblioteca, selecione as aulas e escolha “Material integrado”, ou abra uma pasta e escolha estudar a unidade inteira.": {
+    "en": "Study several lessons together: in the Library, select the lessons and choose “Integrated material”, or open a folder and choose to study the whole unit.",
+    "es": "Estudia varias clases juntas: en la Biblioteca, selecciona las clases y elige “Material integrado”, o abre una carpeta y elige estudiar la unidad entera.",
+    "zh-CN": "一起学习多节课：在资料库中选择课程并选择“综合资料”，或打开一个文件夹并选择学习整个单元。"
+  },
+  "Antes de gerar, o app mostra quais aulas entram e quais ficam de fora, e por quê; só entram aulas com a transcrição confirmada. Cada item do resumo e das questões leva ao trecho da aula de onde veio.": {
+    "en": "Before generating, the app shows which lessons are included and which are left out, and why; only lessons with a confirmed transcript are included. Each summary item and question links to the lesson passage it came from.",
+    "es": "Antes de generar, la app muestra qué clases entran y cuáles quedan fuera, y por qué; solo entran clases con la transcripción confirmada. Cada ítem del resumen y de las preguntas lleva al fragmento de la clase de donde vino.",
+    "zh-CN": "生成前，应用会显示哪些课程被纳入、哪些被排除及原因；只有转录已确认的课程才会纳入。摘要和题目的每一项都链接到其来源的课程片段。"
+  },
+  "Cada aula tem um caderno próprio na aba Anotações, salvo automaticamente na sua conta. Escreva tópicos, listas e resumos com as suas palavras.": {
+    "en": "Each lesson has its own notebook in the Notes tab, saved automatically to your account. Write topics, lists and summaries in your own words.",
+    "es": "Cada clase tiene su propio cuaderno en la pestaña Notas, guardado automáticamente en tu cuenta. Escribe temas, listas y resúmenes con tus palabras.",
+    "zh-CN": "每节课在“笔记”标签中都有自己的笔记本，自动保存到你的账户。用自己的话写要点、清单和总结。"
+  },
+  "Para destacar um trecho, selecione-o na transcrição e escolha destacar ou anotar. Todas as anotações ficam em Revisar e também aparecem na busca do Início.": {
+    "en": "To highlight a passage, select it in the transcript and choose highlight or annotate. All notes are in Review and also appear in the Home search.",
+    "es": "Para destacar un fragmento, selecciónalo en la transcripción y elige destacar o anotar. Todas las notas quedan en Repasar y también aparecen en la búsqueda de Inicio.",
+    "zh-CN": "要标记一个段落，在转录中选中它，然后选择高亮或批注。所有笔记都在“复习”中，也会出现在首页搜索里。"
+  },
+  "Em Planejar, crie objetivos e tarefas com prazo, marque horários no calendário de estudos e exporte o calendário para outro app (arquivo .ics).": {
+    "en": "In Plan, create goals and tasks with due dates, schedule times in the study calendar and export the calendar to another app (.ics file).",
+    "es": "En Planificar, crea objetivos y tareas con plazo, agenda horarios en el calendario de estudio y exporta el calendario a otra app (archivo .ics).",
+    "zh-CN": "在“计划”中创建带截止日期的目标和任务，在学习日历中安排时间，并将日历导出到其他应用（.ics 文件）。"
+  },
+  "A aba Tempo mostra suas semanas em relação à meta semanal e as aulas que você mais estudou. Ajuste a meta quando quiser.": {
+    "en": "The Time tab shows your weeks against the weekly goal and the lessons you studied most. Adjust the goal whenever you like.",
+    "es": "La pestaña Tiempo muestra tus semanas frente a la meta semanal y las clases que más estudiaste. Ajusta la meta cuando quieras.",
+    "zh-CN": "“时间”标签显示每周与周目标的对比，以及你学习最多的课程。可随时调整目标。"
+  },
+  "Abrir Planejar": { "en": "Open Plan", "es": "Abrir Planificar", "zh-CN": "打开计划" },
+  "Em Focar, escolha a duração e inicie um bloco de foco, com pausas entre os blocos. Enquanto ele corre, um pequeno indicador aparece no topo das outras páginas.": {
+    "en": "In Focus, choose the length and start a focus block, with breaks between blocks. While it runs, a small indicator appears at the top of other pages.",
+    "es": "En Enfocar, elige la duración e inicia un bloque de enfoque, con pausas entre bloques. Mientras corre, aparece un pequeño indicador arriba de las otras páginas.",
+    "zh-CN": "在“专注”中选择时长并开始一个专注时段，时段之间有休息。计时期间，其他页面顶部会显示一个小指示器。"
+  },
+  "O botão de fones no topo abre os sons ambientes: chuva, café, biblioteca e outros, com volume para cada um. Nada toca antes de você apertar o play.": {
+    "en": "The headphones button at the top opens ambient sounds: rain, café, library and more, each with its own volume. Nothing plays until you press play.",
+    "es": "El botón de auriculares arriba abre los sonidos ambientales: lluvia, café, biblioteca y otros, con volumen para cada uno. Nada suena antes de que pulses play.",
+    "zh-CN": "顶部的耳机按钮可打开环境音：雨声、咖啡馆、图书馆等，每种都可单独调音量。你按下播放前不会有任何声音。"
+  },
+  "O botão “Modo foco” (ou Alt + F) esconde distrações e recolhe o menu; no foco, A− e A+ ajustam o texto.": {
+    "en": "The “Focus mode” button (or Alt + F) hides distractions and collapses the menu; in focus, A− and A+ adjust the text.",
+    "es": "El botón “Modo enfoque” (o Alt + F) oculta distracciones y recoge el menú; en enfoque, A− y A+ ajustan el texto.",
+    "zh-CN": "“专注模式”按钮（或 Alt + F）会隐藏干扰并收起菜单；专注时，A− 和 A+ 可调整文字大小。"
+  },
+  "Em Aparência e leitura você muda tamanho do texto, espaçamento, fonte de leitura, contraste e movimento, liga a guia de leitura e a leitura em voz alta, e ativa o modo para leitores de tela.": {
+    "en": "In Appearance and reading you change text size, spacing, reading font, contrast and motion, turn on the reading guide and read aloud, and enable screen-reader mode.",
+    "es": "En Apariencia y lectura cambias tamaño del texto, espaciado, fuente de lectura, contraste y movimiento, activas la guía de lectura y la lectura en voz alta, y el modo para lectores de pantalla.",
+    "zh-CN": "在“外观与阅读”中可更改文字大小、间距、阅读字体、对比度和动画，开启阅读辅助线和朗读，并启用屏幕阅读器模式。"
+  },
+  "Pressione ? em qualquer página para ver os atalhos de teclado.": {
+    "en": "Press ? on any page to see the keyboard shortcuts.",
+    "es": "Pulsa ? en cualquier página para ver los atajos de teclado.",
+    "zh-CN": "在任意页面按 ? 查看键盘快捷键。"
+  },
+  "Abrir Leitura e acessibilidade": {
+    "en": "Open Reading and accessibility",
+    "es": "Abrir Lectura y accesibilidad",
+    "zh-CN": "打开阅读与无障碍"
+  },
+  "Ver atalhos de teclado": {
+    "en": "See keyboard shortcuts",
+    "es": "Ver atajos de teclado",
+    "zh-CN": "查看键盘快捷键"
+  },
+  "Em Configurações, escolha o idioma da interface: português, inglês, espanhol ou chinês. Ele muda menus, botões e mensagens.": {
+    "en": "In Settings, choose the interface language: Portuguese, English, Spanish or Chinese. It changes menus, buttons and messages.",
+    "es": "En Configuración, elige el idioma de la interfaz: portugués, inglés, español o chino. Cambia menús, botones y mensajes.",
+    "zh-CN": "在“设置”中选择界面语言：葡萄牙语、英语、西班牙语或中文。它会更改菜单、按钮和消息。"
+  },
+  "Transcrições, resumos, questões e o que você escreveu continuam no idioma original. O idioma da gravação é escolhido ao enviar cada aula.": {
+    "en": "Transcripts, summaries, questions and what you wrote stay in their original language. The recording language is chosen when you send each lesson.",
+    "es": "Transcripciones, resúmenes, preguntas y lo que escribiste siguen en el idioma original. El idioma de la grabación se elige al enviar cada clase.",
+    "zh-CN": "转录、摘要、题目和你写的内容保持原来的语言。录音语言在上传每节课时选择。"
+  },
+  "Nome, foto, capa e apresentação ficam em Minha conta, pelo avatar no topo da página.": {
+    "en": "Name, photo, cover and bio are in My account, from the avatar at the top of the page.",
+    "es": "Nombre, foto, portada y presentación están en Mi cuenta, desde el avatar arriba de la página.",
+    "zh-CN": "姓名、照片、封面和简介在“我的账户”中，点击页面顶部的头像进入。"
+  },
+  "Para trocar a senha, abra Configurações › Trocar senha: defina uma nova agora ou receba um link por e-mail. Esqueceu a senha antes de entrar? Use “Esqueci minha senha” na tela de login.": {
+    "en": "To change your password, open Settings › Change password: set a new one now or get a link by email. Forgot your password before signing in? Use “Forgot my password” on the sign-in screen.",
+    "es": "Para cambiar la contraseña, abre Configuración › Cambiar contraseña: define una nueva ahora o recibe un enlace por correo. ¿Olvidaste la contraseña antes de entrar? Usa “Olvidé mi contraseña” en la pantalla de inicio de sesión.",
+    "zh-CN": "要更改密码，请打开“设置 › 更改密码”：立即设置新密码或通过电子邮件接收链接。登录前忘记密码？请在登录页使用“忘记密码”。"
+  },
+  "Abrir Configurações": {
+    "en": "Open Settings",
+    "es": "Abrir Configuración",
+    "zh-CN": "打开设置"
+  },
+  "O histórico, as conquistas e as preferências são sincronizados com sua conta. Sem conexão, as mudanças ficam neste dispositivo até o próximo envio. Confira o estado em Dados neste navegador antes de limpar os dados do navegador.": {
+    "en": "History, achievements and preferences are synced with your account. Offline, changes stay on this device until the next upload. Check the state in Data on this browser before clearing the browser's data.",
+    "es": "El historial, los logros y las preferencias se sincronizan con tu cuenta. Sin conexión, los cambios quedan en este dispositivo hasta el próximo envío. Revisa el estado en Datos en este navegador antes de borrar los datos del navegador.",
+    "zh-CN": "历史、成就和偏好设置会与你的账户同步。离线时，更改会保存在此设备上直到下次上传。清除浏览器数据前，请在“此浏览器中的数据”中查看状态。"
+  },
+  "O que é enviado para transcrição, onde cada coisa fica guardada e por quanto tempo estão na política de privacidade.": {
+    "en": "What is sent for transcription, where each thing is kept and for how long are in the privacy policy.",
+    "es": "Qué se envía para transcripción, dónde se guarda cada cosa y por cuánto tiempo está en la política de privacidad.",
+    "zh-CN": "发送去转录的内容、各项数据的保存位置和保存时长，都写在隐私政策中。"
+  },
+  "O áudio fica guardado?": {
+    "en": "Is the audio kept?",
+    "es": "¿Se guarda el audio?",
+    "zh-CN": "音频会被保存吗？"
+  },
+  "Ver e apagar os dados neste navegador": {
+    "en": "See and delete the data on this browser",
+    "es": "Ver y borrar los datos en este navegador",
+    "zh-CN": "查看并删除此浏览器中的数据"
+  },
+  "Conteúdo gerado": {
+    "en": "Generated content",
+    "es": "Contenido generado",
+    "zh-CN": "生成的内容"
+  },
+  "Como usar o app: Ajuda": {
+    "en": "How to use the app: Help",
+    "es": "Cómo usar la app: Ayuda",
+    "zh-CN": "如何使用应用：帮助"
+  },
+  "Privacidade e dados": {
+    "en": "Privacy and data",
+    "es": "Privacidad y datos",
+    "zh-CN": "隐私和数据"
+  },
+  "Passo {0} de {1}": {
+    "en": "Step {0} of {1}",
+    "es": "Paso {0} de {1}",
+    "zh-CN": "第 {0} 步，共 {1} 步"
+  },
+  "Fechar tour": { "en": "Close tour", "es": "Cerrar recorrido", "zh-CN": "关闭导览" },
+  "Próximo": { "en": "Next", "es": "Siguiente", "zh-CN": "下一步" },
+  "Esc fecha o tour. Use as setas para avançar ou voltar.": {
+    "en": "Esc closes the tour. Use the arrow keys to go forward or back.",
+    "es": "Esc cierra el recorrido. Usa las flechas para avanzar o volver.",
+    "zh-CN": "按 Esc 关闭导览。使用方向键前进或后退。"
+  },
+  "Fazer um tour rápido?": {
+    "en": "Take a quick tour?",
+    "es": "¿Hacer un recorrido rápido?",
+    "zh-CN": "要快速导览一下吗？"
+  },
+  "Conheça as partes principais do app em um minuto.": {
+    "en": "Get to know the main parts of the app in a minute.",
+    "es": "Conoce las partes principales de la app en un minuto.",
+    "zh-CN": "用一分钟了解应用的主要部分。"
+  },
+  "Começar": { "en": "Start", "es": "Empezar", "zh-CN": "开始" },
+  "Agora não": { "en": "Not now", "es": "Ahora no", "zh-CN": "以后再说" },
+  "Fazer um tour rápido? Opção disponível no canto da tela.": {
+    "en": "Take a quick tour? Option available in the corner of the screen.",
+    "es": "¿Hacer un recorrido rápido? Opción disponible en la esquina de la pantalla.",
+    "zh-CN": "要快速导览一下吗？选项在屏幕角落。"
+  },
+  "Comece por aqui: envie o áudio ou vídeo de uma aula. Você confere a transcrição antes de gerar resumo e questões.": {
+    "en": "Start here: send the audio or video of a lesson. You check the transcript before the summary and questions are generated.",
+    "es": "Empieza aquí: envía el audio o video de una clase. Revisas la transcripción antes de generar el resumen y las preguntas.",
+    "zh-CN": "从这里开始：上传课程的音频或视频。在生成摘要和题目之前，你会先核对转录。"
+  },
+  "A aula para continuar, as tarefas e os cartões de hoje e o seu tempo de estudo na semana.": {
+    "en": "The lesson to continue, today's tasks and cards, and your study time this week.",
+    "es": "La clase para continuar, las tareas y tarjetas de hoy y tu tiempo de estudio de la semana.",
+    "zh-CN": "要继续的课程、今天的任务和卡片，以及本周的学习时间。"
+  },
+  "Todas as suas aulas, com pastas, disciplinas e busca. Cada aula mostra o próximo passo de estudo.": {
+    "en": "All your lessons, with folders, subjects and search. Each lesson shows the next study step.",
+    "es": "Todas tus clases, con carpetas, asignaturas y búsqueda. Cada clase muestra el próximo paso de estudio.",
+    "zh-CN": "你的所有课程，包括文件夹、科目和搜索。每节课都会显示下一步学习。"
+  },
+  "Revise com flashcards e retome suas questões e anotações.": {
+    "en": "Review with flashcards and go back to your questions and notes.",
+    "es": "Repasa con flashcards y retoma tus preguntas y notas.",
+    "zh-CN": "用抽认卡复习，并回顾你的题目和笔记。"
+  },
+  "Objetivos, tarefas e calendário de estudos, com uma meta de tempo por semana.": {
+    "en": "Goals, tasks and study calendar, with a weekly time goal.",
+    "es": "Objetivos, tareas y calendario de estudio, con una meta de tiempo por semana.",
+    "zh-CN": "目标、任务和学习日历，以及每周的时间目标。"
+  },
+  "Um cronômetro de foco com pausas. O tempo estudado aparece no Início e no Planejar.": {
+    "en": "A focus timer with breaks. Time studied shows on Home and in Plan.",
+    "es": "Un cronómetro de enfoque con pausas. El tiempo estudiado aparece en Inicio y en Planificar.",
+    "zh-CN": "带休息的专注计时器。学习时间会显示在首页和计划中。"
+  },
+  "Abra o menu para ir à Biblioteca, ao Planejar, ao Focar e às Configurações.": {
+    "en": "Open the menu to go to the Library, Plan, Focus and Settings.",
+    "es": "Abre el menú para ir a la Biblioteca, Planificar, Enfocar y Configuración.",
+    "zh-CN": "打开菜单可前往资料库、计划、专注和设置。"
+  },
+  "Busca": { "en": "Search", "es": "Búsqueda", "zh-CN": "搜索" },
+  "Menu": { "en": "Menu", "es": "Menú", "zh-CN": "菜单" },
+  "Procure em aulas, questões e transcrições. Os resultados aparecem aqui mesmo, no Início.": {
+    "en": "Search lessons, questions and transcripts. Results show right here on Home.",
+    "es": "Busca en clases, preguntas y transcripciones. Los resultados aparecen aquí mismo, en Inicio.",
+    "zh-CN": "搜索课程、题目和转录。结果直接显示在首页。"
+  },
+  "Escolha quais blocos aparecem no Início e em que ordem.": {
+    "en": "Choose which blocks appear on Home and in what order.",
+    "es": "Elige qué bloques aparecen en Inicio y en qué orden.",
+    "zh-CN": "选择首页显示哪些区块以及它们的顺序。"
+  },
+  "Configurações e ajuda": {
+    "en": "Settings and help",
+    "es": "Configuración y ayuda",
+    "zh-CN": "设置和帮助"
+  },
+  "Aparência, idioma, senha e a Ajuda ficam aqui. Você pode refazer este tour quando quiser.": {
+    "en": "Appearance, language, password and Help are here. You can take this tour again whenever you like.",
+    "es": "Apariencia, idioma, contraseña y la Ayuda están aquí. Puedes repetir este recorrido cuando quieras.",
+    "zh-CN": "外观、语言、密码和帮助都在这里。你可以随时重新参加导览。"
+  }
+}
