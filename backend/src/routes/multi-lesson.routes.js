@@ -1,3 +1,4 @@
+import * as testing from '../services/testing.service.js';
 import { Router } from 'express';
 import { multiLessonService as service } from '../services/multi-lesson.service.js';
 import { multiLessonExportService as exportsService } from '../services/multi-lesson-export.service.js';
@@ -30,7 +31,8 @@ r.get(
 r.post(
   '/',
   limitPerAccount({ name: 'multi-lesson-create', max: 20, windowMs: 3600000 }),
-  action((q) => service.create(q.user, q.body), 202),
+  action((q) => testing.withReservation(q.user.id, testing.USAGE_KIND.MULTI_LESSON,
+    typeof q.body?.requestId === 'string' ? q.body.requestId : null, () => service.create(q.user, q.body)), 202),
 );
 r.get(
   '/:id',

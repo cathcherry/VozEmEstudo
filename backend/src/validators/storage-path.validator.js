@@ -16,3 +16,11 @@ export function assertSafeStoragePath(storagePath) {
   }
   return storagePath;
 }
+
+/**
+ * Canonical demonstration media (public testing) is shared by every participant's copy and must
+ * never be removed through a participant's lesson. Only the seed script manages demo/ objects.
+ */
+export function isSharedDemoPath(storagePath) {
+  return typeof storagePath === 'string' && storagePath.startsWith('demo/');
+}

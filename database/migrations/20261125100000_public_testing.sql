@@ -61,13 +61,15 @@ create table public.public_testing_config (
   demo_access_enabled boolean not null default true,
   -- Limits per role for the whole program (cumulative, never renewed). Missing kind = no personal
   -- limit (still counted globally); 0 = not allowed.
-  tester_limits jsonb not null default '{"transcription_seconds":300,"summary":2,"questions":2,"flashcards":1,"flashcard_replace":5,"warnings":1,"multi_lesson":0}'::jsonb,
-  admin_limits jsonb not null default '{"transcription_seconds":7200,"summary":30,"questions":30,"flashcards":20,"flashcard_replace":60,"warnings":20,"multi_lesson":10}'::jsonb,
+  tester_limits jsonb not null default '{"transcription_seconds":300,"processing_llm":3,"summary":2,"questions":2,"flashcards":1,"flashcard_replace":5,"warnings":1,"multi_lesson":0}'::jsonb,
+  admin_limits jsonb not null default '{"transcription_seconds":7200,"processing_llm":60,"summary":30,"questions":30,"flashcards":20,"flashcard_replace":60,"warnings":20,"multi_lesson":10}'::jsonb,
   -- Aggregate caps for everyone (admins included). Seconds of audio; LLM requests and estimated
-  -- tokens are derived from kind_costs. null = no cap for that window.
-  global_limits jsonb not null default '{"transcription_seconds":{"total":54000,"day":18000,"hour":5400},"llm_requests":{"total":null,"day":900,"hour":300},"llm_tokens":{"total":null,"day":180000,"hour":60000},"concurrent_transcriptions":2}'::jsonb,
+  -- tokens are derived from kind_costs. null = no cap for that window. Defaults fit the Groq FREE
+  -- tier (unknown which tier production uses); raise them on the Developer tier (see
+  -- docs/CAPACIDADE_E_CUSTOS.md). processing_llm = the warning analysis run with each recording.
+  global_limits jsonb not null default '{"transcription_seconds":{"total":54000,"day":18000,"hour":5400},"llm_requests":{"total":null,"day":800,"hour":300},"llm_tokens":{"total":null,"day":160000,"hour":60000},"concurrent_transcriptions":2}'::jsonb,
   -- Estimated provider load of one unit of each kind (requests and tokens incl. reasoning).
-  kind_costs jsonb not null default '{"transcription_seconds":{"requests":0,"tokens":0},"processing_llm":{"requests":1,"tokens":6000},"summary":{"requests":1,"tokens":9000},"questions":{"requests":3,"tokens":22000},"flashcards":{"requests":1,"tokens":7000},"flashcard_replace":{"requests":1,"tokens":2500},"warnings":{"requests":1,"tokens":6000},"multi_lesson":{"requests":4,"tokens":40000}}'::jsonb,
+  kind_costs jsonb not null default '{"transcription_seconds":{"requests":0,"tokens":0},"processing_llm":{"requests":3,"tokens":12000},"summary":{"requests":1,"tokens":9000},"questions":{"requests":3,"tokens":22000},"flashcards":{"requests":1,"tokens":7000},"flashcard_replace":{"requests":1,"tokens":2500},"warnings":{"requests":1,"tokens":6000},"multi_lesson":{"requests":4,"tokens":40000}}'::jsonb,
   -- Accounts created before registration_starts_at keep the previous behaviour (legacy limits)
   -- unless this is true. Admins always use admin_limits.
   apply_to_existing_accounts boolean not null default false,
@@ -452,7 +454,10 @@ begin
   select * into v_copy from public.demo_lesson_copies where user_id = p_user_id and demo_lesson_id = p_demo_id;
   if found then
     if exists (select 1 from public.materials where id = v_copy.material_id and user_id = p_user_id) then
-      return jsonb_build_object('materialId', v_copy.material_id, 'created', false, 'demoId', p_demo_id);
+      return jsonb_build_object('materialId', v_copy.material_id, 'created', false, 'demoId', p_demo_id,
+        'sourceRevisionId', (select tv.id from public.transcription_versions tv join public.transcriptions t
+          on t.id = tv.transcription_id where t.material_id = v_copy.material_id and tv.revision = t.current_revision),
+        'flashcards', coalesce(v_demo.content->'flashcards', 'null'::jsonb));
     end if;
     delete from public.demo_lesson_copies where user_id = p_user_id and demo_lesson_id = p_demo_id;
   end if;

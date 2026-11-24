@@ -82,6 +82,11 @@ async function withMedia(buffer, extension, callback) {
   }
 }
 
+/** Trusted duration (seconds) measured with ffprobe on the server; never the browser's number. */
+export async function probeDurationSeconds(buffer, extension) {
+  return withMedia(buffer, extension, async ({ duration }) => duration);
+}
+
 export async function inspectMedia(buffer, extension) {
   return withMedia(buffer, extension, async ({ input, duration, hasVideo }) => {
     const pcm = await execute(ffmpeg, ['-hide_banner', '-loglevel', 'error', ...inputOptions, '-i', input, '-map', '0:a:0', '-vn', '-ac', '1', '-ar', '1000', '-f', 's16le', 'pipe:1'], { maxBytes: 16 * 1024 * 1024, timeoutMs: 120000 });

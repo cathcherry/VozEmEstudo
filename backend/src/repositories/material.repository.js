@@ -2,7 +2,7 @@ import { rpc } from './rpc.js';
 import { PERMISSION_DECLARATION } from '../config/permission-declaration.js';
 import { getAdminSupabase } from '../integrations/supabase/admin-client.js';
 import { errors } from '../domain/errors.js';
-import { assertSafeStoragePath } from '../validators/storage-path.validator.js';
+import { assertSafeStoragePath, isSharedDemoPath } from '../validators/storage-path.validator.js';
 import { isFeatureEnabled } from '../config/feature-flags.js';
 import { env } from '../config/env.js';
 
@@ -78,7 +78,7 @@ export async function deleteOwnedMaterial(userId, materialId) {
   const audio = Array.isArray(material.audio_files)
     ? material.audio_files[0]
     : material.audio_files;
-  if (audio?.storage_path) {
+  if (audio?.storage_path && !isSharedDemoPath(audio.storage_path)) {
     assertSafeStoragePath(audio.storage_path);
     // Same bucket the upload used (SUPABASE_AUDIO_BUCKET), not a fixed name.
     await db.storage.from(env.audioBucket).remove([audio.storage_path]);

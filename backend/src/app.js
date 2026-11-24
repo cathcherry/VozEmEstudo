@@ -8,6 +8,7 @@ import { PERMISSION_DECLARATION } from './config/permission-declaration.js';
 import { featureFlags, isFeatureEnabled } from './config/feature-flags.js';
 import { assertPublicSupabaseKey } from './validators/public-config.validator.js';
 import { requestIdMiddleware } from './middleware/request-id.middleware.js';
+import { testingRouter, demoLessonRouter } from './routes/testing.routes.js';
 import { requireAuth } from './middleware/auth.middleware.js';
 import { notFoundMiddleware, errorMiddleware } from './middleware/error.middleware.js';
 import { materialRouter } from './routes/material.routes.js';
@@ -125,6 +126,10 @@ if (isFeatureEnabled('discoveries')) {
 }
 // 3.6 Milestone D: the Diário de estudo (personal scrapbook journals; private).
 if (isFeatureEnabled('journal')) app.use('/api/journals', requireAuth, journalRouter);
+if (isFeatureEnabled('public_testing')) {
+  app.use('/api/testing', requireAuth, testingRouter);
+  app.use('/api/demo-lessons', requireAuth, demoLessonRouter);
+}
 app.use('/api/questions', requireAuth, questionRouter);
 // Search in the person's own lessons, questions and transcripts (no answer keys).
 app.get('/api/search', requireAuth, async (req, res, next) => {
