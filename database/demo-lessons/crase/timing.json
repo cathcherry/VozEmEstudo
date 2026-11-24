@@ -1,0 +1,152 @@
+[
+  {
+    "paragraph": 0,
+    "position": 0,
+    "startMs": 400,
+    "endMs": 5795
+  },
+  {
+    "paragraph": 0,
+    "position": 1,
+    "startMs": 6215,
+    "endMs": 10651
+  },
+  {
+    "paragraph": 1,
+    "position": 2,
+    "startMs": 11400,
+    "endMs": 19413
+  },
+  {
+    "paragraph": 1,
+    "position": 3,
+    "startMs": 19832,
+    "endMs": 28279
+  },
+  {
+    "paragraph": 1,
+    "position": 4,
+    "startMs": 28698,
+    "endMs": 33444
+  },
+  {
+    "paragraph": 1,
+    "position": 5,
+    "startMs": 33864,
+    "endMs": 39394
+  },
+  {
+    "paragraph": 1,
+    "position": 6,
+    "startMs": 39813,
+    "endMs": 49850
+  },
+  {
+    "paragraph": 2,
+    "position": 7,
+    "startMs": 50599,
+    "endMs": 57000
+  },
+  {
+    "paragraph": 2,
+    "position": 8,
+    "startMs": 57419,
+    "endMs": 62200
+  },
+  {
+    "paragraph": 2,
+    "position": 9,
+    "startMs": 62619,
+    "endMs": 68882
+  },
+  {
+    "paragraph": 2,
+    "position": 10,
+    "startMs": 69301,
+    "endMs": 79012
+  },
+  {
+    "paragraph": 3,
+    "position": 11,
+    "startMs": 79761,
+    "endMs": 91680
+  },
+  {
+    "paragraph": 3,
+    "position": 12,
+    "startMs": 92099,
+    "endMs": 97163
+  },
+  {
+    "paragraph": 3,
+    "position": 13,
+    "startMs": 97582,
+    "endMs": 104321
+  },
+  {
+    "paragraph": 3,
+    "position": 14,
+    "startMs": 104740,
+    "endMs": 112921
+  },
+  {
+    "paragraph": 4,
+    "position": 15,
+    "startMs": 113670,
+    "endMs": 119744
+  },
+  {
+    "paragraph": 4,
+    "position": 16,
+    "startMs": 120163,
+    "endMs": 127435
+  },
+  {
+    "paragraph": 4,
+    "position": 17,
+    "startMs": 127854,
+    "endMs": 137641
+  },
+  {
+    "paragraph": 4,
+    "position": 18,
+    "startMs": 138060,
+    "endMs": 145064
+  },
+  {
+    "paragraph": 4,
+    "position": 19,
+    "startMs": 145483,
+    "endMs": 156409
+  },
+  {
+    "paragraph": 5,
+    "position": 20,
+    "startMs": 157158,
+    "endMs": 164843
+  },
+  {
+    "paragraph": 5,
+    "position": 21,
+    "startMs": 165262,
+    "endMs": 169535
+  },
+  {
+    "paragraph": 5,
+    "position": 22,
+    "startMs": 169954,
+    "endMs": 175530
+  },
+  {
+    "paragraph": 5,
+    "position": 23,
+    "startMs": 175949,
+    "endMs": 182807
+  },
+  {
+    "paragraph": 5,
+    "position": 24,
+    "startMs": 183226,
+    "endMs": 186910
+  }
+]

@@ -1,0 +1,99 @@
+{
+  "slug": "crase",
+  "voice": "br4",
+  "rate": 140,
+  "pitch": 45,
+  "notes": "Cada parágrafo é uma lista de segmentos; cada segmento é uma lista de frases. Uma frase é um texto (falado e transcrito igual) ou {\"text\": transcrição, \"say\": texto enviado ao sintetizador}.",
+  "paragraphs": [
+    [
+      [
+        "Olá, turma!",
+        "Hoje a nossa aula é sobre um assunto que costuma gerar muita dúvida: a crase."
+      ],
+      ["Vamos entender o que ela é, quando ela acontece e quais são os erros mais comuns."]
+    ],
+    [
+      [
+        "Primeiro, um detalhe de terminologia.",
+        "Crase não é o nome do acento.",
+        "Crase é o nome do fenômeno: a fusão de duas vogais iguais em uma só."
+      ],
+      [
+        "O sinal que usamos para indicar essa fusão se chama acento grave.",
+        "Então, o certo é dizer: este a tem acento grave, porque nele ocorreu crase."
+      ],
+      ["Na maioria dos casos, a crase é o encontro da preposição a com o artigo feminino a."],
+      ["Pense no verbo ir.", "Quem vai, vai a algum lugar, ou seja, o verbo exige a preposição a."],
+      [
+        "Agora pense na palavra escola, que aceita o artigo feminino: a escola.",
+        "Juntando a preposição e o artigo, os dois viram um a só, com acento grave: eu vou à escola."
+      ]
+    ],
+    [
+      [
+        "Existe um teste simples para conferir.",
+        "Troque a palavra feminina por uma palavra masculina equivalente."
+      ],
+      ["Se, no masculino, aparecer ao, é sinal de que, no feminino, há crase."],
+      [
+        "Veja: eu vou ao mercado, portanto eu vou à feira.",
+        "Eu assisti ao jogo, portanto eu assisti à partida."
+      ],
+      [
+        "Se no masculino aparecer apenas o artigo o, ou apenas a preposição a, não há crase.",
+        "Por exemplo: eu comprei o livro, então eu comprei a revista, sem acento."
+      ]
+    ],
+    [
+      [
+        "Daí vêm algumas regras práticas sobre onde a crase não acontece.",
+        "Não há crase antes de palavra masculina, porque palavra masculina não aceita o artigo a.",
+        "Por isso, andar a cavalo não leva acento."
+      ],
+      ["Também não há crase antes de verbo: começou a chover, estamos dispostos a ajudar."],
+      [
+        "E não há crase antes da maioria dos pronomes, como ela, esta e você.",
+        "Escrevemos: entreguei o bilhete a ela."
+      ],
+      [
+        "Outro caso frequente é o de palavras repetidas, como em cara a cara e frente a frente.",
+        "Ali existe só a preposição, sem artigo."
+      ]
+    ],
+    [
+      [
+        "Vamos a alguns casos especiais.",
+        "Com nomes de lugares, use outro macete: vou a, volto da."
+      ],
+      [
+        "Se você volta da Bahia, então vai à Bahia, com crase.",
+        "Mas, se você volta de Recife, então vai a Recife, sem crase."
+      ],
+      [
+        "Com horas exatas, a crase aparece: a reunião começa às oito horas.",
+        "Isso acontece porque a palavra horas, que é feminina, está ali, dita ou subentendida."
+      ],
+      [
+        "E nas locuções formadas com palavra feminina, como às vezes, à noite e à medida que, o acento grave também é usado."
+      ],
+      [
+        "Há também casos em que a crase é opcional.",
+        "Antes de pronome possessivo feminino, o artigo é facultativo: você pode escrever entreguei o livro a minha irmã ou entreguei o livro à minha irmã."
+      ]
+    ],
+    [
+      [
+        "Para fechar, os três erros mais comuns.",
+        "O primeiro é colocar acento antes de palavra masculina, como em comprar a prazo."
+      ],
+      ["O segundo é colocar acento antes de verbo, como na expressão a partir de."],
+      [
+        "E o terceiro é esquecer o acento quando ele é necessário, como em: ele se referiu à professora."
+      ],
+      [
+        "Resumindo: só há crase quando a palavra que vem antes exige a preposição a, e a palavra seguinte aceita o artigo a."
+      ],
+      ["Na dúvida, faça o teste do masculino.", "Até a próxima aula!"]
+    ]
+  ]
+}

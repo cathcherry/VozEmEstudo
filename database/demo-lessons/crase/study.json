@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "title": "Crase: quando usar o acento grave",
+  "subject": "Português",
+  "description": "Entenda de vez quando usar o acento grave, com o teste do masculino e os erros mais comuns.",
+  "cover": { "tone": "rose", "emblem": "emblem.literatura" },
+  "summary": {
+    "label": "Resumo da aula",
+    "text": "## O que é crase\n\n- **Crase** é o nome do fenômeno: a fusão de duas vogais iguais em uma só. Não é o nome do acento.\n- O sinal que indica essa fusão é o **acento grave** (à).\n- Na maioria dos casos, a crase é o encontro da **preposição a** com o **artigo feminino a**: quem vai, vai *a* algum lugar, e *escola* aceita o artigo *a*; por isso, *eu vou à escola*.\n\n## Teste do masculino\n\n- Troque a palavra feminina por uma palavra masculina equivalente.\n- Se aparecer **ao**, há crase no feminino: *vou ao mercado* → *vou à feira*; *assisti ao jogo* → *assisti à partida*.\n- Se aparecer apenas o artigo *o* ou apenas a preposição *a*, não há crase: *comprei o livro* → *comprei a revista*.\n\n## Quando não há crase\n\n- Antes de **palavra masculina**, que não aceita o artigo *a*: *andar a cavalo*.\n- Antes de **verbo**: *começou a chover*, *estamos dispostos a ajudar*.\n- Antes da maioria dos **pronomes**, como *ela*, *esta* e *você*: *entreguei o bilhete a ela*.\n- Em **palavras repetidas**, nas quais só existe a preposição: *cara a cara*, *frente a frente*.\n\n## Casos especiais\n\n- **Nomes de lugares**: use o macete *vou a, volto da*. Quem volta *da* Bahia vai *à* Bahia; quem volta *de* Recife vai *a* Recife.\n- **Horas exatas**: *a reunião começa às oito horas*, porque a palavra *horas*, que é feminina, está dita ou subentendida.\n- **Locuções com palavra feminina**: *às vezes*, *à noite*, *à medida que*.\n- **Crase facultativa**: antes de pronome possessivo feminino, o artigo é opcional, então valem *a minha irmã* e *à minha irmã*.\n\n## Erros mais comuns\n\n1. Acento antes de palavra masculina: o certo é *comprar a prazo*.\n2. Acento antes de verbo: o certo é *a partir de*.\n3. Esquecer o acento quando ele é necessário: *ele se referiu à professora*.\n\n## Pontos para revisar\n\n- Só há crase quando a palavra anterior exige a preposição *a* **e** a palavra seguinte aceita o artigo *a*.\n- Na dúvida, faça o teste do masculino."
+  },
+  "questions": {
+    "title": "Questões da aula",
+    "items": [
+      {
+        "statement": "Qual é a diferença entre crase e acento grave?",
+        "options": [
+          "Crase é o nome do sinal gráfico; acento grave é a regra que define quando usá-lo.",
+          "Crase é a fusão de duas vogais iguais; acento grave é o sinal que indica essa fusão.",
+          "Crase e acento grave são dois nomes diferentes para o mesmo sinal gráfico.",
+          "Acento grave é a fusão de duas vogais iguais; crase é o sinal que marca essa fusão."
+        ],
+        "correctIndex": 1,
+        "explanation": "Crase é o fenômeno, a fusão de duas vogais iguais em uma só; o acento grave é apenas o sinal que mostra que essa fusão aconteceu. Por isso se diz que um a \"tem acento grave\", e não que ele \"tem crase\" como se fosse um sinal.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "Crase e acento grave",
+          "evidence": "Crase é o nome do fenômeno: a fusão de duas vogais iguais em uma só."
+        }
+      },
+      {
+        "statement": "Na maioria dos casos, a crase resulta do encontro de quais elementos?",
+        "options": [
+          "Do artigo masculino o com a preposição a.",
+          "Do pronome ela com a preposição a.",
+          "De duas preposições a seguidas.",
+          "Da preposição a com o artigo feminino a."
+        ],
+        "correctIndex": 3,
+        "explanation": "O caso típico é a preposição a, exigida pela palavra anterior, somada ao artigo feminino a, aceito pela palavra seguinte. As duas vogais iguais se fundem e o resultado é marcado com acento grave.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "Preposição a + artigo a",
+          "evidence": "Na maioria dos casos, a crase é o encontro da preposição a com o artigo feminino a."
+        }
+      },
+      {
+        "statement": "Para decidir se a frase \"Ela foi ___ farmácia\" leva acento grave, um aluno faz o teste do masculino e pensa em \"Ela foi ao hospital\". O que ele deve concluir?",
+        "options": [
+          "Que há crase, porque no masculino apareceu ao: \"Ela foi à farmácia\".",
+          "Que não há crase, porque farmácia é uma palavra feminina.",
+          "Que não há crase, porque antes de verbo nunca se usa acento grave.",
+          "Que a crase é facultativa, porque farmácia é nome de um lugar."
+        ],
+        "correctIndex": 0,
+        "explanation": "No masculino apareceu ao, ou seja, preposição mais artigo. No feminino, essa mesma combinação vira a + a, que se funde em à. Ser palavra feminina é justamente o que permite o artigo a, e não um motivo para evitar a crase.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "application",
+          "facet": "application",
+          "concept": "Teste do masculino",
+          "evidence": "Se, no masculino, aparecer ao, é sinal de que, no feminino, há crase."
+        }
+      },
+      {
+        "statement": "Por que a expressão \"andar a cavalo\" não leva acento grave?",
+        "options": [
+          "Porque o verbo andar nunca exige a preposição a.",
+          "Porque expressões com nomes de animais são exceções à regra da crase.",
+          "Porque cavalo é palavra masculina e não aceita o artigo a, então ali só existe a preposição.",
+          "Porque o acento grave só aparece antes de nomes de lugares."
+        ],
+        "correctIndex": 2,
+        "explanation": "Para haver crase é preciso preposição e artigo feminino. Como cavalo é masculino, não há artigo a para se fundir com a preposição: o a de \"andar a cavalo\" é só preposição.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "understanding",
+          "facet": "mechanism",
+          "concept": "Crase antes de palavra masculina",
+          "evidence": "Não há crase antes de palavra masculina, porque palavra masculina não aceita o artigo a."
+        }
+      },
+      {
+        "statement": "Por que se escreve \"a reunião começa às oito horas\" com acento grave?",
+        "options": [
+          "Porque a palavra horas, que é feminina, está presente ou subentendida.",
+          "Porque todo número escrito por extenso exige acento grave.",
+          "Porque o verbo começar nunca aceita preposição.",
+          "Porque oito é considerada uma palavra feminina."
+        ],
+        "correctIndex": 0,
+        "explanation": "Nas horas exatas, a palavra horas, feminina, aceita o artigo as; somado à preposição a, isso forma às. Mesmo quando se diz só \"às oito\", a palavra horas fica subentendida.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "cause_effect",
+          "facet": "cause_effect",
+          "concept": "Crase com horas exatas",
+          "evidence": "Isso acontece porque a palavra horas, que é feminina, está ali, dita ou subentendida."
+        }
+      },
+      {
+        "statement": "Um aluno escreveu três frases: (1) \"Vendemos à prazo.\" (2) \"O curso começa à partir de março.\" (3) \"Ele se referiu à professora.\" Qual avaliação está correta?",
+        "options": [
+          "Apenas as frases 1 e 3 estão corretas.",
+          "Apenas a frase 3 está correta.",
+          "Apenas a frase 2 está correta.",
+          "As três frases estão corretas."
+        ],
+        "correctIndex": 1,
+        "explanation": "A frase 1 erra ao pôr acento antes de palavra masculina (prazo), e a frase 2 erra ao pô-lo antes de verbo (partir). Só a frase 3 está certa: quem se refere, se refere a algo, e professora aceita o artigo a.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "evaluation",
+          "facet": "relation",
+          "concept": "Erros comuns no uso da crase",
+          "evidence": "O primeiro é colocar acento antes de palavra masculina, como em comprar a prazo."
+        }
+      },
+      {
+        "statement": "Pelo macete \"vou a, volto da\", por que se escreve \"vou à Bahia\", com acento grave, mas \"vou a Recife\", sem acento?",
+        "options": [
+          "Porque Bahia é nome de estado e Recife é nome de cidade, e nomes de cidade nunca levam acento grave.",
+          "Porque Recife é uma palavra masculina e Bahia é uma palavra feminina.",
+          "Porque se diz \"volto da Bahia\", com artigo, mas \"volto de Recife\", sem artigo.",
+          "Porque o verbo ir exige a preposição a antes de Bahia, mas não antes de Recife."
+        ],
+        "correctIndex": 2,
+        "explanation": "Quem volta da Bahia usa da (de + a), sinal de que Bahia aceita artigo; por isso vai à Bahia. Quem volta de Recife usa só de, sem artigo; por isso vai a Recife, sem acento.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "analysis",
+          "facet": "relation",
+          "concept": "Crase com nomes de lugares",
+          "evidence": "Se você volta da Bahia, então vai à Bahia, com crase."
+        }
+      },
+      {
+        "statement": "Considerando as regras estudadas, em qual frase o acento grave está empregado corretamente?",
+        "options": [
+          "Entreguei o bilhete à ela.",
+          "Começou à chover.",
+          "Ficamos frente à frente.",
+          "Chegamos à escola."
+        ],
+        "correctIndex": 3,
+        "explanation": "Em \"chegamos à escola\", o verbo exige a preposição a e escola aceita o artigo a, então as duas condições se cumprem. Nas outras, falta o artigo: ela é pronome, chover é verbo e frente a frente é palavra repetida.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "synthesis",
+          "facet": "implication",
+          "concept": "Condições para haver crase",
+          "evidence": "Resumindo: só há crase quando a palavra que vem antes exige a preposição a, e a palavra seguinte aceita o artigo a."
+        }
+      }
+    ]
+  },
+  "flashcards": {
+    "name": "Cartões: Crase: quando usar o acento grave",
+    "cards": [
+      {
+        "front": "O que é crase?",
+        "back": "É a fusão de duas vogais iguais em uma só. Na maioria dos casos, a preposição a com o artigo feminino a.",
+        "evidence": "Crase é o nome do fenômeno: a fusão de duas vogais iguais em uma só."
+      },
+      {
+        "front": "Como se chama o sinal que indica a crase?",
+        "back": "Acento grave (à).",
+        "evidence": "O sinal que usamos para indicar essa fusão se chama acento grave."
+      },
+      {
+        "front": "Como funciona o teste do masculino?",
+        "back": "Troque a palavra feminina por uma masculina equivalente. Se aparecer ao, há crase: vou ao mercado → vou à feira.",
+        "evidence": "Troque a palavra feminina por uma palavra masculina equivalente."
+      },
+      {
+        "front": "Há crase antes de palavra masculina?",
+        "back": "Não, porque palavra masculina não aceita o artigo a. Exemplo: andar a cavalo.",
+        "evidence": "Por isso, andar a cavalo não leva acento."
+      },
+      {
+        "front": "Há crase antes de verbo?",
+        "back": "Não. Exemplos: começou a chover; estamos dispostos a ajudar.",
+        "evidence": "Também não há crase antes de verbo: começou a chover, estamos dispostos a ajudar."
+      },
+      {
+        "front": "Por que \"cara a cara\" e \"frente a frente\" não levam acento?",
+        "back": "Em palavras repetidas existe só a preposição, sem artigo.",
+        "evidence": "Ali existe só a preposição, sem artigo."
+      },
+      {
+        "front": "Qual é o macete para nomes de lugares?",
+        "back": "Vou a, volto da. Quem volta da Bahia vai à Bahia; quem volta de Recife vai a Recife.",
+        "evidence": "Com nomes de lugares, use outro macete: vou a, volto da."
+      },
+      {
+        "front": "Por que há crase em \"às oito horas\"?",
+        "back": "Porque a palavra horas, que é feminina, está dita ou subentendida.",
+        "evidence": "Com horas exatas, a crase aparece: a reunião começa às oito horas."
+      },
+      {
+        "front": "Quando a crase é facultativa?",
+        "back": "Antes de pronome possessivo feminino: entreguei o livro a minha irmã ou à minha irmã.",
+        "evidence": "Antes de pronome possessivo feminino, o artigo é facultativo"
+      },
+      {
+        "front": "Quais são as duas condições para haver crase?",
+        "back": "A palavra anterior exige a preposição a, e a palavra seguinte aceita o artigo a.",
+        "evidence": "só há crase quando a palavra que vem antes exige a preposição a, e a palavra seguinte aceita o artigo a."
+      }
+    ]
+  }
+}
