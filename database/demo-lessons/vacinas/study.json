@@ -1,0 +1,210 @@
+{
+  "version": 1,
+  "title": "Como as vacinas ensinam o sistema imunológico",
+  "subject": "Ciências",
+  "description": "Do antígeno à imunidade coletiva: veja como a vacina treina as defesas do corpo antes da doença.",
+  "cover": { "tone": "matcha", "emblem": "emblem.biologia" },
+  "summary": {
+    "label": "Resumo da aula",
+    "text": "## A ideia central\n\nA vacina funciona como um **treino para o sistema imunológico**, feito antes que a doença de verdade apareça.\n\n## Conceitos básicos\n\n- **Sistema imunológico**: conjunto de células e moléculas que defende o corpo contra agentes que causam doenças, como vírus e bactérias.\n- **Patógenos**: esses agentes causadores de doenças.\n- **Antígenos**: moléculas da superfície do patógeno que o sistema imunológico reconhece, como uma espécie de assinatura.\n- **Anticorpos**: proteínas em forma de Y que se encaixam em um antígeno específico, como uma chave em uma fechadura.\n\n## Resposta primária\n\n- No primeiro contato com um antígeno, os **linfócitos B** (um tipo de glóbulo branco) produzem anticorpos.\n- Ligado ao patógeno, o anticorpo pode impedir que ele entre nas células e o marca para ser destruído por outras células de defesa.\n- Os **linfócitos T** ajudam a coordenar a resposta e eliminam células já infectadas.\n- Essa resposta é **lenta**: leva uma ou duas semanas para atingir a força máxima. Nesse intervalo, o patógeno se multiplica e a pessoa pode ficar doente.\n\n## Memória imunológica\n\n- Depois da infecção, a maior parte das células de defesa desaparece, mas algumas permanecem: as **células de memória**, que guardam a informação sobre o antígeno, às vezes por muitos anos.\n- Num novo contato, elas reconhecem o antígeno rapidamente. A **resposta secundária** é mais rápida e mais forte e muitas vezes elimina o invasor antes que surjam sintomas.\n\n## Como a vacina age\n\n- A vacina apresenta ao corpo os antígenos de um patógeno **sem causar a doença**.\n- Para isso, pode usar o patógeno enfraquecido ou inativado, apenas uma parte dele (como uma proteína) ou instruções genéticas para que as próprias células produzam essa proteína por um tempo, como nas vacinas de **RNA mensageiro**.\n- O corpo responde como se fosse uma infecção: produz anticorpos e, principalmente, forma células de memória.\n- Algumas vacinas exigem mais de uma dose ou reforços, porque cada nova exposição fortalece e prolonga a memória.\n- Dor no braço ou um pouco de febre são sinais de que o sistema imunológico está trabalhando e normalmente passam em poucos dias.\n\n## Imunidade coletiva\n\n- Também chamada de **imunidade de rebanho**: com grande parte da população imunizada, o patógeno encontra poucas pessoas em quem se multiplicar e a **cadeia de transmissão se interrompe**.\n- Isso protege também quem não pode ser vacinado, como bebês muito pequenos ou pessoas com o sistema imunológico enfraquecido.\n- Quanto mais contagiosa é a doença, maior precisa ser a cobertura vacinal.\n\n## A cadeia, em resumo\n\n1. A vacina apresenta o antígeno.\n2. O corpo produz anticorpos e forma células de memória.\n3. A memória garante uma resposta rápida no futuro.\n4. Com muita gente vacinada, a transmissão diminui e toda a comunidade fica protegida."
+  },
+  "questions": {
+    "title": "Questões da aula",
+    "items": [
+      {
+        "statement": "Como se chamam as moléculas da superfície de um patógeno que o sistema imunológico reconhece?",
+        "options": ["Anticorpos", "Linfócitos", "Antígenos", "Patógenos"],
+        "correctIndex": 2,
+        "explanation": "Antígenos são as moléculas do patógeno que funcionam como uma assinatura reconhecida pelo corpo. Anticorpos são as proteínas que o corpo produz para se encaixar nesses antígenos, e é comum confundir os dois nomes.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "Antígeno",
+          "evidence": "Essas moléculas que o sistema imunológico reconhece são os antígenos."
+        }
+      },
+      {
+        "statement": "O que são anticorpos?",
+        "options": [
+          "Proteínas que se encaixam em um antígeno específico, como uma chave em uma fechadura.",
+          "Moléculas da superfície do patógeno que funcionam como uma assinatura.",
+          "Glóbulos brancos que coordenam a resposta e eliminam células infectadas.",
+          "Versões enfraquecidas do patógeno usadas nas vacinas."
+        ],
+        "correctIndex": 0,
+        "explanation": "Anticorpos são proteínas em forma de Y, produzidas pelos linfócitos B, que reconhecem um antígeno específico. A descrição de \"assinatura\" corresponde ao antígeno, e coordenar a resposta é papel dos linfócitos T.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "Anticorpo",
+          "evidence": "Anticorpos são proteínas em forma de Y que se encaixam em um antígeno específico"
+        }
+      },
+      {
+        "statement": "Por que uma pessoa pode ficar doente no primeiro contato com um patógeno?",
+        "options": [
+          "Porque o corpo não tem linfócitos B antes do primeiro contato.",
+          "Porque os anticorpos atacam as próprias células do corpo na primeira vez.",
+          "Porque as células de memória são destruídas assim que o patógeno entra.",
+          "Porque a resposta primária leva uma ou duas semanas para atingir a força máxima, e o patógeno se multiplica nesse intervalo."
+        ],
+        "correctIndex": 3,
+        "explanation": "Na primeira vez, o corpo ainda precisa montar a resposta do zero, o que é lento. Enquanto isso, o patógeno tem tempo de se multiplicar e causar a doença; ainda não existem células de memória para acelerar o processo.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "cause_effect",
+          "facet": "cause_effect",
+          "concept": "Lentidão da resposta primária",
+          "evidence": "Nesse intervalo, o patógeno tem tempo de se multiplicar, e a pessoa pode ficar doente."
+        }
+      },
+      {
+        "statement": "O que torna a resposta secundária mais rápida e mais forte que a primária?",
+        "options": [
+          "O aumento da temperatura do corpo, que acelera a produção de anticorpos.",
+          "As células de memória, que permanecem após a infecção e reconhecem o antígeno rapidamente.",
+          "A mutação do patógeno, que fica mais fraco no segundo contato.",
+          "Os anticorpos da primeira infecção, que ficam para sempre no sangue em quantidade máxima."
+        ],
+        "correctIndex": 1,
+        "explanation": "Depois da primeira infecção, a maioria das células de defesa desaparece, mas as células de memória ficam. Elas já conhecem o antígeno e disparam a defesa logo no início, o que muitas vezes elimina o invasor antes dos sintomas.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "understanding",
+          "facet": "mechanism",
+          "concept": "Memória imunológica",
+          "evidence": "Se o mesmo patógeno aparecer de novo, as células de memória reconhecem o antígeno rapidamente."
+        }
+      },
+      {
+        "statement": "Como se deve interpretar a dor no braço ou a febre leve que podem aparecer depois da vacina?",
+        "options": [
+          "Como sinal de que a vacina causou a doença que deveria prevenir.",
+          "Como sinal de que a vacina não funcionou.",
+          "Como sinal de que a pessoa já era imune antes da vacina.",
+          "Como sinal de que o sistema imunológico está trabalhando."
+        ],
+        "correctIndex": 3,
+        "explanation": "Essas reações mostram que o corpo está respondendo aos antígenos da vacina, como faria numa infecção, e normalmente passam em poucos dias. A vacina apresenta os antígenos sem causar a doença.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "interpretation",
+          "facet": "implication",
+          "concept": "Reações após a vacina",
+          "evidence": "Isso é sinal de que o sistema imunológico está trabalhando, e normalmente passa em poucos dias."
+        }
+      },
+      {
+        "statement": "Uma vacina leva às células instruções genéticas para que elas produzam, por um tempo, uma proteína de um vírus. O que acontece em seguida?",
+        "options": [
+          "O sistema imunológico reage à proteína como se fosse uma infecção, produzindo anticorpos e células de memória.",
+          "A proteína se multiplica no corpo e provoca uma forma leve da doença.",
+          "As células passam a produzir o vírus completo, que é eliminado aos poucos.",
+          "Nada acontece até que o vírus verdadeiro entre no corpo."
+        ],
+        "correctIndex": 0,
+        "explanation": "A proteína produzida funciona como antígeno: o corpo responde a ela como se fosse uma infecção e, principalmente, forma células de memória. A célula produz só essa proteína, e não o vírus inteiro, por isso não há doença.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "application",
+          "facet": "application",
+          "concept": "Vacinas de RNA mensageiro",
+          "evidence": "O sistema imunológico responde a esses antígenos como se fosse uma infecção: produz anticorpos e, principalmente, forma células de memória."
+        }
+      },
+      {
+        "statement": "Por que a vacinação de grande parte da população também protege um bebê pequeno demais para ser vacinado?",
+        "options": [
+          "Porque os anticorpos das pessoas vacinadas passam para o bebê pelo ar.",
+          "Porque, com poucas pessoas em quem se multiplicar, a cadeia de transmissão do patógeno se interrompe e ele dificilmente chega ao bebê.",
+          "Porque a vacina aplicada nos outros forma células de memória no organismo do bebê.",
+          "Porque o patógeno fica mais fraco cada vez que encontra uma pessoa vacinada."
+        ],
+        "correctIndex": 1,
+        "explanation": "A proteção do bebê vem da imunidade coletiva: como quase todos ao redor estão imunizados, o patógeno não consegue passar de pessoa para pessoa. O bebê não ganha anticorpos nem memória dos outros; ele é protegido porque a transmissão para.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "synthesis",
+          "facet": "cause_effect",
+          "concept": "Imunidade coletiva",
+          "evidence": "Quando uma grande parte da população está imunizada, o patógeno encontra poucas pessoas em quem possa se multiplicar, e a cadeia de transmissão se interrompe."
+        }
+      },
+      {
+        "statement": "Um colega afirma: \"A proporção de vacinados necessária para a imunidade coletiva é a mesma para qualquer doença.\" Como avaliar essa afirmação?",
+        "options": [
+          "Está correta: basta metade da população vacinada, seja qual for a doença.",
+          "Está incorreta: doenças mais contagiosas exigem uma cobertura menor.",
+          "Está incorreta: quanto mais contagiosa a doença, maior precisa ser a cobertura.",
+          "Está correta: a cobertura depende só do número de doses de cada vacina."
+        ],
+        "correctIndex": 2,
+        "explanation": "A proporção necessária varia de doença para doença. Uma doença muito contagiosa se espalha mesmo quando restam poucas pessoas sem proteção, então é preciso vacinar uma parcela maior para interromper a transmissão.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "evaluation",
+          "facet": "relation",
+          "concept": "Cobertura vacinal",
+          "evidence": "A proporção de pessoas vacinadas necessária varia de doença para doença: quanto mais contagiosa ela é, maior precisa ser a cobertura."
+        }
+      }
+    ]
+  },
+  "flashcards": {
+    "name": "Cartões: Como as vacinas ensinam o sistema imunológico",
+    "cards": [
+      {
+        "front": "O que são patógenos?",
+        "back": "Agentes que causam doenças, como vírus e bactérias.",
+        "evidence": "Esses agentes são chamados de patógenos."
+      },
+      {
+        "front": "O que é um antígeno?",
+        "back": "Uma molécula da superfície do patógeno que o sistema imunológico reconhece, como uma assinatura.",
+        "evidence": "Essas moléculas que o sistema imunológico reconhece são os antígenos."
+      },
+      {
+        "front": "Que células produzem anticorpos?",
+        "back": "Os linfócitos B, um tipo de glóbulo branco.",
+        "evidence": "Os linfócitos B, um tipo de glóbulo branco, produzem anticorpos."
+      },
+      {
+        "front": "Como um anticorpo reconhece um antígeno?",
+        "back": "Ele se encaixa em um antígeno específico, como uma chave em uma fechadura.",
+        "evidence": "como uma chave se encaixa em uma fechadura"
+      },
+      {
+        "front": "O que o anticorpo faz ao se ligar ao patógeno?",
+        "back": "Pode impedir que ele entre nas células e o marca para ser destruído por outras células de defesa.",
+        "evidence": "Ao se ligar ao patógeno, o anticorpo pode impedir que ele entre nas células"
+      },
+      {
+        "front": "Qual é o papel dos linfócitos T?",
+        "back": "Ajudam a coordenar a resposta imunológica e eliminam células que já foram infectadas.",
+        "evidence": "os linfócitos T ajudam a coordenar a resposta e eliminam células que já foram infectadas."
+      },
+      {
+        "front": "Quanto tempo a resposta primária leva para atingir a força máxima?",
+        "back": "Uma ou duas semanas.",
+        "evidence": "pode levar uma ou duas semanas para atingir a força máxima"
+      },
+      {
+        "front": "O que são células de memória?",
+        "back": "Células de defesa que permanecem depois da infecção e guardam a informação sobre o antígeno, às vezes por muitos anos.",
+        "evidence": "mas algumas permanecem: são as células de memória."
+      },
+      {
+        "front": "De que formas uma vacina pode apresentar antígenos ao corpo?",
+        "back": "Com o patógeno enfraquecido ou inativado, com só uma parte dele (como uma proteína) ou com instruções genéticas, como nas vacinas de RNA mensageiro.",
+        "evidence": "Isso pode ser feito com o patógeno enfraquecido ou inativado, ou com apenas uma parte dele, como uma proteína."
+      },
+      {
+        "front": "O que é imunidade coletiva (ou de rebanho)?",
+        "back": "A proteção que surge quando grande parte da população está imunizada: a transmissão se interrompe e até quem não pode ser vacinado fica protegido.",
+        "evidence": "Por fim, vamos falar de imunidade coletiva, também chamada de imunidade de rebanho."
+      }
+    ]
+  }
+}

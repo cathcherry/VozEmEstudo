@@ -1,0 +1,118 @@
+{
+  "slug": "internet",
+  "voice": "br4",
+  "rate": 140,
+  "pitch": 45,
+  "notes": "Cada parágrafo é uma lista de segmentos; cada segmento é uma lista de frases. Uma frase é um texto (falado e transcrito igual) ou {\"text\": transcrição, \"say\": texto enviado ao sintetizador}. O campo slide de cada parágrafo indica o slide do vídeo.",
+  "paragraphs": [
+    [
+      [
+        "Olá, turma.",
+        "Vocês já pararam para pensar no que acontece entre o momento em que digitamos um endereço no navegador e o momento em que a página aparece?"
+      ],
+      [
+        "Tudo isso leva menos de um segundo, mas envolve várias etapas.",
+        "Vamos seguir esse caminho passo a passo."
+      ]
+    ],
+    [
+      [
+        "O primeiro passo é descobrir onde o site está.",
+        {
+          "text": "Nós usamos nomes fáceis de lembrar, mas os computadores da rede se localizam por números: os endereços IP.",
+          "say": "Nós usamos nomes fáceis de lembrar, mas os computadores da rede se localizam por números: os endereços i pê."
+        }
+      ],
+      [
+        {
+          "text": "Um endereço IP funciona como o endereço de uma casa: ele identifica um aparelho conectado à rede.",
+          "say": "Um endereço i pê funciona como o endereço de uma casa: ele identifica um aparelho conectado à rede."
+        }
+      ],
+      [
+        "Quem faz a tradução do nome para o número é o DNS, o sistema de nomes de domínio.",
+        "Ele funciona como uma grande lista telefônica distribuída pelo mundo."
+      ],
+      [
+        {
+          "text": "O navegador pergunta a um servidor DNS qual é o IP daquele nome.",
+          "say": "O navegador pergunta a um servidor DNS qual é o i pê daquele nome."
+        },
+        "Se o servidor não souber a resposta, ele consulta outros servidores, numa hierarquia, até encontrá-la."
+      ],
+      [
+        {
+          "text": "Para economizar tempo, essas respostas ficam guardadas por um período, no que chamamos de cache.",
+          "say": "Para economizar tempo, essas respostas ficam guardadas por um período, no que chamamos de quéche."
+        }
+      ]
+    ],
+    [
+      [
+        "Com o endereço em mãos, o navegador abre uma conexão com o servidor do site e faz um pedido."
+      ],
+      [
+        "Esse pedido segue regras combinadas, que chamamos de protocolo.",
+        "O protocolo da web é o HTTP, ou, na versão protegida por criptografia, o HTTPS."
+      ],
+      ["O pedido diz, basicamente: por favor, me envie esta página."],
+      [
+        "O servidor responde enviando a página junto com um código que informa o resultado do pedido.",
+        {
+          "text": "Quando a página não existe, por exemplo, o código é o famoso 404: página não encontrada.",
+          "say": "Quando a página não existe, por exemplo, o código é o famoso quatrocentos e quatro: página não encontrada."
+        }
+      ]
+    ],
+    [
+      [
+        "Agora vem uma parte muito interessante.",
+        "A resposta do servidor não viaja inteira, de uma vez só.",
+        "Ela é dividida em pedaços pequenos, chamados pacotes."
+      ],
+      [
+        "Cada pacote leva um cabeçalho, com o endereço de origem, o endereço de destino e um número de ordem, como uma carta com envelope numerado."
+      ],
+      [
+        "Dividir em pacotes tem uma grande vantagem: se um pedaço se perder no caminho, só ele precisa ser enviado de novo, e não a página inteira."
+      ]
+    ],
+    [
+      ["E quem leva esses pacotes até o destino?", "Os roteadores."],
+      [
+        "Um roteador é um equipamento que recebe um pacote, lê o endereço de destino e decide para qual próximo ponto da rede ele deve seguir."
+      ],
+      [
+        "Cada roteador só conhece o próximo passo, como um carteiro que entrega a carta para a próxima agência.",
+        "Um pacote pode passar por vários roteadores, às vezes mais de dez, até chegar."
+      ],
+      [
+        "Pacotes da mesma página podem até seguir caminhos diferentes, se uma rota estiver congestionada, e chegar fora de ordem."
+      ]
+    ],
+    [
+      [
+        "No destino, o computador usa os números de ordem para colocar os pacotes na sequência certa e confere se algum faltou."
+      ],
+      [
+        "Na maioria das conexões, esse controle é feito pelo protocolo TCP, que pede de novo os pacotes perdidos."
+      ],
+      [
+        "Com tudo montado, o navegador lê o código da página, escrito em HTML, e percebe que precisa de outros arquivos, como imagens e folhas de estilo."
+      ],
+      [
+        "Para cada um deles, o processo de pedido e resposta se repete.",
+        "Só então a página aparece completa na tela."
+      ]
+    ],
+    [
+      [
+        {
+          "text": "Recapitulando: o DNS traduz o nome em endereço IP; o navegador faz um pedido em HTTP; a resposta é dividida em pacotes.",
+          "say": "Recapitulando: o DNS traduz o nome em endereço i pê; o navegador faz um pedido em HTTP; a resposta é dividida em pacotes."
+        }
+      ],
+      ["Os roteadores encaminham cada pacote, e o TCP remonta tudo no destino.", "Até a próxima!"]
+    ]
+  ]
+}

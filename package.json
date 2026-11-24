@@ -24,6 +24,7 @@
     "check": "npm run lint && npm run check:syntax && npm run check:ci && npm run check:secrets && npm test",
     "test:quality": "node --test scripts/tests/*.test.mjs",
     "check:ci": "node scripts/ci-check.mjs",
+    "check:demo-lessons": "node scripts/demo-lessons/validate.mjs",
     "demo": "node scripts/presentation/server.mjs",
     "test:demo": "node --test scripts/tests/presentation.test.mjs",
     "test:auth-css": "node frontend/tests/auth-style-check.mjs && node --test frontend/tests/password-policy.test.mjs frontend/tests/profile-cloud.test.mjs frontend/tests/brand-name.test.mjs",

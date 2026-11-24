@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "title": "Como a internet entrega uma página",
+  "subject": "Tecnologia",
+  "description": "Siga o caminho de uma página da web, passo a passo: DNS, pedido HTTP, pacotes, roteadores e TCP.",
+  "cover": { "tone": "mist", "emblem": "emblem.computacao" },
+  "summary": {
+    "label": "Resumo da aula",
+    "text": "## Visão geral\n\nEntre digitar um endereço no navegador e ver a página, passa-se menos de um segundo, mas o caminho envolve várias etapas.\n\n## 1. Descobrir onde está o site: DNS\n\n- Nós usamos nomes fáceis de lembrar, mas os computadores da rede se localizam por números: os **endereços IP**. Um endereço IP identifica um aparelho conectado à rede, como o endereço de uma casa.\n- O **DNS** (sistema de nomes de domínio) traduz o nome em número. Funciona como uma grande lista telefônica distribuída pelo mundo.\n- Se um servidor DNS não sabe a resposta, consulta outros servidores, numa hierarquia, até encontrá-la.\n- As respostas ficam guardadas por um período, no **cache**, para economizar tempo.\n\n## 2. Fazer o pedido: HTTP\n\n- Com o endereço IP, o navegador abre uma conexão com o servidor do site e faz um pedido.\n- O pedido segue regras combinadas, um **protocolo**. O protocolo da web é o **HTTP**; na versão protegida por criptografia, o **HTTPS**.\n- O servidor responde com a página e com um **código** que informa o resultado. Exemplo: **404**, página não encontrada.\n\n## 3. Dividir a resposta: pacotes\n\n- A resposta não viaja inteira: é dividida em pedaços pequenos, os **pacotes**.\n- Cada pacote leva um **cabeçalho** com endereço de origem, endereço de destino e número de ordem, como uma carta com envelope numerado.\n- Vantagem: se um pacote se perde, só ele precisa ser reenviado, e não a página inteira.\n\n## 4. Encaminhar: roteadores\n\n- Um **roteador** recebe o pacote, lê o endereço de destino e decide para qual próximo ponto da rede ele segue.\n- Cada roteador só conhece o próximo passo, como um carteiro que entrega a carta para a próxima agência. Um pacote pode passar por vários roteadores, às vezes mais de dez.\n- Se uma rota estiver congestionada, pacotes da mesma página podem seguir caminhos diferentes e chegar fora de ordem.\n\n## 5. Remontar e exibir: TCP e HTML\n\n- No destino, os números de ordem permitem pôr os pacotes na sequência certa e conferir se algum faltou. Na maioria das conexões, esse controle é feito pelo **TCP**, que pede de novo os pacotes perdidos.\n- O navegador lê o código da página, escrito em **HTML**, e pede os outros arquivos de que ela precisa, como imagens e folhas de estilo. Para cada um, o pedido e a resposta se repetem.\n- Só então a página aparece completa na tela.\n\n## Recapitulando\n\n1. O DNS traduz o nome em endereço IP.\n2. O navegador faz um pedido em HTTP.\n3. A resposta é dividida em pacotes.\n4. Os roteadores encaminham cada pacote.\n5. O TCP remonta tudo no destino."
+  },
+  "questions": {
+    "title": "Questões da aula",
+    "items": [
+      {
+        "statement": "Qual é a função do DNS?",
+        "options": [
+          "Dividir a resposta do servidor em pacotes.",
+          "Traduzir o nome de um site no endereço IP correspondente.",
+          "Escolher o próximo ponto da rede para cada pacote.",
+          "Reordenar os pacotes e pedir de novo os que se perderam."
+        ],
+        "correctIndex": 1,
+        "explanation": "O DNS, sistema de nomes de domínio, transforma o nome fácil de lembrar no número que os computadores usam para se localizar. Escolher o próximo ponto da rede é tarefa dos roteadores, e reordenar pacotes é tarefa do TCP.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "DNS",
+          "evidence": "Quem faz a tradução do nome para o número é o DNS, o sistema de nomes de domínio."
+        }
+      },
+      {
+        "statement": "Como se chama o protocolo da web, isto é, o conjunto de regras que o pedido do navegador ao servidor segue?",
+        "options": [
+          "DNS, o sistema de nomes de domínio.",
+          "IP, o endereço do aparelho.",
+          "HTML, o código da página.",
+          "HTTP, ou HTTPS na versão com criptografia."
+        ],
+        "correctIndex": 3,
+        "explanation": "O pedido da página segue o HTTP; quando a comunicação é protegida por criptografia, usa-se o HTTPS. HTML é a linguagem em que a página está escrita, não as regras do pedido.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "recall",
+          "facet": "definition",
+          "concept": "Protocolo HTTP",
+          "evidence": "O protocolo da web é o HTTP, ou, na versão protegida por criptografia, o HTTPS."
+        }
+      },
+      {
+        "statement": "Para que servem as respostas de DNS guardadas em cache?",
+        "options": [
+          "Para economizar tempo, evitando repetir a mesma consulta durante um período.",
+          "Para dividir a página em pacotes menores.",
+          "Para criptografar o pedido enviado ao servidor.",
+          "Para guardar as imagens da página dentro do roteador."
+        ],
+        "correctIndex": 0,
+        "explanation": "Descobrir um endereço pode exigir consultar vários servidores numa hierarquia. Guardando a resposta por um tempo, o próximo acesso ao mesmo nome não precisa repetir todo esse caminho.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "understanding",
+          "facet": "mechanism",
+          "concept": "Cache de DNS",
+          "evidence": "Para economizar tempo, essas respostas ficam guardadas por um período, no que chamamos de cache."
+        }
+      },
+      {
+        "statement": "Ao abrir um link, o navegador mostra o código 404. O que isso indica?",
+        "options": [
+          "Que o nome do site não tem endereço IP.",
+          "Que um pacote se perdeu e foi reenviado.",
+          "Que a página pedida não foi encontrada.",
+          "Que a conexão está protegida por criptografia."
+        ],
+        "correctIndex": 2,
+        "explanation": "O servidor sempre responde com um código que informa o resultado do pedido, e 404 significa página não encontrada. Ou seja, o servidor foi alcançado, mas a página pedida não existe nele.",
+        "metadata": {
+          "difficulty": "basic",
+          "skill": "interpretation",
+          "facet": "implication",
+          "concept": "Códigos de resposta",
+          "evidence": "Quando a página não existe, por exemplo, o código é o famoso 404: página não encontrada."
+        }
+      },
+      {
+        "statement": "Qual é a principal vantagem de dividir a resposta do servidor em pacotes?",
+        "options": [
+          "Os pacotes dispensam os endereços de origem e de destino.",
+          "A página passa a ser entregue sem precisar de roteadores.",
+          "Se um pedaço se perder, só ele precisa ser reenviado, e não a página inteira.",
+          "Os pacotes sempre seguem o mesmo caminho e chegam em ordem."
+        ],
+        "correctIndex": 2,
+        "explanation": "Com a resposta em pedaços, uma perda no caminho custa pouco: basta reenviar o pacote que faltou. Os pacotes continuam precisando de endereços e de roteadores, e podem até chegar fora de ordem.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "cause_effect",
+          "facet": "cause_effect",
+          "concept": "Vantagem dos pacotes",
+          "evidence": "Dividir em pacotes tem uma grande vantagem: se um pedaço se perder no caminho, só ele precisa ser enviado de novo, e não a página inteira."
+        }
+      },
+      {
+        "statement": "Enquanto uma página é enviada, uma das rotas da rede fica congestionada. O que pode acontecer com os pacotes dessa página?",
+        "options": [
+          "Todos voltam ao servidor e o envio recomeça do zero.",
+          "São juntados em um único pacote grande para passar mais rápido.",
+          "Ficam parados até que a rota original fique livre.",
+          "Podem seguir caminhos diferentes e chegar fora de ordem, sendo reordenados no destino."
+        ],
+        "correctIndex": 3,
+        "explanation": "Cada roteador decide o próximo passo de cada pacote, então pacotes da mesma página podem desviar da rota congestionada por caminhos diferentes. No destino, os números de ordem permitem colocá-los de volta na sequência certa.",
+        "metadata": {
+          "difficulty": "intermediate",
+          "skill": "application",
+          "facet": "application",
+          "concept": "Roteamento de pacotes",
+          "evidence": "Pacotes da mesma página podem até seguir caminhos diferentes, se uma rota estiver congestionada, e chegar fora de ordem."
+        }
+      },
+      {
+        "statement": "Qual comparação entre roteadores e TCP está correta?",
+        "options": [
+          "Roteadores encaminham cada pacote rumo ao destino; o TCP, no destino, remonta os pacotes e pede de novo os perdidos.",
+          "Roteadores reordenam os pacotes no destino; o TCP escolhe o caminho de cada pacote.",
+          "Roteadores traduzem nomes em endereços IP; o TCP divide a página em pacotes.",
+          "Roteadores conhecem o caminho completo até o destino; o TCP guarda as respostas em cache."
+        ],
+        "correctIndex": 0,
+        "explanation": "Os roteadores trabalham no caminho, olhando o destino e passando cada pacote ao próximo ponto, sem conhecer a rota inteira. O TCP trabalha nas pontas: confere a ordem, detecta o que faltou e pede o reenvio.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "analysis",
+          "facet": "relation",
+          "concept": "Roteadores e TCP",
+          "evidence": "Os roteadores encaminham cada pacote, e o TCP remonta tudo no destino."
+        }
+      },
+      {
+        "statement": "Qual sequência descreve corretamente o caminho de uma página, do endereço digitado até a tela?",
+        "options": [
+          "O navegador faz o pedido em HTTP → o DNS divide a resposta em pacotes → o TCP encaminha os pacotes → os roteadores remontam a página.",
+          "O DNS encontra o IP → o navegador faz o pedido em HTTP → a resposta é dividida em pacotes → os roteadores encaminham → o TCP remonta.",
+          "Os roteadores encontram o IP → o DNS encaminha os pacotes → o navegador remonta a página → o HTTP a exibe.",
+          "O TCP traduz o nome → os roteadores fazem o pedido → o servidor envia a página inteira de uma vez → o DNS a exibe."
+        ],
+        "correctIndex": 1,
+        "explanation": "Primeiro é preciso saber onde está o site (DNS); depois vem o pedido (HTTP); a resposta viaja em pacotes, levados pelos roteadores; e, no destino, o TCP põe tudo em ordem. As outras sequências trocam os papéis de cada parte.",
+        "metadata": {
+          "difficulty": "advanced",
+          "skill": "synthesis",
+          "facet": "mechanism",
+          "concept": "Etapas da entrega de uma página",
+          "evidence": "Recapitulando: o DNS traduz o nome em endereço IP; o navegador faz um pedido em HTTP; a resposta é dividida em pacotes."
+        }
+      }
+    ]
+  },
+  "flashcards": {
+    "name": "Cartões: Como a internet entrega uma página",
+    "cards": [
+      {
+        "front": "O que é um endereço IP?",
+        "back": "Um número que identifica um aparelho conectado à rede, como o endereço de uma casa.",
+        "evidence": "Um endereço IP funciona como o endereço de uma casa: ele identifica um aparelho conectado à rede."
+      },
+      {
+        "front": "O que significa DNS e para que serve?",
+        "back": "Sistema de nomes de domínio: traduz o nome do site no endereço IP.",
+        "evidence": "Quem faz a tradução do nome para o número é o DNS, o sistema de nomes de domínio."
+      },
+      {
+        "front": "O que um servidor DNS faz quando não sabe a resposta?",
+        "back": "Consulta outros servidores, numa hierarquia, até encontrá-la.",
+        "evidence": "ele consulta outros servidores, numa hierarquia, até encontrá-la."
+      },
+      {
+        "front": "O que é o cache, no contexto do DNS?",
+        "back": "O lugar onde as respostas ficam guardadas por um período, para economizar tempo.",
+        "evidence": "essas respostas ficam guardadas por um período, no que chamamos de cache."
+      },
+      {
+        "front": "Qual a diferença entre HTTP e HTTPS?",
+        "back": "Os dois são o protocolo da web; o HTTPS é a versão protegida por criptografia.",
+        "evidence": "na versão protegida por criptografia, o HTTPS."
+      },
+      {
+        "front": "O que são pacotes?",
+        "back": "Os pedaços pequenos em que a resposta do servidor é dividida para viajar pela rede.",
+        "evidence": "Ela é dividida em pedaços pequenos, chamados pacotes."
+      },
+      {
+        "front": "O que vai no cabeçalho de cada pacote?",
+        "back": "Endereço de origem, endereço de destino e um número de ordem.",
+        "evidence": "Cada pacote leva um cabeçalho, com o endereço de origem, o endereço de destino e um número de ordem"
+      },
+      {
+        "front": "O que faz um roteador?",
+        "back": "Recebe um pacote, lê o endereço de destino e decide para qual próximo ponto da rede ele segue.",
+        "evidence": "Um roteador é um equipamento que recebe um pacote, lê o endereço de destino e decide para qual próximo ponto da rede ele deve seguir."
+      },
+      {
+        "front": "Qual é o papel do TCP?",
+        "back": "No destino, controla a ordem dos pacotes, confere se algum faltou e pede de novo os perdidos.",
+        "evidence": "esse controle é feito pelo protocolo TCP, que pede de novo os pacotes perdidos."
+      },
+      {
+        "front": "Por que o navegador faz novos pedidos depois de ler o HTML?",
+        "back": "Porque a página precisa de outros arquivos, como imagens e folhas de estilo; para cada um, o pedido e a resposta se repetem.",
+        "evidence": "percebe que precisa de outros arquivos, como imagens e folhas de estilo."
+      }
+    ]
+  }
+}
