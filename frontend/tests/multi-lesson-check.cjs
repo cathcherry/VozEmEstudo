@@ -214,7 +214,7 @@ async function main() {
     await unitsDialog.getByRole('button', { name: 'Gerar material integrado' }).click();
     await unitsDialog.locator('[role="alert"]', { hasText: 'As aulas da seleção mudaram desde a prévia' }).waitFor();
     await unitsDialog.locator('.multi-lesson-status', { hasText: '2 aulas prontas para estudar juntas.' }).waitFor();
-    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Membrana plasmática — transcrição ainda não confirmada/);
+    assert.match(await unitsDialog.locator('.multi-lesson-excluded').textContent(), /Membrana plasmática: transcrição ainda não confirmada/);
     await unitsDialog.getByRole('button', { name: 'Gerar material integrado' }).click();
     await page.waitForURL(/integrado\.html\?id=/);
     const unitsRequest = data.multiLessonRequests.at(-1);
