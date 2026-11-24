@@ -1,3 +1,4 @@
+/* global document, window, getComputedStyle */
 // Capturas do Apêndice C do TCC: o front end REAL desta versão rodando com a API SIMULADA
 // (./mock-app.cjs) e o conteúdo das aulas de demonstração (database/demo-lessons). Nada aqui
 // acessa backend real, provedor de IA ou projeto Supabase; a única peça do backend usada é a
