@@ -105,6 +105,10 @@ async function transcribeWithProvider(job, material, audio) {
   }
   if (!execution) throw schemaRequired();
   const firstStep = ['pending', 'uploaded'].includes(execution.state);
+  if (firstStep && !(await testing.transcriptionSlotAvailable())) {
+    await releaseForPolling(job, 60_000, 'Muitas transcrições em andamento no programa de testes. A sua começa em instantes.');
+    return 'waiting';
+  }
   if (firstStep)
     await stage(job, PROCESSING_STAGE.TRANSCRIPTION, 'Enviando o áudio para transcrição.');
   const { asr } = getAiRegistry().config;

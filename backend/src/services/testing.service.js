@@ -195,6 +195,28 @@ export async function assertTranscriptionAvailable(userId, declaredDurationMs) {
     throw quotaError(USAGE_KIND.TRANSCRIPTION, { reason: 'user_quota', limit, used, remaining });
 }
 
+/**
+ * Global cap on transcriptions running at the provider at once (global_limits.concurrent_transcriptions).
+ * Returns false when the cap is reached: the caller waits (without spending attempts) and tries again.
+ * Soft with several workers (check, then submit); exact with the recommended single worker.
+ */
+export async function transcriptionSlotAvailable() {
+  if (!publicTestingEnabled()) return true;
+  const client = getAdminSupabase();
+  const { data: config, error } = await client.from('public_testing_config').select('enabled,global_limits').eq('id', 1).maybeSingle();
+  if (error) throw error;
+  const cap = Number(config?.global_limits?.concurrent_transcriptions);
+  // No number: no cap. 0 pauses new transcriptions (they wait in the queue).
+  if (!config?.enabled || config.global_limits?.concurrent_transcriptions == null || !Number.isFinite(cap)) return true;
+  const { count, error: countError } = await client
+    .from('ai_job_executions')
+    .select('id', { count: 'exact', head: true })
+    .eq('task', 'transcription')
+    .in('state', ['submitting', 'processing']);
+  if (countError) throw countError;
+  return Number(count || 0) < cap;
+}
+
 /** Testers: smaller requests (a 5-minute lesson supports ~12 questions; the free LLM tier rejects big calls). */
 export const TESTER_MAX = Object.freeze({ questions: 10, flashcards: 20 });
 export async function assertTesterRequestSize(userId, what, count) {
