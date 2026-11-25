@@ -256,9 +256,9 @@ async function main() {
       ['is-done', 'is-done', 'is-current', 'is-todo'],
     );
     assert.equal(await page.locator('.lesson-next button').textContent(), 'Criar questões');
-    // The timer is not a block in the lesson: it runs on Focar (a top-bar indicator shows it).
+    // The timer is not a block in the lesson: it is the focus drawer in the top bar.
     assert.equal(await page.locator('.lesson-tools').count(), 0);
-    assert.equal(await page.locator('[data-focus-indicator]').count(), 1);
+    assert.equal(await page.locator('[data-utility-trigger]').count(), 1);
     await settle(page);
     await axeCheck(page, 'main', 'Aula › etapas');
     await shot(page, 'aula-etapas-1440');

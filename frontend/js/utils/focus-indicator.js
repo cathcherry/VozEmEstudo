@@ -82,7 +82,9 @@ export async function initFocusIndicator({ materialId = null } = {}) {
   mode.setAttribute('aria-hidden', 'true');
   indicator.append(dot, time, mode);
   const nav = document.querySelector('.header-navigation');
-  if (nav && !onFocusPage) nav.prepend(indicator);
+  // The focus drawer's button already shows the time: no second control in the top bar.
+  const drawer = document.querySelector('[data-utility-trigger]');
+  if (nav && !onFocusPage && !drawer) nav.prepend(indicator);
 
   // ---- Início: "Iniciar foco" in the week card opens Focar (no second timer here) ----------
   const weekHead = document.querySelector('[data-week-widget] .dash-card-head');

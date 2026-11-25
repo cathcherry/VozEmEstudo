@@ -1,6 +1,7 @@
-// Focar with a simulated API: one focus session for the account across pages, reloads and tabs;
-// since 3.6 it is run only on the Focar page (other pages show a top-bar indicator that links to
-// it; Início and Planejar link "Iniciar foco" to Focar); one server session, never duplicated.
+// Focar with a simulated API: one focus session for the account across pages, reloads and tabs.
+// Focar is the full page; every other page has the focus drawer (a top-bar button that shows the
+// time, a side panel or bottom sheet, and a floating capsule) controlling the same session; one
+// server session, never duplicated.
 // History and analysis ("Seu ritmo", recent blocks) live in Planejar › Tempo de estudo.
 const path = require('node:path');
 const fs = require('node:fs');
@@ -50,15 +51,15 @@ async function main() {
     const onFocar = seconds(await page.locator('.focus-time').textContent());
     assert(onFocar < 25 * 60, 'counting down');
     await page.goto(base + '/historico.html');
-    const indicator = page.locator('[data-focus-indicator]:not([hidden])');
+    const indicator = page.locator('[data-utility-trigger].is-active');
     await indicator.waitFor();
-    const onLibrary = seconds(await indicator.locator('.focus-indicator-time').textContent());
+    const onLibrary = seconds(await indicator.locator('.utility-trigger-time').textContent());
     assert(onLibrary <= onFocar, `continues after navigation (${onFocar} → ${onLibrary})`);
     await page.reload();
     await indicator.waitFor();
     await page.waitForTimeout(1200);
     assert(
-      seconds(await indicator.locator('.focus-indicator-time').textContent()) < onLibrary,
+      seconds(await indicator.locator('.utility-trigger-time').textContent()) < onLibrary,
       'and after a reload',
     );
     assert.equal(data.sessions, 1, 'one server session across pages');
@@ -67,23 +68,37 @@ async function main() {
       'Focar: uma sessão continua entre Focar, Biblioteca e recarga; uma só sessão no servidor',
     );
 
-    // ---------- One engine, one place to run it (3.6) -----------------------------------------
-    // Outside Focar there are no timer controls: only the indicator, a link to Focar.
-    assert.equal(await indicator.evaluate((node) => node.tagName), 'A');
-    assert.equal(await indicator.getAttribute('href'), './focar.html');
-    assert.match(await indicator.getAttribute('aria-label'), /^Foco em andamento: \d\d:\d\d restantes\. Abrir Focar$/);
+    // ---------- One engine; the drawer controls it on every page but Focar ------------------
+    assert.equal(await page.locator('[data-focus-indicator]').count(), 0, 'no second top-bar control');
+    assert.match(await indicator.getAttribute('aria-label'), /^Cronômetro de foco: Foco em andamento, \d\d:\d\d$/);
     for (const url of ['/historico.html', '/material.html?id=l-foto', '/planejar.html#tempo', '/flashcards.html#revisar']) {
       await page.goto(base + url);
       await indicator.waitFor();
-      assert.equal(await page.locator('.focus-primary, [data-focus-primary], .focus-time, #utility-panel, [data-focus-capsule], [data-utility-trigger]').count(), 0, `no timer on ${url}`);
     }
-    await settle(page);
-    await axeCheck(page, '.site-header', 'Indicador do foco');
+    // Open the panel, pause there: the same session pauses (Focar shows "Retomar").
     await indicator.click();
-    await page.waitForURL('**/focar.html');
-    assert.equal(await page.locator('[data-focus-indicator]').count(), 0, 'Focar is the timer itself');
+    const panel = page.locator('[data-utility-shell]');
+    await panel.waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement?.id), 'utility-panel-title', 'focus moves into the panel');
+    await settle(page);
+    await axeCheck(page, '[data-utility-shell]', 'Painel de foco');
+    await shot(page, 'painel-foco', false);
+    await panel.locator('[data-focus-primary]', { hasText: 'Pausar' }).click();
+    await panel.locator('[data-focus-primary]', { hasText: 'Retomar' }).waitFor();
+    // Esc closes the panel; a paused block keeps the capsule on screen.
+    await page.keyboard.press('Escape');
+    await panel.waitFor({ state: 'hidden' });
+    const capsule = page.locator('[data-focus-capsule]');
+    await capsule.waitFor();
+    await settle(page);
+    await axeCheck(page, '[data-focus-capsule]', 'Cápsula do foco');
+    await capsule.locator('.focus-capsule-toggle').click();
+    await page.locator('[data-utility-trigger][data-state="running"]').waitFor();
+    assert.equal(data.sessions, 2, 'resuming from the capsule opens a new server session, never a duplicate');
+    await page.goto(base + '/focar.html');
+    assert.equal(await page.locator('[data-utility-trigger], [data-utility-shell], [data-focus-capsule]').count(), 0, 'Focar is the timer itself');
     await page.locator('.focus-primary', { hasText: 'Pausar' }).waitFor();
-    record('Um só motor de foco: controles só em Focar; nas outras páginas, um indicador discreto no topo que abre Focar');
+    record('Painel de foco em todas as páginas menos Focar: botão no topo com o tempo, painel que abre e fecha (Esc), cápsula; controla a mesma sessão de Focar');
 
     // ---------- Two tabs share the session: pausing in one shows in the other -------------
     const second = await context.newPage();
@@ -93,9 +108,9 @@ async function main() {
     await second.locator('.focus-primary', { hasText: 'Retomar' }).waitFor();
     await page.bringToFront();
     await page.goto(base + '/historico.html');
-    await page.locator('[data-focus-indicator][data-state="paused"]').waitFor();
-    assert.match(await page.locator('[data-focus-indicator]').getAttribute('aria-label'), /^Foco pausado/);
-    assert.equal(data.sessions, 1, 'no duplicate session from the second tab');
+    await page.locator('[data-utility-trigger][data-state="paused"]').waitFor();
+    assert.match(await page.locator('[data-utility-trigger]').getAttribute('aria-label'), /Foco pausado/);
+    assert.equal(data.sessions, 2, 'no duplicate session from the second tab');
     assert(
       data.ticks.some((tick) => tick.close),
       'pausing closes the server session',
@@ -107,7 +122,7 @@ async function main() {
     await page.goto(base + '/focar.html');
     await page.locator('.focus-primary', { hasText: 'Retomar' }).click();
     await page.locator('.focus-primary', { hasText: 'Pausar' }).waitFor();
-    assert.equal(data.sessions, 2, 'resuming opens a new server session');
+    assert.equal(data.sessions, 3, 'resuming opens a new server session');
     await page.locator('.focus-stop').click();
     await page.locator('.focus-primary', { hasText: 'Iniciar foco' }).waitFor();
     await page.goto(base + '/material.html?id=l-foto');
