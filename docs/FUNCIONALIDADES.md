@@ -404,9 +404,7 @@ Página: `conta.html`.
 
 **Como foi validado**: auditorias automáticas com axe-core (WCAG A/AA) nas páginas e diálogos
 principais, percursos por teclado nos testes de navegador e testes de DOM. **Não houve teste com
-leitores de tela reais (NVDA, VoiceOver, TalkBack)** nesta auditoria; o registro anterior está em
-[accessibility-integrated-test.md](accessibility-integrated-test.md). Pendências em
-[ROADMAP.md](ROADMAP.md#4-validação-incompleta).
+leitores de tela reais (NVDA, VoiceOver, TalkBack)** nesta auditoria.
 
 ## 13. Compartilhamento público
 
@@ -467,12 +465,12 @@ Regras da sincronização (`profile_state`):
 
 ## Disponibilidade por recurso
 
-Situação do banco de produção `audioestudo` conferida em 20/11/2026. "Banco pronto" quer dizer
-apenas que **as tabelas existem**: o recurso ainda precisa da flag no `backend/.env` e de um teste
-manual. "Falta migration": com a flag ligada, o `INICIAR.cmd` recusa iniciar e lista o que falta (e,
-se o servidor for iniciado de outro jeito, só as rotas daquele recurso respondem `503`). Matriz
-completa (código, banco, dependências, validação e limitações) e roteiro de ativação em
-[ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md).
+> **Situação em 25/11/2026.** No site publicado (https://vozemestudo-production.up.railway.app)
+> todas as migrations estão aplicadas e todos os recursos desta tabela estão ligados, exceto
+> **Descobertas** e **Diário** (`FEATURE_DISCOVERIES` e `FEATURE_JOURNAL` desligadas). A coluna "Banco de produção" abaixo registra a situação de 20/11/2026.
+
+Com uma flag ligada sem a migration correspondente, o `INICIAR.cmd` recusa iniciar e lista o que
+falta (e, se o servidor for iniciado de outro jeito, só as rotas daquele recurso respondem `503`).
 
 | Recurso                                                     | Flag                           | Migration necessária                                   | Banco de produção |
 | ----------------------------------------------------------- | ------------------------------ | ------------------------------------------------------ | ----------------- |

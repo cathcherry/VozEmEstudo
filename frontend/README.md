@@ -4,20 +4,20 @@ Frontend estático servido pelo backend deste pacote. HTML, CSS e JavaScript nã
 
 ## Páginas
 
-| Rota | Conteúdo |
-| --- | --- |
-| `/index.html` | Landing pública |
-| `/login.html`, `/cadastro.html` | E-mail/senha, Google e GitHub |
-| `/auth-callback.html` | Conclusão do login PKCE |
-| `/painel.html` | Continuidade, últimos acessos, disciplinas e tópicos |
-| `/nova-transcricao.html` | Mídia, recorte, identificação e envio |
-| `/historico.html` | Biblioteca, tags, agrupamento, busca e edição |
-| `/material.html?id=…` | Player, transcrição, resumo e questões |
-| `/responder.html?material=…&batch=…` | Responder questões |
-| `/aparencia.html` | Temas, cores, fonte e perfis nomeados |
-| `/leitura.html` | Preferências de leitura e foco |
-| `/conta.html` | Perfil detalhado, oito avatares, histórico e sessão |
-| `/ajuda.html` | Orientações |
+| Rota                                 | Conteúdo                                             |
+| ------------------------------------ | ---------------------------------------------------- |
+| `/index.html`                        | Landing pública                                      |
+| `/login.html`, `/cadastro.html`      | E-mail/senha, Google e GitHub                        |
+| `/auth-callback.html`                | Conclusão do login PKCE                              |
+| `/painel.html`                       | Continuidade, últimos acessos, disciplinas e tópicos |
+| `/nova-transcricao.html`             | Mídia, recorte, identificação e envio                |
+| `/historico.html`                    | Biblioteca, tags, agrupamento, busca e edição        |
+| `/material.html?id=…`                | Player, transcrição, resumo e questões               |
+| `/responder.html?material=…&batch=…` | Responder questões                                   |
+| `/aparencia.html`                    | Temas, cores, fonte e perfis nomeados                |
+| `/leitura.html`                      | Preferências de leitura e foco                       |
+| `/conta.html`                        | Perfil detalhado, oito avatares, histórico e sessão  |
+| `/ajuda.html`                        | Orientações                                          |
 
 O menu principal contém Painel, Nova transcrição e Biblioteca. Preferências e ajuda ficam nas utilidades. A marca, fontes e mascotes vêm de `/assets`, publicado pelo backend atualizado.
 
@@ -60,7 +60,7 @@ npx playwright install chromium
 npm test
 ```
 
-Para usar executáveis já instalados, defina `BROWSER_EXECUTABLE`, `FFMPEG_PATH` e `FFPROBE_PATH`. O teste inicia seu próprio servidor local e não precisa de credenciais. Escopo e resultados em [VERIFICACAO.md](VERIFICACAO.md).
+Para usar executáveis já instalados, defina `BROWSER_EXECUTABLE`, `FFMPEG_PATH` e `FFPROBE_PATH`. O teste inicia seu próprio servidor local e não precisa de credenciais.
 
 Configuração real dos provedores: [../docs/CONFIGURAR_LOGIN_SOCIAL.md](../docs/CONFIGURAR_LOGIN_SOCIAL.md). Créditos: [../docs/CREDITOS_INTERFACE.md](../docs/CREDITOS_INTERFACE.md).
 

@@ -18,14 +18,14 @@ o `INICIAR.cmd` de novo.
 
 ## Supabase (obrigatórias)
 
-| Variável                   | Padrão          | Uso                                                                                            |
-| -------------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
-| `SUPABASE_URL`             | —               | URL do projeto                                                                                 |
-| `SUPABASE_PUBLISHABLE_KEY` | —               | Chave publicável: vai para o navegador e valida tokens                                         |
-| `SUPABASE_SECRET_KEY`      | —               | **Secreta**, só no servidor; nunca publicar                                                    |
-| `SUPABASE_AUDIO_BUCKET`    | `audios`        | Bucket dos áudios enviados                                                                     |
+| Variável                   | Padrão          | Uso                                                                                                                                                               |
+| -------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`             | —               | URL do projeto                                                                                                                                                    |
+| `SUPABASE_PUBLISHABLE_KEY` | —               | Chave publicável: vai para o navegador e valida tokens                                                                                                            |
+| `SUPABASE_SECRET_KEY`      | —               | **Secreta**, só no servidor; nunca publicar                                                                                                                       |
+| `SUPABASE_AUDIO_BUCKET`    | `audios`        | Bucket dos áudios enviados                                                                                                                                        |
 | `SUPABASE_AUTH_VERIFY`     | `server`        | Como o token do usuário é conferido: `server` (pergunta ao Supabase Auth a cada pedido) ou `jwks` (confere a assinatura pela JWKS pública do projeto; ver abaixo) |
-| `OAUTH_PROVIDERS`          | `google,github` | Botões de login social exibidos (ver [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md)) |
+| `OAUTH_PROVIDERS`          | `google,github` | Botões de login social exibidos (ver [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md))                                                                    |
 
 Se uma chave secreta for colocada por engano em `SUPABASE_PUBLISHABLE_KEY`, o servidor se recusa a entregá-la ao navegador.
 
@@ -78,24 +78,24 @@ na fila.
 Cada flag é `FEATURE_<NOME>=true` (qualquer outro valor = desligada; padrão desligada). O frontend
 recebe o estado pelas `featureFlags` de `/api/config`.
 
-| Flag                      | Liga                                                              | Precisa no banco                              | Pode ligar em produção hoje? |
-| ------------------------- | ----------------------------------------------------------------- | --------------------------------------------- | ---------------------------- |
-| `FEATURE_CATALOG_UNITS`   | Pastas de disciplinas/unidades, Editar/Remover disciplina         | E03                                           | Sim                          |
-| `FEATURE_MP4_RETENTION`   | Guardar o MP4 original e assistir com legendas                    | E07 (tabela + políticas de vídeo)             | Sim                          |
-| `FEATURE_STUDY_AUTHORING` | Listas e resumos nomeados, quantidade personalizada, renomear     | `study_authoring`                             | Sim                          |
-| `FEATURE_SHARING`         | Compartilhar listas (com `study_authoring`) e cópias de materiais | listas: `study_authoring`; materiais: E18/E19 | Só listas                    |
-| `FEATURE_PLANNING`        | Meu planejamento                                                  | E05                                           | Não                          |
-| `FEATURE_QUIZ_V2`         | Tentativas de questões                                            | E10                                           | Não                          |
-| `FEATURE_QUIZ_REVIEW`     | Diagnóstico e refazer erradas                                     | E12                                           | Não                          |
-| `FEATURE_FLASHCARDS`      | Flashcards e revisão espaçada                                     | E13                                           | Não                          |
-| `FEATURE_FLASHCARD_SETS`  | Conjuntos, "Criar flashcards" no resumo, CSV                      | E13 + `flashcard_sets`                        | Não                          |
-| `FEATURE_STUDY_TRACKING`  | Tempo e progresso de estudo sincronizados                         | E08/E09                                       | Não                          |
-| `FEATURE_ANNOTATIONS`     | Destaques e anotações                                             | E14/E15                                       | Não                          |
-| `FEATURE_NOTEBOOKS`       | Caderno da aula; destaques em vários trechos (exige ANNOTATIONS)  | E14 + `20261121130000_notes_3_0.sql`          | Não                          |
-| `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                      | E18/E19                                       | Não                          |
-| `FEATURE_CLASSROOMS`      | Turmas privadas (página Turmas, `/api/classrooms`)                | `flashcard_sets` + `classrooms`; exige `FEATURE_FLASHCARD_SETS` | Não                          |
-| `FEATURE_MULTI_LESSON`    | Material integrado de várias aulas, de uma unidade ou disciplina (exige CATALOG_UNITS) | `generation_reuse` + `20261121170000_multi_lesson.sql` (cache opcional `20261121171000_knowledge_map_cache.sql`) | Não |
-| `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                               | —                                             | —                            |
+| Flag                      | Liga                                                                                   | Precisa no banco                                                                                                 | Pode ligar em produção hoje? |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `FEATURE_CATALOG_UNITS`   | Pastas de disciplinas/unidades, Editar/Remover disciplina                              | E03                                                                                                              | Sim                          |
+| `FEATURE_MP4_RETENTION`   | Guardar o MP4 original e assistir com legendas                                         | E07 (tabela + políticas de vídeo)                                                                                | Sim                          |
+| `FEATURE_STUDY_AUTHORING` | Listas e resumos nomeados, quantidade personalizada, renomear                          | `study_authoring`                                                                                                | Sim                          |
+| `FEATURE_SHARING`         | Compartilhar listas (com `study_authoring`) e cópias de materiais                      | listas: `study_authoring`; materiais: E18/E19                                                                    | Só listas                    |
+| `FEATURE_PLANNING`        | Meu planejamento                                                                       | E05                                                                                                              | Não                          |
+| `FEATURE_QUIZ_V2`         | Tentativas de questões                                                                 | E10                                                                                                              | Não                          |
+| `FEATURE_QUIZ_REVIEW`     | Diagnóstico e refazer erradas                                                          | E12                                                                                                              | Não                          |
+| `FEATURE_FLASHCARDS`      | Flashcards e revisão espaçada                                                          | E13                                                                                                              | Não                          |
+| `FEATURE_FLASHCARD_SETS`  | Conjuntos, "Criar flashcards" no resumo, CSV                                           | E13 + `flashcard_sets`                                                                                           | Não                          |
+| `FEATURE_STUDY_TRACKING`  | Tempo e progresso de estudo sincronizados                                              | E08/E09                                                                                                          | Não                          |
+| `FEATURE_ANNOTATIONS`     | Destaques e anotações                                                                  | E14/E15                                                                                                          | Não                          |
+| `FEATURE_NOTEBOOKS`       | Caderno da aula; destaques em vários trechos (exige ANNOTATIONS)                       | E14 + `20261121130000_notes_3_0.sql`                                                                             | Não                          |
+| `FEATURE_CALENDAR`        | Calendário de estudos e .ics                                                           | E18/E19                                                                                                          | Não                          |
+| `FEATURE_CLASSROOMS`      | Turmas privadas (página Turmas, `/api/classrooms`)                                     | `flashcard_sets` + `classrooms`; exige `FEATURE_FLASHCARD_SETS`                                                  | Não                          |
+| `FEATURE_MULTI_LESSON`    | Material integrado de várias aulas, de uma unidade ou disciplina (exige CATALOG_UNITS) | `generation_reuse` + `20261121170000_multi_lesson.sql` (cache opcional `20261121171000_knowledge_map_cache.sql`) | Não                          |
+| `FEATURE_SOCIAL_BASIC`    | (sem uso no código)                                                                    | —                                                                                                                | —                            |
 
 Ao iniciar pelo `INICIAR.cmd`, uma flag ligada sem a migration (ou combinação inválida) **bloqueia a
 inicialização** com a lista do que falta. Se o servidor for iniciado de outro jeito, ligar uma flag sem a migration não quebra o restante do app: as rotas daquele recurso respondem
@@ -110,7 +110,7 @@ inicialização** com a lista do que falta. Se o servidor for iniciado de outro 
   redirecionamento permitidas.
 - **Login social**: [CONFIGURAR_LOGIN_SOCIAL.md](CONFIGURAR_LOGIN_SOCIAL.md).
 
-Matriz completa de cada flag e roteiro de ativação: [ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md).
+Flags ligadas no site publicado e variáveis de cada serviço: [HOSPEDAGEM.md](HOSPEDAGEM.md).
 
 ## Personalização e idioma
 

@@ -1,7 +1,9 @@
-# Hospedagem pública (preparação)
+# Hospedagem pública
 
-Guia para publicar o Voz em Estudo como protótipo. **Nada foi publicado**: este documento e os
-arquivos em `deploy/` preparam a publicação, que depende das etapas manuais no fim.
+O Voz em Estudo está publicado em **https://vozemestudo-production.up.railway.app** (Railway, desde
+24/11/2026), com dois serviços (API e worker) a partir da branch `main` e do `Dockerfile` da raiz.
+Cada merge na `main` publica uma nova versão automaticamente. Este documento descreve como a
+publicação foi montada e como refazê-la.
 
 ## Arquitetura recomendada
 
@@ -137,13 +139,15 @@ Use `backend/.env.example` como referência completa. Mínimo para produção:
 - Uma instância pequena de API e uma de worker bastam; o Supabase gratuito tem limites de banco e
   de Storage que devem ser acompanhados.
 
-## O que você precisa fazer (manual)
+## Situação da publicação (25/11/2026)
 
-1. Criar os dois serviços no Railway (ou equivalente) com os arquivos de `deploy/`.
-2. Cadastrar as variáveis (secretas só no painel da plataforma).
-3. Configurar Site URL e Redirect URLs no Supabase.
-4. Decidir as flags `FEATURE_*` para o público.
-5. Ligar a CSP em `report-only`, testar, depois `enforce`.
-6. Seguir "Como verificar" com uma conta de teste e uma gravação curta.
-7. (Opcional, pede aprovação) aplicar a migration de desempenho de RLS antes de abrir para muita
-   gente.
+- [x] Serviços **VozEmEstudo** (API, porta 3000, healthcheck `/api/health`) e **worker** no
+      Railway, os dois a partir do `Dockerfile`.
+- [x] Variáveis cadastradas no painel do Railway; as chaves secretas ficam só no serviço da API e
+      o worker as referencia.
+- [x] Site URL e Redirect URLs do Supabase apontando para o domínio publicado (login por e-mail e
+      Google funcionando).
+- [x] Flags `FEATURE_*` ligadas, exceto Descobertas e Diário; CSP em modo enforce.
+- [x] Programa de testes ativo, com cotas por participante e tetos globais
+      ([LANCAMENTO_TESTE_PUBLICO.md](LANCAMENTO_TESTE_PUBLICO.md)).
+- [ ] Opcional: SMTP próprio no Supabase para mais de algumas dezenas de cadastros por hora.
