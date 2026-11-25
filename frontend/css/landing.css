@@ -39,7 +39,7 @@ html[data-low-stimulation="true"] .ve-hero:before,html[data-low-stimulation="tru
 .ve-team{padding-top:42px}
 .ve-person h4 a{font:inherit;display:inline;margin:0;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .ve-process{box-shadow:0 0 0 100vmax #f4cfd2;clip-path:inset(0 -100vmax)}
-.ve-landing .skip-link{top:12px;transform:translateY(calc(-100% - 24px))}.ve-landing .skip-link:focus{transform:none}
+.ve-landing .skip-link{top:12px;transform:translateY(calc(-100% - 24px))}.ve-landing .skip-link:not(:focus){opacity:0;pointer-events:none}.ve-landing .skip-link:focus{transform:none}
 @media(max-width:960px) and (min-width:721px){.ve-note-b{width:200px}.ve-note-b ul{font-size:.8125rem}.ve-note-b li{gap:5px}}
 @media(max-width:720px){
 .ve-header{column-gap:10px}.ve-header .ve-brand{font-size:1.12rem;gap:5px}.ve-header .ve-button-secondary{padding:8px 18px}

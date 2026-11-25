@@ -233,6 +233,9 @@
 @media (max-width:900px) { .app-page.navigation-open { overflow:hidden; } }
 [data-focus-mode='true'],[data-low-stimulation='true'] { scroll-behavior:auto; }
 .skip-link { top:0; transform:translateY(calc(-100% - 12px)); max-width:calc(100vw - 24px); white-space:normal; z-index:100; }
+/* Off-screen links stay invisible until focused: full-page screenshot tools draw fixed elements
+ * relative to the scrolled viewport, which used to leave them floating mid-page. */
+.skip-link:not(:focus) { opacity:0; pointer-events:none; }
 .skip-link:focus { top:12px; transform:none; }
 .row-menu summary { font-size:.79rem; }
 [data-text-size='maximum'] .library-group > h2 { display:block; }
