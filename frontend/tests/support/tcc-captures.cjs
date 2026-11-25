@@ -326,11 +326,12 @@ function captureData() {
       'green',
     ),
   ];
+  data.lessonRevision = { [idOf('crase')]: REVISION };
   data.notebooks = {
     [idOf('crase')]: {
       id: 'nb-crase',
       material_id: idOf('crase'),
-      title: 'Crase',
+      title: 'Como usar crase?',
       version: 3,
       last_request_id: 'x',
       visibility: 'private',
@@ -342,36 +343,73 @@ function captureData() {
           {
             id: 'p1',
             type: 'paragraph',
-            text: 'Crase é a fusão de a + a. O sinal que marca essa fusão é o acento grave.',
+            text: 'Crase é a fusão de duas vogais "a": a preposição a + o artigo feminino a. O acento grave (à) é o sinal que marca essa fusão.',
+          },
+          {
+            id: 'r1',
+            type: 'annotation_ref',
+            annotationId: '11111111-1111-4111-8111-000000000001',
+            sourceRevisionId: SOURCE_REVISION_ID,
+            sourceRevision: REVISION,
+          },
+          { id: 'h2', type: 'heading', level: 3, text: 'Como saber se tem crase' },
+          {
+            id: 'o1',
+            type: 'ordered_list',
+            items: [
+              'Veja se o verbo ou o nome pede a preposição a (quem vai, vai a algum lugar).',
+              'Veja se a palavra seguinte aceita o artigo a (é feminina).',
+              'Se as duas coisas acontecem, tem crase.',
+            ],
+          },
+          { id: 'h3', type: 'heading', level: 3, text: 'Teste do masculino' },
+          {
+            id: 'p2',
+            type: 'paragraph',
+            text: 'Troque a palavra feminina por uma masculina. Se aparecer "ao", tem crase.',
           },
           {
             id: 'l1',
             type: 'bullet_list',
             items: [
-              'Teste do masculino: troque por uma palavra masculina',
-              'Virou "ao"? Então tem crase',
+              'Vou à escola → Vou ao colégio ✓',
+              'Assisti à palestra → Assisti ao filme ✓',
+              'Comprei a revista → Comprei o livro ✗ (sem crase)',
             ],
           },
-          { id: 'h2', type: 'heading', level: 3, text: 'Quando não usar' },
+          { id: 'h4', type: 'heading', level: 3, text: 'Quando NÃO usar' },
           {
-            id: 'o1',
-            type: 'ordered_list',
-            items: ['Antes de palavra masculina', 'Antes de verbo', 'Entre palavras repetidas'],
+            id: 'l2',
+            type: 'bullet_list',
+            items: [
+              'Antes de palavra masculina: andar a cavalo',
+              'Antes de verbo: começou a chover',
+              'Antes da maioria dos pronomes: entreguei a ela',
+              'Entre palavras repetidas: cara a cara, frente a frente',
+            ],
           },
+          { id: 'h5', type: 'heading', level: 3, text: 'Casos especiais' },
           {
-            id: 'q1',
-            type: 'quote',
-            text: 'Na maioria dos casos, a crase é o encontro da preposição a com o artigo feminino a.',
+            id: 'l3',
+            type: 'bullet_list',
+            items: [
+              'Horas: chegou às 8h',
+              'À moda de: bife à milanesa',
+              'Nomes de lugar: Vou à Bahia (volto da Bahia) / Vou a Recife (volto de Recife)',
+            ],
           },
+          { id: 'h6', type: 'heading', level: 3, text: 'Para a prova' },
           {
             id: 'c1',
             type: 'checklist',
             items: [
+              { text: 'Ouvir a aula de crase', checked: true },
               { text: 'Refazer as questões da aula', checked: true },
-              { text: 'Revisar os cartões amanhã', checked: false },
+              { text: 'Revisar os flashcards amanhã', checked: false },
+              { text: 'Fazer 10 exercícios do livro', checked: false },
             ],
           },
-          { id: 'p2', type: 'paragraph', text: '' },
+          { id: 'p3', type: 'paragraph', text: '' },
         ],
       },
     },
@@ -802,6 +840,18 @@ const CAPTURES = {
     await settle(page, 1000);
     await shot(page, 'C21b_caderno');
   },
+  // C29: a página da aula inteira com o caderno aberto (capa e papel à mostra).
+  async C29(page, base) {
+    await page.goto(base + `/material.html?id=${idOf('crase')}#anotacoes`);
+    await settle(page, 1500);
+    const book = page.locator('[data-lesson-notebook]');
+    await book.getByRole('button', { name: 'Abrir o caderno' }).click();
+    await book.locator('.nb-editor h2, .nb-editor h3').first().waitFor();
+    await book.locator('summary', { hasText: 'Capa e papel' }).click();
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await settle(page, 1000);
+    await shot(page, 'C29_caderno_pagina_inteira', { fullPage: true });
+  },
   // C23: listas de questões.
   async C23(page, base) {
     await page.goto(base + '/questoes.html');
@@ -878,6 +928,7 @@ const SETTINGS = {
   C21: { theme: 'contrast-light' },
   C21m: { theme: 'forest', mobile: true },
   C23: { theme: 'gabriela', quizHistory: true },
+  C29: { theme: 'paper' },
   C24: { theme: 'ocean' },
   C25: { theme: 'matcha' },
   C27: { theme: 'planner', classrooms: true },
