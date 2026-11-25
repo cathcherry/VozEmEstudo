@@ -5,7 +5,8 @@
 // rota de mídia local (FFmpeg) para ler o áudio escolhido no envio, como em browser-check.cjs.
 //
 // Uso: BROWSER_EXECUTABLE=/caminho/do/chrome node frontend/tests/support/tcc-captures.cjs [somente...]
-// Saída: docs/tcc-apendice-c/*.png (1440x900, deviceScaleFactor 2, tema claro padrão).
+// Saída: docs/tcc-apendice-c/*.png (1440x900 ou 390x844 no celular, deviceScaleFactor 2; cada
+// captura usa um tema do app, definido em SETTINGS).
 const path = require('node:path');
 const fs = require('node:fs');
 const { pathToFileURL } = require('node:url');
@@ -278,10 +279,12 @@ async function clean(page) {
   });
   await page.mouse.move(0, 899);
 }
+// Sufixo do arquivo da captura em andamento ('_celular' nas versões de celular).
+let SUFFIX = '';
 async function shot(page, name, options = {}) {
   await clean(page);
   await page.waitForTimeout(200);
-  const file = path.join(OUT, `${name}.png`);
+  const file = path.join(OUT, `${name}${SUFFIX}.png`);
   await page.screenshot({ path: file, ...options });
   console.log('captura', path.relative(repo, file));
 }
@@ -427,6 +430,90 @@ const CAPTURES = {
     await settle(page, 1200);
     await shot(page, 'C10_planejamento');
   },
+  // C00: Início, com a próxima aula como player (forma de onda do progresso).
+  async C00(page, base) {
+    await page.goto(base + '/painel.html');
+    await page.locator('.dash-continue .dashboard-lesson-card').waitFor();
+    await settle(page, 1200);
+    await shot(page, 'C00_inicio');
+  },
+  // C11: painel de foco ao lado da aula, com um bloco em andamento.
+  async C11(page, base) {
+    await page.goto(base + `/material.html?id=${idOf('crase')}`);
+    await page.locator('[data-utility-trigger]').waitFor();
+    await settle(page);
+    await page.locator('[data-utility-trigger]').click();
+    await page.locator('[data-focus-primary]').click();
+    await page.locator('[data-focus-primary]', { hasText: 'Pausar' }).waitFor();
+    await page.waitForTimeout(3200);
+    await settle(page, 400);
+    await shot(page, 'C11_painel_foco');
+  },
+  // C12: a página Focar (cronômetro completo e a aula do bloco).
+  async C12(page, base) {
+    await page.goto(base + '/focar.html');
+    await page.locator('.focus-primary').waitFor();
+    await settle(page, 1000);
+    await shot(page, 'C12_focar');
+  },
+  // C13: aulas de demonstração na Biblioteca e a conta de participante (programa de testes).
+  async C13(page, base) {
+    await page.goto(base + '/historico.html');
+    await page.locator('.demo-shelf').waitFor();
+    await settle(page, 1200);
+    await page.evaluate(() => document.querySelector('[data-testing-welcome]')?.remove());
+    await shot(page, 'C13_aulas_demonstracao');
+    await page.goto(base + '/conta.html#limites');
+    await page.locator('#limites').waitFor();
+    await settle(page, 1000);
+    await page.evaluate(() => {
+      document.querySelector('[data-testing-welcome]')?.remove();
+      const box = document.querySelector('#limites').getBoundingClientRect();
+      window.scrollTo({ top: box.top + window.scrollY - 90, behavior: 'instant' });
+    });
+    await settle(page, 400);
+    await shot(page, 'C13b_conta_participante');
+  },
+  // C14: tutorial da primeira entrada de uma conta nova.
+  async C14(page, base) {
+    await page.goto(base + '/painel.html');
+    const tour = page.locator('[data-guided-tour]');
+    await tour.waitFor({ timeout: 10000 });
+    await page.locator('[data-tour-next]').click();
+    await page.locator('[data-tour-next]').click();
+    await settle(page, 700);
+    // O tutorial tem o foco: não o tira (clean() tiraria).
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: path.join(OUT, `C14_tutorial${SUFFIX}.png`) });
+    console.log(`captura docs/tcc-apendice-c/C14_tutorial${SUFFIX}.png`);
+  },
+};
+// Versões de celular (as mesmas telas, outro tema).
+for (const name of ['C00', 'C03', 'C06', 'C11']) CAPTURES[`${name}m`] = (...args) => CAPTURES[name](...args);
+
+// Tema de cada captura (para mostrar a personalização) e as que são no celular.
+const MOBILE = { width: 390, height: 844 };
+const DARK_THEMES = new Set(['night', 'contrast-dark']);
+const SETTINGS = {
+  C00: { theme: 'paper' },
+  C00m: { theme: 'night', mobile: true },
+  C01: { theme: 'planner' },
+  C02: { theme: 'desktop' },
+  C03: { theme: 'night' },
+  C03m: { theme: 'matcha', mobile: true },
+  C04: { theme: 'forest' },
+  C05: { theme: 'soft' },
+  C06: { theme: 'gabriela' },
+  C06m: { theme: 'night', mobile: true },
+  C07: { theme: 'ocean' },
+  C08: { theme: 'night' },
+  C09: { theme: 'contrast-light' },
+  C10: { theme: 'matcha' },
+  C11: { theme: 'planner' },
+  C11m: { theme: 'ocean', mobile: true },
+  C12: { theme: 'night' },
+  C13: { theme: 'paper', testing: true },
+  C14: { theme: 'matcha', newUser: true },
 };
 
 (async () => {
@@ -442,12 +529,32 @@ const CAPTURES = {
   try {
     for (const [name, run] of Object.entries(CAPTURES)) {
       if (only.length && !only.includes(name)) continue;
+      const settings = SETTINGS[name] || {};
+      SUFFIX = settings.mobile ? '_celular' : '';
       const data = captureData();
-      const { context, page } = await m.openApp(browser, base, flags, data, VIEWPORT, {
-        user: USER,
-        context: { deviceScaleFactor: 2, colorScheme: 'light', locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' },
+      if (settings.testing) data.testing = require('./mock-testing.cjs').testingState('tester');
+      if (settings.newUser) data.profileState = [];
+      const runFlags = settings.testing ? { ...flags, public_testing: true } : flags;
+      const user = settings.newUser ? { ...USER, created_at: new Date().toISOString() } : USER;
+      const theme = settings.theme || 'paper';
+      const { context, page } = await m.openApp(browser, base, runFlags, data, settings.mobile ? MOBILE : VIEWPORT, {
+        user,
+        context: {
+          deviceScaleFactor: 2,
+          colorScheme: DARK_THEMES.has(theme) ? 'dark' : 'light',
+          locale: 'pt-BR',
+          timezoneId: 'America/Sao_Paulo',
+          ...(settings.mobile ? { isMobile: true, hasTouch: true } : {}),
+        },
       });
-      await overlay(context, base, data, flags, { PERMISSION_DECLARATION });
+      await context.addInitScript((value) => {
+        try {
+          localStorage.setItem('audioestudo-theme', value);
+        } catch {
+          /* storage blocked: default theme */
+        }
+      }, theme);
+      await overlay(context, base, data, runFlags, { PERMISSION_DECLARATION });
       try {
         await run(page, base, data);
       } catch (error) {
