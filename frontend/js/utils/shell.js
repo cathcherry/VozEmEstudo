@@ -4,6 +4,7 @@ import { setStudyUser } from './study-store.js';
 import { initStudySync, isStudySyncEnabled } from './study-sync.js';
 import { initFocusHost } from './focus-host.js';
 import { initFocusIndicator } from './focus-indicator.js';
+import { initFocusDrawer } from './focus-drawer.js';
 import { initSoundscape } from './soundscape-ui.js';
 import { initWallpaperImage } from './wallpaper-image.js';
 import { initPageStickers } from './page-stickers.js';
@@ -121,12 +122,15 @@ export async function initAuthenticatedShell() {
   void initQuestionReports(session.user.id);
   // Sons ambientes (3.5): top-bar mixer for every signed-in page; never plays before a click.
   try { initSoundscape({ userId: session.user.id }); } catch { /* optional tool */ }
-  // Focar: one focus session for the account. It is run on the Focar page; the other pages show a
-  // small indicator in the top bar while a block is running or paused (3.6).
+  // Focar: one focus session for the account. Focar is the full page; every other page has the
+  // focus drawer (top-bar button, side panel or capsule) that controls the same session.
   if (isStudySyncEnabled()) {
     initFocusHost(session.user.id);
     const lessonId = document.body.dataset.page === 'material' ? new URLSearchParams(location.search).get('id') : null;
-    void initFocusIndicator({ materialId: lessonId }).catch(() => { /* optional tool */ });
+    void initFocusDrawer({ userId: session.user.id })
+      .catch(() => false)
+      .then(() => initFocusIndicator({ materialId: lessonId }))
+      .catch(() => { /* optional tool */ });
   }
   await preferenceSync;
   // Public testing program (flag only): loaded on demand, so pages without it pay nothing.
