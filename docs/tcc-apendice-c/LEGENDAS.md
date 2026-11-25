@@ -41,54 +41,54 @@
 
 Os arquivos do .zip ficam em pastas por seção e começam pelo número da figura (`C01_…`). Entre parênteses, o nome do mesmo arquivo no repositório (`docs/tcc-apendice-c/`).
 
-| Figura | Arquivo no .zip                                                                           | Tela                                 | Tema                 | Dispositivo |
-| ------ | ----------------------------------------------------------------------------------------- | ------------------------------------ | -------------------- | ----------- |
-| C.1    | 01_acesso_e_primeiro_uso/C01_landing.png (C15_landing.png)                                | Página inicial pública               | Própria da página    | Computador  |
-| C.2    | 01_acesso_e_primeiro_uso/C02_landing_celular.png (C15_landing_celular.png)                | Página inicial pública               | Própria da página    | Celular     |
-| C.3    | 01_acesso_e_primeiro_uso/C03_login.png (C16_login.png)                                    | Entrar                               | Sálvia               | Computador  |
-| C.4    | 01_acesso_e_primeiro_uso/C04_login_celular.png (C16_login_celular.png)                    | Entrar                               | Lavanda              | Celular     |
-| C.5    | 01_acesso_e_primeiro_uso/C05_cadastro.png (C16b_cadastro.png)                             | Criar conta                          | Sálvia               | Computador  |
-| C.6    | 01_acesso_e_primeiro_uso/C06_cadastro_celular.png (C16b_cadastro_celular.png)             | Criar conta                          | Lavanda              | Celular     |
-| C.7    | 01_acesso_e_primeiro_uso/C07_recuperar_senha.png (C28_recuperar_senha.png)                | Recuperar senha                      | Areia                | Computador  |
-| C.8    | 01_acesso_e_primeiro_uso/C08_tutorial.png (C14_tutorial.png)                              | Tutorial guiado                      | Matcha               | Computador  |
-| C.9    | 02_inicio/C09_inicio.png (C00_inicio.png)                                                 | Início (painel)                      | Escrivaninha lavanda | Computador  |
-| C.10   | 02_inicio/C10_inicio_celular.png (C00_inicio_celular.png)                                 | Início                               | Jardim noturno       | Celular     |
-| C.11   | 03_envio_e_processamento/C11_envio_aula.png (C01_envio_aula.png)                          | Nova transcrição: gravação e recorte | Planner              | Computador  |
-| C.12   | 03_envio_e_processamento/C12_envio_identificacao.png (C01b_envio_identificacao.png)       | Nova transcrição: identificação      | Planner              | Computador  |
-| C.13   | 03_envio_e_processamento/C13_processamento.png (C02_processamento.png)                    | Processamento                        | Mesa digital         | Computador  |
-| C.14   | 04_pagina_da_aula/C14_transcricao_player.png (C03_transcricao_player.png)                 | Player e transcrição                 | Jardim noturno       | Computador  |
-| C.15   | 04_pagina_da_aula/C15_transcricao_player_celular.png (C03_transcricao_player_celular.png) | Player e transcrição                 | Matcha               | Celular     |
-| C.16   | 04_pagina_da_aula/C16_revisao_confirmacao.png (C04_revisao_confirmacao.png)               | Revisão da transcrição               | Sálvia               | Computador  |
-| C.17   | 04_pagina_da_aula/C17_revisao_versoes.png (C04b_revisao_versoes.png)                      | Versões da transcrição               | Sálvia               | Computador  |
-| C.18   | 04_pagina_da_aula/C18_resumo.png (C05_resumo.png)                                         | Resumo                               | Areia                | Computador  |
-| C.19   | 04_pagina_da_aula/C19_questoes.png (C06_questoes.png)                                     | Questões                             | Lavanda              | Computador  |
-| C.20   | 04_pagina_da_aula/C20_questoes_celular.png (C06_questoes_celular.png)                     | Questões                             | Jardim noturno       | Celular     |
-| C.21   | 04_pagina_da_aula/C21_anotacoes.png (C21_anotacoes.png)                                   | Anotações: caderno e destaques       | Areia                | Computador  |
-| C.22   | 04_pagina_da_aula/C22_caderno.png (C21b_caderno.png)                                      | Caderno da aula aberto               | Areia                | Computador  |
-| C.23   | 04_pagina_da_aula/C23_anotacoes_celular.png (C21_anotacoes_celular.png)                   | Anotações                            | Sálvia               | Celular     |
-| C.24   | 04_pagina_da_aula/C24_caderno_celular.png (C21b_caderno_celular.png)                      | Caderno da aula aberto               | Sálvia               | Celular     |
-| C.25   | 05_biblioteca_e_revisao/C25_biblioteca.png (C07_biblioteca.png)                           | Biblioteca                           | Oceano               | Computador  |
-| C.26   | 05_biblioteca_e_revisao/C26_biblioteca_pasta.png (C07b_biblioteca_pasta.png)              | Biblioteca: unidade                  | Oceano               | Computador  |
-| C.27   | 05_biblioteca_e_revisao/C27_flashcards.png (C08_flashcards.png)                           | Flashcards: frente                   | Jardim noturno       | Computador  |
-| C.28   | 05_biblioteca_e_revisao/C28_flashcards_verso.png (C08b_flashcards_verso.png)              | Flashcards: verso                    | Jardim noturno       | Computador  |
-| C.29   | 05_biblioteca_e_revisao/C29_flashcards_conjuntos.png (C25_flashcards_conjuntos.png)       | Flashcards: conjuntos                | Matcha               | Computador  |
-| C.30   | 05_biblioteca_e_revisao/C30_listas_questoes.png (C23_listas_questoes.png)                 | Questões: tentativas e novas listas  | Lavanda              | Computador  |
-| C.31   | 06_planejamento_e_foco/C31_planejamento.png (C10_planejamento.png)                        | Planejar: objetivos e tarefas        | Matcha               | Computador  |
-| C.32   | 06_planejamento_e_foco/C32_calendario.png (C24_calendario.png)                            | Planejar: calendário                 | Oceano               | Computador  |
-| C.33   | 06_planejamento_e_foco/C33_tempo_estudo.png (C24b_tempo_estudo.png)                       | Planejar: tempo de estudo            | Oceano               | Computador  |
-| C.34   | 06_planejamento_e_foco/C34_painel_foco.png (C11_painel_foco.png)                          | Painel de foco lateral               | Planner              | Computador  |
-| C.35   | 06_planejamento_e_foco/C35_painel_foco_celular.png (C11_painel_foco_celular.png)          | Painel de foco                       | Oceano               | Celular     |
-| C.36   | 06_planejamento_e_foco/C36_focar.png (C12_focar.png)                                      | Focar                                | Jardim noturno       | Computador  |
-| C.37   | 07_turmas/C37_turmas.png (C27_turmas.png)                                                 | Turmas                               | Planner              | Computador  |
-| C.38   | 07_turmas/C38_turma.png (C27b_turma.png)                                                  | Turma aberta                         | Planner              | Computador  |
-| C.39   | 08_conta_e_personalizacao/C39_perfil.png (C17_perfil.png)                                 | Meu perfil                           | Lavanda              | Computador  |
-| C.40   | 08_conta_e_personalizacao/C40_perfil_celular.png (C17_perfil_celular.png)                 | Meu perfil                           | Areia                | Celular     |
-| C.41   | 08_conta_e_personalizacao/C41_configuracoes.png (C18_configuracoes.png)                   | Configurações                        | Oceano               | Computador  |
-| C.42   | 08_conta_e_personalizacao/C42_aparencia.png (C19_aparencia.png)                           | Aparência                            | Areia                | Computador  |
-| C.43   | 08_conta_e_personalizacao/C43_acessibilidade.png (C09_acessibilidade.png)                 | Leitura e foco (acessibilidade)      | Alto contraste claro | Computador  |
-| C.44   | 08_conta_e_personalizacao/C44_ajuda.png (C20_ajuda.png)                                   | Ajuda                                | Mesa digital         | Computador  |
-| C.45   | 09_programa_de_testes/C45_aulas_demonstracao.png (C13_aulas_demonstracao.png)             | Aulas de demonstração                | Escrivaninha lavanda | Computador  |
-| C.46   | 09_programa_de_testes/C46_conta_participante.png (C13b_conta_participante.png)            | Conta de participante                | Escrivaninha lavanda | Computador  |
+| Figura | Arquivo no .zip                                                                           | Tela                                 | Tema                                | Dispositivo |
+| ------ | ----------------------------------------------------------------------------------------- | ------------------------------------ | ----------------------------------- | ----------- |
+| C.1    | 01_acesso_e_primeiro_uso/C01_landing.png (C15_landing.png)                                | Página inicial pública               | Própria da página                   | Computador  |
+| C.2    | 01_acesso_e_primeiro_uso/C02_landing_celular.png (C15_landing_celular.png)                | Página inicial pública               | Própria da página                   | Celular     |
+| C.3    | 01_acesso_e_primeiro_uso/C03_login.png (C16_login.png)                                    | Entrar                               | Sálvia                              | Computador  |
+| C.4    | 01_acesso_e_primeiro_uso/C04_login_celular.png (C16_login_celular.png)                    | Entrar                               | Lavanda                             | Celular     |
+| C.5    | 01_acesso_e_primeiro_uso/C05_cadastro.png (C16b_cadastro.png)                             | Criar conta                          | Sálvia                              | Computador  |
+| C.6    | 01_acesso_e_primeiro_uso/C06_cadastro_celular.png (C16b_cadastro_celular.png)             | Criar conta                          | Lavanda                             | Celular     |
+| C.7    | 01_acesso_e_primeiro_uso/C07_recuperar_senha.png (C28_recuperar_senha.png)                | Recuperar senha                      | Areia                               | Computador  |
+| C.8    | 01_acesso_e_primeiro_uso/C08_tutorial.png (C14_tutorial.png)                              | Tutorial guiado                      | Matcha                              | Computador  |
+| C.9    | 02_inicio/C09_inicio.png (C00_inicio.png)                                                 | Início (painel)                      | Escrivaninha lavanda                | Computador  |
+| C.10   | 02_inicio/C10_inicio_celular.png (C00_inicio_celular.png)                                 | Início                               | Jardim noturno                      | Celular     |
+| C.11   | 03_envio_e_processamento/C11_envio_aula.png (C01_envio_aula.png)                          | Nova transcrição: gravação e recorte | Planner                             | Computador  |
+| C.12   | 03_envio_e_processamento/C12_envio_identificacao.png (C01b_envio_identificacao.png)       | Nova transcrição: identificação      | Planner                             | Computador  |
+| C.13   | 03_envio_e_processamento/C13_processamento.png (C02_processamento.png)                    | Processamento                        | Mesa digital                        | Computador  |
+| C.14   | 04_pagina_da_aula/C14_transcricao_player.png (C03_transcricao_player.png)                 | Player e transcrição                 | Jardim noturno                      | Computador  |
+| C.15   | 04_pagina_da_aula/C15_transcricao_player_celular.png (C03_transcricao_player_celular.png) | Player e transcrição                 | Matcha                              | Celular     |
+| C.16   | 04_pagina_da_aula/C16_revisao_confirmacao.png (C04_revisao_confirmacao.png)               | Revisão da transcrição               | Sálvia                              | Computador  |
+| C.17   | 04_pagina_da_aula/C17_revisao_versoes.png (C04b_revisao_versoes.png)                      | Versões da transcrição               | Sálvia                              | Computador  |
+| C.18   | 04_pagina_da_aula/C18_resumo.png (C05_resumo.png)                                         | Resumo                               | Areia                               | Computador  |
+| C.19   | 04_pagina_da_aula/C19_questoes.png (C06_questoes.png)                                     | Questões                             | Lavanda                             | Computador  |
+| C.20   | 04_pagina_da_aula/C20_questoes_celular.png (C06_questoes_celular.png)                     | Questões                             | Jardim noturno                      | Celular     |
+| C.21   | 04_pagina_da_aula/C21_anotacoes.png (C21_anotacoes.png)                                   | Anotações: caderno e destaques       | Alto contraste claro (fundo branco) | Computador  |
+| C.22   | 04_pagina_da_aula/C22_caderno.png (C21b_caderno.png)                                      | Caderno da aula aberto               | Alto contraste claro (fundo branco) | Computador  |
+| C.23   | 04_pagina_da_aula/C23_anotacoes_celular.png (C21_anotacoes_celular.png)                   | Anotações                            | Sálvia                              | Celular     |
+| C.24   | 04_pagina_da_aula/C24_caderno_celular.png (C21b_caderno_celular.png)                      | Caderno da aula aberto               | Sálvia                              | Celular     |
+| C.25   | 05_biblioteca_e_revisao/C25_biblioteca.png (C07_biblioteca.png)                           | Biblioteca                           | Oceano                              | Computador  |
+| C.26   | 05_biblioteca_e_revisao/C26_biblioteca_pasta.png (C07b_biblioteca_pasta.png)              | Biblioteca: unidade                  | Oceano                              | Computador  |
+| C.27   | 05_biblioteca_e_revisao/C27_flashcards.png (C08_flashcards.png)                           | Flashcards: frente                   | Jardim noturno                      | Computador  |
+| C.28   | 05_biblioteca_e_revisao/C28_flashcards_verso.png (C08b_flashcards_verso.png)              | Flashcards: verso                    | Jardim noturno                      | Computador  |
+| C.29   | 05_biblioteca_e_revisao/C29_flashcards_conjuntos.png (C25_flashcards_conjuntos.png)       | Flashcards: conjuntos                | Matcha                              | Computador  |
+| C.30   | 05_biblioteca_e_revisao/C30_listas_questoes.png (C23_listas_questoes.png)                 | Questões: tentativas e novas listas  | Lavanda                             | Computador  |
+| C.31   | 06_planejamento_e_foco/C31_planejamento.png (C10_planejamento.png)                        | Planejar: objetivos e tarefas        | Matcha                              | Computador  |
+| C.32   | 06_planejamento_e_foco/C32_calendario.png (C24_calendario.png)                            | Planejar: calendário                 | Oceano                              | Computador  |
+| C.33   | 06_planejamento_e_foco/C33_tempo_estudo.png (C24b_tempo_estudo.png)                       | Planejar: tempo de estudo            | Oceano                              | Computador  |
+| C.34   | 06_planejamento_e_foco/C34_painel_foco.png (C11_painel_foco.png)                          | Painel de foco lateral               | Planner                             | Computador  |
+| C.35   | 06_planejamento_e_foco/C35_painel_foco_celular.png (C11_painel_foco_celular.png)          | Painel de foco                       | Oceano                              | Celular     |
+| C.36   | 06_planejamento_e_foco/C36_focar.png (C12_focar.png)                                      | Focar                                | Jardim noturno                      | Computador  |
+| C.37   | 07_turmas/C37_turmas.png (C27_turmas.png)                                                 | Turmas                               | Planner                             | Computador  |
+| C.38   | 07_turmas/C38_turma.png (C27b_turma.png)                                                  | Turma aberta                         | Planner                             | Computador  |
+| C.39   | 08_conta_e_personalizacao/C39_perfil.png (C17_perfil.png)                                 | Meu perfil                           | Lavanda                             | Computador  |
+| C.40   | 08_conta_e_personalizacao/C40_perfil_celular.png (C17_perfil_celular.png)                 | Meu perfil                           | Areia                               | Celular     |
+| C.41   | 08_conta_e_personalizacao/C41_configuracoes.png (C18_configuracoes.png)                   | Configurações                        | Oceano                              | Computador  |
+| C.42   | 08_conta_e_personalizacao/C42_aparencia.png (C19_aparencia.png)                           | Aparência                            | Areia                               | Computador  |
+| C.43   | 08_conta_e_personalizacao/C43_acessibilidade.png (C09_acessibilidade.png)                 | Leitura e foco (acessibilidade)      | Alto contraste claro                | Computador  |
+| C.44   | 08_conta_e_personalizacao/C44_ajuda.png (C20_ajuda.png)                                   | Ajuda                                | Mesa digital                        | Computador  |
+| C.45   | 09_programa_de_testes/C45_aulas_demonstracao.png (C13_aulas_demonstracao.png)             | Aulas de demonstração                | Escrivaninha lavanda                | Computador  |
+| C.46   | 09_programa_de_testes/C46_conta_participante.png (C13b_conta_participante.png)            | Conta de participante                | Escrivaninha lavanda                | Computador  |
 
 Se preferir menos figuras no corpo do texto, um conjunto mínimo é C.1, C.9, C.11, C.14, C.16, C.19, C.22, C.27, C.34, C.43 e C.15; o resto pode ficar só no apêndice.
 
@@ -266,16 +266,16 @@ Questões em um celular (página inteira), com alternativas em cartões grandes 
 
 Aba Anotações (página inteira): o caderno da aula fechado e a lista "Destaques da aula", com trechos marcados na transcrição, comentários e as ações citar no caderno, ir ao destaque, ouvir o trecho e editar.
 
-- Tema: Areia. Dispositivo: computador.
+- Tema: Alto contraste claro (fundo branco). Dispositivo: computador.
 - Legenda sugerida: **Figura C.21 – Destaques da transcrição com comentários e o caderno da aula. Fonte: elaborado pela autora (2026).**
 - Onde usar: resultados (anotação e estudo ativo).
 
 #### Figura C.22 – C22_caderno.png
 
-Caderno simulado aberto: título, barra de formatação (texto, título, subtítulo, listas, checklist, citação, citar trecho da aula) e uma página com anotações, lista numerada, citação da aula e checklist. O texto é salvo sozinho ("Salvo").
+Caderno simulado aberto, com as opções "Capa e papel" à mostra (11 capas e 7 papéis: pautado, quadriculado, pontilhado, linho, vegetal, creme envelhecido e kraft). Abaixo, o título, a barra de formatação (texto, título, subtítulo, listas, checklist, citação, citar trecho da aula) e uma página com anotações, lista numerada, citação da aula e checklist. O texto é salvo sozinho ("Salvo").
 
-- Tema: Areia. Dispositivo: computador.
-- Legenda sugerida: **Figura C.22 – Caderno digital da aula, com formatação, citação da aula e checklist. Fonte: elaborado pela autora (2026).**
+- Tema: Alto contraste claro (fundo branco). Dispositivo: computador.
+- Legenda sugerida: **Figura C.22 – Caderno digital da aula, com escolha de capa e papel, formatação, citação da aula e checklist. Fonte: elaborado pela autora (2026).**
 - Onde usar: resultados (anotação e organização pessoal).
 
 #### Figura C.23 – C23_anotacoes_celular.png

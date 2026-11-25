@@ -793,6 +793,8 @@ const CAPTURES = {
     const book = page.locator('[data-lesson-notebook]');
     await book.getByRole('button', { name: 'Abrir o caderno' }).click();
     await book.locator('.nb-editor h2, .nb-editor h3').first().waitFor();
+    // Opções de capa e papel abertas, para mostrar a personalização do caderno.
+    await book.locator('summary', { hasText: 'Capa e papel' }).click();
     await book.evaluate((el) => {
       const top = el.getBoundingClientRect().top + window.scrollY - 130;
       window.scrollTo({ top, behavior: 'instant' });
@@ -873,7 +875,7 @@ const SETTINGS = {
   C18: { theme: 'ocean' },
   C19: { theme: 'soft' },
   C20: { theme: 'desktop' },
-  C21: { theme: 'soft' },
+  C21: { theme: 'contrast-light' },
   C21m: { theme: 'forest', mobile: true },
   C23: { theme: 'gabriela', quizHistory: true },
   C24: { theme: 'ocean' },
