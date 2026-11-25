@@ -51,8 +51,20 @@ const CATALOG = {
     { id: 'sub-mat', name: 'Matemática', color_token: null, sort_order: 7 },
   ],
   units: [
-    { id: 'unit-crase', subject_id: 'sub-por', title: 'Gramática', description: null, sort_order: 0 },
-    { id: 'unit-energia', subject_id: 'sub-bio', title: 'Metabolismo energético', description: null, sort_order: 0 },
+    {
+      id: 'unit-crase',
+      subject_id: 'sub-por',
+      title: 'Gramática',
+      description: null,
+      sort_order: 0,
+    },
+    {
+      id: 'unit-energia',
+      subject_id: 'sub-bio',
+      title: 'Metabolismo energético',
+      description: null,
+      sort_order: 0,
+    },
   ],
 };
 const SUBJECT_IDS = { crase: 'sub-por', vacinas: 'sub-cie', internet: 'sub-tec' };
@@ -167,13 +179,33 @@ async function overlay(context, base, data, flags, config) {
       const rest = match[2] || '';
       if (!rest && method === 'GET') return json(demoDetail(slug, base, data.demoStage?.[slug]));
       if (rest === '/playback')
-        return json({ video: null, signedVideoUrl: null, signedAudioUrl: `${base}/__demo/${slug}/audio.mp3` });
-      if (rest === '/captions') return json({ revision: REVISION, granularity: 'segment', words: [] });
+        return json({
+          video: null,
+          signedVideoUrl: null,
+          signedAudioUrl: `${base}/__demo/${slug}/audio.mp3`,
+        });
+      if (rest === '/captions')
+        return json({ revision: REVISION, granularity: 'segment', words: [] });
       if (rest === '/transcription/versions') {
-        const segs = demo[slug].segments.map((s) => ({ position: s.position, startMs: s.startMs, endMs: s.endMs, text: s.text }));
+        const segs = demo[slug].segments.map((s) => ({
+          position: s.position,
+          startMs: s.startMs,
+          endMs: s.endMs,
+          text: s.text,
+        }));
         return json([
-          { id: SOURCE_REVISION_ID, revision: 2, created_at: new Date(Date.now() - 2 * 3600000).toISOString(), segments_snapshot: segs },
-          { id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', revision: 1, created_at: new Date(Date.now() - 3 * 3600000).toISOString(), segments_snapshot: segs },
+          {
+            id: SOURCE_REVISION_ID,
+            revision: 2,
+            created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+            segments_snapshot: segs,
+          },
+          {
+            id: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+            revision: 1,
+            created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
+            segments_snapshot: segs,
+          },
         ]);
       }
     }
@@ -205,7 +237,12 @@ function captureData() {
       status: 'active',
       card_count: cards.length,
       due_count: cards.length,
-      cards: cards.map(({ id, front_text, back_text }) => ({ id, front_text, back_text, status: 'active' })),
+      cards: cards.map(({ id, front_text, back_text }) => ({
+        id,
+        front_text,
+        back_text,
+        status: 'active',
+      })),
     },
   ];
   data.dueCards = cards;
@@ -217,8 +254,15 @@ function captureData() {
   ];
   data.subgoals = [{ id: 's1', goal_id: 'g1', title: 'Crase e acentuação', due_date: m.day(4) }];
   const task = (id, goal, subgoal, title, due, material, done, order) => ({
-    id, goal_id: goal, subgoal_id: subgoal, title, due_date: due === null ? null : m.day(due),
-    material_id: material, completed_at: done ? m.at(-1, 9) : null, sort_order: order, created_at: m.at(-4, 9),
+    id,
+    goal_id: goal,
+    subgoal_id: subgoal,
+    title,
+    due_date: due === null ? null : m.day(due),
+    material_id: material,
+    completed_at: done ? m.at(-1, 9) : null,
+    sort_order: order,
+    created_at: m.at(-4, 9),
   });
   data.tasks = [
     task('t1', 'g1', 's1', 'Ouvir a aula sobre crase', -1, idOf('crase'), true, 1000),
@@ -228,8 +272,28 @@ function captureData() {
     task('t5', 'g2', null, 'Ler o resumo e anotar dúvidas', null, null, false, 2000),
   ];
   data.events = [
-    { kind: 'event', id: 'e1', title: 'Estudar crase', startsAt: m.at(1, 14), endsAt: m.at(1, 15), description: '', materialId: idOf('crase'), taskId: null, version: 1 },
-    { kind: 'event', id: 'e2', title: 'Revisão de Ciências', startsAt: m.at(3, 19), endsAt: m.at(3, 20), description: '', materialId: idOf('vacinas'), taskId: null, version: 1 },
+    {
+      kind: 'event',
+      id: 'e1',
+      title: 'Estudar crase',
+      startsAt: m.at(1, 14),
+      endsAt: m.at(1, 15),
+      description: '',
+      materialId: idOf('crase'),
+      taskId: null,
+      version: 1,
+    },
+    {
+      kind: 'event',
+      id: 'e2',
+      title: 'Revisão de Ciências',
+      startsAt: m.at(3, 19),
+      endsAt: m.at(3, 20),
+      description: '',
+      materialId: idOf('vacinas'),
+      taskId: null,
+      version: 1,
+    },
   ];
   data.notes = [];
   data.quizSessions = [];
@@ -239,23 +303,38 @@ function captureData() {
 /** As questões da aula de crase alimentam a simulação de tentativas (mock-quiz.cjs). */
 function useCraseQuiz() {
   const batch = batchOf(demo.crase);
-  Object.assign(quizMock.QUIZ_BATCH, { id: batch.id, title: batch.title, generated_count: batch.generated_count, questions: batch.questions });
+  Object.assign(quizMock.QUIZ_BATCH, {
+    id: batch.id,
+    title: batch.title,
+    generated_count: batch.generated_count,
+    questions: batch.questions,
+  });
   for (const key of Object.keys(quizMock.QUIZ_KEY)) delete quizMock.QUIZ_KEY[key];
   demo.crase.questions.items.forEach((q, i) => {
-    quizMock.QUIZ_KEY[`q${i + 1}`] = { correct_index: q.correctIndex, explanation: q.explanation, evidence: q.metadata?.evidence || null };
+    quizMock.QUIZ_KEY[`q${i + 1}`] = {
+      correct_index: q.correctIndex,
+      explanation: q.explanation,
+      evidence: q.metadata?.evidence || null,
+    };
   });
 }
 
 async function startServer() {
-  const { mediaRouter } = await import(pathToFileURL(path.join(backend, 'src/routes/media.routes.js')).href);
+  const { mediaRouter } = await import(
+    pathToFileURL(path.join(backend, 'src/routes/media.routes.js')).href
+  );
   const app = express();
   app.use(
     '/api/media',
     (req, res, next) =>
-      req.headers.authorization === 'Bearer mock-token' ? next() : res.status(401).json({ error: { message: 'Sessão inválida.' } }),
+      req.headers.authorization === 'Bearer mock-token'
+        ? next()
+        : res.status(401).json({ error: { message: 'Sessão inválida.' } }),
     mediaRouter,
   );
-  app.get('/favicon.ico', (_req, res) => res.sendFile('favicon.png', { root: path.join(root, 'assets/brand') }));
+  app.get('/favicon.ico', (_req, res) =>
+    res.sendFile('favicon.png', { root: path.join(root, 'assets/brand') }),
+  );
   app.use('/__demo', express.static(DEMO_DIR, { index: false }));
   app.use('/assets', express.static(path.join(root, 'assets')));
   app.use('/js', express.static(path.join(root, 'js')));
@@ -299,7 +378,9 @@ const CAPTURES = {
       mimeType: 'audio/mpeg',
       buffer: fs.readFileSync(path.join(DEMO_DIR, 'crase/audio.mp3')),
     });
-    await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled, null, { timeout: 30000 });
+    await page.waitForFunction(() => !document.querySelector('[data-wizard-next]').disabled, null, {
+      timeout: 30000,
+    });
     await settle(page, 900);
     await shot(page, 'C01_envio_aula');
     await page.click('[data-wizard-next]');
@@ -312,7 +393,9 @@ const CAPTURES = {
   },
   async C02(page, base) {
     await page.goto(base + `/processando.html?id=${idOf('crase')}&job=job-demo`);
-    await page.waitForFunction(() => document.querySelector('[data-wait-status]')?.textContent.includes('Transcrevendo'));
+    await page.waitForFunction(() =>
+      document.querySelector('[data-wait-status]')?.textContent.includes('Transcrevendo'),
+    );
     await settle(page, 1500);
     await shot(page, 'C02_processamento');
   },
@@ -341,7 +424,10 @@ const CAPTURES = {
     await page.evaluate(() => {
       // Fim da conferência: últimos trechos editáveis e o botão "Confirmar e continuar".
       const box = document.querySelector('.confirmation-footer').getBoundingClientRect();
-      window.scrollTo({ top: box.bottom + window.scrollY - window.innerHeight + 40, behavior: 'instant' });
+      window.scrollTo({
+        top: box.bottom + window.scrollY - window.innerHeight + 40,
+        behavior: 'instant',
+      });
     });
     await page.waitForTimeout(300);
     // A barra "Editando a revisão" é fixa: rola até nenhum trecho ficar cortado sob ela.
@@ -355,7 +441,11 @@ const CAPTURES = {
         const r = seg.getBoundingClientRect();
         return r.top < limit && r.bottom > limit;
       });
-      if (cut) window.scrollBy({ top: cut.getBoundingClientRect().bottom - limit + 12, behavior: 'instant' });
+      if (cut)
+        window.scrollBy({
+          top: cut.getBoundingClientRect().bottom - limit + 12,
+          behavior: 'instant',
+        });
     });
     await settle(page, 500);
     await shot(page, 'C04_revisao_confirmacao');
@@ -375,7 +465,10 @@ const CAPTURES = {
     await page.click('#tab-summary');
     await page.evaluate(() => {
       const tabs = document.querySelector('.material-tabs');
-      window.scrollTo({ top: tabs.getBoundingClientRect().top + window.scrollY - 90, behavior: 'instant' });
+      window.scrollTo({
+        top: tabs.getBoundingClientRect().top + window.scrollY - 90,
+        behavior: 'instant',
+      });
     });
     await settle(page, 600);
     await shot(page, 'C05_resumo');
@@ -387,7 +480,11 @@ const CAPTURES = {
     await page.getByRole('button', { name: 'Começar', exact: true }).click();
     await page.locator('[data-quiz-primary]').waitFor();
     const q = demo.crase.questions.items[0];
-    await page.getByRole('radio', { name: new RegExp(q.options[q.correctIndex].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) }).check();
+    await page
+      .getByRole('radio', {
+        name: new RegExp(q.options[q.correctIndex].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+      })
+      .check();
     await page.locator('[data-quiz-primary]').click();
     await page.locator('.quiz-feedback').first().waitFor();
     await settle(page, 600);
@@ -398,9 +495,19 @@ const CAPTURES = {
     await page.goto(base + '/historico.html');
     await settle(page, 1200);
     await shot(page, 'C07_biblioteca');
-    await page.locator('main').getByText('Português', { exact: true }).locator('visible=true').first().click();
+    await page
+      .locator('main')
+      .getByText('Português', { exact: true })
+      .locator('visible=true')
+      .first()
+      .click();
     await settle(page, 700);
-    await page.locator('main').getByText('Gramática', { exact: true }).locator('visible=true').first().click();
+    await page
+      .locator('main')
+      .getByText('Gramática', { exact: true })
+      .locator('visible=true')
+      .first()
+      .click();
     await settle(page, 900);
     await shot(page, 'C07b_biblioteca_pasta');
   },
@@ -418,11 +525,15 @@ const CAPTURES = {
     await settle(page, 1000);
     await clean(page);
     // The section is taller than the viewport: grow the viewport to fit it, then capture the element.
-    const height = await page.locator('#reading-settings').evaluate((el) => Math.ceil(el.getBoundingClientRect().height));
+    const height = await page
+      .locator('#reading-settings')
+      .evaluate((el) => Math.ceil(el.getBoundingClientRect().height));
     await page.setViewportSize({ width: 1440, height: Math.max(900, height + 200) });
     await settle(page, 600);
     await clean(page);
-    await page.locator('#reading-settings').screenshot({ path: path.join(OUT, 'C09_acessibilidade.png') });
+    await page
+      .locator('#reading-settings')
+      .screenshot({ path: path.join(OUT, 'C09_acessibilidade.png') });
     console.log('captura docs/tcc-apendice-c/C09_acessibilidade.png');
   },
   async C10(page, base) {
@@ -489,7 +600,8 @@ const CAPTURES = {
   },
 };
 // Versões de celular (as mesmas telas, outro tema).
-for (const name of ['C00', 'C03', 'C06', 'C11']) CAPTURES[`${name}m`] = (...args) => CAPTURES[name](...args);
+for (const name of ['C00', 'C03', 'C06', 'C11'])
+  CAPTURES[`${name}m`] = (...args) => CAPTURES[name](...args);
 
 // Tema de cada captura (para mostrar a personalização) e as que são no celular.
 const MOBILE = { width: 390, height: 844 };
@@ -537,16 +649,23 @@ const SETTINGS = {
       const runFlags = settings.testing ? { ...flags, public_testing: true } : flags;
       const user = settings.newUser ? { ...USER, created_at: new Date().toISOString() } : USER;
       const theme = settings.theme || 'paper';
-      const { context, page } = await m.openApp(browser, base, runFlags, data, settings.mobile ? MOBILE : VIEWPORT, {
-        user,
-        context: {
-          deviceScaleFactor: 2,
-          colorScheme: DARK_THEMES.has(theme) ? 'dark' : 'light',
-          locale: 'pt-BR',
-          timezoneId: 'America/Sao_Paulo',
-          ...(settings.mobile ? { isMobile: true, hasTouch: true } : {}),
+      const { context, page } = await m.openApp(
+        browser,
+        base,
+        runFlags,
+        data,
+        settings.mobile ? MOBILE : VIEWPORT,
+        {
+          user,
+          context: {
+            deviceScaleFactor: 2,
+            colorScheme: DARK_THEMES.has(theme) ? 'dark' : 'light',
+            locale: 'pt-BR',
+            timezoneId: 'America/Sao_Paulo',
+            ...(settings.mobile ? { isMobile: true, hasTouch: true } : {}),
+          },
         },
-      });
+      );
       await context.addInitScript((value) => {
         try {
           localStorage.setItem('audioestudo-theme', value);
