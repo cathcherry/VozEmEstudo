@@ -295,9 +295,150 @@ function captureData() {
       version: 1,
     },
   ];
-  data.notes = [];
+  // Destaques e caderno da aula de crase (texto fictício escrito para a captura).
+  const note = (id, position, quote, noteText, color) => ({
+    id,
+    material_id: idOf('crase'),
+    source_revision: REVISION,
+    source_revision_id: SOURCE_REVISION_ID,
+    segment_position: position,
+    end_segment_position: position,
+    start_offset: null,
+    end_offset: null,
+    quote,
+    note_text: noteText,
+    color,
+    version: 1,
+  });
+  data.notes = [
+    note(
+      '11111111-1111-4111-8111-000000000001',
+      2,
+      'Crase é o nome do fenômeno: a fusão de duas vogais iguais em uma só.',
+      'Crase não é o acento! O acento é o grave.',
+      'yellow',
+    ),
+    note(
+      '11111111-1111-4111-8111-000000000002',
+      4,
+      'a crase é o encontro da preposição a com o artigo feminino a.',
+      'Regra principal para a prova.',
+      'green',
+    ),
+  ];
+  data.notebooks = {
+    [idOf('crase')]: {
+      id: 'nb-crase',
+      material_id: idOf('crase'),
+      title: 'Crase',
+      version: 3,
+      last_request_id: 'x',
+      visibility: 'private',
+      doc: {
+        type: 'doc',
+        schemaVersion: 1,
+        blocks: [
+          { id: 'h1', type: 'heading', level: 2, text: 'Crase: o essencial' },
+          {
+            id: 'p1',
+            type: 'paragraph',
+            text: 'Crase é a fusão de a + a. O sinal que marca essa fusão é o acento grave.',
+          },
+          {
+            id: 'l1',
+            type: 'bullet_list',
+            items: [
+              'Teste do masculino: troque por uma palavra masculina',
+              'Virou "ao"? Então tem crase',
+            ],
+          },
+          { id: 'h2', type: 'heading', level: 3, text: 'Quando não usar' },
+          {
+            id: 'o1',
+            type: 'ordered_list',
+            items: ['Antes de palavra masculina', 'Antes de verbo', 'Entre palavras repetidas'],
+          },
+          {
+            id: 'q1',
+            type: 'quote',
+            text: 'Na maioria dos casos, a crase é o encontro da preposição a com o artigo feminino a.',
+          },
+          {
+            id: 'c1',
+            type: 'checklist',
+            items: [
+              { text: 'Refazer as questões da aula', checked: true },
+              { text: 'Revisar os cartões amanhã', checked: false },
+            ],
+          },
+          { id: 'p2', type: 'paragraph', text: '' },
+        ],
+      },
+    },
+  };
   data.quizSessions = [];
   return data;
+}
+
+/** Turmas fictícias para a captura C27. */
+function withClassrooms(d) {
+  const member = (userId, displayName, role) => ({ userId, displayName, role, status: 'active' });
+  const lesson = (id, title, ownerId) => ({
+    id,
+    title,
+    source: 'teacher',
+    status: 'published',
+    ownerId,
+    text: 'Crase é a fusão de duas vogais iguais.',
+    questionBatchIds: [],
+  });
+  const room = (id, name, description, members, lessons, resources = []) => ({
+    id,
+    name,
+    description,
+    status: 'active',
+    members,
+    invites: [],
+    lessons,
+    submissions: [],
+    shared: [],
+    resources,
+  });
+  d.classrooms = {
+    requests: [],
+    rooms: [
+      room(
+        'room-por',
+        'Português 1º ano A',
+        'Gramática e interpretação de texto, com listas para a prova.',
+        [
+          member(m.USER_ID, 'Estudante', 'teacher'),
+          member('s1', 'Aluno A', 'student'),
+          member('s2', 'Aluna B', 'student'),
+        ],
+        [
+          lesson('cl-1', 'Crase: quando usar o acento grave', m.USER_ID),
+          lesson('cl-2', 'Concordância verbal', m.USER_ID),
+        ],
+        [
+          {
+            id: 'r1',
+            title: 'Guia de estudos',
+            url: 'https://example.com/guia',
+            description: 'Roteiro da unidade.',
+          },
+        ],
+      ),
+      room(
+        'room-cie',
+        'Grupo de Ciências',
+        '',
+        [member('s3', 'Professora C', 'teacher'), member(m.USER_ID, 'Estudante', 'student')],
+        [lesson('cl-3', 'Como as vacinas treinam o corpo', 's3')],
+      ),
+    ],
+  };
+  return d;
 }
 
 /** As questões da aula de crase alimentam a simulação de tentativas (mock-quiz.cjs). */
@@ -598,9 +739,106 @@ const CAPTURES = {
     await page.screenshot({ path: path.join(OUT, `C14_tutorial${SUFFIX}.png`) });
     console.log(`captura docs/tcc-apendice-c/C14_tutorial${SUFFIX}.png`);
   },
+  // C15: página pública (antes do login).
+  async C15(page, base) {
+    await page.goto(base + '/index.html');
+    await settle(page, 1200);
+    await shot(page, 'C15_landing');
+  },
+  // C16: entrar e criar conta.
+  async C16(page, base) {
+    await page.goto(base + '/login.html');
+    await settle(page, 1000);
+    await shot(page, 'C16_login');
+    await page.goto(base + '/cadastro.html');
+    await settle(page, 1000);
+    await shot(page, 'C16b_cadastro');
+  },
+  // C17: perfil (Conta).
+  async C17(page, base) {
+    await page.goto(base + '/conta.html');
+    await settle(page, 1500);
+    await shot(page, 'C17_perfil');
+  },
+  // C18: configurações, aparência (temas) e ajuda.
+  async C18(page, base) {
+    await page.goto(base + '/configuracoes.html');
+    await settle(page, 1000);
+    await shot(page, 'C18_configuracoes');
+  },
+  async C19(page, base) {
+    await page.goto(base + '/aparencia.html');
+    await settle(page, 1200);
+    await shot(page, 'C19_aparencia');
+  },
+  async C20(page, base) {
+    await page.goto(base + '/ajuda.html');
+    await settle(page, 1000);
+    await shot(page, 'C20_ajuda');
+  },
+  // C21: anotações da aula (destaques) e o caderno.
+  async C21(page, base) {
+    await page.goto(base + `/material.html?id=${idOf('crase')}#anotacoes`);
+    await settle(page, 1500);
+    if (SUFFIX) {
+      // No celular, a página inteira repetiria a barra fixa: rola até os destaques.
+      await page.evaluate(() => {
+        const el = document.querySelector('[data-lesson-notebook]');
+        const top = el.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top, behavior: 'instant' });
+      });
+      await settle(page, 500);
+      await shot(page, 'C21_anotacoes');
+    } else await shot(page, 'C21_anotacoes', { fullPage: true });
+    const book = page.locator('[data-lesson-notebook]');
+    await book.getByRole('button', { name: 'Abrir o caderno' }).click();
+    await book.locator('.nb-editor h2, .nb-editor h3').first().waitFor();
+    await book.evaluate((el) => {
+      const top = el.getBoundingClientRect().top + window.scrollY - 130;
+      window.scrollTo({ top, behavior: 'instant' });
+    });
+    await settle(page, 1000);
+    await shot(page, 'C21b_caderno');
+  },
+  // C23: listas de questões.
+  async C23(page, base) {
+    await page.goto(base + '/questoes.html');
+    await settle(page, 1500);
+    await shot(page, 'C23_listas_questoes');
+  },
+  // C24: Planejar, calendário e tempo de estudo.
+  async C24(page, base) {
+    await page.goto(base + '/planejar.html#calendario');
+    await settle(page, 1500);
+    await shot(page, 'C24_calendario');
+    await page.goto(base + '/planejar.html#tempo');
+    await settle(page, 1500);
+    await shot(page, 'C24b_tempo_estudo');
+  },
+  // C25: conjuntos de flashcards.
+  async C25(page, base) {
+    await page.goto(base + '/flashcards.html#conjuntos');
+    await settle(page, 1500);
+    await shot(page, 'C25_flashcards_conjuntos');
+  },
+  // C27: turmas.
+  async C27(page, base) {
+    await page.goto(base + '/turmas.html');
+    await settle(page, 1500);
+    await shot(page, 'C27_turmas');
+    await page.goto(base + '/turmas.html?turma=room-por');
+    await settle(page, 1500);
+    await shot(page, 'C27b_turma');
+  },
+  // C28: recuperar a senha.
+  async C28(page, base) {
+    await page.goto(base + '/recuperar-senha.html');
+    await settle(page, 1000);
+    await shot(page, 'C28_recuperar_senha');
+  },
 };
 // Versões de celular (as mesmas telas, outro tema).
-for (const name of ['C00', 'C03', 'C06', 'C11'])
+for (const name of ['C00', 'C03', 'C06', 'C11', 'C15', 'C16', 'C17', 'C21'])
   CAPTURES[`${name}m`] = (...args) => CAPTURES[name](...args);
 
 // Tema de cada captura (para mostrar a personalização) e as que são no celular.
@@ -626,6 +864,22 @@ const SETTINGS = {
   C12: { theme: 'night' },
   C13: { theme: 'paper', testing: true },
   C14: { theme: 'matcha', newUser: true },
+  C15: { theme: 'paper', signedOut: true },
+  C15m: { theme: 'paper', signedOut: true, mobile: true },
+  C16: { theme: 'forest', signedOut: true },
+  C16m: { theme: 'gabriela', signedOut: true, mobile: true },
+  C17: { theme: 'gabriela' },
+  C17m: { theme: 'soft', mobile: true },
+  C18: { theme: 'ocean' },
+  C19: { theme: 'soft' },
+  C20: { theme: 'desktop' },
+  C21: { theme: 'soft' },
+  C21m: { theme: 'forest', mobile: true },
+  C23: { theme: 'gabriela', quizHistory: true },
+  C24: { theme: 'ocean' },
+  C25: { theme: 'matcha' },
+  C27: { theme: 'planner', classrooms: true },
+  C28: { theme: 'soft', signedOut: true },
 };
 
 (async () => {
@@ -636,7 +890,14 @@ const SETTINGS = {
   useCraseQuiz();
   const { server, base } = await startServer();
   const browser = await m.launchBrowser();
-  const flags = { ...m.allFlags };
+  // Os mesmos recursos ligados na produção (GET /api/config em 25/11/2026).
+  const flags = {
+    ...m.allFlags,
+    flashcards_v3: true,
+    classrooms: true,
+    notebooks: true,
+    multi_lesson: true,
+  };
   let failed = 0;
   try {
     for (const [name, run] of Object.entries(CAPTURES)) {
@@ -646,6 +907,19 @@ const SETTINGS = {
       const data = captureData();
       if (settings.testing) data.testing = require('./mock-testing.cjs').testingState('tester');
       if (settings.newUser) data.profileState = [];
+      if (settings.classrooms) withClassrooms(data);
+      if (settings.quizHistory)
+        data.quizSessions = [
+          {
+            id: 'qs-crase',
+            material_id: idOf('crase'),
+            batch_id: 'bq',
+            status: 'completed',
+            kind: 'full',
+            created_at: m.at(-1, 10),
+          },
+          ...m.state().quizSessions,
+        ];
       const runFlags = settings.testing ? { ...flags, public_testing: true } : flags;
       const user = settings.newUser ? { ...USER, created_at: new Date().toISOString() } : USER;
       const theme = settings.theme || 'paper';
@@ -673,6 +947,8 @@ const SETTINGS = {
           /* storage blocked: default theme */
         }
       }, theme);
+      if (settings.signedOut)
+        await context.addInitScript(() => localStorage.setItem('mock-signed-out', '1'));
       await overlay(context, base, data, runFlags, { PERMISSION_DECLARATION });
       try {
         await run(page, base, data);
