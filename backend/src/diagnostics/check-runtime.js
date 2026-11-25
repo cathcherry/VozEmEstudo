@@ -13,11 +13,13 @@ let aiConfig;
 try {
   aiConfig = createAiConfig();
   for (const name of missingAiCredentials(aiConfig)) errors.push(`${name} ausente.`);
-  if (aiConfig.asr.provider === 'huggingface' && !env.hfAsrSpaceId) errors.push('HF_ASR_SPACE_ID ausente.');
+  if (aiConfig.asr.provider === 'huggingface' && !env.hfAsrSpaceId)
+    errors.push('HF_ASR_SPACE_ID ausente.');
 } catch (error) {
   errors.push(error.message);
 }
-if (env.mockExternalServices) errors.push('MOCK_EXTERNAL_SERVICES=true: os resultados seriam simulados.');
+if (env.mockExternalServices)
+  errors.push('MOCK_EXTERNAL_SERVICES=true: os resultados seriam simulados.');
 if (!/^https:\/\/[\w-]+\.supabase\.co\/?$/.test(env.supabaseUrl)) {
   errors.push('SUPABASE_URL inválida. Confira backend/.env.');
 }
@@ -26,7 +28,13 @@ if (errors.length) {
   process.exit(1);
 }
 
-const checks = createReadinessChecks(getAdminSupabase(), featureFlags, env.audioBucket, PERMISSION_DECLARATION.version, { asrProvider: aiConfig.asr.provider });
+const checks = createReadinessChecks(
+  getAdminSupabase(),
+  featureFlags,
+  env.audioBucket,
+  PERMISSION_DECLARATION.version,
+  { asrProvider: aiConfig.asr.provider },
+);
 console.log('Verificando Supabase e recursos ativos (sem alterar nenhum dado)...');
 const results = await runReadinessChecks(checks);
 for (const result of results) {
@@ -35,9 +43,15 @@ for (const result of results) {
   // An optional sub-feature without its migration only answers a scoped 503; it never blocks startup.
   if (!result.ok && !result.optional) errors.push(result.label);
 }
-console.log(`IA: ASR ${aiConfig.asr.provider}/${aiConfig.asr.model}; texto ${[...new Set(Object.values(aiConfig.llm).map((t) => t.provider))].join(', ')} (conectividade/quotas não testadas).`);
+console.log(
+  `IA: ASR ${aiConfig.asr.provider}/${aiConfig.asr.model}; texto ${[...new Set(Object.values(aiConfig.llm).map((t) => t.provider))].join(', ')} (conectividade/quotas não testadas).`,
+);
 if (errors.length) {
-  console.error('Inicialização bloqueada. Consulte docs/first-integrated-test.md e os preflights; não reaplique migrations existentes.');
+  console.error(
+    'Inicialização bloqueada. Consulte docs/BANCO_DE_DADOS.md e os preflights; não reaplique migrations existentes.',
+  );
   process.exit(1);
 }
-console.log('Probes de banco e Storage aprovados. Login real, funções SQL, RLS e processamento ainda exigem os testes do roteiro.');
+console.log(
+  'Probes de banco e Storage aprovados. Login real, funções SQL, RLS e processamento ainda exigem os testes do roteiro.',
+);

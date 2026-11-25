@@ -7,7 +7,9 @@ import path from 'node:path';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const backend = path.join(root, 'backend');
 if (!existsSync(path.join(backend, '.env'))) {
-  console.error('[ERRO] Mantenha o seu arquivo backend/.env com as credenciais do projeto.');
+  console.error(
+    '[ERRO] Crie o arquivo backend/.env a partir de backend/.env.example (ver README.md).',
+  );
   process.exit(1);
 }
 const version = process.versions.node.split('.').map(Number);
@@ -23,7 +25,7 @@ const diagnostic = spawnSync(process.execPath, ['src/diagnostics/check-runtime.j
 });
 if (diagnostic.error || diagnostic.status !== 0) {
   console.error('\nInicialização interrompida para evitar um sistema parcialmente funcional.');
-  console.error('Confira o diagnóstico acima e o arquivo CONFIGURAR-SUPABASE.txt.');
+  console.error('Confira o diagnóstico acima e docs/CONFIGURACAO.md.');
   process.exit(1);
 }
 

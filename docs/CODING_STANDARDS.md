@@ -42,7 +42,7 @@ Aplicar Clean Code, SOLID, DRY, KISS e YAGNI conforme o problema: não criar int
 
 Indentação JS/JSON/YAML/CSS/HTML de dois espaços; Python de quatro. UTF-8, LF e newline final. Prettier é o formatter JS/documentos; Ruff é o lint/formatter Python. ESLint separa Node, ESM browser e scripts clássicos. Bundles de terceiros, binários, segredos e evidências históricas geradas não são reformatados.
 
-Antes de PR, executar os comandos de [TESTING.md](TESTING.md) e seguir [CONTRIBUTING.md](../CONTRIBUTING.md). Formatação legada deve ficar em diff separado de mudanças de lógica. Nenhuma licença do projeto é escolhida nesta entrega.
+Antes de PR, executar os comandos de [TESTING.md](TESTING.md). Formatação legada deve ficar em diff separado de mudanças de lógica. Nenhuma licença do projeto é escolhida nesta entrega.
 
 ## Organização dos estilos (etapa 1)
 

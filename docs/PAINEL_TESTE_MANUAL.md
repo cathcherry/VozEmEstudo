@@ -1,7 +1,7 @@
 # Navegação e jornadas de estudo — teste manual
 
 Para conferir com login real depois de ligar as flags no `backend/.env` (lista em
-[ATIVACAO_RECURSOS.md](ATIVACAO_RECURSOS.md)) e reiniciar o `INICIAR.cmd`.
+[CONFIGURACAO.md](CONFIGURACAO.md)) e reiniciar o `INICIAR.cmd`.
 
 "Automático" = coberto por `frontend/tests/dashboard-home-check.cjs` ou `browser-check.cjs`, com API
 simulada. Isso não substitui o uso real: marque a coluna **Você**. Gerar resumo, questões ou cartões

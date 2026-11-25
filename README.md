@@ -1,116 +1,130 @@
 # Voz em Estudo
 
-Plataforma de estudo que transforma a **gravação de uma aula** em material de estudo:
-transcrição revisável, resumos, listas de questões, flashcards e ferramentas de revisão, com foco em
-acessibilidade. Projeto de TCC.
+Plataforma web que transforma a **gravação de uma aula** em material de estudo: transcrição
+revisável, resumos, questões, flashcards e um caderno de anotações, com foco em acessibilidade.
+Trabalho de Conclusão de Curso de Catharine e Gabriela.
 
 ```
 gravação → recorte → transcrição automática → conferência humana → resumos, questões e cartões → estudo
 ```
 
-Depois da transcrição automática, o sistema só gera **avisos de conteúdo** (para ajudar na
-conferência). **Resumos, listas de questões e flashcards gerados por IA exigem que a pessoa confirme
-uma versão específica da transcrição**, e cada resultado guarda essa versão de origem.
+## Acesse online
+
+**https://vozemestudo-production.up.railway.app**
+
+Não precisa instalar nada: crie uma conta (e-mail ou Google) e use. Contas novas entram no
+programa de testes, que já traz **três aulas de demonstração** (crase, vacinas e internet) e
+limites de uso para controlar o custo dos serviços de IA.
 
 ## O que o app faz
 
-- **Envio de aulas**: áudio ou vídeo (MP4, MOV, WebM, MP3, WAV, M4A, AAC, OGG, FLAC) até 100 MB;
-  recorte de até ~54 min no navegador; envio retomável que continua de onde parou se a internet cair.
-- **Transcrição** com Whisper (Hugging Face) ou AssemblyAI, com idioma da gravação, legendas por
-  trecho ou palavra a palavra, edição com histórico de versões e três avisos automáticos de conteúdo.
-- **Resumos** em 7 formatos, 3 extensões, linguagem simples com glossário e prioridades de estudo;
-  versões nomeadas.
-- **Listas de questões** com quantidade personalizada, dificuldades, habilidades cognitivas e foco
-  temático; cada questão traz o trecho da aula que a sustenta; filtro de repetidas; compartilhamento
-  de folhas sem gabarito.
-- **Biblioteca** com busca, filtros, grade/lista e pastas de disciplinas e unidades.
-- **Busca global** em aulas, questões e transcrições.
-- **Exportação** em PDF, Markdown, TXT e CSV (flashcards).
-- **Acessibilidade**: modo para leitores de tela, leitura em voz alta, modo foco, fontes para
-  dislexia, régua de leitura, temas de alto contraste e temas personalizados.
-- **Perfil** com marcos de estudo e o mascote Nino (pontos e conquistas calculados no navegador,
-  provisórios; a versão verificada pelo servidor está planejada em
-  [docs/GAMIFICACAO_2_0_DESIGN.md](docs/GAMIFICACAO_2_0_DESIGN.md)).
-- Recursos prontos no código e aguardando migrations no banco de produção: planejamento,
-  tentativas e diagnóstico de questões, flashcards com revisão espaçada, tempo de estudo,
-  anotações, calendário e cópias de leitura de materiais.
+| Área               | Recursos                                                                                                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Envio**          | Áudio ou vídeo (MP4, MOV, WebM, MP3, WAV, M4A, AAC, OGG, FLAC) até 100 MB, recorte do trecho no navegador e envio que retoma se a internet cair                          |
+| **Transcrição**    | Automática (AssemblyAI ou Whisper), com player sincronizado, legendas, edição, histórico de versões e confirmação humana antes de gerar qualquer material                |
+| **Materiais**      | Resumos em vários formatos, listas de questões com o trecho da aula que sustenta cada resposta e flashcards com repetição espaçada                                       |
+| **Anotações**      | Destaques na transcrição e um caderno por aula, com capas, papéis, listas, checklist e citações de trechos da aula                                                       |
+| **Organização**    | Biblioteca por disciplinas e unidades, busca global, planejamento com tarefas e calendário, painel de foco (Pomodoro) e turmas                                           |
+| **Acessibilidade** | Modo para leitores de tela, leitura em voz alta, fontes para dislexia, régua de leitura, alto contraste, 12 temas prontos (ou um personalizado) e interface em 4 idiomas |
 
-Lista completa, com o que depende de cada flag: **[docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md)**.
+Descrição completa, página por página: [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md).
+Capturas de todas as telas: [docs/tcc-apendice-c/](docs/tcc-apendice-c/LEGENDAS.md).
 
-## Como iniciar no Windows
+## Rodar no computador (Windows)
 
-Requisito: **Node.js 22.19 ou mais novo** (de preferência 24).
+O site publicado é a forma recomendada de usar o app. Para rodar o código localmente:
 
-1. Coloque seu arquivo privado `backend/.env` (modelo em `backend/.env.example`; variáveis
-   explicadas em [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)).
-2. Dê dois cliques em **INICIAR.cmd**. Na primeira vez ele instala as dependências do backend
-   (precisa de internet).
-3. Espere as mensagens de que a API e o worker iniciaram.
-4. Abra **http://localhost:3000/painel.html**.
-5. Deixe a janela aberta. Para encerrar, pressione **Ctrl+C**. Depois de mudar o `.env` ou de
-   atualizar o código, feche e abra o `INICIAR.cmd` de novo.
+1. Instale o **Node.js 24 LTS** (ou 22.19 ou mais novo): https://nodejs.org
+2. Dê dois cliques em **`INICIAR.cmd`**.
+   - Na primeira vez, ele cria `backend/.env` a partir do modelo e abre o arquivo no Bloco de
+     Notas. Preencha as chaves (tabela abaixo), salve e abra o `INICIAR.cmd` de novo.
+   - Depois, ele instala as dependências (só na primeira vez, precisa de internet), inicia a API e
+     o worker e abre **http://localhost:3000/painel.html** no navegador.
+3. Deixe a janela aberta enquanto usa. **Ctrl+C** encerra.
 
-### Pelo PowerShell
+| Variável em `backend/.env`                                                                                                                            | Onde conseguir                                                                                     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`                                                                                     | Projeto no [Supabase](https://supabase.com) › Project Settings › API                               |
+| Transcrição: `ASR_PROVIDER=assemblyai` e `ASSEMBLYAI_API_KEY` (como no site publicado) ou `HF_TOKEN` com o Whisper do Hugging Face (padrão do modelo) | [AssemblyAI](https://www.assemblyai.com) ou [Hugging Face](https://huggingface.co/settings/tokens) |
+| `GROQ_API_KEY` (resumos, questões e flashcards)                                                                                                       | [Groq](https://console.groq.com)                                                                   |
 
-Se o PowerShell bloquear scripts, use `npm.cmd` em vez de `npm`. Em dois terminais, dentro da
-pasta `backend`:
+O banco precisa das migrations de `database/migrations/` aplicadas em ordem
+([docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)). Todas as variáveis e flags estão explicadas em
+[docs/CONFIGURACAO.md](docs/CONFIGURACAO.md).
+
+<details>
+<summary>Sem o <code>INICIAR.cmd</code> (macOS, Linux ou terminal)</summary>
+
+Com o `backend/.env` preenchido, na raiz do projeto:
 
 ```bash
-npm.cmd ci
+npm ci --prefix backend
 ```
 
 ```bash
-npm.cmd start
+node scripts/full/start.mjs
+```
+
+Ou em dois terminais separados, dentro de `backend/`: `npm start` (API) e `npm run worker`
+(processamento). No PowerShell, use `npm.cmd` se o `npm` for bloqueado.
+
+</details>
+
+## Testes
+
+Os testes usam dados falsos e não precisam de chaves. Instale as dependências das três partes
+(e o Ruff, para os testes em Python) uma vez:
+
+```bash
+npm ci && npm ci --prefix backend && npm ci --prefix frontend
 ```
 
 ```bash
-npm.cmd run worker
+python -m pip install -r requirements-dev.txt
 ```
 
-## Atualizar pelo GitHub Desktop
+Depois:
 
-1. **Fetch origin** e depois **Pull origin** na branch desejada.
-2. Feche e abra o `INICIAR.cmd`; no navegador, **Ctrl+F5**.
-3. Para publicar mudanças: crie uma branch, faça **Commit** e **Push origin**, abra um pull request
-   e confira a verificação **Quality** no GitHub Actions antes do merge.
+```bash
+npm test
+```
 
-Mudanças no banco vêm como SQL versionado em `database/migrations/` e nunca são aplicadas
-automaticamente: ver [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md).
+`npm test` roda os testes do backend (com PostgreSQL embutido), da interface e da qualidade.
+`npm run test:browser` roda as jornadas completas no Chromium. Detalhes em
+[docs/TESTING.md](docs/TESTING.md).
 
-## Organização do repositório
+## Organização do código
 
-| Pasta        | Conteúdo                                                                                    |
-| ------------ | ------------------------------------------------------------------------------------------- |
-| `frontend/`  | Páginas HTML, CSS e JavaScript (módulos ES, sem etapa de build)                             |
-| `backend/`   | API Express (`src/server.js`), worker de processamento (`src/worker.js`), integrações de IA |
-| `database/`  | Migrations, verificações e propostas de SQL                                                 |
-| `asr-space/` | Space do Hugging Face com Whisper (transcrição com tempos)                                  |
-| `scripts/`   | Inicializador do `INICIAR.cmd`, verificações de qualidade, segredos e distribuição          |
-| `docs/`      | Documentação — comece pelo [índice](docs/README.md)                                         |
-| `quality/`   | Linha de base de formatação                                                                 |
+| Pasta        | Conteúdo                                                                                     |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| `frontend/`  | Páginas HTML, CSS e JavaScript (módulos ES, sem etapa de build) e testes da interface        |
+| `backend/`   | API Express (`src/server.js`), worker de processamento (`src/worker.js`) e integrações de IA |
+| `database/`  | Migrations, verificações, rollback e as aulas de demonstração                                |
+| `asr-space/` | Space do Hugging Face com Whisper (transcrição alternativa)                                  |
+| `scripts/`   | Inicializador, verificações de qualidade e segredos, testes de apoio                         |
+| `deploy/`    | Configuração dos serviços no Railway                                                         |
+| `docs/`      | Documentação ([índice](docs/README.md))                                                      |
+
+Tecnologias: Node.js e Express, Supabase (Postgres, Auth, Storage e RLS), AssemblyAI, Groq,
+FFmpeg, Docker e Railway.
 
 ## Documentação
 
-| Documento                                              | Para quê                                                                     |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [docs/README.md](docs/README.md)                       | Índice de toda a documentação                                                |
-| [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md)     | Tudo o que o app faz, página por página, e o que está disponível em produção |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)           | Arquitetura e fluxo de processamento                                         |
-| [docs/API.md](docs/API.md)                             | Rotas HTTP                                                                   |
-| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)       | Tabelas, migrations, segurança e situação da produção                        |
-| [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)           | Variáveis de ambiente e flags                                                |
-| [docs/AI_PROVIDERS.md](docs/AI_PROVIDERS.md)           | Provedores de transcrição e texto                                            |
-| [docs/ATIVACAO_RECURSOS.md](docs/ATIVACAO_RECURSOS.md) | Situação de cada flag e roteiro para ligar o que falta                       |
-| [docs/ROADMAP.md](docs/ROADMAP.md)                     | O que está pronto, o que falta ativar e as dívidas técnicas                  |
-| [docs/TESTING.md](docs/TESTING.md)                     | Como rodar os testes                                                         |
+| Documento                                          | Para quê                                         |
+| -------------------------------------------------- | ------------------------------------------------ |
+| [docs/FUNCIONALIDADES.md](docs/FUNCIONALIDADES.md) | Tudo o que o app faz, página por página          |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)       | Arquitetura e fluxo de processamento de uma aula |
+| [docs/API.md](docs/API.md)                         | Rotas HTTP                                       |
+| [docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)   | Tabelas, migrations e segurança (RLS)            |
+| [docs/CONFIGURACAO.md](docs/CONFIGURACAO.md)       | Variáveis de ambiente e flags                    |
+| [docs/HOSPEDAGEM.md](docs/HOSPEDAGEM.md)           | Como o site foi publicado no Railway             |
+| [docs/README.md](docs/README.md)                   | Índice com os demais documentos                  |
 
 ## Segurança
 
-- **Nunca publique `backend/.env`** nem chaves, mesmo em repositório privado. Ver
-  [PUBLICAR_NO_GITHUB.md](PUBLICAR_NO_GITHUB.md).
-- Aulas, transcrições e tudo o que é gerado passam pela API, que confere o dono de cada dado.
-  O navegador grava diretamente só duas coisas, ambas limitadas à própria conta pelas regras do
-  Supabase (RLS): o estado do perfil e das preferências (`profile_state`) e os arquivos enviados
-  ao Storage (áudio do trecho, MP4 original e imagens do perfil). Detalhes em
-  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#acesso-a-dados).
+- **Nunca publique `backend/.env`** nem chaves: o arquivo fica fora do Git (`.gitignore`). Em
+  produção, as chaves ficam só no painel do Railway.
+- Aulas, transcrições e materiais passam pela API, que confere o dono de cada dado; o banco reforça
+  isso com regras de acesso por linha (RLS).
 - Links de compartilhamento guardam só o hash do token, expiram e podem ser revogados.
+- Auditoria do teste público: [docs/SECURITY_AUDIT_PUBLIC_TESTING.md](docs/SECURITY_AUDIT_PUBLIC_TESTING.md).
